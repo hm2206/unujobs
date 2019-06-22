@@ -13,7 +13,8 @@ class Job extends Model
         "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta",
         "afp_id", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
         "categoria_id", "sindicato_id", "observaciones", "nombre_completo",
-        "cargo_id", 'plaza'
+        "cargo_id", 'plaza', 'meta_id', 'pea', 'condicion_pap', 'perfil',
+        'ext_pptto', 'escuela_id', 'ruc', 'fuente_id'
     ];
 
     public function banco()
@@ -40,4 +41,15 @@ class Job extends Model
     {
         return $this->belongsTo(Cargo::class);
     }
+
+    public function meta() 
+    {
+        return $this->belongsTo(Meta::Class);
+    }
+
+    public function remuneraciones()
+    {
+        return $this->hasMany(Remuneracion::class);
+    }
+
 }

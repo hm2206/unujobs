@@ -12,6 +12,8 @@ use App\Models\Afp;
 use App\Models\Sindicato;
 use App\Models\Categoria;
 use App\Models\Cargo;
+use App\Models\Meta;
+use App\Models\Remuneracion;
 
 class JobController extends Controller
 {
@@ -38,6 +40,7 @@ class JobController extends Controller
         $bancos = Banco::get(["id", "nombre"]);
         $afps = Afp::get(["id", "nombre"]);
         $cargos = Cargo::with('categorias')->get(['id', 'descripcion']);
+        $metas = Meta::all();
         $categorias = Categoria::whereHas('cargos', function($q) {
             $q->where("cargos.id", old('cargo_id'));
         })->get();
@@ -47,13 +50,7 @@ class JobController extends Controller
             $result = $essalud->search($documento);
         }
 
-        return view('trabajador.create', compact('decumento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos'));
-    }
-
-    public function afectacion($id)
-    {
-        $job = Job::findOrFail($id);
-        return view("trabajador.afectacion", compact('job', 'id'));
+        return view('trabajador.create', compact('decumento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
     }
 
  
@@ -85,8 +82,9 @@ class JobController extends Controller
                 $q->where("cargos.id", $job->cargo_id);
             }   
         })->get();
+        $metas = Meta::all();
 
-        return view('trabajador.edit', compact('job','sindicatos', 'bancos', 'afps', 'cargos', 'categorias'));
+        return view('trabajador.edit', compact('job','sindicatos', 'bancos', 'afps', 'cargos', 'categorias', 'metas'));
     }
 
 
@@ -108,6 +106,19 @@ class JobController extends Controller
     {
         return $jobs->where("nombre_completo", "like", "%{$like}%")
             ->orWhere("numero_de_documento", "like", "%{$like}%");
+    }
+
+    public function remuneracion($id)
+    {
+        $job = Job::findOrFail($id);
+        $categoria = Categoria::findOrFail($job->categoria_id);
+        $remuneraciones = Remuneracion::where("job_id", $job->id)
+            ->where("categoria_id", $categoria->id)
+            ->get();
+
+        $total = 0;
+
+        return view("trabajador.remuneracion", compact('job', 'categoria', 'remuneraciones', 'total'));
     }
 
 }

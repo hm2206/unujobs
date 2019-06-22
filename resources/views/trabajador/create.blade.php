@@ -44,7 +44,7 @@
         <div class="card-body">
 
             <span>Campo obligatorio (<span class="text-danger">*</span>)</span>
-            <hr>
+            <hr />
 
             <div class="row">
 
@@ -137,7 +137,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">N° Essalud Autogenerable <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">N° Essalud Autogenerable</label>
                         <input type="text" class="form-control" value="{{ old('numero_de_essalud') }}" name="numero_de_essalud">
                         <b class="text-danger">{{ $errors->first('numero_de_essalud') }}</b>
                     </div>
@@ -146,7 +146,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Banco <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Banco</label>
                         <select name="banco_id" class="form-control">
                             <option value="">Seleccionar...</option>
                             @foreach ($bancos as $banco)
@@ -159,7 +159,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Número de Cuenta <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Número de Cuenta</label>
                         <input type="text" class="form-control" value="{{ old('numero_de_cuenta') }}" name="numero_de_cuenta">
                         <b class="text-danger">{{ $errors->first('numero_de_cuenta') }}</b>
                     </div>
@@ -167,7 +167,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">AFP <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">AFP</label>
                         <select class="form-control" name="afp_id">
                             <option value="">Seleccionar...</option>
                             @foreach ($afps as $afp)
@@ -180,7 +180,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Fecha de Afiliación <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Fecha de Afiliación</label>
                         <input type="date" class="form-control" value="{{ old('fecha_de_afiliacion') }}" name="fecha_de_afiliacion">
                         <b class="text-danger">{{ $errors->first('fecha_de_afiliacion') }}</b>
                     </div>
@@ -188,7 +188,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Número de cussp <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Número de cussp</label>
                         <input type="text" class="form-control" value="{{ old('numero_de_cussp') }}" name="numero_de_cussp">
                         <b class="text-danger">{{ $errors->first('numero_de_cussp') }}</b>
                     </div>
@@ -222,7 +222,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Cargo <span class="text-danger">*</span></label>
-                        <select name="cargo_id"class="form-control" onchange="select(this)">
+                        <select name="cargo_id"class="form-control" onchange="combobox(this, 'categoria');">
                             <option value="">Seleccionar...</option>
                             @foreach ($cargos as $cargo)
                                 <option value="{{ $cargo->id }}" {!! old('cargo_id') == $cargo->id ? 'selected' : '' !!}>{{ $cargo->descripcion }}</option>
@@ -231,6 +231,7 @@
                         <b class="text-danger">{{ $errors->first('cargo_id') }}</b>
                     </div>
                 </div>
+                
 
                 <div class="col-md-6">
                         <div class="form-group">
@@ -246,11 +247,58 @@
                     </div>
 
                 <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="" class="form-control-label">Plaza</label>
-                            <input type="text" name="plaza" class="form-control" value="{{ old('plaza') }}">
-                        </div>
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Condición P.A.P</label>
+                        <input type="text" name="condicion_pap" class="form-control" value="{{ old('condicion_pap') }}">
+                        <b class="text-danger">{{ $errors->first('condicion_pap') }}</b>
                     </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Plaza</label>
+                        <input type="text" name="plaza" class="form-control" value="{{ old('plaza') }}">
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Meta <span class="text-danger">*</span></label>
+                        <select name="meta_id" class="form-control">
+                            <option value="">Seleccionar...</option>
+                            @foreach ($metas as $meta)
+                                <option value="{{ $meta->id }}" {!! old('meta_id') ? "selected" : "" !!}>
+                                    {{ $meta->meta }} -> cod. Act => {{ $meta->actividadID }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <b class="text-danger">{{ $errors->first('meta_id') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Perfil</label>
+                        <input type="text" name="perfil" class="form-control" value="{{ old('perfil') }}">
+                        <b class="text-danger">{{ $errors->first('perfil') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Ext Pptto</label>
+                        <input type="text" name="ext_pptto" class="form-control" value="{{ old('ext_pptto') }}">
+                        <b class="text-danger">{{ $errors->first('ext_pptto') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Escuela</label>
+                        <input type="text" name="escuela_id" class="form-control" value="{{ old('escuela_id') }}">
+                        <b class="text-danger">{{ $errors->first('escuela_id') }}</b>
+                    </div>
+                </div>
 
                 <div class="col-md-12">
                     <div class="form-group">
@@ -259,6 +307,28 @@
                         <b class="text-danger">{{ $errors->first('observaciones') }}</b>
                     </div>
                 </div>
+
+    
+                <h4 class="col-md-12 mt-4">Solo C.A.S</h4>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">R.U.C</label>
+                        <input type="text" name="ruc" class="form-control" value="{{ old('ruc') }}">
+                        <b class="text-danger">{{ $errors->first('ruc') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Fuente de Ingreso</label>
+                        <select name="fuente_id" class="form-control">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <b class="text-danger">{{ $errors->first('fuente_id') }}</b>
+                    </div>
+                </div>
+
 
                 <div class="col-md-12 mt-4">
                     <button class="btn btn-primary">Guardar y continuar <i class="fas fa-save"></i></button>
@@ -270,11 +340,14 @@
 </div>
 
 <script>
-    function select(that) {
-        let categoria = document.getElementById('categoria');
-        categoria.value = "";
-        that.form.submit();
-    }
+
+function combobox(that, id) {
+    let combo = document.getElementById(id);
+    combo.value = "";
+    that.form.submit();
+}
+
+
 </script>
 
 @endsection

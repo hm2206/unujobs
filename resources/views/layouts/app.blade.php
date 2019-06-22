@@ -138,7 +138,7 @@
         <div class="container-fluid">
           <div class="copyright float-right">
             &copy;
-            {{ date('Y') }} Hecho con <i class="material-icons">favorite</i> by
+            {{ date('Y') }} Hecho con <i class="fas fa-heart"></i> by
             <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a> para una mejor web.
           </div>
         </div>
@@ -180,7 +180,7 @@
   <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
   <!-- Library for adding dinamically elements -->
-  <script src="../assets/js/plugins/arrive.min.js"></script>
+  <script src="{{ asset('js/plugins/arrive.min.js') }}"></script>
   <!--  Google Maps Plugin    -->
   {{-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> --}}
   <!-- Chartist JS -->

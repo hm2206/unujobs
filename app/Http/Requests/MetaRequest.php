@@ -41,7 +41,7 @@ class MetaRequest extends FormRequest
             "subProgramaID" => "required",
             "sub_programa" => "required",
             "actividadID" => "required",
-            "actividad" => "required"
+            "actividad" => "required",
         ];
     }
 }

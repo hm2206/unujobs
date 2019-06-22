@@ -17,6 +17,7 @@
     
 <div class="col-md-12">
 
+
     <form class="card" action="{{ route('job.update', $job->id) }}" method="POST" id="register">
         @csrf
         @method('PUT')
@@ -221,11 +222,21 @@
                         <label for="" class="form-control-label">Categoria <span class="text-danger">*</span></label>
                         <select name="categoria_id"class="form-control" id="categoria">
                             <option value="">Seleccionar...</option>
-                            @foreach ($categorias as $categoria)
-                                <option value="{{ $categoria->id }}" {!! $job->categoria_id == $categoria->id ? 'selected' : '' !!}>{{ $categoria->nombre }}</option>
+                            @foreach ($metas as $meta)
+                                <option value="{{ $meta->id }}" {!! $job->meta_id == $meta->id ? 'selected' : '' !!}>
+                                    {{ $meta->meta }} -> cod. Act => {{ $meta->actividadID }}
+                                </option>
                             @endforeach
                         </select>
                         <b class="text-danger">{{ $errors->first('categoria_id') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Condición P.A.P</label>
+                        <input type="text" name="condicion_pap" class="form-control" value="{{ old('condicion_pap') ? old('condicion_pap') : $job->condicion_pap }}">
+                        <b class="text-danger">{{ $errors->first('condicion_pap') }}</b>
                     </div>
                 </div>
 
@@ -236,11 +247,68 @@
                     </div>
                 </div>
 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Meta <span class="text-danger">*</span></label>
+                        <select name="meta_id"class="form-control">
+                            <option value="">Seleccionar...</option>
+                            @foreach ($categorias as $categoria)
+                                <option value="{{ $categoria->id }}" {!! $job->categoria_id == $categoria->id ? 'selected' : '' !!}>{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <b class="text-danger">{{ $errors->first('meta_id') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Perfil</label>
+                        <input type="text" name="perfil" class="form-control" value="{{ old('perfil') ? old('perfil') : $job->perfil }}">
+                        <b class="text-danger">{{ $errors->first('perfil') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Ext Pptto</label>
+                        <input type="text" name="ext_pptto" class="form-control" value="{{ old('ext_pptto') ? old('ext_pptto') : $job->ext_pptto }}">
+                        <b class="text-danger">{{ $errors->first('ext_pptto') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Escuela</label>
+                        <input type="text" name="escuela_id" class="form-control" value="{{ old('escuela_id') ? old('escuela_id') : $job->escuela_id }}">
+                        <b class="text-danger">{{ $errors->first('escuela_id') }}</b>
+                    </div>
+                </div>
+
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="" class="form-control-label">Observaciones</label>
                         <textarea name="observaciones" class="form-control form-textarea" rows="10">{{ $job->observaciones ? $job->observaciones : old('observaciones') }}</textarea>
                         <b class="text-danger">{{ $errors->first('observaciones') }}</b>
+                    </div>
+                </div>
+
+                <h4 class="col-md-12 mt-4">Solo C.A.S</h4>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">R.U.C</label>
+                        <input type="text" name="ruc" class="form-control" value="{{ old('ruc') ? old('ruc') : $job->ruc }}">
+                        <b class="text-danger">{{ $errors->first('ruc') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Fuente de Ingreso</label>
+                        <select name="fuente_id" class="form-control">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                        <b class="text-danger">{{ $errors->first('fuente_id') }}</b>
                     </div>
                 </div>
 

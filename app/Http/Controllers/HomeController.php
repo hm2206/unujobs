@@ -18,7 +18,12 @@ class HomeController extends Controller
 
     public function planilla() 
     {
-        return view("planilla");
+        return view("planilla.index");
+    }
+
+    public function configPlanilla()
+    {
+        return view('planilla.config');;
     }
     
 }

@@ -15,6 +15,7 @@ class CreateMetasTable extends Migration
     {
         Schema::create('metas', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string("metaID");
             $table->string('meta');
             $table->string("sectorID");
             $table->string("sector");

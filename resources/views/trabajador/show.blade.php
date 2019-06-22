@@ -13,8 +13,7 @@
 <div class="col-md-12">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     <a href="{{ route('job.edit', $job->id) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> editar</a>
-    <a href="{{ route('job.edit', $job->id) }}" class="btn btn-dark">Afectación Presupuestal</a>
-    <a href="{{ route('job.edit', $job->id) }}" class="btn btn-dark">Remuneraciones</a>
+    <a href="{{ route('job.remuneracion', $job->id) }}" class="btn btn-dark">Remuneraciones</a>
     <a href="{{ route('job.edit', $job->id) }}" class="btn btn-dark">Obligaciones Judiciales</a>
 </div>
 
@@ -173,8 +172,43 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="" class="form-control-label">Condicion P.A.P</label>
+                        <span class="form-control uppercase">{{ $job->condicion_pap }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="" class="form-control-label">Plaza</label>
                         <span class="form-control uppercase">{{ $job->plaza ? $job->plaza : "No Tiene" }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Meta</label>
+                        <span class="form-control uppercase">{{ $job->meta ? $job->meta->meta : ''}}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Perfil</label>
+                        <span class="form-control uppercase">{{ $job->perfil }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Ext Pptto</label>
+                        <span class="form-control uppercase">{{ $job->ext_pptto}}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Escuela</label>
+                        <span class="form-control uppercase">{{ $job->escuela_id }}</span>
                     </div>
                 </div>
 
@@ -184,7 +218,25 @@
                         <span class="form-control uppercase">{{ $job->observaciones }}</span>
                     </div>
                 </div>
-                
+
+                @if ($job->ruc)
+                    <h4 class="col-md-12 mt-4">Solo C.A.S</h4>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="" class="form-control-label">R.U.C</label>
+                            <span class="form-control uppercase">{{ $job->ruc }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="" class="form-control-label">Fuente de Ingreso</label>
+                            <span class="form-control uppercase">{{ $job->fuente_id }}</span>
+                        </div>
+                    </div>
+                @endif
+
             </div>
         </div>
     </div>        

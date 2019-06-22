@@ -87,7 +87,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#pablo"><b>Configuración</b></a>
+                    <a href="{{ route('planilla.config') }}"><b>Configuración</b></a>
                 </div>
             </div>
         </div>

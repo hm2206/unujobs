@@ -29,20 +29,21 @@ class JobRequest extends FormRequest
             "ape_paterno" => "required",
             "ape_materno" => "required",
             "nombres" => "required",
-            "numero_de_documento" => "required|unique:jobs,numero_de_documento" . self::update("", ",".request()->id),
+            "numero_de_documento" => "required",
             "fecha_de_nacimiento" => "date",
             "profesion" => "required",
             "phone" => "required",
             "fecha_de_ingreso" => "required",
             "sexo" => "required",
-            "numero_de_essalud" => "required|unique:jobs,numero_de_essalud" . self::update("", ",".request()->id),
-            "banco_id" => "required",
-            "numero_de_cuenta" => "required|unique:jobs,numero_de_cuenta" . self::update("", ",".request()->id),
-            "afp_id" => "required",
-            "fecha_de_afiliacion" => "date",
-            "numero_de_cussp" => "required",
             "accidentes" => "required",
+            "cargo_id" => "required",
             "categoria_id" => "required",
+            "meta_id" => "required",
+            "pea" => "required",
+            "condicion_pap" => "required",
+            "perfil" => "required",
+            "ext_pptto" => "required",
+            "escuela_id" => "required"
         ];
     }
 }

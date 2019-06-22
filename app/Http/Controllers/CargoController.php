@@ -2,84 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use App\Cargo;
+use App\Models\Cargo;
+use App\Models\Categoria;
+use App\Models\Planilla;
 use Illuminate\Http\Request;
 
 class CargoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $cargos = Cargo::all();
+        return view("cargos.index", compact('cargos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        //
+        $planillas = Planilla::all();
+        return view('cargos.create', \compact('planillas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        $this->validate(request(), [
+            "descripcion" => "required|unique:cargos",
+            "planilla_id" => "required"
+        ]);
+
+        Cargo::create($request->all());
+
+        return back()->with(["success" => "El registro se guardo correctamente!"]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Cargo  $cargo
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Cargo $cargo)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Cargo  $cargo
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit(Cargo $cargo)
     {
-        //
+        $planillas = Planilla::all();
+        return view('cargos.edit', \compact('planillas', 'cargo'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Cargo  $cargo
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, Cargo $cargo)
     {
-        //
+        $this->validate(request(), [
+            "descripcion" => "required|unique:cargos,id,".$request->descripcion,
+            "planilla_id" => "required"
+        ]);
+
+        $cargo->update($request->all());
+
+        return back()->with(["success" => "El registro se actualizó correctamente!"]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Cargo  $cargo
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Cargo $cargo)
     {
         //
     }
+
+
+    public function categoria($id)
+    {
+        $cargo = Cargo::findOrFail($id);
+        $notIn = $cargo->categorias->pluck(["id"]);
+        $categorias = Categoria::whereNotIn('id', $notIn)->get();
+
+        return view("cargos.categoria", compact('cargo', 'categorias'));
+    }
+
+    public function categoriaStore($id, Request $request)
+    {
+        $this->validate(request(), [
+            "categoria_id" => "required"
+        ]);
+
+        $cargo = Cargo::findOrFail($id);
+        $cargo->categorias()->syncWithoutDetaching($request->categoria_id);
+        return back()->with(["success" => "La categoria se agrego correctamente"]);
+    }
+
 }
