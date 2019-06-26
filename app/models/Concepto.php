@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Concepto extends Model
 {
-    //
+    
+    protected $fillable = ["key", "descripcion", "monto", "horas"];
+
 }

@@ -56,8 +56,10 @@ class JobController extends Controller
  
     public function store(JobRequest $request)
     {
+        $cargo = Cargo::findOrFail($request->cargo_id);
         $job = Job::create($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
+        $job->planilla_id = $cargo->planilla_id;
         $job->save();
         return redirect()->route('job.index')->with(["success" => "El registro se guardo correctamente"]);
     }
@@ -112,13 +114,26 @@ class JobController extends Controller
     {
         $job = Job::findOrFail($id);
         $categoria = Categoria::findOrFail($job->categoria_id);
+
+        $year = request()->year ? (int)request()->year : date('Y');
+        $mes = request()->mes ? (int)request()->mes : (int)date('m');
+        $adicional = request()->adicional ? 1 : 0;
+
         $remuneraciones = Remuneracion::where("job_id", $job->id)
+            ->where('mes', $mes)
+            ->where('año', $year)
             ->where("categoria_id", $categoria->id)
+            ->where("adicional", $adicional)
             ->get();
 
         $total = 0;
+        $dias = 30;
 
-        return view("trabajador.remuneracion", compact('job', 'categoria', 'remuneraciones', 'total'));
+        foreach($remuneraciones as $remuneracion) {
+            $total += $remuneracion->monto;
+        }
+
+        return view("trabajador.remuneracion", compact('job', 'categoria', 'remuneraciones', 'total', 'dias', 'mes', 'year'));
     }
 
 }

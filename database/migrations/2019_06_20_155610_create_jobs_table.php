@@ -41,11 +41,13 @@ class CreateJobsTable extends Migration
             $table->string("pea")->nullable();
             $table->string("condicion_pap")->nullable();
             $table->string("perfil")->nullable();
-            $table->string("ext_pptto");
-            $table->string("escuela_id");
+            $table->string("ext_pptto")->nullable();
+            $table->string("escuela_id")->nullable();
             $table->string("ruc")->nullable();
             $table->string("fuente_id")->nullable();
             $table->text("observaciones")->nullable();
+            $table->integer("sede_id")->default(1);
+            $table->integer("planilla_id")->nullable();
             $table->timestamps();
         });
     }

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo')
-    - Cargos
+    - Concepto
 @endsection
 
 @section('link')
@@ -12,7 +12,7 @@
 
 <div class="col-md-12">
     <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cargo.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
+    <a href="{{ route('concepto.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
 @if (session('success'))
@@ -27,8 +27,8 @@
 
     <div class="card">
         <div class="card-header card-header-danger">
-            <h4 class="card-title">Lista de Cargos</h4>
-            <p class="card-category">Sub Módulo de Gestión de cargos</p>
+            <h4 class="card-title">Lista de Conceptos</h4>
+            <p class="card-category">Sub Módulo de Gestión de conceptos</p>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -37,26 +37,19 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
-                            <th>Categorias</th>
+                            <th>Monto</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($cargos as $cargo)
+                        @forelse ($conceptos as $concepto)
                             <tr>
-                                <th>{{ $cargo->id }}</th>
-                                <th class="uppercase">{{ $cargo->descripcion }}</th>
-                                <th>
-                                    <a href="{{ route('cargo.categoria', $cargo->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i></a>
-                                    @foreach ($cargo->categorias as $categoria)
-                                        <a href="#" class="btn btn-sm uppercase">
-                                            {{ $categoria->nombre }}
-                                        </a>
-                                    @endforeach
-                                </th>
+                                <th>{{ $concepto->id }}</th>
+                                <th class="uppercase">{{ $concepto->descripcion }}</th>
+                                <th class="uppercase">S./ {{ $concepto->monto }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="{{ route('concepto.edit', $concepto->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
                                     </div>
                                 </th>
                             </tr>

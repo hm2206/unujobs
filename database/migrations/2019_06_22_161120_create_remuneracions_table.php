@@ -21,10 +21,12 @@ class CreateRemuneracionsTable extends Migration
             $table->integer("concepto_id");
             $table->integer("cronograma_id");
             $table->text("observaciones")->nullable();
-            $table->integer("sede")->default(1);
+            $table->integer("sede_id")->default(1);
             $table->integer("mes")->default(6);
             $table->integer("año")->default(2019);
             $table->double("monto")->default(0);
+            $table->integer("adicional")->default(0);
+            $table->string("horas")->default(8);
             $table->timestamps();
         });
     }

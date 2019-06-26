@@ -42,8 +42,6 @@ class JobRequest extends FormRequest
             "pea" => "required",
             "condicion_pap" => "required",
             "perfil" => "required",
-            "ext_pptto" => "required",
-            "escuela_id" => "required"
         ];
     }
 }

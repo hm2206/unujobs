@@ -18,6 +18,7 @@ class CreateConceptosTable extends Migration
             $table->string("key")->unique();
             $table->string("descripcion")->nullable();
             $table->double("monto")->default(0);
+            $table->string("horas")->default(8);
             $table->timestamps();
         });
     }

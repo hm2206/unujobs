@@ -18,7 +18,7 @@
             <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                     <div class="card-icon">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-users-cog"></i>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -31,7 +31,7 @@
             <div class="card card-stats">
                 <div class="card-header card-header-warning card-header-icon">
                     <div class="card-icon">
-                        <i class="fas fa-circle"></i>
+                        <i class="fas fa-meteor"></i>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -44,11 +44,11 @@
             <div class="card card-stats">
                 <div class="card-header card-header-success card-header-icon">
                     <div class="card-icon">
-                        <i class="fas fa-coins"></i>
+                        <i class="fas fa-calendar-week"></i>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#pablo"><b>Pagos</b></a>
+                    <a href="{{ route('cronograma.index') }}"><b>Cronogramas</b></a>
                 </div>
             </div>
         </div>
@@ -57,11 +57,11 @@
             <div class="card card-stats">
                 <div class="card-header card-header-primary card-header-icon">
                     <div class="card-icon">
-                        <i class="fas fa-trending"></i>
+                        <i class="fas fa-cogs"></i>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#pablo"><b>Descuentos</b></a>
+                    <a href="{{ route('cargo.index') }}"><b>Cargos</b></a>
                 </div>
             </div>
         </div>
@@ -70,11 +70,11 @@
             <div class="card card-stats">
                 <div class="card-header card-header-info card-header-icon">
                     <div class="card-icon">
-                        <i class="fas fa-ban"></i>
+                        <i class="fas fa-certificate"></i>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#pablo"><b>Liquidaciones</b></a>
+                    <a href="{{ route('categoria.index') }}"><b>Categorias</b></a>
                 </div>
             </div>
         </div>
@@ -83,11 +83,11 @@
             <div class="card card-stats">
                 <div class="card-header card-header-dark card-header-icon">
                     <div class="card-icon">
-                        <i class="fas fa-setting-alt"></i>
+                        <i class="fas fa-cube"></i>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ route('planilla.config') }}"><b>Configuración</b></a>
+                    <a href="{{ route('concepto.index') }}"><b>Conceptos</b></a>
                 </div>
             </div>
         </div>

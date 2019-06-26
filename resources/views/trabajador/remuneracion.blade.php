@@ -17,6 +17,50 @@
 
 
 <div class="col-md-12">
+    <div class="card">
+        <h5 class="card-header">
+            <i class="fas fa-filter"></i> Filtro:
+        </h5>
+        <hr>
+        <form class="card-body" method="GET">
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Mes</label>
+                        <input type="number" name="mes" class="form-control" min="1" max="12" value="{{ $mes }}">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Año</label>
+                        <input type="number" name="year" class="form-control" min="{{ date('Y') - 2 }}" max="{{ date('Y') }}" value="{{ $year }}">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Adicional</label> <br>
+                        <input type="checkbox" name="adicional" {!! request()->input('adicional') ? 'checked' : null !!}>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <button class="btn btn-info">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="col-md-12">
 
     <div class="card">
         <h4 class="card-header">
@@ -41,9 +85,9 @@
                 @forelse ($remuneraciones as $remuneracion)
                     <div class="col-md-4">
                         <div class="row align-items-center">
-                            <h5 class="col-md-4 mb-0 text-primary">
+                            <h6 class="col mb-0 text-primary uppercase text-right">
                                 {{ $remuneracion->concepto ? $remuneracion->concepto->descripcion . " : " : "" }}
-                            </h5>
+                            </h6>
                             S./ 
                             <div class="col-md-4">
                                 <input type="number" class="form-control" value="{{ $remuneracion->monto }}">

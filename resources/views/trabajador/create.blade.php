@@ -278,7 +278,15 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Perfil</label>
+                        <label for="" class="form-control-label">P.E.A <span class="text-danger">*</span></label>
+                        <input type="text" name="pea" class="form-control" value="{{ old('pea') ? old('pea'): 31 }}">
+                        <b class="text-danger">{{ $errors->first('pea') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Perfil <span class="text-danger">*</span></label>
                         <input type="text" name="perfil" class="form-control" value="{{ old('perfil') }}">
                         <b class="text-danger">{{ $errors->first('perfil') }}</b>
                     </div>

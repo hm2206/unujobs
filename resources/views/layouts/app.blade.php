@@ -45,7 +45,7 @@
         <ul class="nav">
           <li class="nav-item {{ isActive('/') }}">
             <a class="nav-link" href="{{ route('home') }}">
-              <i class="fas fa-dashboard"></i>
+              <i class="fab fa-get-pocket"></i>
               <p>Recursos Humanos</p>
             </a>
           </li>

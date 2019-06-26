@@ -2,84 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Categoria;
+use App\Models\Categoria;
+use App\Models\Concepto;
 use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $categorias = Categoria::paginate(20);
+        return view("categorias.index", \compact('categorias'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        //
+        return view('categorias.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function store(Request $request)
     {
-        //
+        $this->validate(request(), [
+            "nombre" => "required"
+        ]);
+
+        $categoria = Categoria::create($request->all());
+        return back()->with(["success" => "El registro se guardo correctamente"]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Categoria  $categoria
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Categoria $categoria)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Categoria  $categoria
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Categoria $categoria)
+
+    public function edit($id)
     {
-        //
+        $categoria = Categoria::findOrFail($id);
+        return view("categorias.edit", compact('categoria'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Categoria  $categoria
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, Categoria $categoria)
     {
-        //
+        $this->validate(request(), [
+            "nombre" => "required"
+        ]); 
+
+        return back()->with(["success" => "El registro se actualizó correctamente"]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Categoria  $categoria
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Categoria $categoria)
     {
         //
     }
+
+
+    public function concepto($id)
+    {
+        $categoria = Categoria::findOrFail($id);
+        $notIn = $categoria->conceptos->pluck(["id"]);
+        $conceptos = Concepto::whereNotIn("id", $notIn)->get();
+        return view("categorias.concepto", compact('categoria', 'conceptos'));
+    }
+
+    public function conceptoStore(Request $request, $id)
+    {
+        $categoria = Categoria::findOrFail($id);
+        $concepto = Concepto::findOrFail($request->concepto_id);
+        $monto = $request->monto ? $request->monto : $concepto->monto;
+
+        $categoria->conceptos()->syncWithoutDetaching($concepto->id);
+        $categoria->conceptos()->updateExistingPivot($concepto->id, ["monto" => $monto]);
+        return back()->with(["success" => "El concepto se añadio correctamente"]);
+    }
+
 }

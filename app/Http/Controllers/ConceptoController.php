@@ -2,74 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Concepto;
+use App\Models\Concepto;
 use Illuminate\Http\Request;
 
 class ConceptoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $conceptos = Concepto::all();
+        return view('conceptos.index', compact('conceptos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function create()
     {
-        //
+        return view('conceptos.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        $this->validate(request(), [
+            "key" => "required",
+            "descripcion" => "required",
+            "monto" => "required"
+        ]);
+
+        $concepto = Concepto::create($request->all());
+        return back()->with(["success" => "El registro se guardo correctamente"]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Concepto  $concepto
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Concepto $concepto)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Concepto  $concepto
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Concepto $concepto)
+
+    public function edit($id)
     {
-        //
+        $concepto = Concepto::findOrFail($id);
+        return view('conceptos.edit', \compact('concepto'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Concepto  $concepto
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Concepto $concepto)
+
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate(request(), [
+            "key" => "required",
+            "descripcion" => "required",
+            "monto" => "required"
+        ]);
+
+        $concepto = Concepto::findOrFail($id);
+        $concepto->update($request->all());
+        return back()->with(["success" => "Los registros fuerón actualizados correctamente"]);
     }
 
     /**

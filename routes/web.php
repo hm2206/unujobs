@@ -29,7 +29,6 @@ Route::group(["prefix" => "RRHH"], function() {
 Route::group(["prefix" => "planilla"], function() {
 
     Route::get('/', 'HomeController@planilla')->name('planilla');
-    Route::get('/config', 'HomeController@configPlanilla')->name('planilla.config');
 
     //Trabajadores
     Route::resource('job', 'JobController');
@@ -43,4 +42,21 @@ Route::group(["prefix" => "planilla"], function() {
     Route::get('cargo/{id}/categoria', 'CargoController@categoria')->name('cargo.categoria');
     Route::post('cargo/{id}/categoria', 'CargoController@categoriaStore')->name('cargo.categoria.store');
 
+    //gestión de categoria
+    Route::resource('categoria', 'CategoriaController');
+    Route::get('categoria/{id}/concepto', 'CategoriaController@concepto')->name('categoria.concepto');
+    Route::post('categoria/{id}/concepto', 'CategoriaController@conceptoStore')->name('categoria.concepto.store');
+
+    //gestión de conceptos
+    Route::resource('concepto', 'ConceptoController');
+
+    //cronogramas
+    Route::resource('cronograma', 'CronogramaController');
+
 });
+
+
+// Route::get("/test", function() {
+//     $pdf = PDF::loadView("pdf.test");
+//     return $pdf->stream();
+// });

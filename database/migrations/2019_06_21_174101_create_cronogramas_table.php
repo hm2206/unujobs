@@ -15,6 +15,11 @@ class CreateCronogramasTable extends Migration
     {
         Schema::create('cronogramas', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer("mes")->nullable();
+            $table->integer("año")->nullable();
+            $table->integer("planilla_id");
+            $table->integer("adicional")->default(0);
+            $table->integer("sede_id")->default(1);
             $table->timestamps();
         });
     }
