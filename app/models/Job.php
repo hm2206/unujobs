@@ -14,7 +14,7 @@ class Job extends Model
         "afp_id", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
         "categoria_id", "sindicato_id", "observaciones", "nombre_completo",
         "cargo_id", 'plaza', 'meta_id', 'pea', 'condicion_pap', 'perfil',
-        'ext_pptto', 'escuela_id', 'ruc', 'fuente_id'
+        'ext_pptto', 'escuela_id', 'ruc', 'fuente_id', "direccion"
     ];
 
     public function banco()

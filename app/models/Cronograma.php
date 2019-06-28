@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cronograma extends Model
 {
 
-    protected $fillable = ["mes", "año", "planilla_id", "adicional", "sede_id"];
+    protected $fillable = ["mes", "año", "planilla_id", "adicional", "sede_id", "numero", "dias"];
     
     public function sede()
     {

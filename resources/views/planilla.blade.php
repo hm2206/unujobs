@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ route('cronograma.index') }}"><b>Cronogramas</b></a>
+                    <a href="{{ route('cronograma.index') }}"><b>Crear Planilla x Mes</b></a>
                 </div>
             </div>
         </div>

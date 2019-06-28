@@ -8,6 +8,8 @@ use App\Models\Categoria;
 use App\Models\Remuneracion;
 use App\Models\Job;
 use App\Models\planilla;
+use App\Models\TypeRemuneracion;
+use \DB;
 
 class CronogramaController extends Controller
 {
@@ -46,13 +48,15 @@ class CronogramaController extends Controller
         $year = date('Y');
         $adicional = $request->adicional ? 1 : 0;
 
-        $cronogramas = Cronograma::where('año', $year)
-            ->where('planilla_id', $request->categoria_id)
-            ->where('mes', $mes)
-            ->where("adicional", $adicional)->get();
 
-        if($cronogramas->count() > 0) {
+        $cronogramas = Cronograma::where('año', $year)
+            ->where('planilla_id', $request->planilla_id)
+            ->where('mes', $mes)->get();
+
+        if ($adicional == 0 && $cronogramas->count() > 0) {
             return back()->with(["danger" => "El cronograma ya existe"]);
+        }elseif($adicional == 1 && $cronogramas->count() < 1) {
+            return back()->with(["danger" => "El cronograma principal aun no está creado"]);
         }
 
         $cronograma = Cronograma::create($request->except('adicional'));
@@ -62,7 +66,13 @@ class CronogramaController extends Controller
             "adicional" => $adicional
         ]);
 
-        self::generarRemuneracion($cronograma);
+        if($cronograma->adicional == 0) {
+            self::generarRemuneracion($cronograma);
+        }elseif($cronograma->adicional == 1) {
+            $cronograma->update([
+                "numero" => $cronogramas->count()
+            ]);
+        }
 
         return back()->with(["success" => "Los datos se guardarón correctamente"]);
     }
@@ -95,24 +105,91 @@ class CronogramaController extends Controller
     private function generarRemuneracion($cronograma)
     {
         $jobs = Job::where('planilla_id', $cronograma->planilla_id)->get();
+        $types = TypeRemuneracion::all();
+
         foreach ($jobs as $job) {
-            foreach ($job->categoria->conceptos as $concepto) {
-                Remuneracion::create([
-                    "job_id" => $job->id,
-                    "planilla_id" => $job->planilla_id,
-                    "categoria_id" => $job->categoria_id,
-                    "dias" => "30",
-                    "concepto_id" => $concepto->id,
-                    "cronograma_id" => $cronograma->id,
-                    "sede_id" => $job->sede_id,
-                    "mes" => $cronograma->mes,
-                    "año" => $cronograma->año,
-                    "monto" => $concepto->monto,
-                    "adicional" => $cronograma->adicional,
-                    "horas" => $concepto->horas
-                ]);
-            }
+            self::configurarRemuneracion($types,$cronograma, $job);
+        }
+
+    }
+
+
+    private function configurarRemuneracion($types, $cronograma, $job)
+    {
+        foreach ($types as $type) {
+            $config = DB::table("concepto_type_remuneracion")
+                ->whereIn("concepto_id", $job->categoria->conceptos->pluck(["id"]))
+                ->where("categoria_id", $job->categoria->id)
+                ->where("type_remuneracion_id", $type->id)
+                ->get();
+
+            $suma = $config->sum("monto");
+
+            Remuneracion::create([
+                "job_id" => $job->id,
+                "categoria_id" => $job->categoria_id,
+                "cronograma_id" => $cronograma->id,
+                "type_remuneracion_id" => $type->id,
+                "mes" => $cronograma->mes,
+                "año" => $cronograma->año,
+                "monto" => $suma,
+                "adicional" => $cronograma->adicional
+            ]);
+
         }
     }
+
+
+    public function job($id)
+    {
+        $cronograma = Cronograma::findOrFail($id);
+        $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
+        $jobs = [];
+        $like = request()->query_search;
+
+        if($remuneraciones->count() > 0) {
+            $jobs = Job::whereIn("id", $remuneraciones->pluck(["job_id"]));
+            if ($like) {
+                $jobs = $jobs->where("nombre_completo", "like", "%{$like}%");
+            }
+            $jobs = $jobs->paginate(20);
+        }
+
+        return view('cronogramas.job', compact('jobs', 'cronograma', 'like'));
+    }
+
+    public function add($id)
+    {
+        $cronograma = Cronograma::where("adicional", 1)->findOrFail($id);
+        $like = request()->query_search;
+        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
+        $notIn = $remuneraciones->pluck(["job_id"]);
+        $jobs = Job::whereNotIn("id", $notIn);
+
+        if($like) {
+           $jobs->where("nombre_completo", "like", "%{$like}%");
+        }
+
+        $jobs = $jobs->paginate(20);
+
+        return view("cronogramas.add", compact('jobs', 'cronograma', 'like'));
+    }
+
+
+    public function addStore(Request $request, $id)
+    {
+        $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
+        $tmp_jobs = $request->except(["_token"]);
+        $jobs = Job::whereIn("id", $tmp_jobs)->get();
+        $types = TypeRemuneracion::all();
+
+        foreach ($jobs as $job) {
+            self::configurarRemuneracion($types, $cronograma, $job);
+        }
+
+        return back()->with(["success" => "Los trabajadores fuerón agregados correctamente"]);
+
+    }
+
 
 }

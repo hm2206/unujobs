@@ -19,11 +19,12 @@ class CreateJobsTable extends Migration
             $table->string("ape_materno");
             $table->string("nombres");
             $table->string("nombre_completo")->nullable();
+            $table->string("direccion")->nullable();
             $table->string("tipo_documento_id")->default(1);
             $table->string("numero_de_documento")->unique();
             $table->string("fecha_de_nacimiento");
             $table->string("profesion");
-            $table->string("phone");
+            $table->string("phone")->nullable();
             $table->date("fecha_de_ingreso");
             $table->integer("sexo");
             $table->string("numero_de_essalud")->nullable();

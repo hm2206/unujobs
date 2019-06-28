@@ -72,6 +72,14 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="" class="form-control-label">Dirección</label>
+                        <span class="form-control uppercase">{{ $job->direccion }}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="" class="form-control-label">Profesión</label>
                         <span class="form-control uppercase">{{ $job->profesion }}</span>
                     </div>

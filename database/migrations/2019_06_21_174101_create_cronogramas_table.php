@@ -20,6 +20,8 @@ class CreateCronogramasTable extends Migration
             $table->integer("planilla_id");
             $table->integer("adicional")->default(0);
             $table->integer("sede_id")->default(1);
+            $table->integer("numero")->nullable();
+            $table->integer("dias")->default(30);
             $table->timestamps();
         });
     }

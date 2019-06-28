@@ -32,7 +32,6 @@ class JobRequest extends FormRequest
             "numero_de_documento" => "required",
             "fecha_de_nacimiento" => "date",
             "profesion" => "required",
-            "phone" => "required",
             "fecha_de_ingreso" => "required",
             "sexo" => "required",
             "accidentes" => "required",
@@ -42,6 +41,7 @@ class JobRequest extends FormRequest
             "pea" => "required",
             "condicion_pap" => "required",
             "perfil" => "required",
+            "direccion" => "required"
         ];
     }
 }

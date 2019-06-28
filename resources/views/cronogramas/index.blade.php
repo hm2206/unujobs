@@ -79,18 +79,42 @@
                     <thead class="text-primary">
                         <tr>
                             <th>#ID</th>
-                            <th>Descripción</th>
-                            <th>Sede</th>
                             <th>Planilla</th>
+                            <th>Sede</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($cronogramas as $cronograma)
                             <tr>
-                                <th>{{ $cronograma->id }}</th>
-                                <th class="uppercase">{{ $cronograma->descripcion ? $cronograma->descripcion : "No tiene" }}</th>
+                                <th>{{ $cronograma->planilla_id }}</th>
+                                    @if ($cronograma->adicional)
+                                        <th class="uppercase">
+                                            {!! $cronograma->planilla 
+                                                ? "Adicional " . "<span class='btn btn-sm btn-primary'>" 
+                                                    . $cronograma->numero . "</span>" .  "<span class='text-danger'> >> </span>"  
+                                                    . $cronograma->planilla->descripcion 
+                                                : null 
+                                            !!}
+                                        </th>
+                                    @else
+                                        <th class="uppercase">{{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}</th>
+                                    @endif
                                 <th class="uppercase">{{ $cronograma->sede ? $cronograma->sede->descripcion : null }}</th>
-                                <th class="uppercase">{{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}</th>
+                                <th>
+                                    <div class="btn-group">
+                                        <a target="__blank" href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+
+                                        @if ($cronograma->adicional)
+                                            <a class="btn btn-sm btn-warning" href="{{ route('cronograma.add', $cronograma->id) }}">
+                                                <i class="fas fa-plus"></i>
+                                            </a>  
+                                        @endif
+
+                                    </div>
+                                </th>
                             </tr>
                         @empty
                             <tr class="text-center">

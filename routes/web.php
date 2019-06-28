@@ -33,6 +33,7 @@ Route::group(["prefix" => "planilla"], function() {
     //Trabajadores
     Route::resource('job', 'JobController');
     Route::get('job/{id}/remuneracion', 'JobController@remuneracion')->name('job.remuneracion');
+    Route::put('job/{id}/remuneracion', 'JobController@remuneracionUpdate')->name('job.remuneracion.update');
 
     //Metas
     Route::resource('meta', 'MetaController');
@@ -52,6 +53,9 @@ Route::group(["prefix" => "planilla"], function() {
 
     //cronogramas
     Route::resource('cronograma', 'CronogramaController');
+    Route::get('/cronograma/{id}/job', 'CronogramaController@job')->name('cronograma.job');
+    Route::get('/cronograma/{id}/add', 'CronogramaController@add')->name('cronograma.add');
+    Route::post('/cronograma/{id}/add', 'CronogramaController@addStore')->name('cronograma.add.store');
 
 });
 

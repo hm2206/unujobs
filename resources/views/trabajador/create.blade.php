@@ -108,6 +108,14 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="" class="form-control-label">Dirección <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" value="{{ old('direccion') }}" name="direccion">
+                        <b class="text-danger">{{ $errors->first('direccion') }}</b>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="" class="form-control-label">Número de Teléfono <span class="text-danger">*</span></label>
                         <input type="tel" class="form-control" value="{{ old('phone') }}" name="phone">
                         <b class="text-danger">{{ $errors->first('phone') }}</b>
