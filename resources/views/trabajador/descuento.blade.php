@@ -16,7 +16,7 @@
     @if ($cronograma)
         <a href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-calendar-week"></i> planilla</a>
     @endif
-    <a href="{{ route('job.descuento', $job->id) . "?mes={$mes}&year={$year}&adicional=" . request()->adicional }}" class="btn">descuento</a>
+    <a href="{{ route('job.remuneracion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn">remuneración</a>
 </div>
 
 
@@ -90,39 +90,29 @@
 
     <div class="card">
         <h4 class="card-header">
-            Remuneración 
+            Descuento
             <span class="text-danger"> >> </span> 
             <span class="uppercase">{{ $job->nombre_completo }}</span>
         </h4>
         <hr>
-        <form class="card-body" action="{{ route('job.remuneracion.update', $job->id) }}" method="POST">
-
-            <div class="mb-4">
-                Categoria: <span class="text-primary">{{ $categoria->nombre }}</span> <br>
-                <div class="row align-items-center">
-                    <div class="col-md-1"> Dias: </div>
-                    <input class="form-control col-md-3" name="dias" max="30" min="1" type="number" value="{{ $dias }}">
-                </div>
-            </div>
-
-            <hr>
+        <form class="card-body" action="{{ route('job.descuento.update', $job->id) }}" method="POST">
 
             <div class="row mt-4">
                 @csrf
                 @method('PUT')
 
-                @forelse ($remuneraciones as $remuneracion)
+                @forelse ($descuentos as $descuento)
                     <div class="col-md-4">
                         <div class="row align-items-center">
-                            <h6 class="col mb-0 text-primary uppercase text-right">
-                                @if ($remuneracion->typeRemuneracion)
-                                    {{ $remuneracion->typeRemuneracion->key }}. <span class="ml-1"></span>
-                                    {{ $remuneracion->typeRemuneracion->descripcion }}
+                            <h6 class="col mb-0 text-primary uppercase text-left">
+                                @if ($descuento->typeDescuento)
+                                    {{ $descuento->typeDescuento->key }}. <span class="ml-1"></span>
+                                    {{ $descuento->typeDescuento->descripcion }}
                                 @endif
                             </h6>
                             S./ 
                             <div class="col-md-4">
-                                <input type="number" name="{{ $remuneracion->id }}" class="form-control" value="{{ $remuneracion->monto }}">
+                                <input type="number" name="{{ $descuento->id }}" class="form-control" value="{{ $descuento->monto }}">
                             </div>
                         </div>
                     </div>
@@ -151,7 +141,7 @@
         <div class="card-footer">
             <hr>
             <h4 class="text-left">
-                Total Bruto:  <b class="text-primary">S./ {{ $total }}</b>
+                Total DSCTOS:  <b class="text-primary">S./ {{ $total }}</b>
             </h4>
         </div>
     </div>

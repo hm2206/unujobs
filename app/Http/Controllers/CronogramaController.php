@@ -9,6 +9,8 @@ use App\Models\Remuneracion;
 use App\Models\Work;
 use App\Models\planilla;
 use App\Models\TypeRemuneracion;
+use App\Models\TypeDescuento;
+use App\Models\Descuento;
 use \DB;
 
 class CronogramaController extends Controller
@@ -68,6 +70,7 @@ class CronogramaController extends Controller
 
         if($cronograma->adicional == 0) {
             self::generarRemuneracion($cronograma);
+            self::generarDescuento($cronograma);
         }elseif($cronograma->adicional == 1) {
             $cronograma->update([
                 "numero" => $cronogramas->count()
@@ -113,29 +116,93 @@ class CronogramaController extends Controller
 
     }
 
+    public function generarDescuento($cronograma)
+    {
+        $jobs = Work::where('planilla_id', $cronograma->planilla_id)->get();
+        $types = TypeDescuento::all();
+
+        foreach ($jobs as $job) {
+            self::configurarDescuento($types,$cronograma, $job);
+        }
+    }
+
 
     private function configurarRemuneracion($types, $cronograma, $job)
     {
-        foreach ($types as $type) {
-            $config = DB::table("concepto_type_remuneracion")
-                ->whereIn("concepto_id", $job->categoria->conceptos->pluck(["id"]))
-                ->where("categoria_id", $job->categoria->id)
-                ->where("type_remuneracion_id", $type->id)
-                ->get();
+        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
+        $hasRemuneraciones = Remuneracion::where("work_id", $job->id)
+            ->where("mes", $mes)->where("año", $year)->get();
+        if ($hasRemuneraciones->count() > 0) {
+            foreach ($hasRemuneraciones as $remuneracion) {
+                Remuneracion::create([
+                    "work_id" => $job->id,
+                    "categoria_id" => $job->categoria_id,
+                    "cronograma_id" => $cronograma->id,
+                    "type_remuneracion_id" => $remuneracion->id,
+                    "mes" => $cronograma->mes,
+                    "año" => $cronograma->año,
+                    "monto" => $remuneracion->monto,
+                    "adicional" => $cronograma->adicional
+                ]);
+            }
+        }else {
+            foreach ($types as $type) {
+                $config = DB::table("concepto_type_remuneracion")
+                    ->whereIn("concepto_id", $job->categoria->conceptos->pluck(["id"]))
+                    ->where("categoria_id", $job->categoria->id)
+                    ->where("type_remuneracion_id", $type->id)
+                    ->get();
+                $suma = $config->sum("monto");
+                Remuneracion::create([
+                    "work_id" => $job->id,
+                    "categoria_id" => $job->categoria_id,
+                    "cronograma_id" => $cronograma->id,
+                    "type_remuneracion_id" => $type->id,
+                    "mes" => $cronograma->mes,
+                    "año" => $cronograma->año,
+                    "monto" => $suma,
+                    "adicional" => $cronograma->adicional
+                ]);
+            }
+        }
+    }
 
-            $suma = $config->sum("monto");
 
-            Remuneracion::create([
-                "work_id" => $job->id,
-                "categoria_id" => $job->categoria_id,
-                "cronograma_id" => $cronograma->id,
-                "type_remuneracion_id" => $type->id,
-                "mes" => $cronograma->mes,
-                "año" => $cronograma->año,
-                "monto" => $suma,
-                "adicional" => $cronograma->adicional
-            ]);
-
+    private function configurarDescuento($types, $cronograma, $job)
+    {
+        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
+        $hasDescuentos = Descuento::where("work_id", $job->id)
+            ->where("mes", $mes)->where("año", $year)->get();
+        if($hasDescuentos->count() > 0) {
+            foreach ($hasDescuentos as $descuento) {
+                $suma = 0;
+                Descuento::create([
+                    "work_id" => $job->id,
+                    "categoria_id" => $job->categoria_id,
+                    "cronograma_id" => $cronograma->id,
+                    "type_descuento_id" => $descuento->id,
+                    "mes" => $cronograma->mes,
+                    "año" => $cronograma->año,
+                    "monto" => $descuento->monto,
+                    "adicional" => $cronograma->adicional
+                ]);
+            }
+        }else {
+            foreach ($types as $type) {
+                $suma = 0;
+                Descuento::create([
+                    "work_id" => $job->id,
+                    "categoria_id" => $job->categoria_id,
+                    "cronograma_id" => $cronograma->id,
+                    "type_descuento_id" => $type->id,
+                    "mes" => $cronograma->mes,
+                    "año" => $cronograma->año,
+                    "monto" => $suma,
+                    "adicional" => $cronograma->adicional
+                ]);
+            }
         }
     }
 

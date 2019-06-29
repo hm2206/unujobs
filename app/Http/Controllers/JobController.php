@@ -16,6 +16,8 @@ use App\Models\Meta;
 use App\Models\Remuneracion;
 use App\Models\TypeRemuneracion;
 use App\Models\Cronograma;
+use App\Models\Descuento;
+use App\Models\TypeDescuento;
 
 class JobController extends Controller
 {
@@ -121,6 +123,8 @@ class JobController extends Controller
         $mes = request()->mes ? (int)request()->mes : (int)date('m');
         $adicional = request()->adicional ? 1 : 0;
         $numero = request()->numero ? request()->numero : 1;
+        $remuneraciones = [];
+        $dias = 30;
 
         $selecionar = [];
         $cronograma = Cronograma::where('mes', $mes)
@@ -134,17 +138,21 @@ class JobController extends Controller
         }
 
 
-        $cronograma = $cronograma->firstOrFail();
+        $cronograma = $cronograma->first();
 
-        $remuneraciones = Remuneracion::where("work_id", $job->id)
-            ->where('mes', $mes)
-            ->where('año', $year)
-            ->where("categoria_id", $categoria->id)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
+        if($cronograma) {
+            $remuneraciones = Remuneracion::where("work_id", $job->id)
+                ->where('mes', $mes)
+                ->where('año', $year)
+                ->where("categoria_id", $categoria->id)
+                ->where("cronograma_id", $cronograma->id)
+                ->get();
+
+            $dias = $cronograma->dias;
+        }
+        
 
         $total = 0;
-        $dias = $cronograma->dias;
 
         foreach($remuneraciones as $remuneracion) {
             $total += $remuneracion->monto;
@@ -161,8 +169,9 @@ class JobController extends Controller
         $job = Work::findOrFail($id);
         $cronograma = Cronograma::find($request->cronograma_id);
         $cronograma->update(["dias" => $request->dias]);
+        $remuneraciones = $job->remuneraciones->where("cronograma_id", $cronograma->id);
 
-        foreach ($job->remuneraciones as $remuneracion) {
+        foreach ($remuneraciones as $remuneracion) {
             if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
                 $tmp_remuneracion = $request->input($remuneracion->id);
                 if (is_numeric($tmp_remuneracion)) {
@@ -177,4 +186,71 @@ class JobController extends Controller
         return back();
     }
 
+    public function descuento($id) 
+    {
+        $job = Work::findOrFail($id);
+
+        $year = request()->year ? (int)request()->year : date('Y');
+        $mes = request()->mes ? (int)request()->mes : (int)date('m');
+        $adicional = request()->adicional ? 1 : 0;
+        $numero = request()->numero ? request()->numero : 1;
+        $descuentos = [];
+        $dias = 30;
+
+        $cronograma = Cronograma::where('mes', $mes)
+            ->where('año', $year)
+            ->where("planilla_id", $job->planilla_id)
+            ->where("adicional", $adicional);
+
+        if($adicional) {
+            $seleccionar = $cronograma->get();
+            $cronograma = $cronograma->where("numero", $numero);
+        }
+
+        $cronograma = $cronograma->first();
+
+        if($cronograma) {
+            $descuentos = Descuento::with('typeDescuento')->where("work_id", $job->id)
+            ->where('mes', $mes)
+            ->where('año', $year)
+            ->where("categoria_id", $job->categoria_id)
+            ->where("cronograma_id", $cronograma->id)
+            ->get();
+
+            $dias = $cronograma->dias;
+        }
+
+        $total = 0;
+
+        foreach($descuentos as $descuento) {
+            $total += $descuento->monto;
+        }
+
+        return view("trabajador.descuento", compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'seleccionar', 'adicional', 'numero', 'total', 'dias'));
+    }
+
+
+    public function descuentoUpdate(Request $request, $id)
+    {
+        $job = Work::findOrFail($id);
+        $cronograma = Cronograma::find($request->cronograma_id);
+        $cronograma->update(["dias" => $request->dias]);
+        $descuentos = Descuento::where("work_id", $job->id)
+            ->where("cronograma_id", $cronograma->id)
+            ->get();
+
+        foreach ($descuentos as $descuento) {
+            if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
+                $tmp_descuento = $request->input($descuento->id);
+                if (is_numeric($tmp_descuento)) {
+                    $descuento->monto = $tmp_descuento;
+                    $descuento->save();
+                }
+            }else {
+                return back()->with(["danger" => "No es posible actualizar estos datos"]);
+            }
+        }
+
+        return back();
+    }
 }

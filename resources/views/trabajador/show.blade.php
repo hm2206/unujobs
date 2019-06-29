@@ -14,7 +14,7 @@
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     <a href="{{ route('job.edit', $job->id) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> editar</a>
     <a href="{{ route('job.remuneracion', $job->id) }}" class="btn btn-dark">Remuneraciones</a>
-    <a href="{{ route('job.remuneracion', $job->id) }}" class="btn btn-dark">Descuentos</a>
+    <a href="{{ route('job.descuento', $job->id) }}" class="btn btn-dark">Descuentos</a>
     <a href="{{ route('job.edit', $job->id) }}" class="btn btn-dark">Obligaciones Judiciales</a>
 </div>
 
