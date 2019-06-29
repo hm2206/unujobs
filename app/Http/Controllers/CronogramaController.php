@@ -6,7 +6,7 @@ use App\Models\Cronograma;
 use Illuminate\Http\Request;
 use App\Models\Categoria;
 use App\Models\Remuneracion;
-use App\Models\Job;
+use App\Models\Work;
 use App\Models\planilla;
 use App\Models\TypeRemuneracion;
 use \DB;
@@ -104,7 +104,7 @@ class CronogramaController extends Controller
 
     private function generarRemuneracion($cronograma)
     {
-        $jobs = Job::where('planilla_id', $cronograma->planilla_id)->get();
+        $jobs = Work::where('planilla_id', $cronograma->planilla_id)->get();
         $types = TypeRemuneracion::all();
 
         foreach ($jobs as $job) {
@@ -126,7 +126,7 @@ class CronogramaController extends Controller
             $suma = $config->sum("monto");
 
             Remuneracion::create([
-                "job_id" => $job->id,
+                "work_id" => $job->id,
                 "categoria_id" => $job->categoria_id,
                 "cronograma_id" => $cronograma->id,
                 "type_remuneracion_id" => $type->id,
@@ -148,7 +148,7 @@ class CronogramaController extends Controller
         $like = request()->query_search;
 
         if($remuneraciones->count() > 0) {
-            $jobs = Job::whereIn("id", $remuneraciones->pluck(["job_id"]));
+            $jobs = Work::whereIn("id", $remuneraciones->pluck(["work_id"]));
             if ($like) {
                 $jobs = $jobs->where("nombre_completo", "like", "%{$like}%");
             }
@@ -163,8 +163,8 @@ class CronogramaController extends Controller
         $cronograma = Cronograma::where("adicional", 1)->findOrFail($id);
         $like = request()->query_search;
         $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
-        $notIn = $remuneraciones->pluck(["job_id"]);
-        $jobs = Job::whereNotIn("id", $notIn);
+        $notIn = $remuneraciones->pluck(["work_id"]);
+        $jobs = Work::whereNotIn("id", $notIn);
 
         if($like) {
            $jobs->where("nombre_completo", "like", "%{$like}%");
@@ -180,7 +180,7 @@ class CronogramaController extends Controller
     {
         $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
         $tmp_jobs = $request->except(["_token"]);
-        $jobs = Job::whereIn("id", $tmp_jobs)->get();
+        $jobs = Work::whereIn("id", $tmp_jobs)->get();
         $types = TypeRemuneracion::all();
 
         foreach ($jobs as $job) {

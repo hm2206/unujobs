@@ -15,7 +15,7 @@ class CreateRemuneracionsTable extends Migration
     {
         Schema::create('remuneracions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer("job_id");
+            $table->integer("work_id");
             $table->integer("categoria_id");
             $table->integer("dias")->default(30);
             $table->integer("cronograma_id");

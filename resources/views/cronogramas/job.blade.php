@@ -12,7 +12,9 @@
 
 <div class="col-md-12">
     <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cronograma.add', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar Trabajador</a>
+    @if ($cronograma->adicional)
+        <a href="{{ route('cronograma.add', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar Trabajador</a>
+    @endif
 </div>
 
 <h3 class="text-center uppercase">

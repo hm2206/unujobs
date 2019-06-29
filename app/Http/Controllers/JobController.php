@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job;
+use App\Models\Work;
 use Illuminate\Http\Request;
 use App\Tools\Reniec;
 use App\Tools\Essalud;
@@ -22,7 +22,7 @@ class JobController extends Controller
 
     public function index()
     {
-        $jobs = Job::orderBy('id', 'DESC');
+        $jobs = Work::orderBy('id', 'DESC');
         $like = request()->query_search;
 
         if($like) {
@@ -59,7 +59,7 @@ class JobController extends Controller
     public function store(JobRequest $request)
     {
         $cargo = Cargo::findOrFail($request->cargo_id);
-        $job = Job::create($request->all());
+        $job = Work::create($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
         $job->planilla_id = $cargo->planilla_id;
         $job->save();
@@ -67,13 +67,13 @@ class JobController extends Controller
     }
 
 
-    public function show(Job $job)
+    public function show(Work $job)
     {
         return view("trabajador.show", \compact('job'));
     }
 
 
-    public function edit(Job $job)
+    public function edit(Work $job)
     {
         $sindicatos = Sindicato::get(["id", "nombre"]);
         $bancos = Banco::get(["id", "nombre"]);
@@ -92,7 +92,7 @@ class JobController extends Controller
     }
 
 
-    public function update(JobRequest $request, Job $job)
+    public function update(JobRequest $request, Work $job)
     {
         $job->update($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
@@ -101,7 +101,7 @@ class JobController extends Controller
     }
 
 
-    public function destroy(Job $job)
+    public function destroy(Work $job)
     {
         //
     }
@@ -114,7 +114,7 @@ class JobController extends Controller
 
     public function remuneracion($id)
     {
-        $job = Job::findOrFail($id);
+        $job = Work::findOrFail($id);
         $categoria = Categoria::findOrFail($job->categoria_id);
 
         $year = request()->year ? (int)request()->year : date('Y');
@@ -136,7 +136,7 @@ class JobController extends Controller
 
         $cronograma = $cronograma->firstOrFail();
 
-        $remuneraciones = Remuneracion::where("job_id", $job->id)
+        $remuneraciones = Remuneracion::where("work_id", $job->id)
             ->where('mes', $mes)
             ->where('año', $year)
             ->where("categoria_id", $categoria->id)
@@ -158,7 +158,7 @@ class JobController extends Controller
 
     public function remuneracionUpdate(Request $request, $id)
     {
-        $job = Job::findOrFail($id);
+        $job = Work::findOrFail($id);
         $cronograma = Cronograma::find($request->cronograma_id);
         $cronograma->update(["dias" => $request->dias]);
 

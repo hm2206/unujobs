@@ -8,7 +8,7 @@ class Remuneracion extends Model
 {
 
     protected $fillable = [
-        "job_id", "categoria_id", "dias", "cronograma_id",
+        "work_id", "categoria_id", "dias", "cronograma_id",
         "observaciones", "sede_id", "mes", "año", "monto", "adicional",
         "horas", "type_remuneracion_id"
     ];
