@@ -63,7 +63,12 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('categoria.edit', $categoria->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="{{ route('categoria.edit', $categoria->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <a href="{{ route('categoria.config', $categoria->id) }}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-cog"></i>
+                                        </a>
                                     </div>
                                 </th>
                             </tr>

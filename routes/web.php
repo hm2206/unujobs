@@ -49,6 +49,8 @@ Route::group(["prefix" => "planilla"], function() {
     Route::resource('categoria', 'CategoriaController');
     Route::get('categoria/{id}/concepto', 'CategoriaController@concepto')->name('categoria.concepto');
     Route::post('categoria/{id}/concepto', 'CategoriaController@conceptoStore')->name('categoria.concepto.store');
+    Route::get('categoria/{id}/config', 'CategoriaController@config')->name('categoria.config');
+    Route::post('categoria/{id}/config', 'CategoriaController@configStore')->name('categoria.config.store');
 
     //gestión de conceptos
     Route::resource('concepto', 'ConceptoController');

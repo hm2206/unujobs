@@ -10,6 +10,7 @@
 
 @section('content')
 
+
 <div class="col-md-12">
     <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     @if ($cronograma->adicional)

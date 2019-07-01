@@ -20,18 +20,21 @@ class ProssingDescuento implements ShouldQueue
 
 
     private $cronograma;
+    private $jobs;
 
 
-    public function __construct(Cronograma $cronograma)
+    public function __construct($cronograma, $jobs)
     {
         $this->cronograma = $cronograma;
+        $this->jobs = $jobs;
     }
+
 
 
     public function handle()
     {
         $cronograma = $this->cronograma;
-        $jobs = Work::where('planilla_id', $cronograma->planilla_id)->get();
+        $jobs = $this->jobs;
         $types = TypeDescuento::all();
 
         foreach ($jobs as $job) {

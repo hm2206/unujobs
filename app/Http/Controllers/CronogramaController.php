@@ -71,8 +71,9 @@ class CronogramaController extends Controller
         ]);
 
         if($cronograma->adicional == 0) {
-            ProssingRemuneracion::dispatch($cronograma);
-            ProssingDescuento::dispatch($cronograma);
+            $jobs = Work::where('planilla_id', $cronograma->planilla_id)->get();
+            ProssingRemuneracion::dispatch($cronograma, $jobs);
+            ProssingDescuento::dispatch($cronograma, $jobs);
         }elseif($cronograma->adicional == 1) {
             $cronograma->update([
                 "numero" => $cronogramas->count()
@@ -148,13 +149,12 @@ class CronogramaController extends Controller
         $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
         $tmp_jobs = $request->except(["_token"]);
         $jobs = Work::whereIn("id", $tmp_jobs)->get();
-        $types = TypeRemuneracion::all();
 
-        foreach ($jobs as $job) {
-            self::configurarRemuneracion($types, $cronograma, $job);
-        }
+        ProssingRemuneracion::dispatch($cronograma, $jobs);
+        ProssingDescuento::dispatch($cronograma, $jobs);
 
-        return back()->with(["success" => "Los trabajadores fuerón agregados correctamente"]);
+        return redirect()->route('cronograma.job', $cronograma->id)
+            ->with(["success" => "Los trabajadores fuerón agregados correctamente. Por favor espero actualize la página"]);
 
     }
 
