@@ -253,4 +253,50 @@ class JobController extends Controller
 
         return back();
     }
+
+
+    public function obligacion($id)
+    {
+        $job = Work::findOrFail($id);
+
+        $year = request()->year ? (int)request()->year : date('Y');
+        $mes = request()->mes ? (int)request()->mes : (int)date('m');
+        $adicional = request()->adicional ? 1 : 0;
+        $numero = request()->numero ? request()->numero : 1;
+        $descuentos = [];
+        $dias = 30;
+
+        $cronograma = Cronograma::where('mes', $mes)
+            ->where('año', $year)
+            ->where("planilla_id", $job->planilla_id)
+            ->where("adicional", $adicional);
+
+        if($adicional) {
+            $seleccionar = $cronograma->get();
+            $cronograma = $cronograma->where("numero", $numero);
+        }
+
+        $cronograma = $cronograma->first();
+
+        if($cronograma) {
+            $descuentos = Descuento::with('typeDescuento')->where("work_id", $job->id)
+            ->where('mes', $mes)
+            ->where('año', $year)
+            ->where("categoria_id", $job->categoria_id)
+            ->where("cronograma_id", $cronograma->id)
+            ->get();
+
+            $dias = $cronograma->dias;
+        }
+
+        $total = 0;
+
+        foreach($descuentos as $descuento) {
+            $total += $descuento->monto;
+        }
+
+        return view("trabajador.obligacion", 
+            compact('cronograma', 'year', 'mes', 'adicional', 'numero', 'dias', 'job', 'total', 'seleccionar'));
+    }
+
 }

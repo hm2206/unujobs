@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo')
-    - Registro de Requerimiento de Personal
+    - Descuentos
 @endsection
 
 
@@ -17,6 +17,7 @@
         <a href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-calendar-week"></i> planilla</a>
     @endif
     <a href="{{ route('job.remuneracion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn">remuneración</a>
+    <a href="{{ route('job.obligacion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn">obligaciones judiciales</a>
 </div>
 
 

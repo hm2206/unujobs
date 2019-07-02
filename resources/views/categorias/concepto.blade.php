@@ -35,7 +35,7 @@
                 <select name="concepto_id" class="form-control">
                     <option value="">Seleccionar...</option>
                     @foreach ($conceptos as $concepto)
-                        <option value="{{ $concepto->id }}">{{ $concepto->descripcion }} ---> monto => {{ $concepto->monto }}</option>
+                        <option value="{{ $concepto->id }}">{{ $concepto->descripcion }}</option>
                     @endforeach
                 </select>
                 <b class="text-danger">{{ $errors->first('concepto_id') }}</b>
@@ -43,7 +43,7 @@
 
             <div class="form-group">
                 <label class="form-control-label">Monto <span class="text-danger">(Opcional)</span></label>
-                <input type="number" class="form-control">
+                <input type="text" name="monto" class="form-control">
                 <b class="text-danger">{{ $errors->first('monto') }}</b>
             </div>
 

@@ -36,6 +36,7 @@ Route::group(["prefix" => "planilla"], function() {
     Route::put('job/{id}/remuneracion', 'JobController@remuneracionUpdate')->name('job.remuneracion.update');
     Route::get('job/{id}/descuento', 'JobController@descuento')->name('job.descuento');
     Route::put('job/{id}/descuento', 'JobController@descuentoUpdate')->name('job.descuento.update');
+    Route::get('job/{id}/obligacion', 'JobController@obligacion')->name('job.obligacion');
 
     //Metas
     Route::resource('meta', 'MetaController');
@@ -68,3 +69,11 @@ Route::group(["prefix" => "planilla"], function() {
 //     $pdf = PDF::loadView("pdf.test");
 //     return $pdf->stream();
 // });
+
+
+//Reportes
+Route::group(["prefix" => "report"], function() {
+
+    Route::get("planilla/{id}", "ReportController@planilla");
+
+});

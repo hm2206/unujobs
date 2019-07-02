@@ -76,7 +76,7 @@ class CategoriaController extends Controller
     {
         $categoria = Categoria::findOrFail($id);
         $concepto = Concepto::findOrFail($request->concepto_id);
-        $monto = $request->monto ? $request->monto : $concepto->monto;
+        $monto = $request->monto;
 
         $categoria->conceptos()->syncWithoutDetaching($concepto->id);
         $categoria->conceptos()->updateExistingPivot($concepto->id, ["monto" => $monto]);
@@ -117,13 +117,16 @@ class CategoriaController extends Controller
     public function configStore(Request $request, $id)
     {
         $this->validate(request(), [
-            "conceptos" => "required",
             "type_remuneracion_id" => "required"
         ]);
 
         $categoria = Categoria::findOrFail($id);
-        $conceptos = $request->input('conceptos');
+        $conceptos = $request->input('conceptos', []);
         $payload = [];
+
+        DB::table('concepto_type_remuneracion')->where("categoria_id", $categoria->id)
+            ->where('type_remuneracion_id', $request->type_remuneracion_id)
+            ->delete();
 
         foreach ($conceptos as $concepto) {
             $tmp = $categoria->conceptos->find($concepto);

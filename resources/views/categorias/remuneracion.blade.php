@@ -32,7 +32,7 @@
             <hr>
             <form class="card-body" action="{{ route('categoria.config.store', $categoria->id) }}" method="post">
                 @csrf
-                <h4><b>{{ $type->descripcion }}</b></h4>
+                <h4>{{ $type->key }}. <b>{{ $type->descripcion }}</b></h4>
                 <input type="hidden" name="type_remuneracion_id" value="{{ $type->id }}">
                 
                 <hr>
