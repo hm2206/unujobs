@@ -55,6 +55,14 @@
     </div>
 @endif
 
+@if ($errors->first('jobs'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-warning">
+            {{ $errors->first('jobs') }}       
+        </div>
+    </div>
+@endif
+
 <div class="col-md-12">
 
     @if ($jobs)
@@ -64,7 +72,7 @@
     <div class="card">
         <div class="card-header card-header-danger">
             <h4 class="card-title">Lista de Trabajadores </h4>
-            <p class="card-category">Que pertenecen a esta planilla</p>
+            <p class="card-category">Que no pertenecen a esta planilla</p>
         </div>
         <form class="card-body" method="POST" action="{{ route('cronograma.add.store', $cronograma->id) }}">
             @csrf
@@ -83,7 +91,7 @@
                         @forelse ($jobs as $job)
                             <tr>
                                 <th>
-                                    <input type="checkbox" name={{ "job_$job->id" }} value="{{ $job->id }}">
+                                    <input type="checkbox" name="jobs[]" value="{{ $job->id }}">
                                 </th>
                                 <th>{{ $job->id }}</th>
                                 <th class="uppercase">{{ $job->nombre_completo }}</th>

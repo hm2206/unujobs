@@ -17,6 +17,7 @@ class CreateRemuneracionsTable extends Migration
             $table->bigIncrements('id');
             $table->integer("work_id");
             $table->integer("categoria_id");
+            $table->integer("cargo_id");
             $table->integer("dias")->default(30);
             $table->integer("cronograma_id");
             $table->text("observaciones")->nullable();

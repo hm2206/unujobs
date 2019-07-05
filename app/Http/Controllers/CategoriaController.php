@@ -74,6 +74,11 @@ class CategoriaController extends Controller
 
     public function conceptoStore(Request $request, $id)
     {
+        $this->validate(request(), [
+            "concepto_id" => "required",
+            "monto" => "required|numeric"
+        ]);
+
         $categoria = Categoria::findOrFail($id);
         $concepto = Concepto::findOrFail($request->concepto_id);
         $monto = $request->monto;
@@ -86,9 +91,12 @@ class CategoriaController extends Controller
 
     public function config($id)
     {
-        $categoria = Categoria::with('conceptos')->findOrFail($id);
+        $categoria = Categoria::with(['conceptos' => function($c) {
+            $c->orderBy('conceptos.key', 'ASC');
+        }])->findOrFail($id);
         $types = TypeRemuneracion::all();
         $tmpType = DB::table('concepto_type_remuneracion')->where('categoria_id', $id)->get();
+        $checked = \collect();
 
         $conceptos = $categoria->conceptos->filter(function ($con) {
             $con->check = false;
@@ -96,18 +104,31 @@ class CategoriaController extends Controller
         });
 
         foreach ($types as $type) {
-            $tmpConceptos = [];
+            $tmpConceptos = collect();
             foreach ($conceptos as $concepto) {
                 $tmp = $tmpType->where("type_remuneracion_id", $type->id)->where("concepto_id", $concepto->id);
                 $concepto->check = $tmp->count();
-                array_push($tmpConceptos, (object)[
+                $tmpConceptos->push([
                     "id" => $concepto->id,
                     "descripcion" => $concepto->descripcion,
+                    "key" => $concepto->key,
                     "check" => $concepto->check
                 ]);
+
+                if($concepto->check) {
+                    $checked->push(["key" => $concepto->key]);
+                }
+
             }
             
-            $type->conceptos = $tmpConceptos;
+            $type->conceptos = collect($tmpConceptos);
+        }
+
+
+        //validar y ocultar
+        foreach ($types as $type) {
+            $tmp = $type->conceptos->whereIn("key", $checked->pluck(["key"]))->where("check", 0);
+            $type->conceptos = $type->conceptos->except($tmp->keys());
         }
 
         return view('categorias.remuneracion', compact('categoria', 'types'));
@@ -140,8 +161,9 @@ class CategoriaController extends Controller
         }
 
         DB::table('concepto_type_remuneracion')->insert($payload);
+        $config = "page={$request->page}#type-{$request->type_remuneracion_id}";
 
-        return back();
+        return redirect()->route("categoria.config", [$id, $config]);
 
     }
 

@@ -14,4 +14,9 @@ class Cargo extends Model
         return $this->belongsToMany(Categoria::class, 'cargo_categoria');
     }
 
+    public function typeCategoria()
+    {
+        return $this->belongsTo(TypeCategoria::class);
+    }
+
 }

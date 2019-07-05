@@ -113,6 +113,24 @@
                                             </a>  
                                         @endif
 
+
+                                        @if ($cronograma->pendiente)
+                                            <button class="btn btn-sm btn-danger" disabled>
+                                                Generar PDF
+                                            </button>
+                                        @else
+                                            <a title="PDF" href="{{ route('export.cronograma.pdf', $cronograma->id) }}" class="btn btn-sm btn-danger">
+                                                Generar PDF
+                                            </a>
+                                        @endif
+
+
+                                        @if ($cronograma->pdf)
+                                            <a target="blank" title="PDF" href="{{ $cronograma->pdf }}" class="btn btn-sm btn-outline-danger">
+                                                <i class="far fa-file-pdf" aria-hidden="true"></i> Ver PDF
+                                            </a>
+                                        @endif
+
                                     </div>
                                 </th>
                             </tr>

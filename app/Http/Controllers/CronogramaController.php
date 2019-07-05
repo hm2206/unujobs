@@ -146,8 +146,12 @@ class CronogramaController extends Controller
 
     public function addStore(Request $request, $id)
     {
+        $this->validate(request(), [
+            "jobs" => "required"
+        ]);
+
         $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
-        $tmp_jobs = $request->except(["_token"]);
+        $tmp_jobs = $request->input('jobs', []);
         $jobs = Work::whereIn("id", $tmp_jobs)->get();
 
         ProssingRemuneracion::dispatch($cronograma, $jobs);

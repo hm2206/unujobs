@@ -65,15 +65,10 @@ Route::group(["prefix" => "planilla"], function() {
 });
 
 
-// Route::get("/test", function() {
-//     $pdf = PDF::loadView("pdf.test");
-//     return $pdf->stream();
-// });
-
 
 //Reportes
-Route::group(["prefix" => "report"], function() {
+Route::group(["prefix" => "export"], function() {
 
-    Route::get("planilla/{id}", "ReportController@planilla");
+    Route::get("cronograma/{id}/pdf", "ExportCronogramaController@pdf")->name('export.cronograma.pdf');
 
 });

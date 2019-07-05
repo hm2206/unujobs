@@ -73,19 +73,21 @@ class CargoController extends Controller
     {
         $cargo = Cargo::findOrFail($id);
         $notIn = $cargo->categorias->pluck(["id"]);
-        $categorias = Categoria::whereNotIn('id', $notIn)->get();
+        $categorias = Categoria::whereNotIn('id', $notIn)->orderBy('nombre', 'ASC')->get();
 
         return view("cargos.categoria", compact('cargo', 'categorias'));
     }
 
-    public function categoriaStore($id, Request $request)
+    public function categoriaStore(Request $request, $id)
     {
         $this->validate(request(), [
-            "categoria_id" => "required"
+            "categorias" => "required"
         ]);
 
+        $categorias = $request->input("categorias", []);
+
         $cargo = Cargo::findOrFail($id);
-        $cargo->categorias()->syncWithoutDetaching($request->categoria_id);
+        $cargo->categorias()->syncWithoutDetaching($categorias);
         return back()->with(["success" => "La categoria se agrego correctamente"]);
     }
 

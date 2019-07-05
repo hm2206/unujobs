@@ -1,0 +1,42 @@
+
+
+.text-sm {
+    font-size: 0.5em;
+    font-weight: 0;
+}
+
+h6 {
+    font-size: 0.7em;
+}
+
+
+.table-sm > * {
+    font-size: 0.55em;
+}
+
+
+.table > * {
+    border: 0px;
+    padding: 0px;
+}
+
+.table {
+    border-bottom: 0px !important;
+}
+
+
+.flex {
+    justify-content: space-between;
+}
+
+.small {
+    font-size: 0.95em;
+}
+
+.text-md {
+    font-size: 0.6em;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}

@@ -93,6 +93,20 @@
                                         <a href="{{ route('job.show', $job->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        <a target="blank" 
+                                            title="remuneracion"
+                                            href="{{ route('job.remuneracion', [$job->id, "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
+                                            class="btn btn-sm btn-warning"
+                                        >
+                                            <i class="fas fa-coins"></i>
+                                        </a>
+                                        <a target="blank" 
+                                            title="descuento"
+                                            href="{{ route('job.descuento', [$job->id, "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
+                                            class="btn btn-sm btn-danger"
+                                        >
+                                            <i class="fab fa-creative-commons-nc"></i>
+                                        </a>
                                     </div>
                                 </th>
                             </tr>

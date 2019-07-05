@@ -25,8 +25,7 @@ class ConceptoController extends Controller
     {
         $this->validate(request(), [
             "key" => "required",
-            "descripcion" => "required",
-            "monto" => "required"
+            "descripcion" => "required"
         ]);
 
         $concepto = Concepto::create($request->all());
@@ -51,8 +50,7 @@ class ConceptoController extends Controller
     {
         $this->validate(request(), [
             "key" => "required",
-            "descripcion" => "required",
-            "monto" => "required"
+            "descripcion" => "required"
         ]);
 
         $concepto = Concepto::findOrFail($id);

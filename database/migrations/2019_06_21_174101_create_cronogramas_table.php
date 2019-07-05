@@ -22,6 +22,8 @@ class CreateCronogramasTable extends Migration
             $table->integer("sede_id")->default(1);
             $table->integer("numero")->nullable();
             $table->integer("dias")->default(30);
+            $table->string('pdf')->nullable();
+            $table->integer('pendiente')->default(0);
             $table->timestamps();
         });
     }

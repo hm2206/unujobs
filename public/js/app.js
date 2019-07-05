@@ -36929,13 +36929,6 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js"); // window
 //     el: '#app',
 // });
 
-
-function combobox(that, id) {
-  var combo = document.getElementById(id);
-  combo.value = "";
-  that.form.submit();
-}
-
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":

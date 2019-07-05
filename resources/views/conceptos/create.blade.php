@@ -43,12 +43,6 @@
                 <b class="text-danger">{{ $errors->first('descripcion') }}</b>
             </div>
 
-            <div class="form-group">
-                <label for="" class="form-control-label">Monto <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" name="monto" value="{{ old('monto') }}">
-                <b class="text-danger">{{ $errors->first('monto') }}</b>
-            </div>
-
             <button class="btn btn-primary" type="submit">Guardar <i class="fas fa-save"></i></button>
 
         </form>

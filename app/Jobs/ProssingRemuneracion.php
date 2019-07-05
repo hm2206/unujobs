@@ -54,6 +54,7 @@ class ProssingRemuneracion implements ShouldQueue
                     "work_id" => $job->id,
                     "categoria_id" => $job->categoria_id,
                     "cronograma_id" => $cronograma->id,
+                    "cargo_id" => $job->cargo_id,
                     "type_remuneracion_id" => $remuneracion->id,
                     "mes" => $cronograma->mes,
                     "año" => $cronograma->año,
@@ -72,6 +73,7 @@ class ProssingRemuneracion implements ShouldQueue
                 Remuneracion::create([
                     "work_id" => $job->id,
                     "categoria_id" => $job->categoria_id,
+                    "cargo_id" => $job->cargo_id,
                     "cronograma_id" => $cronograma->id,
                     "type_remuneracion_id" => $type->id,
                     "mes" => $cronograma->mes,

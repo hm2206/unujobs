@@ -37,7 +37,6 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
-                            <th>Monto</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -46,7 +45,6 @@
                             <tr>
                                 <th>{{ $concepto->id }}</th>
                                 <th class="uppercase">{{ $concepto->descripcion }}</th>
-                                <th class="uppercase">S./ {{ $concepto->monto }}</th>
                                 <th>
                                     <div class="btn-group">
                                         <a href="{{ route('concepto.edit', $concepto->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
