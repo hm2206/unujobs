@@ -11,7 +11,7 @@ class Work extends Model
         "ape_paterno", "ape_materno", "nombres","numero_de_documento",
         "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso",
         "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta",
-        "afp_id", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
+        "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
         "categoria_id", "sindicato_id", "observaciones", "nombre_completo",
         "cargo_id", 'plaza', 'meta_id', 'pea', 'condicion_pap', 'perfil',
         'ext_pptto', 'escuela_id', 'ruc', 'fuente_id', "direccion", "total"

@@ -31,6 +31,7 @@ class CreateWorksTable extends Migration
             $table->integer("banco_id")->nullable();
             $table->string("numero_de_cuenta")->nullable();
             $table->integer("afp_id")->nullable();
+            $table->string('type_afp')->nullable();
             $table->date("fecha_de_afiliacion")->nullable();
             $table->string("plaza")->nullable();
             $table->string("numero_de_cussp")->nullable();

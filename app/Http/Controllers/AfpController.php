@@ -2,51 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Afp;
+use App\Models\Afp;
 use Illuminate\Http\Request;
 
 class AfpController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
-        //
+        
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Afp  $afp
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Afp $afp)
     {
-        //
+        
     }
 
     /**

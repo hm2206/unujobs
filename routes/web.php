@@ -45,6 +45,8 @@ Route::group(["prefix" => "planilla"], function() {
     Route::resource('cargo', 'CargoController');
     Route::get('cargo/{id}/categoria', 'CargoController@categoria')->name('cargo.categoria');
     Route::post('cargo/{id}/categoria', 'CargoController@categoriaStore')->name('cargo.categoria.store');
+    Route::get('cargo/{id}/config', 'CargoController@config')->name('cargo.config');
+    Route::post('cargo/{id}/config', 'CargoController@configStore')->name('cargo.config.store');
 
     //gestión de categoria
     Route::resource('categoria', 'CategoriaController');
@@ -67,6 +69,7 @@ Route::group(["prefix" => "planilla"], function() {
     Route::resource('descuento', 'DescuentoController');
     Route::get('descuento/{id}/config', 'DescuentoController@config')->name('descuento.config');
     Route::post('descuento/{id}/config', 'DescuentoController@configStore')->name('descuento.config.store');
+
 
 });
 

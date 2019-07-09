@@ -94,7 +94,7 @@ class JobController extends Controller
     }
 
 
-    public function update(JobRequest $request, Work $job)
+    public function update(Request $request, Work $job)
     {
         $job->update($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";

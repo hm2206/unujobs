@@ -19,4 +19,9 @@ class Cargo extends Model
         return $this->belongsTo(TypeCategoria::class);
     }
 
+    public function typeRemuneracions()
+    {
+        return $this->belongsToMany(TypeRemuneracion::class, 'cargo_type_remuneracion');
+    }
+
 }

@@ -56,7 +56,12 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                        <a href="{{ route('cargo.config', $cargo->id) }}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-cog"></i>
+                                        </a>
                                     </div>
                                 </th>
                             </tr>

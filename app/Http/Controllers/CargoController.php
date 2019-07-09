@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cargo;
 use App\Models\Categoria;
 use App\Models\Planilla;
+use App\Models\TypeRemuneracion;
 use Illuminate\Http\Request;
 
 class CargoController extends Controller
@@ -78,6 +79,7 @@ class CargoController extends Controller
         return view("cargos.categoria", compact('cargo', 'categorias'));
     }
 
+
     public function categoriaStore(Request $request, $id)
     {
         $this->validate(request(), [
@@ -89,6 +91,34 @@ class CargoController extends Controller
         $cargo = Cargo::findOrFail($id);
         $cargo->categorias()->syncWithoutDetaching($categorias);
         return back()->with(["success" => "La categoria se agrego correctamente"]);
+    }
+
+
+    public function config($id)
+    {
+        $cargo = Cargo::findOrFail($id);
+        $types = TypeRemuneracion::all();
+
+        // return $cargo->types;
+
+        foreach ($types as $type) {
+           if ($cargo->typeRemuneracions->count() > 0) {
+                $checked = $cargo->typeRemuneracions->where("id", $type->id)->count() ? true : false;
+                $type->checked = $checked;
+           } else {
+               $type->checked = false;
+           }
+        }
+
+        return view("cargos.config", compact('cargo', 'types'));
+    }
+
+    public function configStore(Request $request, $id)
+    {
+        $cargo = Cargo::findOrFail($id);
+        $types = $request->input('types', []);
+        $cargo->typeRemuneracions()->sync($types);
+        return back();
     }
 
 }
