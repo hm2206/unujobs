@@ -158,6 +158,8 @@ class JobController extends Controller
             $total += $remuneracion->monto;
         }
 
+        $job->update(["total" => $total]);
+        
         return view("trabajador.remuneracion", 
             compact('job', 'categoria', 'remuneraciones', 'total', 'dias', 'mes', 'year', 'cronograma', 'numero', 'seleccionar')
         );
@@ -195,7 +197,10 @@ class JobController extends Controller
         $adicional = request()->adicional ? 1 : 0;
         $numero = request()->numero ? request()->numero : 1;
         $descuentos = [];
+        $types = [];
         $dias = 30;
+        $total = 0;
+        $base = 0;
 
         $cronograma = Cronograma::where('mes', $mes)
             ->where('año', $year)
@@ -218,15 +223,27 @@ class JobController extends Controller
             ->get();
 
             $dias = $cronograma->dias;
+
+            $types = Remuneracion::where('work_id', $job->id)
+                ->where("cronograma_id", $cronograma->id)
+                ->where("base", 1)->get();
+
+            $base = $types->sum('monto');
         }
 
-        $total = 0;
 
         foreach($descuentos as $descuento) {
             $total += $descuento->monto;
         }
 
-        return view("trabajador.descuento", compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'seleccionar', 'adicional', 'numero', 'total', 'dias'));
+        $base = $base - $total;
+        $base = $base == 0 ? $job->total : $base;
+        $aporte = $base * 0.09;
+        $aporte = $aporte < 930 ? 87.70 : $aporte;
+        $total_neto = $job->total - $total;
+
+        return view("trabajador.descuento", 
+            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 'total_neto'));
     }
 
 

@@ -62,6 +62,12 @@ Route::group(["prefix" => "planilla"], function() {
     Route::get('/cronograma/{id}/add', 'CronogramaController@add')->name('cronograma.add');
     Route::post('/cronograma/{id}/add', 'CronogramaController@addStore')->name('cronograma.add.store');
 
+    
+    //Descuentos
+    Route::resource('descuento', 'DescuentoController');
+    Route::get('descuento/{id}/config', 'DescuentoController@config')->name('descuento.config');
+    Route::post('descuento/{id}/config', 'DescuentoController@configStore')->name('descuento.config.store');
+
 });
 
 

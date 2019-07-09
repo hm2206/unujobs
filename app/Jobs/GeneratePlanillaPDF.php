@@ -109,11 +109,15 @@ class GeneratePlanillaPDF implements ShouldQueue
             ]);
         }
 
+        $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
+        $titulo = "5";
+
 
         $pdf = PDF::loadView('pdf.cronograma', \compact(
             'type_remuneraciones', 'results', 'resumen', 
             'meses', 'cronograma', 'type_categorias',
-            'totales', 'type_descuentos', 'rows'
+            'totales', 'type_descuentos', 'rows', 
+            'sub_titulo','titulo'
         ));
 
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);

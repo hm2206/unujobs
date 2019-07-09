@@ -18,6 +18,7 @@ class CreateTypeDescuentosTable extends Migration
             $table->string("key")->unique();
             $table->string("descripcion");
             $table->double("monto")->default();
+            $table->string('config_afp')->nullable();
             $table->timestamps();
         });
     }

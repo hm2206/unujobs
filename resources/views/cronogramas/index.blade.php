@@ -80,8 +80,9 @@
                         <tr>
                             <th>#ID</th>
                             <th>Planilla</th>
+                            <th>Observación</th>
                             <th>Sede</th>
-                            <th>Acciones</th>
+                            <th class="text-right">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,15 +101,20 @@
                                     @else
                                         <th class="uppercase">{{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}</th>
                                     @endif
+                                    <th class="uppercase">{{ $cronograma->observacion }}</th>
                                 <th class="uppercase">{{ $cronograma->sede ? $cronograma->sede->descripcion : null }}</th>
-                                <th>
-                                    <div class="btn-group">
-                                        <a target="__blank" href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-sm btn-primary">
+                                <th class="text-right">
+                                    <div class="btn-group text-right">
+                                        <a target="blank" href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
 
+                                        <a href="{{ route('cronograma.edit', $cronograma->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+
                                         @if ($cronograma->adicional)
-                                            <a class="btn btn-sm btn-warning" href="{{ route('cronograma.add', $cronograma->id) }}">
+                                            <a class="btn btn-sm btn-success" href="{{ route('cronograma.add', $cronograma->id) }}">
                                                 <i class="fas fa-plus"></i>
                                             </a>  
                                         @endif

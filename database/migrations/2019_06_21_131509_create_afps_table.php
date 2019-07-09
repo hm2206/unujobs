@@ -18,6 +18,10 @@ class CreateAfpsTable extends Migration
             $table->string("nombre");
             $table->text("descripcion")->nullable();
             $table->double("porcentaje")->nullable();
+            $table->double('flujo')->nullable();
+            $table->double('mixta')->nullable();
+            $table->double('aporte')->nullable();
+            $table->double('prima')->nullable();
             $table->timestamps();
         });
     }

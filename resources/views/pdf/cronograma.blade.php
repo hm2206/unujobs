@@ -10,6 +10,7 @@
 </head>
 <body class="bg-white">
 
+    <div class="text-center">{{ $titulo }}</div>
         
     <table>
         <thead>
@@ -26,7 +27,7 @@
         </thead>
     </table>
 
-    <h6 class="mt-1 text-center mb-2 uppercase">RESUMEN GENERAL DE TODAS LAS METAS DE MES {{ $meses[$cronograma->mes] }} - {{ $cronograma->año }}</h6>
+    <h6 class="mt-1 text-center mb-2 uppercase">{{ $sub_titulo }}</h6>
 
     <div class="text-md uppercase">
         <b> 

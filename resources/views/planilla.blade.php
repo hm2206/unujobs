@@ -92,6 +92,19 @@
             </div>
         </div>
 
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+                <div class="card-header card-header-dark card-header-icon">
+                    <div class="card-icon">
+                        <i class="fab fa-creative-commons-nc"></i>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ route('descuento.index') }}"><b>Descuentos</b></a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 @endsection

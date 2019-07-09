@@ -93,7 +93,7 @@
         <h4 class="card-header">
             Descuento
             <span class="text-danger"> >> </span> 
-            <span class="uppercase">{{ $job->nombre_completo }}</span>
+            <span class="uppercase">{{ $job->nombre_completo }} <i class="fas fa-arrow-right"></i> <b class="text-danger">{{ $job->categoria->nombre }}</b></span>
         </h4>
         <hr>
         <form class="card-body" action="{{ route('job.descuento.update', $job->id) }}" method="POST">
@@ -142,9 +142,31 @@
         <div class="card-footer">
             <hr>
             <h4 class="text-left">
-                Total DSCTOS:  <b class="text-primary">S./ {{ $total }}</b>
+                <b>TOTAL DSCTOS:</b>  <b class="text-primary">S./ {{ $total }}</b>
             </h4>
         </div>
+
+        <div class="card-footer">
+            <hr>
+            <h4 class="text-left">
+                <b>BASE IMPONIBLE:</b>  <b class="text-primary">S./ {{ $base }}</b>
+            </h4>
+        </div>
+
+        <div class="card-footer">
+            <hr>
+            <h4 class="text-left">
+                <b>APORTE PATRONAL ESSALUD:</b>  <b class="text-primary">S./ {{ $aporte }}</b>
+            </h4>
+        </div>
+
+        <div class="card-footer">
+            <hr>
+            <h4 class="text-left">
+                <b>TOTAL:</b>  <b class="text-primary">S./ {{ $total_neto }}</b>
+            </h4>
+        </div>
+
     </div>
 
 </div>

@@ -115,7 +115,7 @@
                 @forelse ($remuneraciones as $remuneracion)
                     <div class="col-md-4">
                         <div class="row align-items-center">
-                            <h6 class="col mb-0 text-primary uppercase text-right">
+                            <h6 class="col mb-0 text-primary uppercase text-left">
                                 @if ($remuneracion->typeRemuneracion)
                                     {{ $remuneracion->typeRemuneracion->key }}. <span class="ml-1"></span>
                                     {{ $remuneracion->typeRemuneracion->descripcion }}

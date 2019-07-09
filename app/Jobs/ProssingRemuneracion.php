@@ -44,10 +44,13 @@ class ProssingRemuneracion implements ShouldQueue
 
     private function configurarRemuneracion($types, $cronograma, $job)
     {
+        $total = 0;
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         $hasRemuneraciones = Remuneracion::where("work_id", $job->id)
             ->where("mes", $mes)->where("año", $year)->get();
+
+            
         if ($hasRemuneraciones->count() > 0) {
             foreach ($hasRemuneraciones as $remuneracion) {
                 Remuneracion::create([
@@ -59,8 +62,11 @@ class ProssingRemuneracion implements ShouldQueue
                     "mes" => $cronograma->mes,
                     "año" => $cronograma->año,
                     "monto" => $remuneracion->monto,
-                    "adicional" => $cronograma->adicional
+                    "adicional" => $cronograma->adicional,
+                    "base" => $type->base
                 ]);
+
+                $total += $remuneracion->monto;
             }
         }else {
             foreach ($types as $type) {
@@ -79,10 +85,15 @@ class ProssingRemuneracion implements ShouldQueue
                     "mes" => $cronograma->mes,
                     "año" => $cronograma->año,
                     "monto" => $suma,
-                    "adicional" => $cronograma->adicional
+                    "adicional" => $cronograma->adicional,
+                    "base" => $type->base
                 ]);
+
+                $total += $suma;
             }
         }
+
+        $job->update(["total" => $total]);
     }
 
 }

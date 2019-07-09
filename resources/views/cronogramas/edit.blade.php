@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo')
-    - Crear Cronograma
+    - Editar Cronograma >> {{ base64_encode($cronograma->id) }}
 @endsection
 
 @section('link')
@@ -33,32 +33,20 @@
 
     <div class="card">
         <div class="card-header">
-            Registro de cronograma</b>
+            Editar Cronograma</b>
         </div>
-        <form class="card-body" action="{{ route('cronograma.store') }}" method="post">
+        <form class="card-body" action="{{ route('cronograma.update', $cronograma->id) }}" method="post">
             @csrf
+            @method('PUT')
 
             <div class="form-group">
                 <label for="" class="form-control-label">Planilla <span class="text-danger">*</span></label>
-                <select name="planilla_id" class="form-control uppercase">
-                    <option value="">Seleccionar...</option>
-                    @foreach ($planillas as $planilla)
-                        <option value="{{ $planilla->id }}" {!! old('planilla_id') ? "selected" : null !!}>{{ $planilla->descripcion }}</option>
-                    @endforeach
-                </select>
-                <b class="text-danger">{{ $errors->first('planilla_id') }}</b>
+                <span class="form-control">{{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}</span>
             </div>
 
             <div class="form-group">
                 <label for="" class="form-control-label">Observación</label>
-                <textarea name="observacion" class="form-control">{{ old('observacion') }}</textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="" class="form-control-label">Adicional</label>
-                <br>
-                <input type="checkbox" name="adicional" {!! old('adicional') ? 'checked' : '' !!}>
-                <b class="text-danger">{{ $errors->first('adicional') }}</b>
+                <textarea name="observacion" class="form-control">{{ old('observacion') ? old('observacion') : $cronograma->observacion }}</textarea>
             </div>
 
             <button class="btn btn-primary mt-4" type="submit">Guardar <i class="fas fa-save"></i></button>

@@ -9,7 +9,7 @@ class Cronograma extends Model
 
     protected $fillable = [
         "mes", "año", "planilla_id", "adicional", "sede_id", "numero", "dias",
-        "pdf", "pendiente"
+        "pdf", "pendiente", "observacion"
     ];
     
     public function sede()

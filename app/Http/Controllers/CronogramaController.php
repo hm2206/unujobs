@@ -92,13 +92,14 @@ class CronogramaController extends Controller
 
     public function edit(Cronograma $cronograma)
     {
-        //
+        return view("cronogramas.edit", compact('cronograma'));
     }
 
  
     public function update(Request $request, Cronograma $cronograma)
     {
-        //
+        $cronograma->update(["observacion" => $request->observacion]);
+        return back()->with(["success" => "Los datos se actualizarón correctamente"]);
     }
 
 
@@ -132,7 +133,7 @@ class CronogramaController extends Controller
         $like = request()->query_search;
         $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
         $notIn = $remuneraciones->pluck(["work_id"]);
-        $jobs = Work::whereNotIn("id", $notIn);
+        $jobs = Work::whereNotIn("id", $notIn)->where("planilla_id", $cronograma->planilla_id);
 
         if($like) {
            $jobs->where("nombre_completo", "like", "%{$like}%");
