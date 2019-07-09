@@ -51,6 +51,7 @@ class ProssingDescuento implements ShouldQueue
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         $hasDescuentos = Descuento::where("work_id", $job->id)
             ->where("mes", $mes)->where("año", $year)->get();
+
         if($hasDescuentos->count() > 0) {
             foreach ($hasDescuentos as $descuento) {
                 Descuento::create([
@@ -67,6 +68,18 @@ class ProssingDescuento implements ShouldQueue
         }else {
             foreach ($types as $type) {
                 $config = \json_decode($type->config_afp);
+                $cargo = $job->cargo;
+                $typeIn = $cargo->typeRemuneracions->pluck(["id"]);
+                $remuneraciones = Remuneracion::where('work_id', $job->id)
+                    ->where('cargo_id', $job->cargo_id)
+                    ->where('categoria_id', $job->categoria_id)
+                    ->where('cronograma_id', $cronograma->id)
+                    ->whereIn('type_remuneracion_id', $typeIn)
+                    ->get();
+
+                
+                $total = $remuneraciones->sum("monto");
+                $total = $total > 0 ? $total : $job->total;
                 $suma = 0;
                 
                 if($job->afp) {
@@ -76,10 +89,13 @@ class ProssingDescuento implements ShouldQueue
                         $opcional = count($config) > 1 ? true : false; 
 
                         if($opcional) {
+
                             foreach ($config as $conf) {
                                 if($conf != "aporte" && $conf != "prima") {
-                                    $type_afp = $conf == $job->type_afp ? $conf : null;
-                                    break;
+                                    if($conf == $job->type_afp) {
+                                        $type_afp = $conf;
+                                        break;
+                                    }
                                 }
                             }
 
@@ -87,27 +103,14 @@ class ProssingDescuento implements ShouldQueue
                             $type_afp = implode("", $config);
                         }
 
+                        $porcentaje = $job->afp->{$type_afp};
+                        \Log::info($job->id . " => " . $type_afp . " => " . $porcentaje);
+                        $suma = ($total * $porcentaje) / 100;
 
-                        if ($type_afp) {
-
-                            $porcentaje = $job->afp->{$type_afp};
-                            $total = 0;
-
-                            $cargo = $job->cargo;
-                            $typeIn = $cargo->typeRemuneracions->pluck(["id"]);
-                            $remuneraciones = Remuneracion::where('work_id', $job->id)
-                                ->where('cargo_id', $job->cargo_id)
-                                ->where('categoria_id', $job->categoria_id)
-                                ->where('cronograma_id', $cronograma->id)
-                                ->whereIn('type_remuneracion_id', $typeIn)
-                                ->get();
-
-                            $total = $remuneraciones->suma("monto");
-                            $suma = ($total * $porcentaje) / 100;
-
-                        }
-
-
+                    }
+                }else {
+                    if($type->obligatorio) {
+                        $suma = ($total * 13) / 100;   
                     }
                 }
 

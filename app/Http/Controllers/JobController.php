@@ -229,17 +229,13 @@ class JobController extends Controller
                 ->where("base", 1)->get();
 
             $base = $types->sum('monto');
+            $total = $descuentos->sum('monto');
         }
 
-
-        foreach($descuentos as $descuento) {
-            $total += $descuento->monto;
-        }
-
-        $base = $base - $total;
         $base = $base == 0 ? $job->total : $base;
+        $base = $base - $total;
         $aporte = $base * 0.09;
-        $aporte = $aporte < 930 ? 87.70 : $aporte;
+        $aporte = $base < 930 ? 83.70 : $aporte;
         $total_neto = $job->total - $total;
 
         return view("trabajador.descuento", 

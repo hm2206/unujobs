@@ -81,7 +81,7 @@ class DescuentoController extends Controller
 
         $tmps = [
             ["name" => "Flujo", "checked" => false],
-            ["name" => "Mixto", "checked" => false],
+            ["name" => "Mixta", "checked" => false],
             ["name" => "Aporte", "checked" => false],
             ["name" => "Prima", "checked" => false]
         ];

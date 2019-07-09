@@ -50,7 +50,7 @@
         <hr>
 
         <div class="card-body">
-            <h4><b>Tipo de AFP</b></h4>
+            <h4><b>Configuración de AFP</b></h4>
                     
             <hr>
 
