@@ -40,3 +40,68 @@ h6 {
 .uppercase {
     text-transform: uppercase;
 }
+
+.boleta-header {
+    width: auto;
+    border: 0.5px solid black;
+    border-radius: 0.5em;
+}
+
+    .table-boleta thead, tr, td, th {
+        padding: 0px;
+    }
+
+.py-0 {
+    padding: 0px;
+}
+
+.bbt-1 {
+    border-top: 1px solid black;
+}
+
+.bbb-1 {
+    border-bottom: 1px solid black;
+}
+
+.bbl-1 {
+    border-left: 1px solid black;
+}
+
+.bbr-1 {
+    border-right: 1px solid black;
+}
+
+
+.mb-5 {
+    margin-bottom: 5em;
+}
+
+.mb-7 {
+    margin-bottom: 7em; 
+}
+
+
+.p-relative {
+    position: relative;
+}
+
+.p-absolute {
+    position: absolute;
+}
+
+    .top-0 {
+        top: 0px;
+    }
+
+    .bottom {
+        bottom: 0px;
+    }
+
+
+.w-100 {
+    width: 100%;
+}
+
+.w-40 {
+    width: 40%;
+}

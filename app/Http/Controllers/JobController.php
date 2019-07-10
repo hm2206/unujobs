@@ -18,6 +18,7 @@ use App\Models\TypeRemuneracion;
 use App\Models\Cronograma;
 use App\Models\Descuento;
 use App\Models\TypeDescuento;
+use \PDF;
 
 class JobController extends Controller
 {
@@ -150,13 +151,8 @@ class JobController extends Controller
 
             $dias = $cronograma->dias;
         }
-        
 
-        $total = 0;
-
-        foreach($remuneraciones as $remuneracion) {
-            $total += $remuneracion->monto;
-        }
+        $total = $remuneraciones->sum('monto');
 
         $job->update(["total" => $total]);
         
@@ -310,6 +306,61 @@ class JobController extends Controller
 
         return view("trabajador.obligacion", 
             compact('cronograma', 'year', 'mes', 'adicional', 'numero', 'dias', 'job', 'total', 'seleccionar'));
+    }
+
+    public function boleta($id)
+    {
+        $work = Work::findOrFail($id);
+        $remuneraciones = Remuneracion::where('work_id', $work->id)->get();
+        $cronogramas = Cronograma::whereIn("id", $remuneraciones->pluck(['cronograma_id']))
+            ->orderBy('id', 'ASC')->paginate(30);
+
+        $meses = [
+            "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+            "Julio", "Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+        ];
+
+        return view('trabajador.boleta', compact('work', 'cronogramas', 'meses'));
+    }
+
+    public function boletaStore(Request $request, $id)
+    {
+        $work = Work::findOrFail($id);
+        $whereIn = $request->input('cronogramas', []);
+        $cronogramas = Cronograma::whereIn("id", $whereIn)->get();
+
+        $cronogramas->map(function($q) use($work) {
+            $remuneraciones = Remuneracion::where("work_id", $work->id)
+                ->where("cronograma_id", $q->id)
+                ->get();
+
+            $descuentos = Descuento::with('typeDescuento')->whereHas('typeDescuento', function($q) {
+                $q->where('type_descuentos.config_afp', null);
+                $q->where('obligatorio', 0);
+            })->where('work_id', $work->id)
+                ->where("cronograma_id", $q->id)
+                ->get();
+            
+            $q->remuneraciones = $remuneraciones;
+            $q->descuentos = $descuentos->chunk(2)->toArray();
+            $q->total_descuento = $descuentos->sum('monto');
+
+            $total = $remuneraciones->where('base', 1)->sum('monto');
+            $total = $total == 0 ? $work->total : $total;
+            $base = $total - $q->total_descuento;
+
+            $q->base = $base;
+            $q->essalud = $base < 930 ? 83.7 : $base * 0.09;
+            $q->neto = $work->total - $q->total_descuento;
+
+            return $q;
+        });
+
+        // return $cronogramas;
+
+        $pdf = PDF::loadView("pdf.boleta", compact('work', 'cronogramas'));
+        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
+        return $pdf->stream("boleta - {$work->nombre_completo}");
     }
 
 }

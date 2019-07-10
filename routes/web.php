@@ -37,6 +37,8 @@ Route::group(["prefix" => "planilla"], function() {
     Route::get('job/{id}/descuento', 'JobController@descuento')->name('job.descuento');
     Route::put('job/{id}/descuento', 'JobController@descuentoUpdate')->name('job.descuento.update');
     Route::get('job/{id}/obligacion', 'JobController@obligacion')->name('job.obligacion');
+    Route::get('job/{id}/boleta', 'JobController@boleta')->name('job.boleta');
+    Route::post('job/{id}/boleta', 'JobController@boletaStore')->name('job.boleta.store');
 
     //Metas
     Route::resource('meta', 'MetaController');

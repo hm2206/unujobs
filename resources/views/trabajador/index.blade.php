@@ -78,11 +78,14 @@
                                 <th>{{ $job->numero_de_cuenta }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('job.edit', $job->id) }}" class="btn btn-xs btn-warning">
+                                        <a href="{{ route('job.edit', $job->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-                                        <a href="{{ route('job.show', $job->id) }}" class="btn btn-xs btn-primary">
+                                        <a href="{{ route('job.show', $job->id) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('job.boleta', $job->id) }}" target="blank" title="Boleta" class="btn btn-sm btn-dark">
+                                            <i class="fas fa-file"></i>
                                         </a>
                                     </div>
                                 </th>
