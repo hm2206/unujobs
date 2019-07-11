@@ -15,4 +15,9 @@ class Meta extends Model
         "actividad"
     ];
 
+    public function works()
+    {
+        return $this->hasMany(Work::class);
+    }
+
 }

@@ -123,10 +123,89 @@
                     <tbody>
                         @foreach ($type_descuentos as $descuento)
                             <tr>
-                                <td></td>
-                                <td></td>
+                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $descuento->descripcion }}
+                                </td>
+                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $descuento->monto }}
+                                </td>
                             </tr>
                         @endforeach
+
+                        @foreach ($afps as $afp)
+                            <tr>
+                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    AFP {{ $afp->nombre }}
+                                </td>
+                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $afp->monto }}
+                                </td>
+                            </tr>
+                        @endforeach
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                TOTAL DESCUENTOS
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
+                                {{ $total_descuentos }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                TOTAL LICUADO PERCIBIDO
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:1px solid black;">
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                TOTAL PLANILLA BRUTA
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:2px solid black;">
+                                {{ $totales }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                80.-ESSALUD (APORTACIONES)
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $total_essalud }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                81.-I.E.S 17%
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $total_ies }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                82.-D.L.F.P (APORTACIONES)
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $total_dlfp }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                83.-ACCIDENTES DE TRABAJO
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $total_accidentes }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                84.-TOTAL APORTACIONES
+                            </td>
+                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $total_aportaciones }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </td>
