@@ -334,10 +334,7 @@ class JobController extends Controller
                 ->where("cronograma_id", $q->id)
                 ->get();
 
-            $descuentos = Descuento::with('typeDescuento')->whereHas('typeDescuento', function($q) {
-                $q->where('type_descuentos.config_afp', null);
-                $q->where('obligatorio', 0);
-            })->where('work_id', $work->id)
+            $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
                 ->where("cronograma_id", $q->id)
                 ->get();
             
@@ -352,6 +349,7 @@ class JobController extends Controller
             $q->base = $base;
             $q->essalud = $base < 930 ? 83.7 : $base * 0.09;
             $q->neto = $work->total - $q->total_descuento;
+            $q->total_aportes = $q->essalud;
 
             return $q;
         });

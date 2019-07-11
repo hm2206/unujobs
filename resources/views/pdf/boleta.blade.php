@@ -65,7 +65,7 @@
                                 <td class="py-0 pl-3">Condición Laboral</td>
                                 <td colspan="3" class="uppercase py-0">{{ $work->cargo ? $work->cargo->descripcion : null }} - {{ $work->condicion_pap }}</td>
                                 <td class="py-0" width="10%">Meta Siaf:</td>
-                                <td class="py-0"></td>
+                                <td class="py-0">{{ $work->meta ? $work->meta->metaID : null }}</td>
                             </tr>
                             <tr>
                                 <td class="py-0 pl-3 pb-1">Cargo</td>
@@ -129,7 +129,7 @@
                                         @foreach ($cronograma->descuentos as $body)
                                             <tr>
                                                 @foreach ($body as $descuento)
-                                                    <td class="py-0" width="45%">
+                                                    <td class="py-0" width="35%">
                                                         {{ $descuento['type_descuento'] ? $descuento['type_descuento']['key'] : null }}
                                                         <span>.-</span>
                                                         {{ $descuento['type_descuento'] ? $descuento['type_descuento']['descripcion'] : null }}
@@ -177,7 +177,7 @@
                                     </tr>
                                     <tr>
                                         <td class="py-0">84.-TOTAL APORTE</td>
-                                        <td class="py-0 bbt-1">83.00</td>
+                                        <td class="py-0 bbt-1">{{ $cronograma->total_aportes }}</td>
                                     </tr>
 
                                     <tr>
@@ -196,10 +196,9 @@
                                         </tr>
                                     @endfor
                                     <tr>
-                                        <td class="py-0"></td>
-                                        <td class="py-0 p-absolute bottom-0">
-                                            <div>--------------------------------</div>
-                                            <div class="ml-1">RECIBI CONFORME</div>
+                                        <td colspan="2" class="py-0 p-absolute bottom-0 text-center">
+                                            <div class="center">--------------------------------</div>
+                                            <div class="center">RECIBI CONFORME</div>
                                         </td>
                                     </tr>
                                 </table>
