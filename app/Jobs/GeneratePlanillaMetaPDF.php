@@ -42,7 +42,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             $meta->works->map(function($work) use($config) {
 
                 $total = $work->remuneraciones->where('año', $config['year'])->where('mes', $config['mes'])->sum("monto");
-                $tmp_base = $work->remuneraciones->where("base", 1)->sum('monto');
+                $tmp_base = $work->remuneraciones->where("base", 0)->sum('monto');
                 $tmp_base = $tmp_base == 0 ? $work->total : $tmp_base;
 
                 $work->remuneraciones->push([
@@ -58,7 +58,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
                 $total_descto = $work->descuentos->sum('monto');
 
                 //calcular base imponible
-                $work->base = $tmp_base - $total_descto;
+                $work->base = $tmp_base;
 
                 //calcular total de descuentos
                 $work->descuentos->push([

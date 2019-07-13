@@ -9,6 +9,7 @@ use App\Models\Cargo;
 use App\Models\Sede;
 use App\Models\Dependencia;
 use App\Models\Oficina;
+use App\Models\Meta;
 
 class PersonalController extends Controller
 {
@@ -31,6 +32,7 @@ class PersonalController extends Controller
         $current_dependencia = [];
         $oficinas = [];
         $lugares = [];
+        $metas = Meta::all();
 
         if($sedes) {
             $current_sede = old('sede_id') ? $sedes->find(old('sede_id')) : $sedes->first();
@@ -55,7 +57,7 @@ class PersonalController extends Controller
 
         $cargos = Cargo::get(["id", "descripcion"]);
 
-        return view("personal.create", \compact('sedes', 'dependencias', 'oficinas', 'cargos', 'lugares'));
+        return view("personal.create", \compact('sedes', 'dependencias', 'oficinas', 'cargos', 'lugares', 'metas'));
     }
 
     public function store(PersonalRequest $request)

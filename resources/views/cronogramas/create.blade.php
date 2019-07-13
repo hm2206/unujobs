@@ -50,6 +50,12 @@
             </div>
 
             <div class="form-group">
+                <label for="" class="form-control-label">Dias</label>
+                <input type="number" class="form-control" name="dias" value="30">
+                <b class="text-danger">{{ $errors->first('dias') }}</b>
+            </div>
+
+            <div class="form-group">
                 <label for="" class="form-control-label">Observación</label>
                 <textarea name="observacion" class="form-control">{{ old('observacion') }}</textarea>
             </div>

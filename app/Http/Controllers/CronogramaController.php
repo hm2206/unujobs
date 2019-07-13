@@ -45,7 +45,8 @@ class CronogramaController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
-            "planilla_id" => "required"
+            "planilla_id" => "required",
+            "dias" => "required",
         ]);
 
         $mes = (int)date('m');

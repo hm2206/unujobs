@@ -173,7 +173,7 @@
                                     </tr>
                                     <tr>
                                         <td class="py-0">83.-A.C.C DE TRABAJO</td>
-                                        <td class="py-0">00.00</td>
+                                        <td class="py-0">{{ $cronograma->accidentes }}</td>
                                     </tr>
                                     <tr>
                                         <td class="py-0">84.-TOTAL APORTE</td>

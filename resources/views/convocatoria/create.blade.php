@@ -11,7 +11,7 @@
 @section('content')
 
 <div class="col-md-12">
-    <a href="{{ route('home') }}" class="btn btn-danger"><i class="material-icons">undo</i> atrás</a>
+    <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
     
 <div class="col-md-12">
@@ -52,8 +52,8 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Etapas, Cronograma y área responsable del proceso</label>
-                        <input type="text" class="form-control">
+                        <label for="" class="form-control-label">Área responsable del proceso <span class="text-danger">*</span></label>
+                        <input type="text" name="area_responsable" class="form-control" value="{{ old('area_responsable') }}">
                     </div>
                 </div>
 
@@ -75,8 +75,9 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Asignar factores de evaluación</label>
-                        <input type="text" class="form-control">
+                        <label for="" class="form-control-label">Asignar factores de evaluación <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="factor_evaluacion" value="{{ old('factor_evaluacion') }}">
+                        <b class="text-danger">{{ $errors->first('factor_evaluacion') }}</b>
                     </div>
                 </div>
 

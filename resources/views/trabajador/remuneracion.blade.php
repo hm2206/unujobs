@@ -152,7 +152,7 @@
         <div class="card-footer">
             <hr>
             <h4 class="text-left">
-                Total Bruto:  <b class="text-primary">S./ {{ $total }}</b>
+                Total Bruto:  <b class="text-primary">S./ {{ $job->total }}</b>
             </h4>
         </div>
     </div>

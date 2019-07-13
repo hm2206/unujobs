@@ -16,7 +16,7 @@
             <div class="card card-stats">
                 <div class="card-header card-header-warning card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">supervisor_account</i>
+                        <i class="fas fa-user-clock"></i>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -29,7 +29,7 @@
             <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">date_range</i>
+                        <i class="fas fa-user-friends"></i>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -42,7 +42,7 @@
             <div class="card card-stats">
                 <div class="card-header card-header-success card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">person</i>
+                        <i class="fas fa-user"></i>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -55,7 +55,7 @@
             <div class="card card-stats">
                 <div class="card-header card-header-primary card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">beenhere</i>
+                        <i class="fab fa-get-pocket"></i>
                     </div>
                 </div>
                 <div class="card-footer">

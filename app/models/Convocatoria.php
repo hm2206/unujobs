@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Convocatoria extends Model
 {
     
-    protected $fillable = ["numero_de_convocatoria", "periodo", "codigo_de_postulacion", "oficina_id"];
+    protected $fillable = [
+        "numero_de_convocatoria", "periodo", "codigo_de_postulacion", "oficina_id",
+        "area_responsable", "factor_evaluacion"
+    ];
 
 }

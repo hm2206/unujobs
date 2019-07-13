@@ -28,6 +28,7 @@ class CreatePersonalsTable extends Migration
             $table->date("periodo")->nullable();
             $table->integer("lugar_id")->nullable();
             $table->text("perfil")->nullable();
+            $table->integer("supervisora_id")->nullable();
             $table->timestamps();
         });
     }

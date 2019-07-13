@@ -20,6 +20,7 @@ class CreateTypeDescuentosTable extends Migration
             $table->double("monto")->default();
             $table->string('config_afp')->nullable();
             $table->integer('obligatorio')->default(0);
+            $table->integer('ley')->default(0);
             $table->timestamps();
         });
     }

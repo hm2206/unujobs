@@ -135,19 +135,22 @@ class GeneratePlanillaPDF implements ShouldQueue
 
         foreach ($works as $work) {
             $tmp_essalud = 0;
+            $tmp_accidente = 0;
             $base = 0;
-            $tmp_base = Remuneracion::where("cronograma_id", $cronograma->id)
-                ->where("base", 1)->where("work_id", $work->id)
-                ->get();
-
-            $work_descuentos = Descuento::where("cronograma_id", $cronograma->id)
+            $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
                 ->where("work_id", $work->id)
+                ->where('base', 0)
                 ->get();
 
-            $tmp_base = $tmp_base->count() > 0 ? $tmp_base->sum("monto") : $work->total;
-            $base = $tmp_base - $work_descuentos->sum('monto');
+            $base = $remuneraciones->sum('monto');
+
+            //aportaciones current
             $tmp_essalud = $base < 930 ? 83.7 : $base * 0.09;
+            $tmp_accidente = $work->accidentes ? ($base * 1.55) / 100 : 0;
+
+            //totales
             $total_essalud += $tmp_essalud;        
+            $total_accidentes += $tmp_accidente;
         }
 
         //calcular total de aportaciones

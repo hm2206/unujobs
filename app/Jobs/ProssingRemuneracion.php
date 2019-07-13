@@ -61,7 +61,7 @@ class ProssingRemuneracion implements ShouldQueue
                     "type_remuneracion_id" => $remuneracion->id,
                     "mes" => $cronograma->mes,
                     "año" => $cronograma->año,
-                    "monto" => $remuneracion->monto,
+                    "monto" => round($remuneracion->monto, 2),
                     "adicional" => $cronograma->adicional,
                     "base" => $type->base
                 ]);
@@ -84,7 +84,7 @@ class ProssingRemuneracion implements ShouldQueue
                     "type_remuneracion_id" => $type->id,
                     "mes" => $cronograma->mes,
                     "año" => $cronograma->año,
-                    "monto" => $suma,
+                    "monto" => \round(($suma * $cronograma->dias) / 30, 2),
                     "adicional" => $cronograma->adicional,
                     "base" => $type->base
                 ]);
@@ -93,7 +93,7 @@ class ProssingRemuneracion implements ShouldQueue
             }
         }
 
-        $job->update(["total" => $total]);
+        $job->update(["total" => round($total)]);
     }
 
 }

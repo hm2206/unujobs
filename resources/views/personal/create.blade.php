@@ -59,12 +59,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Dependencia <span class="text-danger">*</span></label>
-                        <select name="dependencia_id" value="{{ old('dependencia_id') }}" class="form-control" onchange="select(this.form);return false;">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($dependencias as $dependencia)
-                                <option value="{{ $dependencia->id }}" {!! old('dependencia_id') == $dependencia->id ? "selected" : "" !!}>{{ $dependencia->descripcion }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" class="form-control" name="dependencia_id" value="{{ old('dependencia_id') }}">
                         <b class="text-danger">{{ $errors->first('dependencia_id') }}</b>
                     </div>
                 </div>
@@ -72,12 +67,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Oficina Solicitante</label>
-                        <select name="oficina_id" value="{{ old('oficina_id') }}" class="form-control">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($oficinas as $oficina)
-                                <option value="{{ $oficina->id }}"  {!! old('oficina_id') == $oficina->id ? "selected" : "" !!}>{{ $oficina->descripcion }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" class="form-control" name="oficina_id" value="{{ old('oficina_id') }}">
                         <b class="text-danger">{{ $errors->first('oficina_id') }}</b>
                     </div>
                 </div>
@@ -85,12 +75,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Denominación del requerimiento o cargo <span class="text-danger">*</span></label>
-                        <select name="cargo_id" class="form-control" value="{{ old('cargo_id') }}">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($cargos as $cargo)
-                                <option value="{{ $cargo->id }}" {!! old('cargo_id') == $cargo->id ? "selected" : "" !!}>{{ $cargo->descripcion }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" name="cargo_id" class="form-control" value="{{ old('cargo_id') }}">
                         <b class="text-danger">{{ $errors->first('cargo_id') }}</b>
                     </div>
                 </div>
@@ -114,7 +99,11 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Meta <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" name="meta_id" value="{{ old('meta_id') }}">
+                        <select name="meta_id" id="" class="uppercase form-control">
+                            @foreach ($metas as $meta)
+                                <option value="{{ $meta->id }}" {!! old('meta_id') ? 'checked' : null !!}>{{ $meta->meta }}</option>
+                            @endforeach
+                        </select>
                         <b class="text-danger">{{ $errors->first('meta_id') }}</b>
                     </div>
                 </div>
@@ -146,12 +135,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Lugar de prestación de servicio <span class="text-danger">*</span></label>
-                        <select name="lugar_id" id="" class="form-control">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($lugares as $lugar)
-                                <option value="{{ $lugar->id }}"  {!! old('lugar_id') == $lugar->id ? "selected" : "" !!}>{{ $lugar->descripcion }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" name="lugar_id" class="form-control" value="{{ old('lugar_id') }}">
                         <b class="text-danger">{{ $errors->first('lugar_id') }}</b>
                     </div>
                 </div>
@@ -159,7 +143,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Dependencia Supervisora</label>
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="supervisora_id" value="{{ old('supervisora_id') }}">
+                        <b class="text-danger">{{ $errors->first('supervisora_id') }}</b>
                     </div>
                 </div>
 
@@ -196,12 +181,12 @@
 </div>
 
 
-<script>
+{{-- <script>
 
     function select(form) {
         form.submit();
     }
 
-</script>
+</script> --}}
 
 @endsection

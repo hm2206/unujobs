@@ -126,6 +126,7 @@ class JobController extends Controller
         $numero = request()->numero ? request()->numero : 1;
         $remuneraciones = [];
         $dias = 30;
+        $total = 0;
 
         $selecionar = [];
         $cronograma = Cronograma::where('mes', $mes)
@@ -150,11 +151,8 @@ class JobController extends Controller
                 ->get();
 
             $dias = $cronograma->dias;
+            $total = $remuneraciones->sum('monto');
         }
-
-        $total = $remuneraciones->sum('monto');
-
-        $job->update(["total" => $total]);
         
         return view("trabajador.remuneracion", 
             compact('job', 'categoria', 'remuneraciones', 'total', 'dias', 'mes', 'year', 'cronograma', 'numero', 'seleccionar')
@@ -168,19 +166,22 @@ class JobController extends Controller
         $cronograma = Cronograma::find($request->cronograma_id);
         $cronograma->update(["dias" => $request->dias]);
         $remuneraciones = $job->remuneraciones->where("cronograma_id", $cronograma->id);
+        $total = 0;
 
         foreach ($remuneraciones as $remuneracion) {
             if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
                 $tmp_remuneracion = $request->input($remuneracion->id);
                 if (is_numeric($tmp_remuneracion)) {
-                    $remuneracion->monto = $tmp_remuneracion;
+                    $remuneracion->monto = round($tmp_remuneracion, 2);
                     $remuneracion->save();
+                    $total += $tmp_remuneracion;
                 }
             }else {
                 return back()->with(["danger" => "No es posible actualizar estos datos"]);
             }
         }
 
+        $job->update(["total" => round($total, 2)]);
         return back();
     }
 
@@ -218,24 +219,21 @@ class JobController extends Controller
             ->where("cronograma_id", $cronograma->id)
             ->get();
 
-            $dias = $cronograma->dias;
-
             $types = Remuneracion::where('work_id', $job->id)
                 ->where("cronograma_id", $cronograma->id)
-                ->where("base", 1)->get();
+                ->where("base", 0)->get();
 
             $base = $types->sum('monto');
             $total = $descuentos->sum('monto');
         }
 
-        $base = $base == 0 ? $job->total : $base;
-        $base = $base - $total;
         $aporte = $base * 0.09;
         $aporte = $base < 930 ? 83.70 : $aporte;
         $total_neto = $job->total - $total;
 
         return view("trabajador.descuento", 
-            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 'total_neto'));
+            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 
+            'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 'total_neto'));
     }
 
 
@@ -252,7 +250,7 @@ class JobController extends Controller
             if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
                 $tmp_descuento = $request->input($descuento->id);
                 if (is_numeric($tmp_descuento)) {
-                    $descuento->monto = $tmp_descuento;
+                    $descuento->monto = round($tmp_descuento, 2);
                     $descuento->save();
                 }
             }else {
@@ -342,14 +340,17 @@ class JobController extends Controller
             $q->descuentos = $descuentos->chunk(2)->toArray();
             $q->total_descuento = $descuentos->sum('monto');
 
-            $total = $remuneraciones->where('base', 1)->sum('monto');
-            $total = $total == 0 ? $work->total : $total;
-            $base = $total - $q->total_descuento;
 
-            $q->base = $base;
-            $q->essalud = $base < 930 ? 83.7 : $base * 0.09;
+            //base imponible
+            $q->base = $remuneraciones->where('base', 0)->sum('monto');
+
+            //aportes
+            $q->essalud = $q->base < 930 ? 83.7 : $q->base * 0.09;
+            $q->accidentes = $work->accidentes ? ($base * 1.55) / 100 : 0;
+
+            //total neto
             $q->neto = $work->total - $q->total_descuento;
-            $q->total_aportes = $q->essalud;
+            $q->total_aportes = $q->essalud + $q->accidentes;
 
             return $q;
         });

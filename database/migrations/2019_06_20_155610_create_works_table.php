@@ -50,6 +50,7 @@ class CreateWorksTable extends Migration
             $table->text("observaciones")->nullable();
             $table->integer("sede_id")->default(1);
             $table->integer("planilla_id")->nullable();
+            $table->string('ley')->nullable();
             $table->double('total')->nullable();
             $table->timestamps();
         });

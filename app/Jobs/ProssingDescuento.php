@@ -104,14 +104,21 @@ class ProssingDescuento implements ShouldQueue
                         }
 
                         $porcentaje = $job->afp->{$type_afp};
-                        \Log::info($job->id . " => " . $type_afp . " => " . $porcentaje);
                         $suma = ($total * $porcentaje) / 100;
 
                     }
-                }else {
-                    if($type->obligatorio) {
-                        $suma = ($total * 13) / 100;   
+                }elseif ($job->ley) {
+
+                    if($type->ley) {
+                        $suma = $total * 0.06;
                     }
+
+                }else {
+
+                    if($type->obligatorio) {
+                        $suma =($total * 13) / 100;   
+                    }
+
                 }
 
                 
@@ -122,7 +129,7 @@ class ProssingDescuento implements ShouldQueue
                     "type_descuento_id" => $type->id,
                     "mes" => $cronograma->mes,
                     "año" => $cronograma->año,
-                    "monto" => $suma,
+                    "monto" => round($suma, 2),
                     "adicional" => $cronograma->adicional
                 ]);
 
