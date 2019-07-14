@@ -10,7 +10,7 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('descuento.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
 

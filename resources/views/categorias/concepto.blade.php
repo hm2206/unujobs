@@ -10,8 +10,10 @@
 
 @section('content')
 
-<div class="col-md-12">
-    <a href="{{ route('categoria.index') . "?page=" . request()->page . "#categoria-{$categoria->id}" }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+<div class="row">
+    <div class="col-md-12 mb-2">
+        <a href="{{ route('categoria.index') . "?page=" . request()->page . "#categoria-{$categoria->id}" }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    </div>
 </div>
 
 @if (session('success'))
@@ -59,7 +61,7 @@
         <div class="card-body">
             <div class="row justify-content-start">
                 @foreach ($categoria->conceptos as $concepto)
-                    <div class="btn btn-outline-success">
+                    <div class="btn btn-outline-success mb-1 mr-1">
                         <b class="text-danger">{{ $concepto->key }}</b>
                         <i class="fas fa-lock text-dark"></i>
                         <b class="text-danger">{{ $concepto->descripcion }}</b>

@@ -10,7 +10,7 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
 
@@ -49,7 +49,7 @@
                 <textarea name="observacion" class="form-control">{{ old('observacion') ? old('observacion') : $cronograma->observacion }}</textarea>
             </div>
 
-            <button class="btn btn-primary mt-4" type="submit">Guardar <i class="fas fa-save"></i></button>
+            <button class="btn btn-primary mt-4" type="submit"><i class="fas fa-sync"></i> Actualizar</button>
 
         </form>
     </div>

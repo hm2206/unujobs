@@ -10,8 +10,8 @@
 
 @section('content')
 
-<div class="col-md-12">
-    <a href="{{ route('meta.index') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> atrás</a>
+<div class="col-md-12 mb-2">
+    <a href="{{ route('meta.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
 
 @if (session('update'))
@@ -26,7 +26,7 @@
     <form class="card" method="post" action="{{ route('meta.update', $meta->id) }}">
         @csrf
         @method('PUT')
-        <h4 class="card-header">Editar Meta presupuestal <b><span class="text-danger">>></span> {{ $meta->meta }}</b></h4>
+        <h4 class="card-header">Editar Meta Presupuestal <b><span class="text-danger">>></span> <span class="uppercase">{{ $meta->meta }}</span></b></h4>
         <div class="card-body">
             <div class="row">
                 
@@ -160,7 +160,7 @@
 
 
                 <div class="col-md-12 mt-4">
-                    <button class="btn btn-primary">Actualizar <i class="fas fa-save"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-sync"></i> Actualizar</button>
                 </div>
 
             </div>        

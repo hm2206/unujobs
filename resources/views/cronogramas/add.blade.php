@@ -24,7 +24,7 @@
     {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}
 </h3>
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <div class="card">
         <div class="card-header">
             <i class="fas fa-filter"></i> Filtrar

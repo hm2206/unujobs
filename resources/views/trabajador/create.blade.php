@@ -10,19 +10,18 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
     
 <div class="col-md-12">
 
-    <form method="GET" class="card">
+    <form method="GET" class="card mb-2">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Número de documento</label>
-                        <input type="number" name="documento" value="{{ request()->documento }}" class="form-control" autofocus>
+                        <input type="number" placeholder="Número de documento" name="documento" value="{{ request()->documento }}" class="form-control" autofocus>
                         @if ($result->success == false)
                             <span class="text-danger">
                                 {{ $result->message }}
@@ -347,7 +346,7 @@
 
 
                 <div class="col-md-12 mt-4">
-                    <button class="btn btn-primary">Guardar y continuar <i class="fas fa-save"></i></button>
+                    <button class="btn btn-success">Guardar y continuar <i class="fas fa-save"></i></button>
                 </div>
 
             </div>        

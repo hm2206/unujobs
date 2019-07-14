@@ -15,7 +15,9 @@ use App\Models\TypeDescuento;
 use App\Models\Descuento;
 use App\Models\Afp;
 use App\Models\Cargo;
-use App\models\Remuneracion;
+use App\Models\Remuneracion;
+use App\Models\User;
+use App\Notifications\BasicNotification;
 
 class ProssingDescuento implements ShouldQueue
 {
@@ -43,6 +45,13 @@ class ProssingDescuento implements ShouldQueue
         foreach ($jobs as $job) {
             $this->configurarDescuento($types,$cronograma, $job);
         }
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new BasicNotification("#", "Descuentos agregados a los trabajadores", "fas fa-file-alt", "bg-danger"));
+        }
+
     }
 
     private function configurarDescuento($types, $cronograma, $job)

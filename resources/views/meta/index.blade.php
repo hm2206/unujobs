@@ -11,28 +11,29 @@
 @section('content')
 
 <div class="col-md-12">
-    <a href="{{ route('planilla') }}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('meta.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
+    <h3>Metas presupuestales</h3>
+</div>
+
+
+<div class="col-md-12 mb-2">
+    <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('meta.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
 @if (session('success'))
-    <div class="col-md-12 mt-3 ">
+    <div class="col-md-12 mt-3">
         <div class="alert alert-success">
             {{ session('success') }}       
         </div>
     </div>
 @endif
 
-<div class="col-md-12">
-
-    <h3>Metas presupuestales</h3>
-
-    <form method="GET" class="card">
+<div class="col-md-12 mb-2">
+    <form method="GET" class="card mb-2">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Buscar</label>
                         <input type="text" name="query_search" value="{{ request('query_search') }}" class="form-control uppercase" autofocus>
                     </div>
                 </div>

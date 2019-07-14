@@ -2,195 +2,220 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>
-    RRHH @yield('titulo')
-  </title>
-  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
-  <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-  <!-- CSS Files -->
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/all.css') }}">
-  <link href="{{ asset('css/material-dashboard.css?v=2.1.1') }}" rel="stylesheet" />
-  <!-- CSS Just for demo purpose, don't include it in your project -->
-  <link href="{{ asset('demo/demo.css') }}" rel="stylesheet" />
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Sistema Recursos Humanos @yield('titulo')</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css">
+  <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+
 </head>
 
-<body class="">
-  <div class="wrapper ">
-    <div class="sidebar" data-color="danger" data-background-color="white" data-image="../img/sidebar-1.jpg">
-      {{-- <!-- --}}
-        {{-- Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger" --}}
+<body id="page-top">
 
-        {{-- Tip 2: you can also add an image using data-image tag --}}
-    {{-- --> --}}
+  <!-- Page Wrapper -->
+  <div id="wrapper">
 
-      @php
-        function isActive($ruta) {
-          return url()->current() == url($ruta) ? 'active' : null;   
-        }
-      @endphp
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-success sidebar sidebar-dark accordion" id="accordionSidebar">
 
-      <div class="logo">
-        <a href="{{ route('home') }}" class="simple-text logo-normal">
-          Sistema de RRHH
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-text mx-3">RRHH</div>
+      </a>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item active">
+        <a class="nav-link" href="index.html">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Inicio</span></a>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Menu
+      </div>
+
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-users"></i>
+          <span>Recursos Humanos</span>
         </a>
-      </div>
-      <div class="sidebar-wrapper">
-        <ul class="nav">
-          <li class="nav-item {{ isActive('/') }}">
-            <a class="nav-link" href="{{ route('home') }}">
-              <i class="fab fa-get-pocket"></i>
-              <p>Recursos Humanos</p>
-            </a>
-          </li>
-          <li class="nav-item {{ isActive('/planilla') }}">
-            <a class="nav-link" href="{{ route('planilla') }}">
-              <i class="fas fa-paste"></i>
-              <p>Planillas</p>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="main-panel">
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
-        <div class="container-fluid">
-          <div class="navbar-wrapper">
-            <a class="navbar-brand" href="#pablo">@yield("link")</a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Custom Components:</h6>
+            <a class="collapse-item" href="buttons.html">Buttons</a>
+            <a class="collapse-item" href="cards.html">Cards</a>
           </div>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="navbar-toggler-icon icon-bar"></span>
-            <span class="navbar-toggler-icon icon-bar"></span>
-            <span class="navbar-toggler-icon icon-bar"></span>
-          </button>
-          <div class="collapse navbar-collapse justify-content-end">
-            {{-- <form class="navbar-form">
-              <div class="input-group no-border">
-                <input type="text" value="" class="form-control" placeholder="Search...">
-                <button type="submit" class="btn btn-white btn-round btn-just-icon">
-                  <i class="material-icons">search</i>
-                  <div class="ripple-container"></div>
-                </button>
+        </div>
+      </li>
+
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-file"></i>
+          <span>Planillas</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Opciones:</h6>
+            <a class="collapse-item" href="{{ route('job.index') }}">Trabajadores</a>
+            <a class="collapse-item" href="{{ route('meta.index') }}">Metas</a>
+            <a class="collapse-item" href="{{ route('cronograma.index') }}">Crear Planilla x Mes</a>
+            <a class="collapse-item" href="{{ route('cargo.index') }}">Cargos</a>
+            <a class="collapse-item" href="{{ route('categoria.index') }}">Categorias</a>
+            <a class="collapse-item" href="{{ route('concepto.index') }}">Conceptos</a>
+            <a class="collapse-item" href="{{ route('descuento.index') }}">Descuentos</a>
+          </div>
+        </div>
+      </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+            <!-- Nav Item - Alerts -->
+            <li class="nav-item dropdown no-arrow mx-1">
+              <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+                <!-- Counter - Alerts -->
+                @if (auth()->user()->unreadNotifications->count())
+                  <span class="badge badge-danger badge-counter">{{ auth()->user()->unreadNotifications->count() }}</span>
+                @endif
+              </a>
+              <!-- Dropdown - Alerts -->
+              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">
+                  Notificaciones
+                </h6>
+                
+                @forelse (auth()->user()->unreadNotifications as $unread)
+                  <a class="dropdown-item d-flex align-items-center" target="blank" href="{{ $unread->data['url'] }}">
+                    <div class="mr-3">
+                      <div class="icon-circle {{ isset($unread->data['background']) ? $unread->data['background'] : 'bg-primary' }}">
+                        <i class="{{ isset($unread->data['icono']) ? $unread->data['icono'] : 'fas fa-file-alt' }} text-white"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="small text-gray-500">{{ $unread->created_at }}</div>
+                      <span class="font-weight-bold">{{ $unread->data['body'] }}</span>
+                    </div>
+                  </a>
+                @empty
+                  <div class="dropdown-item  text-center">
+                      No hay Notificaciones disponibles
+                  </div>
+                @endforelse
+
+                <a class="dropdown-item text-center small text-gray-500" href="#">Todas las notificaciones</a>
               </div>
-            </form> --}}
-            <ul class="navbar-nav">
-              {{-- <li class="nav-item">
-                <a class="nav-link" href="#pablo">
-                  <i class="material-icons">dashboard</i>
-                  <p class="d-lg-none d-md-block">
-                    Stats
-                  </p>
+            </li>
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small capitalize">{{ auth()->user()->nombre_completo }}</span>
+                <img class="img-profile rounded-circle" src="">
+              </a>
+              <!-- Dropdown - User Information -->
+              <form method="POST" action="{{ route('logout') }}" class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                @csrf
+                {{-- <a class="dropdown-item" href="#">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Profile
                 </a>
-              </li> --}}
-              <li class="nav-item dropdown">
-                {{-- <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="material-icons">notifications</i>
-                  <span class="notification">5</span>
-                  <p class="d-lg-none d-md-block">
-                    Some Actions
-                  </p>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Settings
+                </a>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Activity Log
                 </a> --}}
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Mike John responded to your email</a>
-                  <a class="dropdown-item" href="#">You have 5 new tasks</a>
-                  <a class="dropdown-item" href="#">You're now friend with Andrew</a>
-                  <a class="dropdown-item" href="#">Another Notification</a>
-                  <a class="dropdown-item" href="#">Another One</a>
-                </div>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fas fa-user"></i> @auth {{ auth()->user()->email }} @endauth
-                  <p class="d-lg-none d-md-block">
-                    Account
-                  </p>
-                </a>
-                <form class="dropdown-menu dropdown-menu-right" action="/logout" method="post">
-                  @csrf
-                  {{-- <a class="dropdown-item">Perfil</a>
-                  <a class="dropdown-item">Settings</a>
-                  <div class="dropdown-divider"></div> --}}
-                  <button class="dropdown-item"style="width:94%;" type="submit">Cerrar sesión</button>
-                </form>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <!-- End Navbar -->
-      <div class="content">
+                {{-- <div class="dropdown-divider"></div> --}}
+                <button class="dropdown-item">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Cerrar Sesión
+                </button>
+              </form>
+            </li>
+
+          </ul>
+
+        </nav>
+        <!-- End of Topbar -->
+
+        <!-- Begin Page Content -->
         <div class="container-fluid">
 
-            @yield('content')
+          @yield('content')
 
         </div>
+        <!-- /.container-fluid -->
+
       </div>
-            
-      <footer class="footer">
-        <div class="container-fluid">
-          <div class="copyright float-right">
-            &copy;
-            {{ date('Y') }} Hecho con <i class="fas fa-heart"></i> by
-            <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a> para una mejor web.
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; Sistema de Recursos Humanos - UNU 2019</span>
           </div>
         </div>
       </footer>
+      <!-- End of Footer -->
+
     </div>
+    <!-- End of Content Wrapper -->
+
   </div>
+  <!-- End of Page Wrapper -->
 
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
 
-  {{-- Files   --> --}}
-  {{-- <script src="{{ asset('js/core/jquery.min.js') }}"></script>
-  <script src="{{ asset('js/core/popper.min.js') }}"></script> --}}
+  <!-- Bootstrap core JavaScript-->
   <script src="{{ asset('js/app.js') }}"></script>
-  <script src="{{ asset('js/core/bootstrap-material-design.min.js') }}"></script>
-  <script src="{{ asset('js/plugins/perfect-scrollbar.jquery.min.js') }}"></script>
-  <!-- Plugin for the momentJs  -->
-  <script src="{{ asset('js/plugins/moment.min.js') }}"></script>
-  <!--  Plugin for Sweet Alert -->
-  <script src="{{ asset('js/plugins/sweetalert2.js') }}"></script>
-  <!-- Forms Validations Plugin -->
-  <script src="{{ asset('js/plugins/jquery.validate.min.js') }}"></script>
-  <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
-  <script src="{{ asset('js/plugins/jquery.bootstrap-wizard.js') }}"></script>
-  <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
-  <script src="{{ asset('js/plugins/bootstrap-selectpicker.js') }}"></script>
-  <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
-  <script src="{{ asset('js/plugins/bootstrap-datetimepicker.min.js') }}"></script>
-  <!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
-  <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
-  <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
-  <script src="{{ asset('js/plugins/bootstrap-tagsinput.js') }}"></script>
-  <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
-  <script src="{{ asset('js/plugins/jasny-bootstrap.min.js') }}"></script>
-  <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
-  <script src="{{ asset('js/plugins/fullcalendar.min.js') }}"></script>
-  <!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
-  <script src="{{ asset('js/plugins/jquery-jvectormap.js') }}"></script>
-  <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
-  <script src="{{ asset('js/plugins/nouislider.min.js') }}"></script>
-  <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
-  <!-- Library for adding dinamically elements -->
-  <script src="{{ asset('js/plugins/arrive.min.js') }}"></script>
-  <!--  Google Maps Plugin    -->
-  {{-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script> --}}
-  <!-- Chartist JS -->
-  <script src="{{ asset('js/plugins/chartist.min.js') }}"></script>
-  <!--  Notifications Plugin    -->
-  <script src="{{ asset('js/plugins/bootstrap-notify.js') }}"></script>
-  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-  {{-- <script src="{{ asset('js/material-dashboard.js?v=2.1.1') }}" type="text/javascript"></script> --}}
-  <!-- Material Dashboard DEMO methods, don't include it in your project! -->
-  <script src="{{ asset('demo/demo.js') }}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+
 </body>
 
 </html>

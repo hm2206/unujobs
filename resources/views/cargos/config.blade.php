@@ -30,7 +30,6 @@
                 CARGO <span class="text-danger">>></span> <b class="uppercase">{{ $cargo->descripcion }} </b>
                 <span class="text-danger">>> </span><b>CONFIGURAR APORTES AFP</b>
             </h5>
-            <hr>
 
             @if ($errors->first('categorias'))
                 <div class="cart-footer pl-3 pr-3">
@@ -54,7 +53,7 @@
                         @endforeach
                     </div>
 
-                <button class="btn btn-primary" type="submit">Guardar <i class="fas fa-save"></i></button>
+                <button class="btn btn-success" type="submit">Guardar <i class="fas fa-save"></i></button>
             </form>
         </div>
     </div>

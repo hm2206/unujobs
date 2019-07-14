@@ -10,36 +10,34 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cronograma.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
+    <a href="{{ route('cronograma.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <div class="card">
         <h4 class="card-header">
             Cronograma
         </h4>
-        <hr>
+
         <form class="card-body" action="" method="GET">
             <div class="row">
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label for="">Mes</label>
-                        <input type="number" name="mes" class="form-control" min="1" max="12" value="{{ $mes }}">
+                        <input type="number" placeholder="mes" name="mes" class="form-control" min="1" max="12" value="{{ $mes }}">
                     </div>
                 </div>
 
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label for="">Año</label>
-                        <input type="number" name="year" max="{{ date('Y') }}" min="{{ date('Y') - 2 }}" class="form-control" value="{{ $year }}">
+                        <input type="number" placeholder="año" name="year" max="{{ date('Y') }}" min="{{ date('Y') - 2 }}" class="form-control" value="{{ $year }}">
                     </div>
                 </div>
 
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Adicional</label> <br>
+                        <label for="">Adicional</label>
                         <input type="checkbox" name="adicional" {!! $adicional ? 'checked' : null !!}>
                     </div>
                 </div>
@@ -132,7 +130,7 @@
 
 
                                         @if ($cronograma->pdf)
-                                            <a target="blank" title="PDF" href="{{ $cronograma->pdf }}" class="btn btn-sm btn-outline-danger">
+                                            <a target="__blank" title="PDF" href="{{ $cronograma->pdf }}" class="btn btn-sm btn-outline-danger">
                                                 <i class="far fa-file-pdf" aria-hidden="true"></i> Ver PDF
                                             </a>
                                         @endif

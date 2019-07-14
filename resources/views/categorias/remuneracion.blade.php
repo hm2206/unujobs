@@ -10,7 +10,7 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('categoria.index') . "?page=" . request()->page . "#categoria-{$categoria->id}" }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
 
@@ -30,7 +30,6 @@
         </h4>
         @foreach ($types as $type)
             @if ($type->conceptos->count() > 0)
-                <hr>
                 <form class="card-body" action="{{ route('categoria.config.store', [$categoria->id, "page=".request()->page]) }}" method="post" id="type-{{ $type->id }}">
                     @csrf
                     <h4>{{ $type->key }}. <b>{{ $type->descripcion }}</b></h4>
@@ -50,9 +49,9 @@
                         @endforeach
                     </div>
 
-                    <hr>
-
-                    <button class="btn btn-primary" type="submit">Guardar <i class="fas fa-save"></i></button>
+                    <div class="text-right">
+                        <button class="btn btn-primary" type="submit">Guardar <i class="fas fa-save"></i></button>
+                    </div>
 
                 </form>
                 <hr>

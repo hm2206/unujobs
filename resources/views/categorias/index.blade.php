@@ -12,7 +12,7 @@
 
 <div class="col-md-12">
     <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('categoria.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
+    <a href="{{ route('categoria.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
 @if (session('success'))
@@ -51,11 +51,11 @@
                                 <th>{{ $categoria->id }}</th>
                                 <th class="uppercase">{{ $categoria->nombre }}</th>
                                 <th>
-                                    <a href="{{ route('categoria.concepto', [$categoria->id, "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('categoria.concepto', [$categoria->id, "page={$categorias->currentPage()}"]) }}" class="mb-1 btn btn-sm btn-primary">
                                         <i class="fas fa-plus"></i>
                                     </a>
                                     @foreach ($categoria->conceptos as $concepto)
-                                        <a href="#" class="btn btn-sm uppercase">
+                                        <a href="#" class="btn btn-dark btn-sm uppercase mb-1">
                                             {{ $concepto->descripcion }}  <i class="fas fa-arrow-right text-dark ml-1 mr-1"></i>
                                             <b class="badge badge-danger">
                                                S./ {{ $concepto->pivot ? $concepto->pivot->monto : $concepto->monto }}

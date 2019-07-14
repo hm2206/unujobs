@@ -18,7 +18,9 @@ use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Afp;
 use App\Models\Work;
+use App\Notifications\ReportNotification;
 use \PDF;
+use App\Models\User;
 
 
 class GeneratePlanillaPDF implements ShouldQueue
@@ -175,6 +177,13 @@ class GeneratePlanillaPDF implements ShouldQueue
         $ruta = "/pdf/planilla_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
         $pdf->save(public_path() . $ruta);
         $cronograma->update(["pdf" => $ruta, "pendiente" => 0]);
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new ReportNotification($ruta, "La Planilla general se genero correctamente"));
+        }
+
 
     }
 

@@ -10,9 +10,9 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cargo.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
+    <a href="{{ route('cargo.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
 @if (session('success'))
@@ -47,9 +47,9 @@
                                 <th>{{ $cargo->id }}</th>
                                 <th class="uppercase">{{ $cargo->descripcion }}</th>
                                 <th>
-                                    <a href="{{ route('cargo.categoria', $cargo->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i></a>
+                                    <a href="{{ route('cargo.categoria', $cargo->id) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>
                                     @foreach ($cargo->categorias as $categoria)
-                                        <a href="#" class="btn btn-sm uppercase">
+                                        <a href="#" class="btn btn-sm btn-danger uppercase mt-1">
                                             {{ $categoria->nombre }}
                                         </a>
                                     @endforeach
@@ -59,7 +59,7 @@
                                         <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-                                        <a href="{{ route('cargo.config', $cargo->id) }}" class="btn btn-sm btn-success">
+                                        <a href="{{ route('cargo.config', $cargo->id) }}" class="btn btn-sm btn-dark">
                                             <i class="fas fa-cog"></i>
                                         </a>
                                     </div>

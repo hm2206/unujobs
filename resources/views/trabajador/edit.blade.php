@@ -10,7 +10,7 @@
 
 @section('content')
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-ban"></i> cancelar</a>
     <a href="{{ route('job.show', $job->id) }}" class="btn btn-primary"><i class="fas fa-user"></i> perfil</a>
 </div>
@@ -320,7 +320,7 @@
                 </div>
 
                 <div class="col-md-12 mt-4">
-                    <button class="btn btn-primary">
+                    <button class="btn btn-success">
                         Guardar y continuar <i class="fas fa-save"></i>
                     </button>
                 </div>

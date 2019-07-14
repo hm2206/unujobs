@@ -10,9 +10,13 @@
 
 @section('content')
 
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Trabajador <span class="text-danger">>></span>  <span class="uppercase">{{ $work->nombre_completo }}</span> </h1>    
+</div>
+
 <div class="col-md-12">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('job.show', $work->id) }}" class="btn btn-primary"><i class="fas fa-user"></i> perfil</a>
+    <a href="{{ route('job.show', $work->id) }}" class="btn btn-primary"><i class="fas fa-user"></i> Perfil</a>
 </div>
 
 @if (session('success'))
@@ -22,10 +26,6 @@
         </div>
     </div>
 @endif
-
-<div class="col-md-12">
-    <h3>Trabajador <span class="text-danger">>></span>  <span class="uppercase">{{ $work->nombre_completo }}</span></h3>
-</div>
 
 <div class="col-md-12 mt-5">
 

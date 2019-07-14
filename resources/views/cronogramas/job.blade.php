@@ -11,7 +11,7 @@
 @section('content')
 
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     @if ($cronograma->adicional)
         <a href="{{ route('cronograma.add', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar Trabajador</a>
@@ -27,7 +27,7 @@
     {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}
 </h3>
 
-<div class="col-md-12">
+<div class="col-md-12 mb-2">
     <div class="card">
         <div class="card-header">
             <i class="fas fa-filter"></i> Filtrar

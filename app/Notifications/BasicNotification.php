@@ -7,18 +7,21 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class ReportNotification extends Notification
+class BasicNotification extends Notification
 {
     use Queueable;
 
     private $url;
     private $body;
+    private $icono;
+    private $background;
 
-
-    public function __construct($url, $body)
+    public function __construct($url, $body, $icono = "fas fa-file-alt", $background = "bg-primary")
     {
         $this->url = $url;
         $this->body = $body;
+        $this->icono = $icono;
+        $this->background = $background;
     }
 
 
@@ -42,8 +45,8 @@ class ReportNotification extends Notification
         return [
             "url" => $this->url,
             "body" => $this->body,
-            "icono" => "fas fa-file-pdf",
-            "background" => "bg-danger"
+            "icono" => $this->icono,
+            "background" => $this->background
         ];
     }
 }

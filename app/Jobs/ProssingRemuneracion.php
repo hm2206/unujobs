@@ -13,6 +13,8 @@ use App\Models\Work;
 use App\Models\Cronograma;
 use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
+use App\Models\User;
+use App\Notifications\BasicNotification;
 
 class ProssingRemuneracion implements ShouldQueue
 {
@@ -38,6 +40,12 @@ class ProssingRemuneracion implements ShouldQueue
 
         foreach ($jobs as $job) {
             $this->configurarRemuneracion($types, $cronograma, $job);
+        }
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new BasicNotification("#", "Remuneraciones agregadas a los trabajadores"));
         }
     }
 
