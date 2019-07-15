@@ -90,7 +90,7 @@ class ReportBoleta implements ShouldQueue
 
         foreach ($users as $user) {
             $user->notify(new ReportNotification("storage/pdf/boletas_{$this->mes}_{$this->year}.pdf", 
-                "Le boleta {$this->mes} del {$this->year} fué generada"
+                "La boleta {$this->mes} del {$this->year} fué generada"
             ));
         }
 

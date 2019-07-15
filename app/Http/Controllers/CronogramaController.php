@@ -35,7 +35,7 @@ class CronogramaController extends Controller
             ->paginate(20);
 
         //traer reportes
-        $report_planilla_metas = "pdf/planilla_metas.pdf";
+        $report_planilla_metas = "pdf/planilla_metas_{$mes}_{$year}.pdf";
 
 
         $report_boletas = Storage::disk('public')->exists("pdf/boletas_{$mes}_{$year}.pdf") ? 
