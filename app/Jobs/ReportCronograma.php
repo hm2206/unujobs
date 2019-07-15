@@ -8,41 +8,51 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-use \PDF;
+use App\Models\Meta;
 use App\Models\Work;
 use App\Models\Descuento;
+use App\Models\Remuneracion;
+use \PDF;
+use App\Models\User;
+use App\Notifications\ReportNotification;
 
-class GeneratePlanillaMetaPDF implements ShouldQueue
+class ReportCronograma implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
- 
-    private $metas = [];
-    private $config;
+    private $mes;
+    private $year;
+    private $adicional;
 
-    public function __construct($metas, array $config)
+    public function __construct($mes, $year, $adicional)
     {
-        $this->metas = $metas;
-        $this->config = $config;
+        $this->mes = $mes;
+        $this->year = $year;
+        $this->adicional = $adicional;
     }
 
 
     public function handle()
     {
-        $metas = $this->metas;
+        $metas = $metas = Meta::whereHas('works', function($q){})->with('works')->get();
         $pagina = 0;
-        $config = $this->config;
 
         //traemos trabajadores que pertenescan a la meta actual
-        $metas->map(function($meta) use($config) {
+        foreach($metas as $meta) {
 
-            $meta->mes = $config['mes'];
-            $meta->year = $config['year'];
+            $meta->mes = $this->mes;
+            $meta->year = $this->year;
 
-            $meta->works->map(function($work) use($config) {
+            foreach($meta->works as $work) {
 
-                $total = $work->remuneraciones->where('año', $config['year'])->where('mes', $config['mes'])->sum("monto");
-                $tmp_base = $work->remuneraciones->where("base", 0)->sum('monto');
+                $total = $work->remuneraciones->where('año', $this->year)
+                    ->where('mes', $this->mes)->where("adicional", $this->adicional)
+                    ->sum("monto");
+
+                $tmp_base = $work->remuneraciones->where("año", $this->year)
+                    ->where('mes', $this->mes)->where("adicional", $this->adicional)
+                    ->where("base", 0)->sum('monto');
+
                 $tmp_base = $tmp_base == 0 ? $work->total : $tmp_base;
 
                 $work->remuneraciones->push([
@@ -50,8 +60,9 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
                     "monto" => $total
                 ]);
 
-                $work->descuentos = Descuento::where('año', $config['year'])
-                    ->where('mes', $config['mes'])
+                $work->descuentos = Descuento::where('año', $this->year)
+                    ->where('mes', $this->mes)
+                    ->where('adicional', $this->adicional)
                     ->where('work_id', $work->id)
                     ->get();
 
@@ -72,18 +83,23 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
                 //calcular total neto
                 $work->neto = $work->total - $total_descto;
 
-                return $work;
-            });
+            }
 
-            return $meta;
-        });
+        }
 
         $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
         $pdf = PDF::loadView('pdf.planilla', compact('meses', 'metas', 'pagina'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
-        $ruta = "/pdf/planilla_metas.pdf";
-        $pdf->save(storage_path('app/public') . $ruta);
+        $ruta = "/pdf/planilla_metas_{$this->mes}_{$this->year}.pdf";
+        $pdf->save(public_path() . $ruta);
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new ReportNotification($ruta, "La planilla {$this->mes} del {$this->year} fué generada"));
+        }
+
     }
 }

@@ -18,6 +18,8 @@ use App\Models\TypeRemuneracion;
 use App\Models\Cronograma;
 use App\Models\Descuento;
 use App\Models\TypeDescuento;
+use App\Jobs\ReportBoleta;
+use App\Jobs\ReportCronograma;
 use \PDF;
 
 class JobController extends Controller

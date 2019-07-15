@@ -13,6 +13,9 @@ use App\Models\TypeDescuento;
 use App\Models\Descuento;
 use App\Jobs\ProssingRemuneracion;
 use App\Jobs\ProssingDescuento;
+use App\Jobs\ReportBoleta;
+use App\Jobs\ReportCronograma;
+use Illuminate\Support\Facades\Storage;
 use \DB;
 
 class CronogramaController extends Controller
@@ -30,8 +33,20 @@ class CronogramaController extends Controller
             ->where('año', $year)
             ->where('adicional', $adicional)
             ->paginate(20);
-        
-        return view('cronogramas.index', \compact('cronogramas', 'categoria_id', 'mes', 'year', 'adicional'));
+
+        //traer reportes
+        $report_planilla_metas = "pdf/planilla_metas.pdf";
+
+
+        $report_boletas = Storage::disk('public')->exists("pdf/boletas_{$mes}_{$year}.pdf") ? 
+            "storage/pdf/boletas_{$mes}_{$year}.pdf" : "#";
+
+
+        return view('cronogramas.index', 
+            \compact(
+                'cronogramas', 'categoria_id', 'mes', 'year', 'adicional', 
+                'report_planilla_metas', 'report_boletas'
+            ));
     }
 
 

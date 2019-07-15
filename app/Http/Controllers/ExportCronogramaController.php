@@ -13,7 +13,8 @@ use App\Models\Remuneracion;
 use \PDF;
 use App\Models\Meta;
 use App\Jobs\GeneratePlanillaPDF;
-use App\Jobs\GeneratePlanillaMetaPDF;
+use App\Jobs\ReportCronograma;
+use App\Jobs\ReportBoleta;
 
 class ExportCronogramaController extends Controller
 {
@@ -26,19 +27,11 @@ class ExportCronogramaController extends Controller
         return back()->with(["success" => "Este proceso durará unos minutos... Vuelva más tarde"]);
     }
 
-
-    public function planilla($id) 
+    public function reporte($mes, $year, $condicion)
     {
-        $request = request();
-        $metas = Meta::whereHas('works', function($q){})->with('works')->get();
-
-        $config = [
-            "mes" => $request->mes,
-            "year" => $request->year
-        ];
-
-        GeneratePlanillaMetaPDF::dispatch($metas, $config);
-        return "ready";
+        ReportCronograma::dispatch($mes, $year, $condicion);
+        ReportBoleta::dispatch($mes, $year, $condicion);
+        return back()->with(["success" => "Este proceso durará unos minutos... Vuelva más tarde"]);
     }
 
 }

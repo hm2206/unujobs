@@ -120,8 +120,8 @@
                   Notificaciones
                 </h6>
                 
-                @forelse (auth()->user()->unreadNotifications as $unread)
-                  <a class="dropdown-item d-flex align-items-center" target="blank" href="{{ $unread->data['url'] }}">
+                @forelse (auth()->user()->unreadNotifications->take(5) as $unread)
+                  <a class="dropdown-item d-flex align-items-center" target="__blank" href="{{ url($unread->data['url']) }}">
                     <div class="mr-3">
                       <div class="icon-circle {{ isset($unread->data['background']) ? $unread->data['background'] : 'bg-primary' }}">
                         <i class="{{ isset($unread->data['icono']) ? $unread->data['icono'] : 'fas fa-file-alt' }} text-white"></i>

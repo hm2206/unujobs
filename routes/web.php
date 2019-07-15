@@ -81,6 +81,6 @@ Route::group(["prefix" => "planilla"], function() {
 Route::group(["prefix" => "export"], function() {
 
     Route::get("cronograma/{id}/pdf", "ExportCronogramaController@pdf")->name('export.cronograma.pdf');
-    Route::get("cronograma/{id}/planilla", "ExportCronogramaController@planilla")->name('export.cronograma.planilla');
+    Route::get("reporte/mes/{mes}/year/{year}/adicional/{adicional}", 'ExportCronogramaController@reporte')->name('export.reporte');
 
 });

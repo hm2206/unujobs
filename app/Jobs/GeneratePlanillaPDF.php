@@ -175,13 +175,13 @@ class GeneratePlanillaPDF implements ShouldQueue
 
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
         $ruta = "/pdf/planilla_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
-        $pdf->save(public_path() . $ruta);
-        $cronograma->update(["pdf" => $ruta, "pendiente" => 0]);
+        $pdf->save(storage_path('app/public') . $ruta);
+        $cronograma->update(["pdf" => "storage{$ruta}", "pendiente" => 0]);
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification($ruta, "La Planilla general se genero correctamente"));
+            $user->notify(new ReportNotification("storage" . $ruta, "La Planilla general se genero correctamente"));
         }
 
 
