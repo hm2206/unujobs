@@ -26,7 +26,7 @@ Route::group(["prefix" => "RRHH"], function() {
 });
 
 
-Route::group(["prefix" => "planilla"], function() {
+Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
 
     Route::get('/', 'HomeController@planilla')->name('planilla');
 

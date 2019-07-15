@@ -11,11 +11,13 @@
 @section('content')
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Crear Planilla x Mes</h1>
+    <h1 class="h3 mb-0 text-gray-800">Crear Planilla x Mes</h1>
+    @if ($cronogramas->count() > 0)
         <a href="{{ route('export.reporte', [$mes, $year, $adicional]) }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-download fa-sm text-white-50"></i> Generar Reporte
         </a>
-    </div>
+    @endif
+</div>
 
 <div class="row">
     <div class="col-md-12 mb-2">
@@ -82,14 +84,16 @@
             </div>
             <div class="card-body">
 
-                <div class="mb-2 pl-3 pr-3 row">
-                    <a target="__blank" href="{{ url($report_planilla_metas) }}" class="btn btn-sm btn-primary mr-1">
-                        <i class="fas fa-download"></i> Reporte Planillas Metas 
-                    </a>
-                    <a target="__blank" href="{{ url($report_boletas) }}" class="btn btn-sm btn-primary mr-1">
-                        <i class="fas fa-download"></i> Reporte Boletas del Mes
-                    </a>
-                </div>
+                @if ($cronogramas->count() > 0)
+                    <div class="mb-2 pl-3 pr-3 row">
+                        <a target="__blank" href="{{ url($report_planilla_metas) }}" class="btn btn-sm btn-primary mr-1">
+                            <i class="fas fa-download"></i> Reporte Planillas Metas 
+                        </a>
+                        <a target="__blank" href="{{ url($report_boletas) }}" class="btn btn-sm btn-primary mr-1">
+                            <i class="fas fa-download"></i> Reporte Boletas del Mes
+                        </a>
+                    </div>
+                @endif
 
                 <div class="table-responsive">
                     <table class="table">

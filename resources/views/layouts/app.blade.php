@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es_Es">
 
 <head>
 
@@ -8,15 +8,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
+  <meta mame="csrf-token" content="{{ csrf_token() }}">
 
   <title>Sistema Recursos Humanos @yield('titulo')</title>
 
   <!-- Custom fonts for this template-->
-  <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css">
+  {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css"> --}}
+  <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
   <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
 
   <!-- Custom styles for this template-->
-  <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
 
 </head>
 
@@ -29,7 +30,7 @@
     <ul class="navbar-nav bg-gradient-success sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
         <div class="sidebar-brand-text mx-3">RRHH</div>
       </a>
 
@@ -38,7 +39,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="{{ route('home') }}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Inicio</span></a>
       </li>
@@ -148,7 +149,7 @@
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small capitalize">{{ auth()->user()->nombre_completo }}</span>
-                <img class="img-profile rounded-circle" src="">
+                <img class="img-profile rounded-circle" src="{{ asset('img/perfil.png') }}">
               </a>
               <!-- Dropdown - User Information -->
               <form method="POST" action="{{ route('logout') }}" class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -214,7 +215,7 @@
   <script src="{{ asset('js/app.js') }}"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin-2.min.js"></script>
+  <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
 </body>
 
