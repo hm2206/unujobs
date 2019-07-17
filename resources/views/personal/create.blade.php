@@ -11,12 +11,13 @@
 
 @section('content')
 
-<div class="col-md-12">
-    <a href="{{ route('home') }}" class="btn btn-warning"><i class="material-icons">undo</i> atrás</a>
+<div class="col-md-12 mb-2">
+    <a href="{{ route('personal.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
     
 <div class="col-md-12">
-    <form class="card" id="register" action="{{ route('personal.store') }}" method="post">
+
+    <form class="card" id="register" action="{{ route('personal.store') }}" method="post" enctype="multipart/form-data">
         @csrf
         <h4 class="card-header"><b>Registro de Requerimiento de Personal</b></h4>
         <div class="card-body">
@@ -25,7 +26,8 @@
             <hr>
 
             <div class="row">
-                
+
+
                 @if(session('success'))
                     <div class="col-md-12">
                         <div class="alert alert-success" role="alert">
@@ -58,25 +60,17 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Dependencia <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="dependencia_id" value="{{ old('dependencia_id') }}">
-                        <b class="text-danger">{{ $errors->first('dependencia_id') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Oficina Solicitante</label>
-                        <input type="text" class="form-control" name="oficina_id" value="{{ old('oficina_id') }}">
-                        <b class="text-danger">{{ $errors->first('oficina_id') }}</b>
+                        <label for="" class="form-control-label">Dependencia, Unidad Órganica y/o Área Solicitante <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="dependencia_txt" value="{{ old('dependencia_txt') }}">
+                        <b class="text-danger">{{ $errors->first('dependencia_txt') }}</b>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Denominación del requerimiento o cargo <span class="text-danger">*</span></label>
-                        <input type="text" name="cargo_id" class="form-control" value="{{ old('cargo_id') }}">
-                        <b class="text-danger">{{ $errors->first('cargo_id') }}</b>
+                        <input type="text" name="cargo_txt" class="form-control" value="{{ old('cargo_txt') }}">
+                        <b class="text-danger">{{ $errors->first('cargo_txt') }}</b>
                     </div>
                 </div>
 
@@ -91,7 +85,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Honorarios <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" name="honorarios" value="{{ old('honorarios') }}">
+                        <textarea name="honorarios" class="form-control">{{ old('honorarios') }}</textarea>
                         <b class="text-danger">{{ $errors->first('honorarios') }}</b>
                     </div>
                 </div>
@@ -110,83 +104,65 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Fuente <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" name="fuente_id" value="{{ old('fuente_id') }}">
-                        <b class="text-danger">{{ $errors->first('fuente_id') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Especificación de gastos<span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" name="gasto" value="{{ old('gasto') }}">
-                        <b class="text-danger">{{ $errors->first('gasto') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Periodo de contratación <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" name="periodo" value="{{ old('periodo') }}">
-                        <b class="text-danger">{{ $errors->first('periodo') }}</b>
+                        <label for="" class="form-control-label">¿Que labores se van a realizar? <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="deberes">{{ old('deberes') }}</textarea>
+                        <b class="text-danger">{{ $errors->first('deberes') }}</b>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Lugar de prestación de servicio <span class="text-danger">*</span></label>
-                        <input type="text" name="lugar_id" class="form-control" value="{{ old('lugar_id') }}">
-                        <b class="text-danger">{{ $errors->first('lugar_id') }}</b>
+                        <input type="text" name="lugar_txt" class="form-control" value="{{ old('lugar_txt') ? old('lugar_txt') : 'Universidad Nacional de Ucayali' }}">
+                        <b class="text-danger">{{ $errors->first('lugar_txt') }}</b>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Dependencia Supervisora</label>
-                        <input type="text" class="form-control" name="supervisora_id" value="{{ old('supervisora_id') }}">
-                        <b class="text-danger">{{ $errors->first('supervisora_id') }}</b>
+                        <label for="" class="form-control-label">Dependencia Supervisora <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="supervisora_txt" 
+                            value="{{ old('supervisora_txt') ? old('supervisora_txt') : 'Oficina Ejecutiva de Recursos Humanos' }}"
+                        >
+                        <b class="text-danger">{{ $errors->first('supervisora_txt') }}</b>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Perfil del puesto <span class="text-danger">*</span></label>
-                        <textarea name="perfil" class="form-control">{{ old('perfil') }}</textarea>
-                        <b class="text-danger">{{ $errors->first('perfil') }}</b>
+                        <label for="" class="form-control-label">Fecha Inicio <small>(Periodo de Contratación)</small><span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" name="fecha_inicio" value="{{ old('fecha_inicio') }}">
+                        <b class="text-danger">{{ $errors->first('fecha_inicio') }}</b>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Principales funciones</label>
-                        <input type="text" class="form-control">
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Lista de preguntas y respuestas</label>
-                        <input type="text" class="form-control">
+                        <label for="" class="form-control-label">Fecha Final <small>(Periodo de Contratación)</small><span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" name="fecha_final" value="{{ old('fecha_final') }}">
+                        <b class="text-danger">{{ $errors->first('fecha_final') }}</b>
                     </div>
                 </div>
 
 
-                <div class="col-md-12 mt-4">
-                    <button class="btn btn-primary">Guardar <i class="material-icons">save</i></button>
+                <div class="col-md-12">
+                    <hr>
+                    <b>BASE LEGAL</b>
+
+                    <add-base :errors="{{ $errors }}" :bases="{{ old('bases') ? json_encode(old('bases')) : json_encode([]) }}"></add-base>
+                    <b class="text-danger">{{ $errors->first('bases') }}</b>
                 </div>
 
+                <div class="col-md-12">
+                    <hr>
+                    <b>PERFIL DEL PUESTO</b>
+                    <add-question :errors="{{ $errors }}" :questions="{{ old('requisitos') ? json_encode(old('requisitos')) : json_encode([]) }}"></add-question>
+                </div>
             </div>        
         </div>
     </form>
 </div>
 
 
-{{-- <script>
-
-    function select(form) {
-        form.submit();
-    }
-
-</script> --}}
 
 @endsection

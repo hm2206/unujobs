@@ -17,18 +17,18 @@ class CreatePersonalsTable extends Migration
             $table->bigIncrements('id');
             $table->string("numero_de_requerimiento")->unique();
             $table->integer("sede_id");
-            $table->integer("dependencia_id");
-            $table->integer("oficina_id")->nullable();
-            $table->integer("cargo_id")->nullable();
+            $table->string("dependencia_txt");
+            $table->string("cargo_txt")->nullable();
             $table->integer("cantidad")->default(1);
             $table->double("honorarios")->nullable();
-            $table->integer("meta_id")->nullable();
-            $table->integer("fuente_id")->nullable();
-            $table->double("gasto")->nullable();
-            $table->date("periodo")->nullable();
-            $table->integer("lugar_id")->nullable();
-            $table->text("perfil")->nullable();
-            $table->integer("supervisora_id")->nullable();
+            $table->integer("meta_id");
+            $table->string("deberes")->nullable();
+            $table->date("fecha_inicio")->nullable();
+            $table->date("fecha_final")->nullable();
+            $table->string("lugar_txt")->nullable();
+            $table->text("bases")->nullable();
+            $table->string("supervisora_txt")->nullable();
+            $table->integer('aceptado')->default(0);
             $table->timestamps();
         });
     }

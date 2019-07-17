@@ -5,33 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\Convocatoria;
 use Illuminate\Http\Request;
 use App\Http\Requests\ConvocatoriaRequest;
+use App\Models\Personal;
 
 class ConvocatoriaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $convocatorias = Convocatoria::all();
+        return view('convocatoria.index', compact('convocatorias'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        return view("convocatoria.create");
+        $personals = Personal::where("aceptado", 1)
+            ->where("fecha_final", "<=", date('Y-m-d'))
+            ->get();
+            
+        return view("convocatoria.create", \compact('personals'));
     }
 
 
     public function store(ConvocatoriaRequest $request)
     {   
-        $convocatoria = Convocatoria::create($request->all());
+        $convocatoria = Convocatoria::create($request->except('aceptado'));
         return back()->with(["success" => "Los datos se guardaron correctamente!"]);
     }
 
@@ -41,37 +39,32 @@ class ConvocatoriaController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Convocatoria  $convocatoria
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit(Convocatoria $convocatoria)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Convocatoria  $convocatoria
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, Convocatoria $convocatoria)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Convocatoria  $convocatoria
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Convocatoria $convocatoria)
     {
         //
+    }
+
+
+    public function aceptar(Request $request, $id)
+    {
+        $convocatoria = Convocatoria::findOrFail($id);
+        $convocatoria->update([
+            "aceptado" => $convocatoria->aceptado ? 0 : 1
+        ]);
+
+        return back();
     }
 }

@@ -60,9 +60,9 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Components:</h6>
-            <a class="collapse-item" href="buttons.html">Buttons</a>
-            <a class="collapse-item" href="cards.html">Cards</a>
+            <h6 class="collapse-header">Opciones:</h6>
+            <a class="collapse-item" href="{{ route('personal.index') }}">Requirimiento de Personal</a>
+            <a class="collapse-item" href="{{ route('convocatoria.index') }}">Convocatorias</a>
           </div>
         </div>
       </li>
@@ -180,7 +180,7 @@
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
-        <div class="container-fluid">
+        <div class="container-fluid" id="app">
 
           @yield('content')
 

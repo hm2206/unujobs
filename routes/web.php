@@ -10,12 +10,15 @@ Route::group(["prefix" => "RRHH"], function() {
     
     //Personal
     Route::resource("personal", "PersonalController");
+    Route::post('personal/{id}/aceptar', 'PersonalController@aceptar')->name('personal.aceptar');
+    Route::get('personal/{id}/pdf', 'PersonalController@pdf')->name('personal.pdf');
 
     //sedes
     Route::resource("sede", "SedeController");
 
     //convocatorias
     Route::resource("convocatoria", "ConvocatoriaController");
+    Route::post("convocatoria/{id}/aceptar", "ConvocatoriaController@aceptar")->name("convocatoria.aceptar");
 
     //Postulantes
     Route::resource("postulante", "PostulanteController");

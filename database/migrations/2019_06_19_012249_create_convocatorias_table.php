@@ -16,9 +16,11 @@ class CreateConvocatoriasTable extends Migration
         Schema::create('convocatorias', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string("numero_de_convocatoria");
-            $table->date("periodo");
-            $table->string("codigo_de_postulacion")->unique();
-            $table->integer("oficina_id");
+            $table->text("observacion")->nullable();
+            $table->date("fecha_inicio");
+            $table->date('fecha_final');
+            $table->integer('personal_id');
+            $table->integer('aceptado')->default(0);
             $table->timestamps();
         });
     }

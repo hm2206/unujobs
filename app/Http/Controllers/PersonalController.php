@@ -10,17 +10,17 @@ use App\Models\Sede;
 use App\Models\Dependencia;
 use App\Models\Oficina;
 use App\Models\Meta;
+use App\Models\Question;
+use \PDF;
+use Illuminate\Support\Facades\Storage;
 
 class PersonalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $personals = Personal::paginate(20);
+        return view('personal.index', compact('personals'));
     }
 
 
@@ -62,19 +62,41 @@ class PersonalController extends Controller
 
     public function store(PersonalRequest $request)
     {
-        $personal = Personal::create($request->all());
+
+        return $request->all();
+
+        $this->validate(request(), [
+            "numero_de_requerimiento" => "unique:personals"
+        ]);
+
+        $bases = $request->input('bases', []);
+        $requisitos = $request->input("requisitos", []);
+
+        $personal = Personal::create($request->except(['aceptado', 'file', 'bases']));
+        $personal->update(["bases" => json_encode($bases)]);
+
+        foreach ($requisitos as $key => $requisito) {
+            $titulo = isset($requisito[0]) ? $requisito[0] : "";
+            $body = isset($requisito[1]) ? $requisito[1] : [];
+
+            if($titulo) {
+                Question::create([
+                    "requisito" => $titulo,
+                    "body" => json_encode($body),
+                    "personal_id" => $personal->id
+                ]);
+            }
+
+        }
+
         return back()->with(["success" => "EL registro se guardo correctamente!"]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Personal  $personal
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Personal $personal)
+
+    public function show($id)
     {
-        //
+        $personal = Personal::findOrFail($id);
+        return view("personal.show", \compact('personal'));
     }
 
     /**
@@ -109,5 +131,24 @@ class PersonalController extends Controller
     public function destroy(Personal $personal)
     {
         //
+    }
+
+    public function aceptar(Request $request, $id)
+    {
+        $personal = Personal::findOrFail($id);
+        $personal->update([
+            "aceptado" => $personal->aceptado ? 0 : 1
+        ]);
+
+        return back();
+    }
+
+
+    public function pdf($id)
+    {
+        $personal = Personal::findOrFail($id);
+        $bases = \json_decode($personal->bases);
+        $pdf = PDF::loadView("pdf.requerimiento_personal", compact('personal', 'bases'));
+        return $pdf->stream();
     }
 }

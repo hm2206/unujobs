@@ -7,8 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class Personal extends Model
 {
     protected $fillable = [
-        "numero_de_requerimiento", "sede_id", "dependencia_id", "oficina_id",
-        "cargo_id", "cantidad", "honorarios", "meta_id", "fuente_id", "gasto",
-        "periodo", "lugar_id", "perfil" , 'supervisora_id'
+        "numero_de_requerimiento", "sede_id", "dependencia_txt",
+        "cargo_txt", "cantidad", "honorarios", "meta_id", "deberes",
+        "fecha_inicio", "fecha_final", "lugar_txt", "bases", 
+        'supervisora_txt', 'aceptado'
     ];
+
+    protected function sede()
+    {
+        return $this->belongsTo(Sede::class);
+    }
+
+    public function meta()
+    {
+        return $this->belongsTo(Meta::class);
+    }
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class);
+    }
 }

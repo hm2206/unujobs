@@ -25,9 +25,9 @@ class ConvocatoriaRequest extends FormRequest
     {
         return [
             "numero_de_convocatoria" => "required",
-            "periodo" => "date",
-            "codigo_de_postulacion" => "required",
-            "oficina_id" => "required"
+            "fecha_inicio" => "date",
+            "fecha_final" => "required",
+            "personal_id" => "required"
         ];
     }
 }
