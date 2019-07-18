@@ -15,12 +15,6 @@
 
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="" class="form-control-label">Número de Requerimiento</label>
-                    <span class="form-control">{{ $personal->numero_de_requerimiento }}</span>
-                </div>
-            </div>
 
             <div class="col-md-6" id="">
                 <div class="form-group">
@@ -67,16 +61,10 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Fuente</label>
-                        <span class="form-control">{{ $personal->fuente_txt }}</span>
+                        {{-- <span class="form-control">{{ $personal->fuente_txt }}</span> --}}
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Especificación de gastos</label>
-                        <span class="form-control">{{ $personal->gasto }}</span>
-                    </div>
-                </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
@@ -103,13 +91,6 @@
                     <div class="form-group">
                         <label for="" class="form-control-label">Dependencia Supervisora</label>
                         <span class="form-control">{{ $personal->supervisora_txt }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Perfil del puesto <span class="text-danger">*</span></label>
-                        <textarea name="perfil" disabled class="form-control">{{ $personal->perfil }}</textarea>
                     </div>
                 </div>
 

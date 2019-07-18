@@ -9,12 +9,17 @@ class Convocatoria extends Model
     
     protected $fillable = [
         "numero_de_convocatoria", "observacion", "fecha_inicio", "fecha_final",
-        "personal_id", "aceptado"
+        "aceptado"
     ];
 
-    public function personal()
+    public function personals()
     {
-        return $this->belongsTo(Personal::class);
+        return $this->hasMany(Personal::class);
+    }
+
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
     }
 
 }

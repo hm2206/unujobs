@@ -20,7 +20,6 @@ class PersonalRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            "numero_de_requerimiento" => "required",
             "sede_id" => "required",
             "dependencia_txt" => "required",
             "cargo_txt" => "required",
@@ -32,10 +31,8 @@ class PersonalRequest extends FormRequest
             "fecha_final" => "required|date",
             "lugar_txt" => "required",
             "supervisora_txt" => "required",
-            "titulos" => "required",
-            "requisitos" => "required",
+            "requisitos" => "required|max:15",
             "bases" => "required|max:10",
-            "titulos" => "required|max:15"
         ];
 
         foreach ($this->request->get('bases') as $key => $value) {

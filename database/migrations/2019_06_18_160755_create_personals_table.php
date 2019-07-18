@@ -15,7 +15,6 @@ class CreatePersonalsTable extends Migration
     {
         Schema::create('personals', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string("numero_de_requerimiento")->unique();
             $table->integer("sede_id");
             $table->string("dependencia_txt");
             $table->string("cargo_txt")->nullable();
@@ -29,6 +28,7 @@ class CreatePersonalsTable extends Migration
             $table->text("bases")->nullable();
             $table->string("supervisora_txt")->nullable();
             $table->integer('aceptado')->default(0);
+            $table->integer("convocatoria_id")->nullable();
             $table->timestamps();
         });
     }

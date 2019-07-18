@@ -13,6 +13,7 @@ use App\Models\Meta;
 use App\Models\Question;
 use \PDF;
 use Illuminate\Support\Facades\Storage;
+use \DB;
 
 class PersonalController extends Controller
 {
@@ -62,13 +63,7 @@ class PersonalController extends Controller
 
     public function store(PersonalRequest $request)
     {
-
-        return $request->all();
-
-        $this->validate(request(), [
-            "numero_de_requerimiento" => "unique:personals"
-        ]);
-
+        
         $bases = $request->input('bases', []);
         $requisitos = $request->input("requisitos", []);
 
@@ -99,27 +94,56 @@ class PersonalController extends Controller
         return view("personal.show", \compact('personal'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Personal  $personal
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Personal $personal)
+
+    public function edit($id)
     {
-        //
+        $sedes = Sede::all();
+        $metas = Meta::all();
+        $personal = Personal::findOrFail($id);
+        $questions = [];
+
+        foreach ($personal->questions as $q) {
+
+            array_push($questions, [
+                $q->requisito,
+                json_decode($q->body)
+            ]);
+
+        }
+
+        return view("personal.edit", compact('personal', 'sedes', 'metas', 'questions'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Personal  $personal
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Personal $personal)
+
+    public function update(PersonalRequest $request, $id)
     {
-        //
+
+        $personal = Personal::findOrFail($id);
+
+        $bases = $request->input('bases', []);
+        $requisitos = $request->input("requisitos", []);
+
+        $personal->update($request->except(['aceptado', 'file', 'bases']));
+        $personal->update(["bases" => json_encode($bases)]);
+
+
+        DB::table('questions')->where('personal_id', $id)->delete();
+
+        foreach ($requisitos as $key => $requisito) {
+            $titulo = isset($requisito[0]) ? $requisito[0] : "";
+            $body = isset($requisito[1]) ? $requisito[1] : [];
+
+            if($titulo) {
+                Question::create([
+                    "requisito" => $titulo,
+                    "body" => json_encode($body),
+                    "personal_id" => $personal->id
+                ]);
+            }
+
+        }
+
+        return back()->with(["success" => "EL registro se actualizó correctamente!"]);
     }
 
     /**

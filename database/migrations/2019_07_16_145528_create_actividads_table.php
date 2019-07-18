@@ -15,6 +15,11 @@ class CreateActividadsTable extends Migration
     {
         Schema::create('actividads', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string("descripcion");
+            $table->date("fecha_inicio");
+            $table->date('fecha_final')->nullable();
+            $table->string('responsable');
+            $table->integer('convocatoria_id');
             $table->timestamps();
         });
     }

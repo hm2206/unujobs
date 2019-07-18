@@ -19,11 +19,11 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Numero de Requerimiento</th>
                                 <th>Sede</th>
                                 <th>Dependencia</th>
                                 <th>Cargo</th>
-                                <th class="text-center">Fecha de publicación</th>
+                                <th class="text-center">Inicio</th>
+                                <th class="text-center">Final</th>
                                 <th class="text-center">Archivo</th>
                                 <th class="text-center">Aceptado</th>
                                 <th class="text-center">Acciones</th>
@@ -32,13 +32,19 @@
                         @foreach ($personals as $personal)
                             <tr>
                                 <td>
-                                    <a href="{{ route('personal.show', $personal->id) }}">{{ $personal->numero_de_requerimiento }}</a>
+                                    <a href="{{ route('personal.edit', $personal->id) }}">{{ $personal->sede ? $personal->sede->descripcion : null }}</a>
                                 </td>
-                                <td>{{ $personal->sede ? $personal->sede->descripcion : null }}</td>
-                                <td>{{ $personal->dependencia_txt }}</td>
-                                <td>{{ $personal->cargo_txt }}</td>
+                                <td>
+                                    <a href="{{ route('personal.edit', $personal->id) }}">{{ $personal->dependencia_txt }}</a>
+                                </td>
+                                <td>
+                                    <a href="{{ route('personal.edit', $personal->id) }}">{{ $personal->cargo_txt }}</a>
+                                </td>
                                 <td class="text-center">
-                                    <span class="btn btn-dark btn-sm">{{ $personal->created_at }}</span>
+                                    <span class="btn btn-dark btn-sm"><small>{{ $personal->fecha_inicio }}</small></span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="btn btn-dark btn-sm"><small>{{ $personal->fecha_final }}</small></span>
                                 </td>
                                 <td class="text-center">
                                     <a href="{{ route('personal.pdf', $personal->id) }}" target="__blank" class="btn btn-sm btn-danger">

@@ -22,7 +22,6 @@
                                 <th>Numero de Convocatoria</th>
                                 <th>Fecha Inicio</th>
                                 <th>Fecha Final</th>
-                                <th>Personal</th>
                                 <th class="text-center">Aceptado</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -30,15 +29,14 @@
                         <tbody>
                             @foreach ($convocatorias as $convocatoria)
                                 <tr>
-                                    <td>{{ $convocatoria->numero_de_convocatoria }}</td>
+                                    <td>
+                                        <a href="{{ route('convocatoria.edit', $convocatoria->id) }}">N° {{ $convocatoria->numero_de_convocatoria }}</a>
+                                    </td>
                                     <td>
                                         <span class="btn btn-sm btn-dark">{{ $convocatoria->fecha_inicio }}</span>
                                     </td>
                                     <td>
                                         <span class="btn btn-sm btn-dark">{{ $convocatoria->fecha_final }}</span>
-                                    </td>
-                                    <td>
-                                        {{ $convocatoria->personal->numero_de_requerimiento }}
                                     </td>
                                     <td class="text-center">
                                         @if ($convocatoria->aceptado)
