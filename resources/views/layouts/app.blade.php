@@ -97,7 +97,7 @@
     <div id="content-wrapper" class="d-flex flex-column">
 
       <!-- Main Content -->
-      <div id="content">
+      <div id="app">
 
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
@@ -107,41 +107,7 @@
           <ul class="navbar-nav ml-auto">
 
             <!-- Nav Item - Alerts -->
-            <li class="nav-item dropdown no-arrow mx-1">
-              <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-bell fa-fw"></i>
-                <!-- Counter - Alerts -->
-                @if (auth()->user()->unreadNotifications->count())
-                  <span class="badge badge-danger badge-counter">{{ auth()->user()->unreadNotifications->count() }}</span>
-                @endif
-              </a>
-              <!-- Dropdown - Alerts -->
-              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                <h6 class="dropdown-header">
-                  Notificaciones
-                </h6>
-                
-                @forelse (auth()->user()->unreadNotifications->take(5) as $unread)
-                  <a class="dropdown-item d-flex align-items-center" target="__blank" href="{{ url($unread->data['url']) }}">
-                    <div class="mr-3">
-                      <div class="icon-circle {{ isset($unread->data['background']) ? $unread->data['background'] : 'bg-primary' }}">
-                        <i class="{{ isset($unread->data['icono']) ? $unread->data['icono'] : 'fas fa-file-alt' }} text-white"></i>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="small text-gray-500">{{ $unread->created_at }}</div>
-                      <span class="font-weight-bold">{{ $unread->data['body'] }}</span>
-                    </div>
-                  </a>
-                @empty
-                  <div class="dropdown-item  text-center">
-                      No hay Notificaciones disponibles
-                  </div>
-                @endforelse
-
-                <a class="dropdown-item text-center small text-gray-500" href="#">Todas las notificaciones</a>
-              </div>
-            </li>
+            <notification></notification>
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -180,7 +146,7 @@
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
-        <div class="container-fluid" id="app">
+        <div class="container-fluid">
 
           @yield('content')
 

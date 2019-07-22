@@ -68,7 +68,11 @@ class PersonalController extends Controller
         $requisitos = $request->input("requisitos", []);
 
         $personal = Personal::create($request->except(['aceptado', 'file', 'bases']));
-        $personal->update(["bases" => json_encode($bases)]);
+        $slug = \str_replace(" ", "-", $personal->cargo_txt) . "-" . date('Y');
+        $personal->update([
+            "bases" => json_encode($bases),
+            "slug" => $slug
+        ]);
 
         foreach ($requisitos as $key => $requisito) {
             $titulo = isset($requisito[0]) ? $requisito[0] : "";

@@ -10,7 +10,7 @@ class Personal extends Model
         "numero_de_requerimiento", "sede_id", "dependencia_txt",
         "cargo_txt", "cantidad", "honorarios", "meta_id", "deberes",
         "fecha_inicio", "fecha_final", "lugar_txt", "bases", 
-        'supervisora_txt', 'aceptado', 'convocatoria_id'
+        'supervisora_txt', 'aceptado', 'convocatoria_id', 'slug'
     ];
 
     protected function sede()

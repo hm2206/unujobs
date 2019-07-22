@@ -23,6 +23,7 @@ Route::group(["prefix" => "RRHH"], function() {
 
     //Postulantes
     Route::resource("postulante", "PostulanteController");
+    Route::post("postulante/{id}/cv", "PostulanteController@upload")->name('postulante.cv');
 
     //Evalusiones
     Route::resource("evaluacion", "EvaluacionController");
@@ -100,3 +101,9 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
     Route::post("/auth", "BolsaController@authenticar")->name('bolsa.auth');
 
 });
+
+
+
+//notificaciones
+Route::get("user/unread", "UserController@unread");
+Route::post("user/{notify}/markasread", "UserController@markAsRead");

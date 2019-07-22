@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Tools\Reniec;
 use App\Http\Requests\PostulanteRequest;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class PostulanteController extends Controller
 {
@@ -97,4 +98,21 @@ class PostulanteController extends Controller
     {
         //
     }
+
+
+    public function upload(Request $request, $id)
+    {
+        $this->validate(request(), [
+            "cv" => "required|mimes:pdf"
+        ]);
+
+        $postulante = Postulante::findOrFail($id);
+        $file = $request->file('cv');
+        $name = "cv_{$postulante->id}.pdf";
+        $store = Storage::disk('public')->putFileAs("pdf/cv", $file, $name);
+        $postulante->update(["cv" => "storage/" . $store]);
+
+        return back()->with(["cv" => "EL  CV fué actualizado"]);
+    }
+
 }

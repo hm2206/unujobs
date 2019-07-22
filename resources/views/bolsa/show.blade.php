@@ -21,6 +21,11 @@
                     <div class="card mb-3">
                         <div class="card-header">
                             Postulante <i class="fas fa-arrow-right text-danger"></i> <b class="capitalize">{{ $postulante->nombre_completo }}</b>
+                            @if ($postulante->cv)
+                                <a href="{{ url($postulante->cv) }}" target="__blank" class="ml-5 btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-file-pdf"></i> Mi CV
+                                </a>
+                            @endif
                         </div>
                         <div class="card-body">
                             <div class="row justify-content-around">
@@ -189,19 +194,24 @@
                     </div>
                 </div>
 
+                @if (session('cv'))
+                    <div class="alert alert-success mt-3">
+                        {{ session('cv') }}
+                    </div>
+                @endif
+
                 <div class="card mt-3">
                     <div class="card-header">
                         Subir o Actualizar CV
                     </div>
-                    <form class="card-body">
-                        <div class="form-group">
-
-                        </div>
+                    <form class="card-body" method="POST" action="{{ route('postulante.cv', $postulante->id) }}" enctype="multipart/form-data">
+                        @csrf
                         <div class="form-group">
                             <label for="cv" class="btn btn-block btn-outline-danger">
                                 <i class="fas fa-file-pdf"></i> PDF
-                                <input type="file" name="" hidden id="cv">
+                                <input type="file" name="cv" hidden id="cv">
                             </label>
+                            <b class="text-danger"><small>{{ $errors->first('cv') }}</small></b>
                         </div>
                         <button class="btn btn-block btn-primary">
                             <i class="fas fa-upload"></i> Subir

@@ -10,7 +10,7 @@ class Postulante extends Model
     protected $fillable = [
         "ape_paterno", "ape_materno", "nombres", "numero_de_documento",
         "departamento_id", "provincia_id", "distrito_id", "fecha_de_nacimiento",
-        "phone", "email"
+        "phone", "email", 'cv'
     ];
 
     public function personals()
