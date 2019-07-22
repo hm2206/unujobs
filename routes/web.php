@@ -19,6 +19,7 @@ Route::group(["prefix" => "RRHH"], function() {
     //convocatorias
     Route::resource("convocatoria", "ConvocatoriaController");
     Route::post("convocatoria/{id}/aceptar", "ConvocatoriaController@aceptar")->name("convocatoria.aceptar");
+    Route::get("convocatoria/{id}/pdf", "ConvocatoriaController@pdf")->name("convocatoria.pdf");
 
     //Postulantes
     Route::resource("postulante", "PostulanteController");
@@ -85,5 +86,17 @@ Route::group(["prefix" => "export"], function() {
 
     Route::get("cronograma/{id}/pdf", "ExportCronogramaController@pdf")->name('export.cronograma.pdf');
     Route::get("reporte/mes/{mes}/year/{year}/adicional/{adicional}", 'ExportCronogramaController@reporte')->name('export.reporte');
+
+});
+
+
+
+//Bolsa de trabajo
+Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
+   
+    Route::get("/", "BolsaController@index")->name('bolsa.index');
+    Route::get("/{numero}/cargo/{titulo}", "BolsaController@show")->name('bolsa.show');
+    Route::get("/{numero}/cargo/{titulo}/postular", "BolsaController@postular")->name('bolsa.postular');
+    Route::post("/auth", "BolsaController@authenticar")->name('bolsa.auth');
 
 });

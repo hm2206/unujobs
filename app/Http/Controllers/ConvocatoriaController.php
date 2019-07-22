@@ -9,6 +9,7 @@ use App\Models\Personal;
 use App\Http\Requests\ConvocatoriaUpdateRequest;
 use App\Models\Actividad;
 use \DB;
+use \PDF;
 
 class ConvocatoriaController extends Controller
 {
@@ -145,5 +146,13 @@ class ConvocatoriaController extends Controller
         ]);
 
         return back();
+    }
+
+    public function pdf($id)
+    {
+        $convocatoria = Convocatoria::findOrFail($id);
+        $year = isset(explode("-", $convocatoria->fecha_inicio)[0]) ? explode("-", $convocatoria->fecha_inicio)[0] : date('Y');
+        $pdf = PDF::loadView('pdf.convocatoria', compact('convocatoria', 'year'));
+        return $pdf->stream();
     }
 }

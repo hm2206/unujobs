@@ -28,11 +28,14 @@ class PostulanteRequest extends FormRequest
             "ape_materno" => "required",
             "nombres" => "required",
             "numero_de_documento" => "required",
-            "departamento" => "required",
-            "provincia" => "required",
-            "distrito" => "required",
-            "fecha_de_nacimiento" => "required",
-            "phone" => "required"
+            "departamento_id" => "required",
+            "provincia_id" => "required",
+            "distrito_id" => "required",
+            "fecha_de_nacimiento" => "date",
+            "phone" => "required",
+            "direccion" => "required",
+            "email" => "email",
+            "personal_id" => "required"
         ];
     }
 }

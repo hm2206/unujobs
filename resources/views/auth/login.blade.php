@@ -8,6 +8,12 @@
         
     <div class="col-xl-10 col-lg-12 col-md-9">
 
+      <div class="text-right">
+          <a href="{{ route('bolsa.index') }}" class="btn btn-primary">
+            Convocatorias
+          </a>
+      </div>
+
       <div class="card o-hidden border-0 shadow-lg my-5">
         <div class="card-body p-0">
           <!-- Nested Row within Card Body -->

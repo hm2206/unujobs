@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTypeEtapasTable extends Migration
+class CreatePersonalPostulanteTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateTypeEtapasTable extends Migration
      */
     public function up()
     {
-        Schema::create('type_etapas', function (Blueprint $table) {
+        Schema::create('personal_postulante', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('descripcion');
-            $table->string("icono");
-            $table->integer("fin")->nullable();
+            $table->integer("personal_id");
+            $table->integer("postulante_id");
+            $table->integer("estado")->default(1);
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateTypeEtapasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('type_etapas');
+        Schema::dropIfExists('personal_postulante');
     }
 }

@@ -18,13 +18,15 @@ class CreatePostulantesTable extends Migration
             $table->string("ape_paterno");
             $table->string("ape_materno");
             $table->string("nombres");
+            $table->string("nombre_completo")->nullable();
             $table->string("numero_de_documento")->unique();
-            $table->string("departamento");
-            $table->string("provincia");
-            $table->string("distrito");
+            $table->integer("departamento_id");
+            $table->integer("provincia_id");
+            $table->integer("distrito_id");
             $table->date("fecha_de_nacimiento");
             $table->string("phone");
             $table->string("email")->nullable();
+            $table->string("cv")->nullable();
             $table->timestamps();
         });
     }
