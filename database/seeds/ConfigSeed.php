@@ -5,6 +5,8 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Sede;
 use App\Models\Dependencia;
+use App\Models\Ubigeo;
+use App\Models\TypeEtapa;
 
 class ConfigSeed extends Seeder
 {
@@ -17,6 +19,8 @@ class ConfigSeed extends Seeder
         self::roles();
         self::sedes();
         self::dependencias();
+        self::ubigeos();
+        self::typeEtapas();
 
     }
 
@@ -43,8 +47,8 @@ class ConfigSeed extends Seeder
 
         $roles = [
             ["key" => "admin", "name" => "Administrador"],
-            ["key" => "job", "name" => "Personal"],
-            ["key" => "postulate", "name" => "Postulante"]
+            ["key" => "mod", "name" => "Moderador"],
+            ["key" => "basic", "name" => "Consultor"]
         ];
 
         foreach ($roles as $role) {
@@ -57,7 +61,7 @@ class ConfigSeed extends Seeder
     {
         Sede::truncate();
         $sedes = [
-            ["descripcion" => "pucallpa"]
+            ["descripcion" => "Pucallpa"]
         ];
 
         foreach($sedes as $sede) {
@@ -75,6 +79,38 @@ class ConfigSeed extends Seeder
 
         foreach($dependencias as $dependencia) {
             Dependencia::create($dependencia);
+        }
+    }
+
+    public function ubigeos()
+    {
+        Ubigeo::truncate();
+
+        $ubigeos = [
+            ["descripcion" => "Ucayali - Pucallpa"],
+            ["descripcion" => "Coronel Portillo", "departamento_id" => "1"],
+            ["descripcion" => "Calleria", "provincia_id" => "2"],
+            ["descripcion" => "Yarina", "provincia_id" => "2"],
+            ["descripcion" => "Manantay", "provincia_id" => "2"]
+        ];
+
+        foreach ($ubigeos as $ubigeo) {
+            Ubigeo::create($ubigeo);
+        }
+    }
+
+    public function typeEtapas()
+    {
+        TypeEtapa::truncate();
+
+        $types = [
+            ["descripcion" => "Acta Curricular", "icono" => "fas fa-file-pdf"],
+            ["descripcion" => "Acta de Conocimiento", "icono" => "fas fa-file"],
+            ["descripcion" => "Entrevista Personal", "icono" => "fas fa-user"]
+        ];
+
+        foreach ($types as $type) {
+            TypeEtapa::create($type);
         }
     }
 

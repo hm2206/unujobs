@@ -9,10 +9,10 @@
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img class="d-block w-100" src="{{ asset('img/macbook.png') }}" style="object-fit:cover" height="500px">
+                <img class="d-block w-100" src="{{ asset('img/bolsa.png') }}" style="object-fit:contain" height="500px">
             </div>
             <div class="carousel-item">
-                <img class="d-block w-100" src="{{ asset('img/macbook.png') }}" style="object-fit:cover" height="500px" alt="">
+                <img class="d-block w-100" src="{{ asset('img/macbook.png') }}" style="object-fit:contain" height="500px" alt="">
             </div>
         </div>
         <a class="carousel-control-prev" href="#my-carousel" data-slide="prev" role="button">
@@ -74,7 +74,7 @@
                                 <li>
                                     <a href="{{ route('bolsa.show', 
                                         [
-                                            $convocatoria->numero_de_convocatoria, 
+                                            $convocatoria->id, 
                                             $personal->slug, 
                                             'postulante=' . request()->postulante
                                         ]) }}"

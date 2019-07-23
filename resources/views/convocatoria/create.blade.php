@@ -66,20 +66,6 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Requerimiento de  Personal <span class="text-danger">*</span></label>
-                        <select name="personal_id" class="form-control">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($personals as $personal)
-                                <option value="{{ $personal->id }}">{{ $personal->numero_de_requerimiento }}</option>
-                            @endforeach
-                        </select>
-                        <b class="text-danger">{{ $errors->first('personal_id') }}</b>
-                    </div>
-                </div>
-                
-
                 <div class="col-md-12 mt-4">
                     <button class="btn btn-success">Guardar <i class="fas fa-save"></i></button>
                 </div>

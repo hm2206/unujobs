@@ -27,7 +27,6 @@ class ConvocatoriaRequest extends FormRequest
             "numero_de_convocatoria" => "required",
             "fecha_inicio" => "date",
             "fecha_final" => "required",
-            "personal_id" => "required"
         ];
     }
 }

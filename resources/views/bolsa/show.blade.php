@@ -229,7 +229,7 @@
                                 Postular
                             </button>
                         @else
-                            <a href="{{ route('bolsa.postular', [$convocatoria->numero_de_convocatoria, $personal->slug]) }}" class="btn btn-primary btn-block">Postular</a>
+                            <a href="{{ route('bolsa.postular', [$convocatoria->id, $personal->slug]) }}" class="btn btn-primary btn-block">Postular</a>
                         @endif
                     </div>
                 </div>

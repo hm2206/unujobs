@@ -39,10 +39,10 @@ class PostulanteController extends Controller
 
         if($postulante) {
             $postulante->update($request->all());
-            $postulante->personal()->syncWithoutDetaching($request->personal_id);
+            $postulante->personals()->syncWithoutDetaching($request->personal_id);
         }else {
             $postulante = Postulante::create($request->all());
-            $postulante->personal()->syncWithoutDetaching($request->personal_id);
+            $postulante->personals()->syncWithoutDetaching($request->personal_id);
         }
 
         if ($request->redirect) {

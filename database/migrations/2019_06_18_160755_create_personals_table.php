@@ -15,11 +15,12 @@ class CreatePersonalsTable extends Migration
     {
         Schema::create('personals', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('slug')->nullable();
             $table->integer("sede_id");
             $table->string("dependencia_txt");
             $table->string("cargo_txt")->nullable();
             $table->integer("cantidad")->default(1);
-            $table->double("honorarios")->nullable();
+            $table->string("honorarios")->nullable();
             $table->integer("meta_id");
             $table->string("deberes")->nullable();
             $table->date("fecha_inicio")->nullable();

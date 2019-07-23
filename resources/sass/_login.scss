@@ -48,3 +48,8 @@ form.user {
 .btn-facebook {
   @include button-variant($brand-facebook, $white);
 }
+
+
+#app {
+  min-height: 100%;
+}

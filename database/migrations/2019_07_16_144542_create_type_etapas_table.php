@@ -17,7 +17,6 @@ class CreateTypeEtapasTable extends Migration
             $table->bigIncrements('id');
             $table->string('descripcion');
             $table->string("icono");
-            $table->integer("fin")->nullable();
             $table->timestamps();
         });
     }

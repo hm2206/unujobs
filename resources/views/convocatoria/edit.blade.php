@@ -10,6 +10,7 @@
 
 @section('content')
 
+
 <div class="col-md-12 mb-2">
     <a href="{{ route('convocatoria.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
@@ -86,7 +87,7 @@
                                 <input type="checkbox" value="{{ $personal->id }}" {!! $personal->convocatoria_id == $convocatoria->id ? 'checked' : null !!} 
                                     name="personals[]"
                                 >
-                                {{ $personal->cargo_txt }}
+                                {{ $personal->slug }}
                             </div>
                         @endforeach
                     </div>
