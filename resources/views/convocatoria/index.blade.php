@@ -22,6 +22,7 @@
                                 <th>Numero de Convocatoria</th>
                                 <th>Fecha Inicio</th>
                                 <th>Fecha Final</th>
+                                <th class="text-center">Etapas</th>
                                 <th class="text-center">Archivo</th>
                                 <th class="text-center">Aceptado</th>
                                 <th class="text-center">Acciones</th>
@@ -38,6 +39,11 @@
                                     </td>
                                     <td>
                                         <span class="btn btn-sm btn-dark">{{ $convocatoria->fecha_final }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('convocatoria.etapas', $convocatoria->id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </td>
                                     <td class="text-center">
                                         <a target="__blank" href="{{ route('convocatoria.pdf', $convocatoria->id) }}" class="btn btn-sm btn-danger">

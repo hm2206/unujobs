@@ -2,40 +2,91 @@
 
 namespace App\Http\Controllers;
 
-use App\Etapa;
+use App\Models\Etapa;
 use Illuminate\Http\Request;
+use App\Models\TypeEtapa;
+use \DB;
 
 class EtapaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        $this->validate(request(), [
+            "type_etapa_id" => "required",
+            "convocatoria_id" => "required",
+            "personal_id" => "required"
+        ]);
+
+
+        foreach ($request->input('postulantes', []) as $key => $pos) {
+
+            $tmp_postulante = isset($request->postulantes[$key][0]) ? $request->postulantes[$key][0] : 0;
+            $puntaje = isset($request->postulantes[$key][1]) ? $request->postulantes[$key][1] : 0;
+
+            if($tmp_postulante) {
+
+                $payload = [
+                    "postulante_id" => $tmp_postulante,
+                    "type_etapa_id" => $request->type_etapa_id,
+                    "convocatoria_id" => $request->convocatoria_id,
+                    "personal_id" => $request->personal_id
+                ];
+
+                $next = isset($request->nexts[$key][0]) ? 1 : 0;
+    
+                $etapa = Etapa::updateOrCreate($payload);
+                $etapa->update([
+                    "puntaje" => $puntaje,
+                    "next" => $next,
+                    "current" => 0
+                ]);
+
+    
+                if ($etapa->next == 0) {
+
+                    $etapas = DB::table('etapas')->where("postulante_id", $tmp_postulante)
+                        ->where("personal_id", $etapa->personal_id)
+                        ->orderBy('id', 'DESC')
+                        ->where('id', '>', $etapa->id)
+                        ->delete();
+
+                }else {
+                    $type = TypeEtapa::where("id", "<>", $request->type_etapa_id)->first();
+                    
+                    if ($type) {
+
+                        $nuevo = Etapa::create([
+                            "postulante_id" => $tmp_postulante,
+                            "type_etapa_id" => $type->id,
+                            "convocatoria_id" => $request->convocatoria_id,
+                            "personal_id" => $request->personal_id
+                        ]);
+
+                        $nuevo->puntaje = 0;
+                        $nuevo->current = 1;
+                        $nuevo->save();
+                    }
+
+                }
+
+            }
+
+        }
+
+        return back()->with(["Los datos se guardarón correctamente"]);
     }
 
     /**

@@ -8,7 +8,8 @@ use App\Tools\Reniec;
 use App\Http\Requests\PostulanteRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\Etapa;
+use App\Models\Personal;
 class PostulanteController extends Controller
 {
 
@@ -39,11 +40,23 @@ class PostulanteController extends Controller
 
         if($postulante) {
             $postulante->update($request->all());
-            $postulante->personals()->syncWithoutDetaching($request->personal_id);
         }else {
             $postulante = Postulante::create($request->all());
-            $postulante->personals()->syncWithoutDetaching($request->personal_id);
         }
+
+        $nombre = "{$postulante->ape_paterno} {$postulante->ape_materno} {$postulante->nombres}";
+        $postulante->update(["nombre_completo" => $nombre]);
+
+        $personal = Personal::findOrfail($request->personal_id);
+
+        $etapa = Etapa::updateOrCreate([
+            "postulante_id" => $postulante->id,
+            "type_etapa_id" => 1,
+            "convocatoria_id" => $personal->convocatoria_id,
+            "personal_id" => $personal->id,
+            "current" => 1,
+            "next" => 0
+        ]);
 
         if ($request->redirect) {
             $id = \base64_encode($postulante->id);

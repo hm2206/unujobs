@@ -7,6 +7,7 @@ use App\Models\Convocatoria;
 use App\Models\Personal;
 use App\Models\Ubigeo;
 use App\Models\Postulante;
+use App\Models\Etapa;
 use App\Models\TypeEtapa;
 use Illuminate\Support\Facades\Cache;
 
@@ -27,6 +28,7 @@ class BolsaController extends Controller
     public function show($numero, $titulo)
     {
         $convocatoria = Convocatoria::findOrFail($numero);
+        $personal = Personal::where("slug", $titulo)->firstOrFail();
         $types = [];
 
         $idParse = request()->postulante ? \base64_decode(request()->postulante) : Cache::get('postulante');
@@ -39,18 +41,11 @@ class BolsaController extends Controller
             $auth = true;
             $types = TypeEtapa::all();
 
-            $personal = $postulante->personals->where('slug', $titulo)->first();
-
-            if ($personal) {
-                $current = $personal->pivot->type_etapa_id;
-            }else {
-                $personal = Personal::where("slug", $titulo)->firstOrFail();
-            }
-
-        }else {
-            $personal = Personal::where("slug", $titulo)->firstOrFail();
+            $current = Etapa::where("postulante_id", $postulante->id)
+                ->where("personal_id", $personal->id)
+                ->where("current", 1)
+                ->first();
         }
-
 
         $isExpire = $convocatoria->fecha_final < date('Y-m-d') ? true : false;
         $mas = $convocatoria->personals->where("id", "<>", $personal->id);
@@ -88,8 +83,9 @@ class BolsaController extends Controller
         if ($postulante) {
             $idParse = base64_encode($postulante->id);
             Cache::put("postulante", $idParse, 600);
+            
 
-            $personal = $postulante->personals->where("id", $request->personal_id)->first();
+            $personal = $postulante->etapas->where("personal_id", $request->personal_id)->first();
 
             if ($personal) { 
                 if ($request->redirect) {

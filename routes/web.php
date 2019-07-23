@@ -20,6 +20,7 @@ Route::group(["prefix" => "RRHH"], function() {
     Route::resource("convocatoria", "ConvocatoriaController");
     Route::post("convocatoria/{id}/aceptar", "ConvocatoriaController@aceptar")->name("convocatoria.aceptar");
     Route::get("convocatoria/{id}/pdf", "ConvocatoriaController@pdf")->name("convocatoria.pdf");
+    Route::get("convocatoria/{id}/etapas", "ConvocatoriaController@etapas")->name("convocatoria.etapas");
 
     //Postulantes
     Route::resource("postulante", "PostulanteController");
@@ -27,6 +28,10 @@ Route::group(["prefix" => "RRHH"], function() {
 
     //Evalusiones
     Route::resource("evaluacion", "EvaluacionController");
+
+
+    //Etapas
+    Route::resource('etapa', 'EtapaController');
 
 });
 

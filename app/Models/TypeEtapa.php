@@ -9,4 +9,10 @@ class TypeEtapa extends Model
     
     protected $fillable = ['descripcion', 'icono'];
 
+
+    public function postulantes()
+    {
+        return $this->belongsToMany(Postulante::class, 'etapas');
+    }
+
 }

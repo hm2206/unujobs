@@ -10,13 +10,12 @@ class Postulante extends Model
     protected $fillable = [
         "ape_paterno", "ape_materno", "nombres", "numero_de_documento",
         "departamento_id", "provincia_id", "distrito_id", "fecha_de_nacimiento",
-        "phone", "email", 'cv'
+        "phone", "email", 'cv', 'nombre_completo'
     ];
 
-    public function personals()
+    public function etapas()
     {
-        return $this->belongsToMany(Personal::class, 'personal_postulante')
-            ->withPivot(["type_etapa_id"]);
+        return $this->hasMany(Etapa::class);
     }
 
 }

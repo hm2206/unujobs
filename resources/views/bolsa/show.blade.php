@@ -32,7 +32,7 @@
                                 @foreach ($types as $count => $type)
                                     <div class="col-md-4">
                                         <div class="row justify-content-center">
-                                            @if ($type->id == $current)
+                                            @if (isset($current->id) && $type->id == $current->id)
                                                 <div class="col-md-12 text-center">
                                                     <button class="btn btn-circle btn-lg btn-success">
                                                         <i class="{{ $type->icono }}"></i>
@@ -254,7 +254,7 @@
                             >
                             <small class="text-danger">{{ $errors->first('numero_de_documento') }}</small>
                             <input type="hidden" name="redirect" 
-                                value="{{ route('bolsa.show', [$convocatoria->numero_de_convocatoria, $personal->slug]) }}"
+                                value="{{ route('bolsa.show', [$convocatoria->id, $personal->slug]) }}"
                             >
                             <input type="hidden" name="personal_id" value="{{ $personal->id }}">
                         </div>

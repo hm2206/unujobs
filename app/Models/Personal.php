@@ -27,4 +27,9 @@ class Personal extends Model
     {
         return $this->hasMany(Question::class);
     }
+
+    public function postulantes()
+    {
+        return $this->belongsToMany(Postulante::class, 'etapas');
+    }
 }

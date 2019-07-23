@@ -8,6 +8,8 @@ use App\Http\Requests\ConvocatoriaRequest;
 use App\Models\Personal;
 use App\Http\Requests\ConvocatoriaUpdateRequest;
 use App\Models\Actividad;
+use App\Models\TypeEtapa;
+use App\Models\Postulante;
 use \DB;
 use \PDF;
 
@@ -154,5 +156,24 @@ class ConvocatoriaController extends Controller
         $year = isset(explode("-", $convocatoria->fecha_inicio)[0]) ? explode("-", $convocatoria->fecha_inicio)[0] : date('Y');
         $pdf = PDF::loadView('pdf.convocatoria', compact('convocatoria', 'year'));
         return $pdf->stream();
+    }
+
+    public function etapas($id)
+    {
+        $convocatoria = Convocatoria::findOrFail($id);
+        $year = isset(explode("-", $convocatoria->fecha_final)[0]) ? explode("-", $convocatoria->fecha_final)[0] : date('Y');
+        $etapas = TypeEtapa::all();
+
+        $current = request()->personal ? $convocatoria->personals->find(request()->personal) : $convocatoria->personals->first();
+
+        foreach ($etapas as $etapa) {
+            $etapa->postulantes = Postulante::whereHas("etapas", function($e) use($current){
+                            $e->where("personal_id", isset($current->id) ? $current->id : 0);
+                        })->whereHas("etapas", function($e) use($etapa) {
+                            $e->where("type_etapa_id", $etapa->id);
+                        })->get(); 
+        }
+
+        return view("convocatoria.etapas", compact('convocatoria', 'etapas', 'year', 'current'));
     }
 }

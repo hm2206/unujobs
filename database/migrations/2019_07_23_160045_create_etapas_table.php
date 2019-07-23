@@ -15,6 +15,13 @@ class CreateEtapasTable extends Migration
     {
         Schema::create('etapas', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('postulante_id');
+            $table->integer('type_etapa_id');
+            $table->integer('convocatoria_id');
+            $table->integer('personal_id');
+            $table->integer('current')->default(1);
+            $table->integer('next')->default(0);
+            $table->integer('puntaje')->default(0);
             $table->timestamps();
         });
     }
