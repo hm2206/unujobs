@@ -234,7 +234,19 @@
             Cargos
         </div>
         <div class="card-body">
-
+            <div class="row">
+                @foreach ($job->infos as $info)
+                    <div class="col-md-4">
+                        <button class="btn btn-primary">
+                            {{ $info->cargo ? $info->cargo->descripcion : '' }}
+                            <i class="fas fa-arrow-right text-warning"></i>
+                            <span class="btn btn-sm btn-danger">
+                                {{ $info->categoria ? $info->categoria->nombre : '' }}
+                            </span>
+                        </button>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 
@@ -243,7 +255,15 @@
             Sindicatos
         </div>
         <div class="card-body">
-            
+            <div class="row">
+                @foreach ($job->sindicatos as $sindicato)
+                    <div class="col-md-3">
+                        <div class="btn btn-outline-dark">
+                            {{ $sindicato->nombre }}
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 

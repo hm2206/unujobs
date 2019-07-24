@@ -413,7 +413,7 @@ class JobController extends Controller
         $info->active = 1;
         $info->save();
 
-        return back()->with(["success.config" => "Los datos se guardarón correctamente"]);
+        return redirect()->route('job.config', $work->id);
 
     }
 

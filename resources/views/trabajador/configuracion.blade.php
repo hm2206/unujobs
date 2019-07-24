@@ -43,7 +43,7 @@
                     <label for="">Cargo <span class="text-danger">*</span></label>
                     <select-change name="cargo_id" :datos="{{ json_encode($cargos) }}" 
                         value="id" text="descripcion" for="form-cargo"
-                        request="{!! request()->cargo_id !!}"
+                        :request="'{{ request()->input('cargo_id', 0) }}'"
                     >
                     </select-change>
                 </div>
@@ -51,7 +51,7 @@
                     <label for="">Categoria <span class="text-danger">*</span></label>
                     <select-change name="categoria_id" :datos="{{ json_encode($categorias) }}" 
                         value="id" text="nombre" for="form-cargo"
-                        request="{!! request()->categoria_id  !!}"
+                        :request="'{{ request()->input('categoria_id')  }}'"
                     >
                     </select-change>
                 </div>
@@ -59,8 +59,8 @@
             
             <form action="{{ route('job.config.store', $work->id) }}" method="POST" class="mt-3">
                 @csrf
-                <input type="hidden" name="cargo_id" value="{{ request()->cargo_id }}">
-                <input type="hidden" name="categoria_id" value="{{ request()->categoria_id }}">
+                <input type="hidden" name="cargo_id" value="{{ request()->input('cargo_id') }}">
+                <input type="hidden" name="categoria_id" value="{{ request()->input('categoria_id') }}">
 
                 <button class="btn btn-success">
                     <i class="fas fa-save"></i> Guardar
@@ -73,7 +73,7 @@
             <div class="row">
                 @foreach ($work->infos as $info)
                     <div class="col-md-4">
-                        <div class="btn btn-primary">
+                        <div class="btn btn-primary mb-1">
                             {{ $info->cargo ? $info->cargo->descripcion : '' }} 
                             <i class="fas fa-arrow-right text-warning"></i>
                             <span class="btn btn-sm btn-danger">
@@ -97,10 +97,12 @@
             <div class="row">
                 @foreach ($sindicatos as $sindicato)
                     <div class="col-md-4">
-                        <input type="checkbox" name="sindicatos[]" 
-                            value="{{ $sindicato->id }}"
-                            {!! $sindicato->check ? 'checked' : null !!}
-                        > 
+                        @if ($sindicato->check)
+                            <input type="checkbox" name="sindicatos[]" value="{{ $sindicato->id }}" checked> 
+                        @else
+                            <input type="checkbox" name="sindicatos[]" value="{{ $sindicato->id }}"> 
+                        @endif
+                        
                         {{ $sindicato->nombre }}
                     </div>
                 @endforeach
