@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cargo extends Model
 {
     
-    protected $fillable = ["descripcion", "planilla_id"];
+    protected $fillable = ["descripcion", "planilla_id", "tag"];
 
     public function categorias()
     {

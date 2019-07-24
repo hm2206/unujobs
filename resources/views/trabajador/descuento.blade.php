@@ -90,9 +90,16 @@
         <h4 class="card-header">
             Descuento
             <span class="text-danger"> >> </span> 
-            <span class="uppercase">{{ $job->nombre_completo }} <i class="fas fa-arrow-right"></i> <b class="text-danger">{{ $job->categoria->nombre }}</b></span>
+            <span class="uppercase">{{ $job->nombre_completo }} </span>
         </h4>
         <form class="card-body" action="{{ route('job.descuento.update', $job->id) }}" method="POST">
+            <div class="mb-4">
+                Categoria: <b class="text-primary">{{ $categoria->nombre }}</b> <br>
+                <div class="row align-items-center">
+                    <div class="col-md-1"> Dias: </div>
+                    <b class="text-primary">{{ $dias }}</b>
+                </div>
+            </div>
 
             <div class="row mt-4">
                 @csrf
@@ -133,21 +140,24 @@
 
         </form>
 
-        <div class="card-footer">
-            <h5 class="text-right">
-                <b>TOTAL DSCTOS:</b>  <b class="text-primary">S./ {{ $total }}</b>
-            </h5>
-            <h5 class="text-right">
-                <b>BASE IMPONIBLE:</b>  <b class="text-primary">S./ {{ $base }}</b>
-            </h5>
-            <h5 class="text-right">
-                <b>APORTE PATRONAL ESSALUD:</b>  <b class="text-primary">S./ {{ $aporte }}</b>
-            </h5>
-            <hr>
-            <h5 class="text-right">
-                <b>TOTAL:</b>  <b class="text-primary">S./ {{ $total_neto }}</b>
-            </h5>
-        </div>
+        @if (count($descuentos) > 0)
+            <div class="card-footer">
+                <h6 class="text-right">
+                    <b>TOTAL DSCTOS:</b>  <b class="text-primary">S./ {{ $total }}</b>
+                </h6>
+                <h6 class="text-right">
+                    <b>BASE IMPONIBLE:</b>  <b class="text-primary">S./ {{ $base }}</b>
+                </h6>
+                <h6 class="text-right">
+                    <b>APORTE PATRONAL ESSALUD:</b>  <b class="text-primary">S./ {{ $aporte }}</b>
+                </h6>
+                <hr>
+                <h6 class="text-right">
+                    <b>TOTAL:</b>  <b class="text-primary">S./ {{ $total_neto }}</b>
+                </h6>
+            </div>
+        @endif
+
     </div>
 
 </div>

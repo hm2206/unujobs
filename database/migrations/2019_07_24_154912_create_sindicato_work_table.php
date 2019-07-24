@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTypeEtapasTable extends Migration
+class CreateSindicatoWorkTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateTypeEtapasTable extends Migration
      */
     public function up()
     {
-        Schema::create('type_etapas', function (Blueprint $table) {
+        Schema::create('sindicato_work', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('descripcion');
-            $table->string("icono");
-            $table->integer("fin")->default(0);
+            $table->integer('sindicato_id');
+            $table->integer('work_id');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateTypeEtapasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('type_etapas');
+        Schema::dropIfExists('sindicato_work');
     }
 }

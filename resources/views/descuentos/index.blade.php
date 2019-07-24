@@ -11,7 +11,7 @@
 @section('content')
 
 <div class="col-md-12 mb-2">
-    <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     <a href="{{ route('descuento.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
@@ -44,7 +44,7 @@
                     <tbody>
                         @forelse ($descuentos as $descuento)
                             <tr id="categoria-{{ $descuento->id }}">
-                                <th>{{ $descuento->id }}</th>
+                                <th>{{ $descuento->key }}</th>
                                 <th class="uppercase">{{ $descuento->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">

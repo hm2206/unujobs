@@ -5,7 +5,7 @@
 <div class="row">
 
     <div class="col-md-12 mb-3">
-        <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+        <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
         <a href="{{ route('personal.create') }}" class="btn btn-success"><i class="fas fa-plus"></i> nuevo</a>
     </div>
 

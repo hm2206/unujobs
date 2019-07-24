@@ -11,7 +11,7 @@
 @section('content')
 
 <div class="col-md-12">
-    <a href="{{ route('planilla') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     <a href="{{ route('categoria.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 

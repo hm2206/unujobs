@@ -215,19 +215,6 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Sindicatos</label>
-                        <select name="sindicato_id"class="form-control">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($sindicatos as $sindicato)
-                                <option value="{{ $sindicato->id }}" {!! old('sindicato_id') == $sindicato->id ? 'selected' : '' !!}>{{ $sindicato->nombre }}</option>
-                            @endforeach
-                        </select>
-                        <b class="text-danger">{{ $errors->first('sindicato_id') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
                         <label for="" class="form-control-label">Cargo <span class="text-danger">*</span></label>
                         <select name="cargo_id"class="form-control" onchange="combobox(this, 'categoria');">
                             <option value="">Seleccionar...</option>
@@ -238,7 +225,6 @@
                         <b class="text-danger">{{ $errors->first('cargo_id') }}</b>
                     </div>
                 </div>
-                
 
                 <div class="col-md-6">
                         <div class="form-group">
@@ -253,13 +239,6 @@
                         </div>
                     </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Condición P.A.P</label>
-                        <input type="text" name="condicion_pap" class="form-control" value="{{ old('condicion_pap') }}">
-                        <b class="text-danger">{{ $errors->first('condicion_pap') }}</b>
-                    </div>
-                </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
@@ -285,27 +264,12 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">P.E.A <span class="text-danger">*</span></label>
-                        <input type="text" name="pea" class="form-control" value="{{ old('pea') ? old('pea'): 31 }}">
-                        <b class="text-danger">{{ $errors->first('pea') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
                         <label for="" class="form-control-label">Perfil <span class="text-danger">*</span></label>
                         <input type="text" name="perfil" class="form-control" value="{{ old('perfil') }}">
                         <b class="text-danger">{{ $errors->first('perfil') }}</b>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Ext Pptto</label>
-                        <input type="text" name="ext_pptto" class="form-control" value="{{ old('ext_pptto') }}">
-                        <b class="text-danger">{{ $errors->first('ext_pptto') }}</b>
-                    </div>
-                </div>
 
                 <div class="col-md-6">
                     <div class="form-group">

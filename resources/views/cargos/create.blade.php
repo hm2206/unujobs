@@ -38,6 +38,12 @@
             </div>
 
             <div class="form-group">
+                <label for="" class="form-control-label">Tag <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="tag" value="{{ old('tag') }}">
+                <b class="text-danger">{{ $errors->first('tag') }}</b>
+            </div>
+
+            <div class="form-group">
                 <label for="" class="form-control-label">Planilla <span class="text-danger">*</span></label>
                 <select name="planilla_id" class="form-control">
                     <option value="">Seleccionar...</option>

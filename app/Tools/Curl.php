@@ -1,7 +1,7 @@
 <?php
     namespace App\Tools;
     
-	class cURL
+	class Curl
 	{
 		protected $_useragent = 'Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0';
 		protected $_url;
@@ -26,7 +26,7 @@
 		public    $proxy = false;
 		public    $proxy_host = '';
 		public    $proxy_port = '';
-		public    $proxy_type = CURLPROXY_HTTP;
+		public    $proxy_type = "CURLPROXY_HTTP";
 		
 		public    $authentication = false;
 		public    $auth_name      = '';

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo')
-    - Cargos
+    - Descuentos
 @endsection
 
 @section('link')
@@ -12,7 +12,7 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cargo.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <a href="{{ route('remuneracion.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
 </div>
 
 @if (session('success'))
@@ -23,12 +23,13 @@
     </div>
 @endif
 
+
 <div class="col-md-12">
 
     <div class="card">
         <div class="card-header card-header-danger">
-            <h4 class="card-title">Lista de Cargos</h4>
-            <p class="card-category">Sub Módulo de Gestión de cargos</p>
+            <h4 class="card-title">Lista de Descuentos</h4>
+            <p class="card-category">Sub Módulo de Gestión de descuentos</p>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -37,36 +38,24 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
-                            <th>Categorias</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($cargos as $cargo)
-                            <tr>
-                                <th>{{ $cargo->id }}</th>
-                                <th class="uppercase">{{ $cargo->descripcion }}</th>
-                                <th>
-                                    <a href="{{ route('cargo.categoria', $cargo->id) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>
-                                    @foreach ($cargo->categorias as $categoria)
-                                        <a href="#" class="btn btn-sm btn-danger uppercase mt-1">
-                                            {{ $categoria->nombre }}
-                                        </a>
-                                    @endforeach
-                                </th>
+                        @forelse ($remuneraciones as $remuneracion)
+                            <tr id="categoria-{{ $remuneracion->id }}">
+                                <th>{{ $remuneracion->key }}</th>
+                                <th class="uppercase">{{ $remuneracion->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('remuneracion.edit', $remuneracion->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a href="{{ route('cargo.config', $cargo->id) }}" class="btn btn-sm btn-dark">
-                                            <i class="fas fa-cog"></i>
                                         </a>
                                     </div>
                                 </th>
                             </tr>
                         @empty
-                            <tr>
+                            <tr class="text-center">
                                 <td colspan="4">No hay registros</td>
                             </tr>
                         @endforelse

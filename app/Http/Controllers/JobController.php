@@ -18,6 +18,7 @@ use App\Models\TypeRemuneracion;
 use App\Models\Cronograma;
 use App\Models\Descuento;
 use App\Models\TypeDescuento;
+use App\Models\Info;
 use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCronograma;
 use \PDF;
@@ -52,9 +53,11 @@ class JobController extends Controller
             $q->where("cargos.id", old('cargo_id'));
         })->get();
 
-        if($documento) {
-            $essalud = new Essalud();
-            $result = $essalud->search($documento);
+        if (!old('numero_de_documento')) {
+            if($documento) {
+                $essalud = new Essalud();
+                $result = $essalud->search($documento);
+            }
         }
 
         return view('trabajador.create', compact('decumento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
@@ -164,9 +167,12 @@ class JobController extends Controller
 
     public function remuneracionUpdate(Request $request, $id)
     {
+        $this->validate(request(), [
+            "cronograma_id" => "required"
+        ]);
+        
         $job = Work::findOrFail($id);
         $cronograma = Cronograma::find($request->cronograma_id);
-        $cronograma->update(["dias" => $request->dias]);
         $remuneraciones = $job->remuneraciones->where("cronograma_id", $cronograma->id);
         $total = 0;
 
@@ -190,6 +196,7 @@ class JobController extends Controller
     public function descuento($id) 
     {
         $job = Work::findOrFail($id);
+        $categoria = Categoria::findOrFail($job->categoria_id);
 
         $year = request()->year ? (int)request()->year : date('Y');
         $mes = request()->mes ? (int)request()->mes : (int)date('m');
@@ -234,16 +241,19 @@ class JobController extends Controller
         $total_neto = $job->total - $total;
 
         return view("trabajador.descuento", 
-            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 
+            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria',
             'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 'total_neto'));
     }
 
 
     public function descuentoUpdate(Request $request, $id)
     {
+        $this->validate(request(), [
+            "cronograma_id" => "required"
+        ]);
+
         $job = Work::findOrFail($id);
         $cronograma = Cronograma::find($request->cronograma_id);
-        $cronograma->update(["dias" => $request->dias]);
         $descuentos = Descuento::where("work_id", $job->id)
             ->where("cronograma_id", $cronograma->id)
             ->get();
@@ -362,6 +372,58 @@ class JobController extends Controller
         $pdf = PDF::loadView("pdf.boleta", compact('work', 'cronogramas'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
         return $pdf->stream("boleta - {$work->nombre_completo}");
+    }
+
+
+    public function config($id)
+    {  
+        $work = Work::with('infos')->findOrFail($id);
+        $cargoNotIn = $work->infos->pluck(["id"]);
+        $cargos = Cargo::whereNotIn("id", $cargoNotIn)->get();
+        $sindicatos = Sindicato::all();
+        $current = $cargos->find(request()->cargo_id);
+        $categorias = [];
+
+        if ($current) {
+            $categorias = $current->categorias;
+        }
+
+        foreach ($sindicatos as $sindicato) {
+            $sindicato->check = $work->sindicatos->where('id', $sindicato->id)->count() ? true : false;
+        }
+
+        return view('trabajador.configuracion', compact('work', 'cargos', 'categorias', 'current', 'sindicatos'));
+    }
+
+    public function configStore(Request $request, $id)
+    {
+        $this->validate(request(), [
+            "cargo_id" => "required",
+            "categoria_id" => "required"
+        ]);
+
+        $work = Work::findOrFail($id);
+
+        $info = Info::updateOrCreate([
+            "work_id" => $work->id,
+            "cargo_id" => $request->cargo_id,
+            "categoria_id" => $request->categoria_id
+        ]);
+
+        $info->active = 1;
+        $info->save();
+
+        return back()->with(["success.config" => "Los datos se guardarón correctamente"]);
+
+    }
+
+    
+    public function sindicatoStore(Request $request, $id)
+    {
+        $work = Work::findOrFail($id);
+        $sindicatos = $request->input('sindicatos', []);
+        $work->sindicatos()->sync($sindicatos);
+        return back();
     }
 
 }

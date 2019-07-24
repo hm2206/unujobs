@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Remuneracion;
+use App\Info;
 use Illuminate\Http\Request;
 
-class RemuneracionController extends Controller
+class InfoController extends Controller
 {
-    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-    
+        //
     }
 
-
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
-        
+        //
     }
 
     /**
@@ -33,10 +41,10 @@ class RemuneracionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Remuneracion  $remuneracion
+     * @param  \App\Info  $info
      * @return \Illuminate\Http\Response
      */
-    public function show(Remuneracion $remuneracion)
+    public function show(Info $info)
     {
         //
     }
@@ -44,10 +52,10 @@ class RemuneracionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Remuneracion  $remuneracion
+     * @param  \App\Info  $info
      * @return \Illuminate\Http\Response
      */
-    public function edit(Remuneracion $remuneracion)
+    public function edit(Info $info)
     {
         //
     }
@@ -56,10 +64,10 @@ class RemuneracionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Remuneracion  $remuneracion
+     * @param  \App\Info  $info
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Remuneracion $remuneracion)
+    public function update(Request $request, Info $info)
     {
         //
     }
@@ -67,10 +75,10 @@ class RemuneracionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Remuneracion  $remuneracion
+     * @param  \App\Info  $info
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Remuneracion $remuneracion)
+    public function destroy(Info $info)
     {
         //
     }

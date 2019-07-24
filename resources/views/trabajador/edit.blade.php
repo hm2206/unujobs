@@ -13,6 +13,9 @@
 <div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-ban"></i> cancelar</a>
     <a href="{{ route('job.show', $job->id) }}" class="btn btn-primary"><i class="fas fa-user"></i> perfil</a>
+    <a href="{{ route('job.config', $job->id) }}" class="btn btn-dark">
+        <i class="fas fa-cog"></i> Configuración
+    </a>
 </div>
     
 <div class="col-md-12">
@@ -194,18 +197,6 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Sindicatos</label>
-                        <select name="sindicato_id"class="form-control">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($sindicatos as $sindicato)
-                                <option value="{{ $sindicato->id }}" {!! $job->sindicato_id == $sindicato->id ? 'selected' : '' !!}>{{ $sindicato->nombre }}</option>
-                            @endforeach
-                        </select>
-                        <b class="text-danger">{{ $errors->first('sindicato_id') }}</b>
-                    </div>
-                </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
@@ -241,14 +232,6 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Condición P.A.P</label>
-                        <input type="text" name="condicion_pap" class="form-control" value="{{ old('condicion_pap') ? old('condicion_pap') : $job->condicion_pap }}">
-                        <b class="text-danger">{{ $errors->first('condicion_pap') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
                         <label for="" class="form-control-label">Plaza</label>
                         <input type="text" name="plaza" class="form-control" value="{{ old('plaza') ? old('plaza') : $job->plaza }}">
                     </div>
@@ -272,14 +255,6 @@
                         <label for="" class="form-control-label">Perfil</label>
                         <input type="text" name="perfil" class="form-control" value="{{ old('perfil') ? old('perfil') : $job->perfil }}">
                         <b class="text-danger">{{ $errors->first('perfil') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Ext Pptto</label>
-                        <input type="text" name="ext_pptto" class="form-control" value="{{ old('ext_pptto') ? old('ext_pptto') : $job->ext_pptto }}">
-                        <b class="text-danger">{{ $errors->first('ext_pptto') }}</b>
                     </div>
                 </div>
 

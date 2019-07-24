@@ -145,9 +145,9 @@
         </form>
 
         <div class="card-footer">
-            <h4 class="text-right">
+            <h5 class="text-right">
                 Total Bruto:  <b class="text-primary">S./ {{ $job->total }}</b>
-            </h4>
+            </h5>
         </div>
     </div>
 

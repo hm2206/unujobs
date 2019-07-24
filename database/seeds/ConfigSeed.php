@@ -7,6 +7,10 @@ use App\Models\Sede;
 use App\Models\Dependencia;
 use App\Models\Ubigeo;
 use App\Models\TypeEtapa;
+use App\Models\Planilla;
+use App\Models\Afp;
+use App\Models\Banco;
+use App\Models\Sindicato;
 
 class ConfigSeed extends Seeder
 {
@@ -21,6 +25,10 @@ class ConfigSeed extends Seeder
         self::dependencias();
         self::ubigeos();
         self::typeEtapas();
+        self::planillas();
+        self::afps();
+        self::bancos();
+        self::sindicatos();
 
     }
 
@@ -105,19 +113,16 @@ class ConfigSeed extends Seeder
 
         $types = [
             [
-                "titulo" => "",
                 "descripcion" => "Acta Curricular", 
                 "icono" => "fas fa-file-pdf", 
                 "fin" => 0,
             ],
             [
-                "titulo" => "",
                 "descripcion" => "Acta de Conocimiento", 
                 "icono" => "fas fa-file", 
                 "fin" => 0
             ],
             [
-                "titulo" => "",
                 "descripcion" => "Entrevista Personal", 
                 "icono" => "fas fa-user", 
                 "fin" => 1
@@ -127,6 +132,73 @@ class ConfigSeed extends Seeder
         foreach ($types as $type) {
             TypeEtapa::create($type);
         }
+    }
+
+
+    public function planillas()
+    {
+        Planilla::truncate();
+
+        $planillas = [
+            ["key" => "01", "descripcion" => "Planilla Activos"],
+            ["key" => "05", "descripcion" => "Planilla Cas"],
+            ["key" => "06", "descripcion" => "Planilla Adicional"]
+        ];
+
+        foreach ($planillas as $planilla) {
+            Planilla::create($planilla);
+        }
+    }
+
+    public function afps()
+    {
+        Afp::truncate();
+
+        $afps = [
+            ["nombre" => "HABITAT", "descripcion" => "", "flujo" => "1.47", "mixta" => "0.38", "aporte" => "10.00", "prima" => "1.35"],
+            ["nombre" => "INTEGRA", "descripcion" => "", "flujo" => "1.55", "mixta" => "0.00", "aporte" => "10.00", "prima" => "1.35"],
+            ["nombre" => "PRIMA", "descripcion" => "", "flujo" => "1.60", "mixta" => "0.18", "aporte" => "10.00", "prima" => "1.35"],
+            ["nombre" => "PROFUTURO", "descripcion" => "", "flujo" => "1.69", "mixta" => "0.67", "aporte" => "10.00", "prima" => "1.35"]
+        ];
+
+        foreach ($afps as $afp) {
+            Afp::create($afp);
+        }
+    }
+
+    
+    public function bancos()
+    {
+
+        Banco::truncate();
+
+        $bancos = [
+            ["nombre" => "Banco de la Nación"],
+            ["nombre" => "Banco Continental"],
+            ["nombre" => "Banco de Credito"],
+            ["nombre" => "Otros"]
+        ];
+
+        foreach ($bancos as $key => $banco) {
+            Banco::create($banco);
+        }
+
+    }
+
+    public function sindicatos()
+    {
+
+        Sindicato::truncate();
+
+        $sindicatos = [
+            ["nombre" => "SUTUNU", "porcentaje" => 1.0],
+            ["nombre" => "SITUNU", "porcentaje" => 1.0]
+        ];
+
+        foreach ($sindicatos as $sindicato) {
+            Sindicato::create($sindicato);
+        }
+
     }
 
 }

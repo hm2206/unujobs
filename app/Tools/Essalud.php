@@ -4,7 +4,7 @@
 	{
 		function __construct()
 		{
-			$this->cc = new cURL();
+			$this->cc = new Curl();
 			$this->cc->setReferer('https://ww1.essalud.gob.pe');
         }
         

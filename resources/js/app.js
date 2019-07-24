@@ -25,6 +25,7 @@ Vue.component('add-base', require('./components/AddBase.vue').default);
 Vue.component('add-actividades', require('./components/AddActividades.vue').default);
 Vue.component('locacion', require('./components/Locacion.vue').default);
 Vue.component('notification', require('./components/Notifications.vue').default);
+Vue.component('select-change', require('./components/SelectChange.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

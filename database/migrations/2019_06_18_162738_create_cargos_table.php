@@ -18,7 +18,7 @@ class CreateCargosTable extends Migration
             $table->string("tag");
             $table->string("descripcion")->unique();
             $table->integer("planilla_id");
-            $table->integer("type_categoria_id");
+            $table->integer("type_categoria_id")->nullable();
             $table->timestamps();
         });
     }

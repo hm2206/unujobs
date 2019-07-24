@@ -62,7 +62,7 @@
         <div class="card-body">
             <div class="row">
                 @foreach ($cargo->categorias as $categoria)
-                    <div class="btn btn-warning">
+                    <div class="btn btn-warning ml-1 mb-1">
                         {{ $categoria->nombre }}
                     </div>
                 @endforeach

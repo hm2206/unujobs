@@ -68,7 +68,8 @@ export default {
                 this.notifications = res.data;
 
             }).catch(err => {
-                alert("No se pudó obtener las notificaciones");
+                alert("No se pudó obtener las notificaciones, Actualize la página");
+                clearTimeout(this.intervalo);
             })
         },
         getDate(timestap){
@@ -81,7 +82,8 @@ export default {
             api.then(res => {
                 this.notifications = res.data;
             }).catch(err => {
-                alert("Ocurrio un error al actualizar las notificationes");
+                alert("Ocurrio un error al actualizar las notificationes, Actualize la página");
+                clearTimeout(this.intervalo);
             });
         }
     },

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Categoria;
 use App\Models\Remuneracion;
 use App\Models\Work;
-use App\Models\planilla;
+use App\Models\Planilla;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;

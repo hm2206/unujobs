@@ -160,13 +160,6 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Sindicatos</label>
-                        <span class="form-control uppercase">{{ $job->sindicato ? $job->sindicato->nombre : ''}}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
                         <label for="" class="form-control-label">Cargo</label>
                         <span class="form-control uppercase">{{ $job->cargo ? $job->cargo->descripcion : ''}}</span>
                     </div>
@@ -176,13 +169,6 @@
                     <div class="form-group">
                         <label for="" class="form-control-label">Categoria</label>
                         <span class="form-control uppercase">{{ $job->categoria ? $job->categoria->nombre : ''}}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Condicion P.A.P</label>
-                        <span class="form-control uppercase">{{ $job->condicion_pap }}</span>
                     </div>
                 </div>
 
@@ -204,13 +190,6 @@
                     <div class="form-group">
                         <label for="" class="form-control-label">Perfil</label>
                         <span class="form-control uppercase">{{ $job->perfil }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Ext Pptto</label>
-                        <span class="form-control uppercase">{{ $job->ext_pptto}}</span>
                     </div>
                 </div>
 
@@ -248,7 +227,25 @@
 
             </div>
         </div>
-    </div>        
+    </div> 
+    
+    <div class="card mt-3">
+        <div class="card-header">
+            Cargos
+        </div>
+        <div class="card-body">
+
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">
+            Sindicatos
+        </div>
+        <div class="card-body">
+            
+        </div>
+    </div>
 
 </div>
 @endsection

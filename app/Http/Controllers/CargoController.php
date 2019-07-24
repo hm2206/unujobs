@@ -29,7 +29,8 @@ class CargoController extends Controller
     {
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos",
-            "planilla_id" => "required"
+            "planilla_id" => "required",
+            "tag" => "required"
         ]);
 
         Cargo::create($request->all());
@@ -55,7 +56,8 @@ class CargoController extends Controller
     {
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos,id,".$request->descripcion,
-            "planilla_id" => "required"
+            "planilla_id" => "required",
+            "tag" => "required"
         ]);
 
         $cargo->update($request->all());

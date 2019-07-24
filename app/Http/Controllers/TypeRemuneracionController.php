@@ -2,82 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\TypeRemuneracion;
+use App\Models\TypeRemuneracion;
 use Illuminate\Http\Request;
 
 class TypeRemuneracionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $remuneraciones = TypeRemuneracion::all();
+
+        return view('remuneraciones.index', compact('remuneraciones'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        //
+        return view('remuneraciones.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        $payload = $this->validate(request(), [
+            "key" => "required|unique:type_remuneracions",
+            "descripcion" => "required",
+        ]);
+        
+        $base = $request->base ? 1 : 0;
+
+        $type = TypeRemuneracion::create($payload);
+        $type->update(["base" => $base]);
+        
+        return back()->with(["success" => "Los datos se guardarón correctamente"]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\TypeRemuneracion  $typeRemuneracion
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(TypeRemuneracion $typeRemuneracion)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\TypeRemuneracion  $typeRemuneracion
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(TypeRemuneracion $typeRemuneracion)
+
+    public function edit($id)
     {
-        //
+        $remuneracion = TypeRemuneracion::findOrFail($id);
+
+        return view('remuneraciones.edit', compact('remuneracion'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TypeRemuneracion  $typeRemuneracion
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, TypeRemuneracion $typeRemuneracion)
+
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate(request(), [
+            "key" => "required|unique:type_remuneracions,key,".$id,
+            "descripcion" => "required",
+        ]);
+
+        $remuneracion = TypeRemuneracion::findOrFail($id);
+
+        $base = $request->base ? 1 : 0;
+
+        $remuneracion->update([
+            "key" => $request->key,
+            "descripcion" => $request->descripcion,
+            "base" => $base
+        ]);
+
+        return back()->with(["success" => "Los datos se actualizarón correctamente"]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\TypeRemuneracion  $typeRemuneracion
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(TypeRemuneracion $typeRemuneracion)
     {
         //

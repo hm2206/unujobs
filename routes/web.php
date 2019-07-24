@@ -39,8 +39,6 @@ Route::group(["prefix" => "RRHH"], function() {
 
 Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
 
-    Route::get('/', 'HomeController@planilla')->name('planilla');
-
     //Trabajadores
     Route::resource('job', 'JobController');
     Route::get('job/{id}/remuneracion', 'JobController@remuneracion')->name('job.remuneracion');
@@ -50,6 +48,9 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     Route::get('job/{id}/obligacion', 'JobController@obligacion')->name('job.obligacion');
     Route::get('job/{id}/boleta', 'JobController@boleta')->name('job.boleta');
     Route::post('job/{id}/boleta', 'JobController@boletaStore')->name('job.boleta.store');
+    Route::get('job/{id}/config', 'JobController@config')->name('job.config');
+    Route::post('job/{id}/config', 'JobController@configStore')->name('job.config.store');
+    Route::post('job/{id}/sindicato', 'JobController@sindicatoStore')->name('job.sindicato.store');
 
     //Metas
     Route::resource('meta', 'MetaController');
@@ -82,6 +83,9 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     Route::resource('descuento', 'DescuentoController');
     Route::get('descuento/{id}/config', 'DescuentoController@config')->name('descuento.config');
     Route::post('descuento/{id}/config', 'DescuentoController@configStore')->name('descuento.config.store');
+
+    //Remuneraciones
+    Route::resource('remuneracion', 'TypeRemuneracionController');
 
 
 });

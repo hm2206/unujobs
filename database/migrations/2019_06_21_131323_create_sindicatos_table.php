@@ -17,6 +17,7 @@ class CreateSindicatosTable extends Migration
             $table->bigIncrements('id');
             $table->string("nombre");
             $table->text("descripcion")->nullable();
+            $table->double("porcentaje")->nullable();
             $table->timestamps();
         });
     }

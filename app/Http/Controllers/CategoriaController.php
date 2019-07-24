@@ -48,11 +48,15 @@ class CategoriaController extends Controller
     }
 
 
-    public function update(Request $request, Categoria $categoria)
+    public function update(Request $request, $id)
     {
-        $this->validate(request(), [
+        $payload = $this->validate(request(), [
             "nombre" => "required"
         ]); 
+
+        $categoria = Categoria::findOrFail($id);
+
+        $categoria->update($payload);
 
         return back()->with(["success" => "El registro se actualizó correctamente"]);
     }

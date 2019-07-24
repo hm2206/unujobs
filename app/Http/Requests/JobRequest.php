@@ -38,9 +38,8 @@ class JobRequest extends FormRequest
             "cargo_id" => "required",
             "categoria_id" => "required",
             "meta_id" => "required",
-            "pea" => "required",
-            "condicion_pap" => "required",
             "perfil" => "required",
+            "phone" => "required",
             "direccion" => "required"
         ];
     }

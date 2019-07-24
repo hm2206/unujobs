@@ -27,6 +27,11 @@ class Work extends Model
         return $this->belongsTo(Sindicato::class);
     }
 
+    public function sindicatos()
+    {
+        return $this->belongsToMany(Sindicato::class, 'sindicato_work');
+    }
+
     public function afp()
     {
         return $this->belongsTo(Afp::class);
@@ -40,6 +45,11 @@ class Work extends Model
     public function cargo()
     {
         return $this->belongsTo(Cargo::class);
+    }
+
+    public function infos()
+    {
+        return $this->hasMany(Info::class);
     }
 
     public function meta() 
