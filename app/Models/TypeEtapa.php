@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TypeEtapa extends Model
 {
     
-    protected $fillable = ['descripcion', 'icono'];
+    protected $fillable = ['descripcion', 'icono', 'fin'];
 
 
     public function postulantes()

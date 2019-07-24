@@ -18,7 +18,7 @@ class CreateConvocatoriasTable extends Migration
             $table->string("numero_de_convocatoria");
             $table->text("observacion")->nullable();
             $table->date("fecha_inicio");
-            $table->date('fecha_final');
+            $table->date('fecha_final')->nullable();
             $table->integer('aceptado')->default(0);
             $table->timestamps();
         });

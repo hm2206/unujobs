@@ -9,6 +9,7 @@ use App\Models\Ubigeo;
 use App\Models\Postulante;
 use App\Models\Etapa;
 use App\Models\TypeEtapa;
+use \PDF;
 use Illuminate\Support\Facades\Cache;
 
 class BolsaController extends Controller
@@ -45,6 +46,7 @@ class BolsaController extends Controller
                 ->where("personal_id", $personal->id)
                 ->where("current", 1)
                 ->first();
+
         }
 
         $isExpire = $convocatoria->fecha_final < date('Y-m-d') ? true : false;
@@ -95,6 +97,32 @@ class BolsaController extends Controller
         }
 
         return back()->with(["auth" => "EL postulante no está registrado"]);
+    }
+
+
+    public function resultados($id, $personalID)
+    {
+        $convocatoria = Convocatoria::findOrFail($id);
+        $year = isset(explode("-", $convocatoria->fecha_final)[0]) ? explode("-", $convocatoria->fecha_final)[0] : date('Y');
+        $etapas = TypeEtapa::all();
+        $current = Personal::findOrFail($personalID);
+
+
+        foreach ($etapas as $etapa) {
+            $etapa->postulantes = Postulante::whereHas("etapas", function($e) use($current){
+                        $e->where("personal_id", isset($current->id) ? $current->id : 0);
+                    })->whereHas("etapas", function($e) use($etapa) {
+                        $e->where("type_etapa_id", $etapa->id);
+                    })->with(["etapas" => function($q) use($etapa) {
+                        $q->where("etapas.type_etapa_id", $etapa->id);
+                    }])->get(); 
+        }
+        
+        $hasExpire = $convocatoria->fecha_final < date('Y-m-d') ? true : false;
+        
+        $pdf = PDF::loadView('pdf.resultados', compact('convocatoria', 'year', 'etapas', 'current', 'hasExpire'));
+        return $pdf->stream();
+
     }
 
 

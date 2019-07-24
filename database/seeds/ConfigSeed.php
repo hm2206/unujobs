@@ -104,9 +104,24 @@ class ConfigSeed extends Seeder
         TypeEtapa::truncate();
 
         $types = [
-            ["descripcion" => "Acta Curricular", "icono" => "fas fa-file-pdf"],
-            ["descripcion" => "Acta de Conocimiento", "icono" => "fas fa-file"],
-            ["descripcion" => "Entrevista Personal", "icono" => "fas fa-user"]
+            [
+                "titulo" => "",
+                "descripcion" => "Acta Curricular", 
+                "icono" => "fas fa-file-pdf", 
+                "fin" => 0,
+            ],
+            [
+                "titulo" => "",
+                "descripcion" => "Acta de Conocimiento", 
+                "icono" => "fas fa-file", 
+                "fin" => 0
+            ],
+            [
+                "titulo" => "",
+                "descripcion" => "Entrevista Personal", 
+                "icono" => "fas fa-user", 
+                "fin" => 1
+            ]
         ];
 
         foreach ($types as $type) {

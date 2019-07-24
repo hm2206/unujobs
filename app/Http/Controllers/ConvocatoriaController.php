@@ -96,8 +96,8 @@ class ConvocatoriaController extends Controller
         foreach ($activities as $activity) {
             $tmpID = isset($activity[0]) ? $activity[0] : "";
             $descripcion = isset($activity[1]) ? $activity[1] : "";
-            $f_inicio = isset($activity[2]) ? $activity[2] : "";
-            $f_final = isset($activity[3]) ? $activity[3] : "";
+            $f_inicio = isset($activity[2]) ? $activity[2] : null;
+            $f_final = isset($activity[3]) ? $activity[3] : null;
             $responsable = isset($activity[4]) ? $activity[4] : "";
 
             $actividad = Actividad::find($tmpID);
@@ -174,6 +174,8 @@ class ConvocatoriaController extends Controller
                         })->get(); 
         }
 
-        return view("convocatoria.etapas", compact('convocatoria', 'etapas', 'year', 'current'));
+        $hasExpire = $convocatoria->fecha_final < date('Y-m-d') ? true : false;
+
+        return view("convocatoria.etapas", compact('convocatoria', 'etapas', 'year', 'current', 'hasExpire'));
     }
 }

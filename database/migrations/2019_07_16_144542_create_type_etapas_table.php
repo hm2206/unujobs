@@ -15,8 +15,10 @@ class CreateTypeEtapasTable extends Migration
     {
         Schema::create('type_etapas', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string("titulo")->nullable();
             $table->string('descripcion');
             $table->string("icono");
+            $table->integer("fin")->default(0);
             $table->timestamps();
         });
     }

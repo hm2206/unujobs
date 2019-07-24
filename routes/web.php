@@ -26,12 +26,13 @@ Route::group(["prefix" => "RRHH"], function() {
     Route::resource("postulante", "PostulanteController");
     Route::post("postulante/{id}/cv", "PostulanteController@upload")->name('postulante.cv');
 
-    //Evalusiones
+    //Evaluaciones
     Route::resource("evaluacion", "EvaluacionController");
 
 
     //Etapas
     Route::resource('etapa', 'EtapaController');
+    Route::get('etapa/{id}/convocatoria/{convocatoria}/pdf', 'EtapaController@pdf')->name('etapa.pdf');
 
 });
 
@@ -104,6 +105,7 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
     Route::get("/{numero}/cargo/{titulo}", "BolsaController@show")->name('bolsa.show');
     Route::get("/{numero}/cargo/{titulo}/postular", "BolsaController@postular")->name('bolsa.postular');
     Route::post("/auth", "BolsaController@authenticar")->name('bolsa.auth');
+    Route::get("/{id}/personal/{personalID}/pdf", "BolsaController@resultados")->name('bolsa.resultados');
 
 });
 

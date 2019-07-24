@@ -18,11 +18,19 @@
                 <div class="row">
                     @foreach ($convocatoria->personals as $personal)
                         <div class="col-md-3">
-                            <a href="{{ route('convocatoria.etapas', [$convocatoria->id, "personal={$personal->id}"]) }}" 
-                                class="btn btn-{{ isset($current->id) && $personal->id ==  $current->id ? 'primary' : 'outline-primary' }}"
-                            >
-                                {{ $personal->slug }}
-                            </a>
+                            <div class="btn btn-{{ isset($current->id) && $personal->id ==  $current->id ? 'primary' : 'outline-primary' }}">
+                                <a href="{{ route('convocatoria.etapas', [$convocatoria->id, "personal={$personal->id}"]) }}"
+                                    class="{{ isset($current->id) && $personal->id ==  $current->id ? 'text-white' : 'text-primary' }}"    
+                                >
+                                    {{ $personal->slug }}
+                                </a>
+                                <a href="{{ route('bolsa.resultados', [$convocatoria->id, $personal->id]) }}" 
+                                    class="btn btn-sm btn-circle btn-danger"
+                                    target="__blank"    
+                                >
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -33,11 +41,13 @@
         @foreach ($etapas as $etapa)
             <form class="card mt-3" method="POST" action="{{ route('etapa.store') }}">
                 @csrf
-                <div class="card-header">
-                    Etapa <i class="fas fa-arrow-right text-danger"></i> {{ $etapa->descripcion }} 
-                    <a href="#" class="btn btn-sm btn-circle btn-danger">
-                        <i class="fas fa-file-pdf"></i>
-                    </a>
+                <div class="card-header bg-dark text-white">
+                    Etapa <i class="fas fa-arrow-right text-warning"></i> {{ $etapa->descripcion }} 
+                    @if ($etapa->postulantes->count() > 0)
+                        <a href="{{ route('etapa.pdf', [$etapa->id, $convocatoria->id]) }}" target="__blank" class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-file-pdf"></i> ver reporte
+                        </a>
+                    @endif
                 </div>
                 <div class="card-body">
                     <div class="responsive-table">
@@ -66,8 +76,8 @@
                                                 : 0
                                             @endphp
                                             <div class="col-md-3">
-                                                <input type="hidden" value="{{ $postulante->id }}" name="postulantes[{{ $iter }}][0]">
-                                                <input type="number" value="{{ $puntaje }}" class="form-control" name="postulantes[{{ $iter }}][1]">
+                                                <input type="hidden" {!! $hasExpire ? 'disabled' : null !!} value="{{ $postulante->id }}" name="postulantes[{{ $iter }}][0]">
+                                                <input type="number" {!! $hasExpire ? 'disabled' : null !!} value="{{ $puntaje }}" class="form-control" name="postulantes[{{ $iter }}][1]">
                                             </div>
                                         </td>
                                         <td>
@@ -79,10 +89,27 @@
                                                         : 0
                                                 @endphp
 
-                                                <label for="" class="btn btn-sm btn-{{ $checked ? 'primary' : 'outline-primary'}}">
-                                                    <input type="checkbox" name="nexts[{{ $iter }}]" {!! $checked ? 'checked' : null !!}>
-                                                    Continuar
-                                                </label>
+                                                @if ($hasExpire)
+                                                    <button class="btn btn-sm btn-{{ $checked ? 'success' : 'outline-danger'}}" disabled>
+                                                        @php
+                                                            $ok = $etapa->fin ? 'Ganó' : 'Pasó';
+                                                            $fail = $etapa->fin ? 'Pedió' : 'No Pasó'
+                                                        @endphp
+                                                        @if ($checked)
+                                                            {{ $ok }}
+                                                            <i class="fas fa-check ml-1"></i>
+                                                        @else    
+                                                            {{ $fail }}
+                                                            <i class="fas fa-times ml-1"></i>
+                                                        @endif
+
+                                                    </button>
+                                                @else
+                                                    <label for="" class="btn btn-sm btn-{{ $checked ? 'primary' : 'outline-primary'}}">
+                                                        <input type="checkbox" name="nexts[{{ $iter }}]" {!! $checked ? 'checked' : null !!}>
+                                                        {{ $etapa->fin ? 'Ganador' : 'Continuar' }}
+                                                    </label>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -97,11 +124,16 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button class="btn btn-success">
-                        <i class="fas fa-save"></i> Guardar
-                    </button>
-                </div>
+                
+                @if ($etapa->postulantes->count() > 0)
+                    @if (!$hasExpire)
+                        <div class="card-footer">
+                            <button class="btn btn-success">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                        </div>
+                    @endif
+                @endif
 
                 <input type="hidden" value="{{ $etapa->id }}" name="type_etapa_id">
                 <input type="hidden" name="personal_id" value="{{ isset($current->id) ? $current->id : '' }}">

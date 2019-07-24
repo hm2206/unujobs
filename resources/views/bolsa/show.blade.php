@@ -12,6 +12,12 @@
             <a href="{{ route('personal.pdf', $personal->id) }}" class="btn btn-dark" target="__blank">
                 <i class="fas fa-file-pdf"></i> PDF
             </a>
+            <a href="{{ route('bolsa.resultados', [$personal->convocatoria_id, $personal->id]) }}" class="btn btn-dark" target="__blank">
+                <i class="fas fa-file-pdf"></i> Resultados
+            </a>
+            <a href="{{ route('convocatoria.pdf', $personal->convocatoria_id) }}" class="btn btn-dark" target="__blank">
+                <i class="fas fa-file-pdf"></i> Bases
+            </a>
         </div>
 
         <div class="col-md-9">
@@ -32,7 +38,7 @@
                                 @foreach ($types as $count => $type)
                                     <div class="col-md-4">
                                         <div class="row justify-content-center">
-                                            @if (isset($current->id) && $type->id == $current->id)
+                                            @if (isset($current->type_etapa_id) && $type->id == $current->type_etapa_id)
                                                 <div class="col-md-12 text-center">
                                                     <button class="btn btn-circle btn-lg btn-success">
                                                         <i class="{{ $type->icono }}"></i>
@@ -155,7 +161,19 @@
                             </thead>
                             <tbody class="text-center">
                                 @foreach ($convocatoria->actividades as $actividad)
-                                    <tr class="{{ $actividad->fecha_final < date('Y-m-d') ? 'bg-danger text-white' : null }}">
+
+                                    @php
+                                        $dd = false;
+
+                                        if ($actividad->fecha_final) {
+                                            $dd = $actividad->fecha_final < date("Y-m-d");
+                                        }else {
+                                            $dd = $actividad->fecha_inicio < date("Y-m-d");
+                                        }
+
+                                    @endphp
+
+                                    <tr class="{{ $dd ? 'bg-danger text-white' : null }}">
                                         <th>{{ $actividad->descripcion }}</td>
                                         <td>
                                             <span class="btn btn-sm btn-dark">
