@@ -47,37 +47,39 @@ class ReportBoleta implements ShouldQueue
         $works = Work::whereIn("id", $workIn)->get();
 
         foreach ($works as $work) {
-            $cronograma = Cronograma::where("mes", $this->mes)
-                ->where("año", $this->year)
-                ->where("adicional", $this->adicional)
-                ->first();
-
-            $remuneraciones = Remuneracion::where("work_id", $work->id)
-                ->where("cronograma_id", $cronograma->id)
-                ->get();
-
-            $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
-                ->where("cronograma_id", $cronograma->id)
-                ->get();
             
-            $cronograma->remuneraciones = $remuneraciones;
-            $cronograma->descuentos = $descuentos->chunk(2)->toArray();
-            $cronograma->total_descuento = $descuentos->sum('monto');
+            foreach ($work->infos as $info) {
+
+                $remuneraciones = Remuneracion::where("work_id", $work->id)
+                    ->where("categoria_id", $info->categoria_id)
+                    ->where("cargo_id", $info->cargo_id)
+                    ->where("adicional", $this->adicional)
+                    ->get();
+
+                $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
+                    ->where("categoria_id", $info->categoria_id)
+                    ->where("cargo_id", $info->cargo_id)
+                    ->where("adicional", $this->adicional)
+                    ->get();
+                
+                $info->remuneraciones = $remuneraciones;
+                $info->descuentos = $descuentos->chunk(2)->toArray();
+                $info->total_descuento = $descuentos->sum('monto');
 
 
-            //base imponible
-            $cronograma->base = $remuneraciones->where('base', 0)->sum('monto');
+                //base imponible
+                $info->base = $remuneraciones->where('base', 0)->sum('monto');
 
-            //aportes
-            $cronograma->essalud = $cronograma->base < 930 ? 83.7 : $cronograma->base * 0.09;
-            $cronograma->accidentes = $work->accidentes ? ($cronograma->base * 1.55) / 100 : 0;
+                //aportes
+                $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
+                $info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
 
-            //total neto
-            $cronograma->neto = $work->total - $cronograma->total_descuento;
-            $cronograma->total_aportes = $cronograma->essalud + $cronograma->accidentes;
+                //total neto
+                $info->neto = $info->total - $info->total_descuento;
+                $info->total_aportes = $info->essalud + $info->accidentes;
 
+            }
 
-            $work->cronograma = $cronograma;
         }
 
         
@@ -89,7 +91,7 @@ class ReportBoleta implements ShouldQueue
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("storage/pdf/boletas_{$this->mes}_{$this->year}.pdf", 
+            $user->notify(new ReportNotification("/storage/pdf/boletas_{$this->mes}_{$this->year}.pdf", 
                 "La boleta {$this->mes} del {$this->year} fué generada"
             ));
         }

@@ -70,11 +70,37 @@
                     </div>
                 @endif
 
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <button class="btn btn-info">
-                            <i class="fas fa-search"></i> Buscar
-                        </button>
+                <div class="col-md-12">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <select name="categoria_id" class="form-control">
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}" {!! request()->categoria_id == $categoria->id ? 'selected' : '' !!}>
+                                        {{ $categoria->categoria ? $categoria->categoria->nombre : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    Dias:
+                                </div>
+                                <div class="col-md-9">
+                                    <input disabled type="text" class="form-control" value="{{ $dias }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <button class="btn btn-info">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -94,16 +120,6 @@
         </h4>
         
         <form class="card-body" action="{{ route('job.remuneracion.update', $job->id) }}" method="POST">
-
-            <div class="mb-4">
-                Categoria: <b class="text-primary">{{ $categoria->nombre }}</b> <br>
-                <div class="row align-items-center">
-                    <div class="col-md-1"> Dias: </div>
-                    <b class="text-primary">{{ $dias }}</b>
-                </div>
-            </div>
-
-            <hr>
 
             <div class="row mt-4">
                 @csrf
@@ -136,6 +152,10 @@
                     @if (isset($cronograma->id))
                         <input type="hidden" name="cronograma_id" value="{{ $cronograma->id }}">
                     @endif
+
+                    <input type="hidden" name="categoria_id" value="{{ $current->categoria_id }}">
+                    <input type="hidden" name="cargo_id" value="{{ $current->cargo_id }}">
+
                     <button class="btn btn-primary"><i class="fas fa-sync"></i> Actualizar</button>
                 </div>
 
@@ -146,7 +166,7 @@
 
         <div class="card-footer">
             <h5 class="text-right">
-                Total Bruto:  <b class="text-primary">S./ {{ $job->total }}</b>
+                Total Bruto:  <b class="text-primary">S./ {{ $total }}</b>
             </h5>
         </div>
     </div>

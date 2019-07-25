@@ -10,19 +10,31 @@ class AfpController extends Controller
 
     public function index()
     {
-        
+        $afps = Afp::all();
+
+        return view('afps.index', compact('afps'));
     }
 
     
     public function create()
     {
-        
+        return view('afps.create');
     }
 
 
     public function store(Request $request)
     {
-        
+        $this->validate(request(), [
+            "nombre" => "required|unique:afps",
+            "flujo" => "required|numeric",
+            "mixta" => "required|numeric",
+            "aporte" => "required|numeric",
+            "prima" => "required|numeric"
+        ]);
+
+        $afp = Afp::create($request->all());
+
+        return back()->with(["success" => "Los datos se guardarón correctamente"]);
     }
 
 
@@ -31,27 +43,29 @@ class AfpController extends Controller
         
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Afp  $afp
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Afp $afp)
+
+    public function edit($id)
     {
-        //
+        $afp = Afp::findOrFail($id);
+
+        return view('afps.edit', compact('afp'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Afp  $afp
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Afp $afp)
+
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate(request(), [
+            "nombre" => "required",
+            "flujo" => "required|numeric",
+            "mixta" => "required|numeric",
+            "aporte" => "required|numeric",
+            "prima" => "required|numeric"
+        ]);
+
+        $afp = Afp::findOrFail($id);
+        $afp->update($request->all());
+
+        return back();
     }
 
     /**

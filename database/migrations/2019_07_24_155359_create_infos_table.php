@@ -18,8 +18,10 @@ class CreateInfosTable extends Migration
             $table->integer('work_id');
             $table->integer('cargo_id');
             $table->integer('categoria_id');
+            $table->integer('meta_id');
             $table->integer('active')->default(1);
             $table->text('observacion')->nullable();
+            $table->double("total")->default(0);
             $table->timestamps();
         });
     }

@@ -34,7 +34,7 @@ class ReportCronograma implements ShouldQueue
 
     public function handle()
     {
-        $metas = $metas = Meta::whereHas('works', function($q){})->with('works')->get();
+        $metas = $metas = Meta::all();
         $pagina = 0;
 
         //traemos trabajadores que pertenescan a la meta actual
@@ -43,47 +43,65 @@ class ReportCronograma implements ShouldQueue
             $meta->mes = $this->mes;
             $meta->year = $this->year;
 
-            foreach($meta->works as $work) {
+            //obtener a los trabajadores que esten en esta meta
+            $works = Work::whereHas('infos', function($i) use($meta) {
+                $i->where('infos.meta_id', $meta->id);
+            })->with(['infos' => function($i) use($meta) {
+                $i->where('infos.meta_id', $meta->id);
+            }])->get();
 
-                $total = $work->remuneraciones->where('año', $this->year)
-                    ->where('mes', $this->mes)->where("adicional", $this->adicional)
-                    ->sum("monto");
+            foreach($works as $work) {
 
-                $tmp_base = $work->remuneraciones->where("año", $this->year)
-                    ->where('mes', $this->mes)->where("adicional", $this->adicional)
-                    ->where("base", 0)->sum('monto');
+                foreach ($work->infos as $info) {
 
-                $tmp_base = $tmp_base == 0 ? $work->total : $tmp_base;
+                    //obtenemos las remuneraciones actuales del trabajador
+                    $info->remuneraciones = $work->remuneraciones->where('año', $meta->year)
+                        ->where('mes', $meta->mes)
+                        ->where('adicional', $this->adicional)
+                        ->where('cargo_id', $info->cargo_id)
+                        ->where('categoria_id', $info->categoria_id);
+                    
+                    $total = $info->remuneraciones->sum('monto');
 
-                $work->remuneraciones->push([
-                    "nombre" => "TOTAL",
-                    "monto" => $total
-                ]);
+                    $tmp_base = $info->remuneraciones->where("base", 0)->sum('monto');
+                    $tmp_base = $tmp_base == 0 ? $info->total : $tmp_base;
 
-                $work->descuentos = Descuento::where('año', $this->year)
-                    ->where('mes', $this->mes)
-                    ->where('adicional', $this->adicional)
-                    ->where('work_id', $work->id)
-                    ->get();
+                    // agregamos datos a las remuneraciones
+                    $info->remuneraciones->push([
+                        "nombre" => "TOTAL",
+                        "monto" => $total
+                    ]);
 
-                $total_descto = $work->descuentos->sum('monto');
+                    //obtenemos los descuentos actuales del trabajador
+                    $info->descuentos = Descuento::where('año', $meta->year)
+                            ->where('mes', $meta->mes)
+                            ->where('adicional', $this->adicional)
+                            ->where('cargo_id', $info->cargo_id)
+                            ->where('categoria_id', $info->categoria_id)
+                            ->get();
 
-                //calcular base imponible
-                $work->base = $tmp_base;
+                    $total_descto = $info->descuentos->sum('monto');
 
-                //calcular total de descuentos
-                $work->descuentos->push([
-                    "nombre" => "TOTAL",
-                    "monto" => $work->descuentos->sum('monto')
-                ]);
+                    //calcular base imponible
+                    $info->base = $tmp_base;
 
-                //calcular essalud
-                $work->essalud = $work->base < 930 ? 83.7 : $work->base * 0.09;
+                    //calcular total de descuentos
+                    $info->descuentos->push([
+                        "nombre" => "TOTAL",
+                        "monto" => $info->descuentos->sum('monto')
+                    ]);
 
-                //calcular total neto
-                $work->neto = $work->total - $total_descto;
+                    //calcular essalud
+                    $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
+
+                    //calcular total neto
+                    $info->neto = $info->total - $total_descto;
+
+                }
 
             }
+
+            $meta->works = $works;
 
         }
 
@@ -93,12 +111,12 @@ class ReportCronograma implements ShouldQueue
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
         $ruta = "/pdf/planilla_metas_{$this->mes}_{$this->year}.pdf";
-        $pdf->save(public_path() . $ruta);
+        $pdf->save(storage_path("app/public") . $ruta);
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification($ruta, "La planilla {$this->mes} del {$this->year} fué generada"));
+            $user->notify(new ReportNotification("/storage{$ruta}", "La planilla {$this->mes} del {$this->year} fué generada"));
         }
 
     }

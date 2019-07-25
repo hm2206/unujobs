@@ -123,7 +123,9 @@ class JobController extends Controller
     public function remuneracion($id)
     {
         $job = Work::findOrFail($id);
-        $categoria = Categoria::findOrFail($job->categoria_id);
+
+        $current = request()->categoria_id ? $job->infos->find(request()->categoria_id) : $job->infos->first();
+        $categorias = $job->infos;
 
         $year = request()->year ? (int)request()->year : date('Y');
         $mes = request()->mes ? (int)request()->mes : (int)date('m');
@@ -148,10 +150,12 @@ class JobController extends Controller
         $cronograma = $cronograma->first();
 
         if($cronograma) {
+
             $remuneraciones = Remuneracion::where("work_id", $job->id)
                 ->where('mes', $mes)
                 ->where('año', $year)
-                ->where("categoria_id", $categoria->id)
+                ->where("categoria_id", $current->categoria_id)
+                ->where("cargo_id", $current->cargo_id)
                 ->where("cronograma_id", $cronograma->id)
                 ->get();
 
@@ -160,20 +164,31 @@ class JobController extends Controller
         }
         
         return view("trabajador.remuneracion", 
-            compact('job', 'categoria', 'remuneraciones', 'total', 'dias', 'mes', 'year', 'cronograma', 'numero', 'seleccionar')
+            compact(
+                'job', 'categoria', 'remuneraciones', 'total', 
+                'dias', 'mes', 'year', 'cronograma', 'numero', 'seleccionar',
+                'current', 'categorias'
+            )
         );
     }
 
 
     public function remuneracionUpdate(Request $request, $id)
     {
+
         $this->validate(request(), [
-            "cronograma_id" => "required"
+            "cronograma_id" => "required",
+            "categoria_id" => "required",
+            "categoria_id" => "required"
         ]);
         
         $job = Work::findOrFail($id);
         $cronograma = Cronograma::find($request->cronograma_id);
-        $remuneraciones = $job->remuneraciones->where("cronograma_id", $cronograma->id);
+        $remuneraciones = $job->remuneraciones
+            ->where("cronograma_id", $cronograma->id)
+            ->where("cargo_id", $request->cargo_id)
+            ->where("categoria_id", $request->categoria_id);
+
         $total = 0;
 
         foreach ($remuneraciones as $remuneracion) {
@@ -193,10 +208,13 @@ class JobController extends Controller
         return back();
     }
 
+
     public function descuento($id) 
     {
         $job = Work::findOrFail($id);
-        $categoria = Categoria::findOrFail($job->categoria_id);
+
+        $current = request()->categoria_id ? $job->infos->find(request()->categoria_id) : $job->infos->first();
+        $categorias = $job->infos;
 
         $year = request()->year ? (int)request()->year : date('Y');
         $mes = request()->mes ? (int)request()->mes : (int)date('m');
@@ -224,16 +242,20 @@ class JobController extends Controller
             $descuentos = Descuento::with('typeDescuento')->where("work_id", $job->id)
             ->where('mes', $mes)
             ->where('año', $year)
-            ->where("categoria_id", $job->categoria_id)
+            ->where("categoria_id", $current->categoria_id)
+            ->where("cargo_id", $current->cargo_id)
             ->where("cronograma_id", $cronograma->id)
             ->get();
 
             $types = Remuneracion::where('work_id', $job->id)
                 ->where("cronograma_id", $cronograma->id)
+                ->where("categoria_id", $current->categoria_id)
+                ->where("cargo_id", $current->cargo_id)
                 ->where("base", 0)->get();
 
             $base = $types->sum('monto');
             $total = $descuentos->sum('monto');
+            $dias = $cronograma->dias;
         }
 
         $aporte = $base * 0.09;
@@ -242,20 +264,26 @@ class JobController extends Controller
 
         return view("trabajador.descuento", 
             compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria',
-            'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 'total_neto'));
+                'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 
+                'total_neto', 'current', 'categorias'
+            ));
     }
 
 
     public function descuentoUpdate(Request $request, $id)
     {
         $this->validate(request(), [
-            "cronograma_id" => "required"
+            "cronograma_id" => "required",
+            "categoria_id" => "required",
+            "categoria_id" => "required"
         ]);
 
         $job = Work::findOrFail($id);
         $cronograma = Cronograma::find($request->cronograma_id);
         $descuentos = Descuento::where("work_id", $job->id)
             ->where("cronograma_id", $cronograma->id)
+            ->where("categoria_id", $request->categoria_id)
+            ->where("cargo_id", $request->cargo_id)
             ->get();
 
         foreach ($descuentos as $descuento) {

@@ -54,54 +54,75 @@ class ProssingRemuneracion implements ShouldQueue
     {
         $total = 0;
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
-        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
-        $hasRemuneraciones = Remuneracion::where("work_id", $job->id)
-            ->where("mes", $mes)->where("año", $year)->get();
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año;
+       
+        foreach ($job->infos as $info) {
+
+            $current_total = 0;
+
+            $hasRemuneraciones = Remuneracion::where("work_id", $job->id)
+                ->where("cargo_id", $info->cargo_id)
+                ->where("categoria_id", $info->categoria_id)
+                ->where("adicional", $cronograma->adicional)
+                ->where("dias", $cronograma->dias)
+                ->where("mes", $mes)
+                ->where("año", $year)
+                ->get();
 
             
-        if ($hasRemuneraciones->count() > 0) {
-            foreach ($hasRemuneraciones as $remuneracion) {
-                Remuneracion::create([
-                    "work_id" => $job->id,
-                    "categoria_id" => $job->categoria_id,
-                    "cronograma_id" => $cronograma->id,
-                    "cargo_id" => $job->cargo_id,
-                    "type_remuneracion_id" => $remuneracion->id,
-                    "mes" => $cronograma->mes,
-                    "año" => $cronograma->año,
-                    "monto" => round($remuneracion->monto, 2),
-                    "adicional" => $cronograma->adicional,
-                    "base" => $type->base
-                ]);
+            if ($hasRemuneraciones->count() > 0) {
+                foreach ($hasRemuneraciones as $remuneracion) {
+                    Remuneracion::create([
+                        "work_id" => $job->id,
+                        "categoria_id" => $info->categoria_id,
+                        "cronograma_id" => $cronograma->id,
+                        "cargo_id" => $info->cargo_id,
+                        "type_remuneracion_id" => $remuneracion->id,
+                        "mes" => $cronograma->mes,
+                        "año" => $cronograma->año,
+                        "monto" => round($remuneracion->monto, 2),
+                        "adicional" => $cronograma->adicional,
+                        "dias" => $cronograma->dias,
+                        "base" => $type->base
+                    ]);
 
-                $total += $remuneracion->monto;
-            }
-        }else {
-            foreach ($types as $type) {
-                $config = DB::table("concepto_type_remuneracion")
-                    ->whereIn("concepto_id", $job->categoria->conceptos->pluck(["id"]))
-                    ->where("categoria_id", $job->categoria->id)
-                    ->where("type_remuneracion_id", $type->id)
-                    ->get();
-                $suma = $config->sum("monto");
-                Remuneracion::create([
-                    "work_id" => $job->id,
-                    "categoria_id" => $job->categoria_id,
-                    "cargo_id" => $job->cargo_id,
-                    "cronograma_id" => $cronograma->id,
-                    "type_remuneracion_id" => $type->id,
-                    "mes" => $cronograma->mes,
-                    "año" => $cronograma->año,
-                    "monto" => \round(($suma * $cronograma->dias) / 30, 2),
-                    "adicional" => $cronograma->adicional,
-                    "base" => $type->base
-                ]);
+                    $current_total += $remuneracion->monto;
+                }
+            }else {
+                foreach ($types as $type) {
+                    $config = DB::table("concepto_type_remuneracion")
+                        ->whereIn("concepto_id", $job->categoria->conceptos->pluck(["id"]))
+                        ->where("categoria_id", $info->categoria_id)
+                        ->where("type_remuneracion_id", $type->id)
+                        ->get();
 
-                $total += $suma;
+                    $suma = $config->sum("monto");
+
+                    Remuneracion::create([
+                        "work_id" => $job->id,
+                        "categoria_id" => $info->categoria_id,
+                        "cargo_id" => $info->cargo_id,
+                        "cronograma_id" => $cronograma->id,
+                        "type_remuneracion_id" => $type->id,
+                        "mes" => $cronograma->mes,
+                        "año" => $cronograma->año,
+                        "monto" => \round(($suma * $cronograma->dias) / 30, 2),
+                        "adicional" => $cronograma->adicional,
+                        "base" => $type->base
+                    ]);
+
+                    $current_total += $suma;
+                }
             }
+
+            $info->update(["total" => $current_total]);
+
+            $total += $current_total;
+
         }
-
+        
         $job->update(["total" => round($total)]);
+
     }
 
 }

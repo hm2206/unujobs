@@ -84,6 +84,7 @@
             <a class="collapse-item" href="{{ route('concepto.index') }}">Conceptos</a>
             <a class="collapse-item" href="{{ route('descuento.index') }}">Descuentos</a>
             <a class="collapse-item" href="{{ route('remuneracion.index') }}">Remuneraciones</a>
+            <a class="collapse-item" href="{{ route('afp.index') }}">Afps</a>
           </div>
         </div>
       </li>

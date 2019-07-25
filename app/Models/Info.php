@@ -8,7 +8,8 @@ class Info extends Model
 {
     
     protected $fillable = [
-        "categoria_id", "cargo_id", "work_id", "active", "observacion"
+        "categoria_id", "cargo_id", "work_id", "active", "observacion", 
+        'meta_id', 'total'
     ];
 
     public function cargo()
@@ -19,6 +20,11 @@ class Info extends Model
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
+    }
+
+    public function meta()
+    {
+        return $this->belongsTo(Meta::class);
     }
 
 }

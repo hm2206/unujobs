@@ -11,6 +11,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use \PDF;
 use App\Models\Work;
 use App\Models\Descuento;
+use App\Models\User;
+use App\Notifications\ReportNotification;
 
 class GeneratePlanillaMetaPDF implements ShouldQueue
 {
@@ -39,43 +41,65 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             $meta->mes = $config['mes'];
             $meta->year = $config['year'];
 
-            $meta->works->map(function($work) use($config) {
+            //obtener a los trabajadores que esten en esta meta
+            $works = Work::whereHas('infos', function($i) use($meta) {
+                $i->where('infos.meta_id', $meta->id);
+            })->with(['infos' => function($i) use($meta) {
+                $i->where('infos.meta_id', $meta->id);
+            }])->get();
 
-                $total = $work->remuneraciones->where('año', $config['year'])->where('mes', $config['mes'])->sum("monto");
-                $tmp_base = $work->remuneraciones->where("base", 0)->sum('monto');
-                $tmp_base = $tmp_base == 0 ? $work->total : $tmp_base;
+            foreach ($works as $work) {
+                
+                foreach ($work->infos as $info) {
 
-                $work->remuneraciones->push([
-                    "nombre" => "TOTAL",
-                    "monto" => $total
-                ]);
+                    //obtenemos las remuneraciones actuales del trabajador
+                    $info->remuneraciones = $work->remuneraciones->where('año', $config['year'])
+                        ->where('mes', $config['mes'])
+                        ->where('cargo_id', $info->cargo_id)
+                        ->where('categoria_id', $info->categoria_id);
+                    
+                    $total = $info->remuneraciones->sum('monto');
 
-                $work->descuentos = Descuento::where('año', $config['year'])
-                    ->where('mes', $config['mes'])
-                    ->where('work_id', $work->id)
-                    ->get();
+                    $tmp_base = $info->remuneraciones->where("base", 0)->sum('monto');
+                    $tmp_base = $tmp_base == 0 ? $info->total : $tmp_base;
 
-                $total_descto = $work->descuentos->sum('monto');
+                    // agregamos datos a las remuneraciones
+                    $info->remuneraciones->push([
+                        "nombre" => "TOTAL",
+                        "monto" => $total
+                    ]);
 
-                //calcular base imponible
-                $work->base = $tmp_base;
+                    //obtenemos los descuentos actuales del trabajador
+                    $info->descuentos = Descuento::where('año', $config['year'])
+                            ->where('mes', $config['mes'])
+                            ->where('cargo_id', $info->cargo_id)
+                            ->where('categoria_id', $info->categoria_id)
+                            ->get();
 
-                //calcular total de descuentos
-                $work->descuentos->push([
-                    "nombre" => "TOTAL",
-                    "monto" => $work->descuentos->sum('monto')
-                ]);
+                    $total_descto = $info->descuentos->sum('monto');
 
-                //calcular essalud
-                $work->essalud = $work->base < 930 ? 83.7 : $work->base * 0.09;
+                    //calcular base imponible
+                    $info->base = $tmp_base;
 
-                //calcular total neto
-                $work->neto = $work->total - $total_descto;
+                    //calcular total de descuentos
+                    $info->descuentos->push([
+                        "nombre" => "TOTAL",
+                        "monto" => $info->descuentos->sum('monto')
+                    ]);
 
-                return $work;
-            });
+                    //calcular essalud
+                    $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
 
+                    //calcular total neto
+                    $info->neto = $info->total - $total_descto;
+
+                }
+
+            }
+
+            //retornamos las metas
             return $meta;
+
         });
 
         $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
@@ -83,7 +107,13 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
         $pdf = PDF::loadView('pdf.planilla', compact('meses', 'metas', 'pagina'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
-        $ruta = "/pdf/planilla_metas.pdf";
+        $ruta = "/pdf/planilla_metas_{$config['mes']}_{$config['year']}.pdf";
         $pdf->save(storage_path('app/public') . $ruta);
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new ReportNotification("/storage{$ruta}" ,"La Planilla Meta x Meta se genero correctamente"));
+        }
     }
 }

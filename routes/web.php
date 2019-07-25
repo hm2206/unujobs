@@ -88,6 +88,10 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     Route::resource('remuneracion', 'TypeRemuneracionController');
 
 
+    //AFPS
+    Route::resource('afp', 'AfpController');
+
+
 });
 
 
@@ -118,3 +122,5 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 //notificaciones
 Route::get("user/unread", "UserController@unread");
 Route::post("user/{notify}/markasread", "UserController@markAsRead");
+
+
