@@ -41,6 +41,7 @@ class ProssingDescuento implements ShouldQueue
     {
         $cronograma = $this->cronograma;
         $jobs = $this->jobs;
+
         $types = TypeDescuento::all();
 
         foreach ($jobs as $job) {
@@ -65,6 +66,7 @@ class ProssingDescuento implements ShouldQueue
                 ->where("cronograma_id", $cronograma->id)
                 ->where("cargo_id", $info->cargo_id)
                 ->where("categoria_id", $info->categoria_id)
+                ->where("planilla_id", $info->planilla_id)
                 ->get();
 
             if($hasDescuentos->count() > 0) {
@@ -74,6 +76,7 @@ class ProssingDescuento implements ShouldQueue
                         "categoria_id" => $info->categoria_id,
                         "cargo_id" => $info->cargo_id,
                         "cronograma_id" => $cronograma->id,
+                        "planilla_id" => $info->planilla_id,
                         "type_descuento_id" => $descuento->id,
                         "mes" => $cronograma->mes,
                         "año" => $cronograma->año,
@@ -90,6 +93,7 @@ class ProssingDescuento implements ShouldQueue
                         ->where('cargo_id', $info->cargo_id)
                         ->where('categoria_id', $info->categoria_id)
                         ->where('cronograma_id', $cronograma->id)
+                        ->where('planilla_id', $info->planilla_id)
                         ->where('base', 0)
                         ->get();
 
@@ -155,9 +159,6 @@ class ProssingDescuento implements ShouldQueue
     
                             // terminamos la configuracion de los sindicatos
                             $suma =  ($total * $porcentaje_sindicato) / 100;
-    
-                            //test
-                            \Log::info($job->nombre_completo . " => si tiene sindicato esta descuento: " . $type->descripcion);
 
                         }
 
@@ -169,6 +170,7 @@ class ProssingDescuento implements ShouldQueue
                         "work_id" => $job->id,
                         "categoria_id" => $info->categoria_id,
                         "cargo_id" => $info->cargo_id,
+                        "planilla_id" => $info->planilla_id,
                         "cronograma_id" => $cronograma->id,
                         "type_descuento_id" => $type->id,
                         "mes" => $cronograma->mes,

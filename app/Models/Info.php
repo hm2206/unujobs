@@ -9,7 +9,8 @@ class Info extends Model
     
     protected $fillable = [
         "categoria_id", "cargo_id", "work_id", "active", "observacion", 
-        'meta_id', 'total'
+        'meta_id', 'total', 'perfil', 'planilla_id', 'fuente_id', 'plaza',
+        'escuela', 'observacion', 'ruc'
     ];
 
     public function cargo()

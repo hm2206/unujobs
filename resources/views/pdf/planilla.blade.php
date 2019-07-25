@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-    <title>Reporte </title>
+    <title>Reporte Planillas Meta x Metas </title>
 </head>
 <body class="bg-white">
 
@@ -89,7 +89,7 @@
                                 <td class="py-0">AFP {{ $work->afp ? $work->afp->descripcion : null }}</td>
                                 <td class="py-0">N° CUSPP: {{ $work->numero_de_cuspp }}</td>
                                 <td class="py-0">N° ESSALUD: {{ $work->numero_de_essalud }}</td>
-                                <td class="py-0">OBS: {{ $work->observaciones }}</td>
+                                <td class="py-0">OBS: {{ $info->observacion }}</td>
                             </tr>
                             <tr>
                                 <td class="py-0" colspan="2">

@@ -10,7 +10,7 @@ class Remuneracion extends Model
     protected $fillable = [
         "work_id", "categoria_id", "dias", "cronograma_id",
         "observaciones", "sede_id", "mes", "año", "monto", "adicional",
-        "horas", "type_remuneracion_id", 'cargo_id', 'base'
+        "horas", "type_remuneracion_id", 'cargo_id', 'base', 'planilla_id',
     ];
     
     public function concepto()

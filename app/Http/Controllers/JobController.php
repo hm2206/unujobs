@@ -66,10 +66,8 @@ class JobController extends Controller
  
     public function store(JobRequest $request)
     {
-        $cargo = Cargo::findOrFail($request->cargo_id);
         $job = Work::create($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
-        $job->planilla_id = $cargo->planilla_id;
         $job->save();
         return redirect()->route('job.index')->with(["success" => "El registro se guardo correctamente"]);
     }
@@ -83,18 +81,8 @@ class JobController extends Controller
 
     public function edit(Work $job)
     {
-        $sindicatos = Sindicato::get(["id", "nombre"]);
         $bancos = Banco::get(["id", "nombre"]);
         $afps = Afp::get(["id", "nombre"]);
-        $cargos = Cargo::with('categorias')->get(['id', 'descripcion']);
-        $categorias = Categoria::whereHas('cargos', function($q) use($job) {
-            if(old('cargo_id')) {
-                $q->where("cargos.id", old('cargo_id'));
-            }else{
-                $q->where("cargos.id", $job->cargo_id);
-            }   
-        })->get();
-        $metas = Meta::all();
 
         return view('trabajador.edit', compact('job','sindicatos', 'bancos', 'afps', 'cargos', 'categorias', 'metas'));
     }
@@ -135,23 +123,32 @@ class JobController extends Controller
         $dias = 30;
         $total = 0;
 
+        if (!$current) {
+            return back();
+        }
+
         $selecionar = [];
         $cronograma = Cronograma::where('mes', $mes)
-            ->where('año', $year)
-            ->where("planilla_id", $job->planilla_id)
-            ->where("adicional", $adicional);
+                ->where('año', $year)
+                ->where("adicional", $adicional);
+        
+        if ($current) {
+            $cronograma = $cronograma->where("planilla_id", $current->planilla_id);
+        }
+
 
         if($adicional) {
             $seleccionar = $cronograma->get();
             $cronograma = $cronograma->where("numero", $numero);
         }
 
-
         $cronograma = $cronograma->first();
 
         if($cronograma) {
 
-            $remuneraciones = Remuneracion::where("work_id", $job->id)
+            if($current) {
+
+                $remuneraciones = Remuneracion::where("work_id", $job->id)
                 ->where('mes', $mes)
                 ->where('año', $year)
                 ->where("categoria_id", $current->categoria_id)
@@ -159,8 +156,10 @@ class JobController extends Controller
                 ->where("cronograma_id", $cronograma->id)
                 ->get();
 
-            $dias = $cronograma->dias;
-            $total = $remuneraciones->sum('monto');
+                $dias = $cronograma->dias;
+                $total = $remuneraciones->sum('monto');
+            }
+
         }
         
         return view("trabajador.remuneracion", 
@@ -179,7 +178,8 @@ class JobController extends Controller
         $this->validate(request(), [
             "cronograma_id" => "required",
             "categoria_id" => "required",
-            "categoria_id" => "required"
+            "categoria_id" => "required",
+            "planilla_id" => "required"
         ]);
         
         $job = Work::findOrFail($id);
@@ -187,7 +187,13 @@ class JobController extends Controller
         $remuneraciones = $job->remuneraciones
             ->where("cronograma_id", $cronograma->id)
             ->where("cargo_id", $request->cargo_id)
+            ->where("planilla_id", $request->planilla_id)
             ->where("categoria_id", $request->categoria_id);
+
+        $info = Info::where("work_id", $job->id)
+            ->where("cargo_id", $request->cargo_id)
+            ->where("categoria_id", $request->categoria_id)
+            ->firstOrFail();
 
         $total = 0;
 
@@ -204,7 +210,7 @@ class JobController extends Controller
             }
         }
 
-        $job->update(["total" => round($total, 2)]);
+        $info->update(["total" => round($total, 2)]);
         return back();
     }
 
@@ -226,10 +232,17 @@ class JobController extends Controller
         $total = 0;
         $base = 0;
 
+        if (!$current) {
+            return back();
+        }
+
         $cronograma = Cronograma::where('mes', $mes)
             ->where('año', $year)
-            ->where("planilla_id", $job->planilla_id)
             ->where("adicional", $adicional);
+
+        if ($current) {
+            $cronograma = $cronograma->where("planilla_id", $current->planilla_id);
+        }
 
         if($adicional) {
             $seleccionar = $cronograma->get();
@@ -275,7 +288,8 @@ class JobController extends Controller
         $this->validate(request(), [
             "cronograma_id" => "required",
             "categoria_id" => "required",
-            "categoria_id" => "required"
+            "categoria_id" => "required",
+            "planilla_id" => "required"
         ]);
 
         $job = Work::findOrFail($id);
@@ -283,6 +297,7 @@ class JobController extends Controller
         $descuentos = Descuento::where("work_id", $job->id)
             ->where("cronograma_id", $cronograma->id)
             ->where("categoria_id", $request->categoria_id)
+            ->where("planilla_id", $request->planilla_id)
             ->where("cargo_id", $request->cargo_id)
             ->get();
 
@@ -409,6 +424,7 @@ class JobController extends Controller
         $cargoNotIn = $work->infos->pluck(["id"]);
         $cargos = Cargo::whereNotIn("id", $cargoNotIn)->get();
         $sindicatos = Sindicato::all();
+        $metas = Meta::all();
         $current = $cargos->find(request()->cargo_id);
         $categorias = [];
 
@@ -420,14 +436,18 @@ class JobController extends Controller
             $sindicato->check = $work->sindicatos->where('id', $sindicato->id)->count() ? true : false;
         }
 
-        return view('trabajador.configuracion', compact('work', 'cargos', 'categorias', 'current', 'sindicatos'));
+        return view('trabajador.configuracion', compact('work', 'cargos', 'categorias', 'current', 'sindicatos', 'metas'));
     }
 
     public function configStore(Request $request, $id)
     {
+
         $this->validate(request(), [
             "cargo_id" => "required",
-            "categoria_id" => "required"
+            "categoria_id" => "required",
+            "meta_id" => "required",
+            "planilla_id" => "required",
+            "perfil" => "required"
         ]);
 
         $work = Work::findOrFail($id);
@@ -435,11 +455,12 @@ class JobController extends Controller
         $info = Info::updateOrCreate([
             "work_id" => $work->id,
             "cargo_id" => $request->cargo_id,
-            "categoria_id" => $request->categoria_id
+            "categoria_id" => $request->categoria_id,
+            "planilla_id" => $request->planilla_id,
+            "meta_id" => $request->meta_id
         ]);
 
-        $info->active = 1;
-        $info->save();
+        $info->update($request->all());
 
         return redirect()->route('job.config', $work->id);
 

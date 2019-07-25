@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-    <title>Reporte </title>
+    <title>Reporte Planilla </title>
 </head>
 <body class="bg-white">
 

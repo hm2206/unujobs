@@ -59,6 +59,7 @@ class ReportCronograma implements ShouldQueue
                         ->where('mes', $meta->mes)
                         ->where('adicional', $this->adicional)
                         ->where('cargo_id', $info->cargo_id)
+                        ->where('planilla_id', $info->planilla_id)
                         ->where('categoria_id', $info->categoria_id);
                     
                     $total = $info->remuneraciones->sum('monto');
@@ -78,6 +79,7 @@ class ReportCronograma implements ShouldQueue
                             ->where('adicional', $this->adicional)
                             ->where('cargo_id', $info->cargo_id)
                             ->where('categoria_id', $info->categoria_id)
+                            ->where('planilla_id', $info->planilla_id)
                             ->get();
 
                     $total_descto = $info->descuentos->sum('monto');
@@ -95,7 +97,7 @@ class ReportCronograma implements ShouldQueue
                     $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
 
                     //calcular total neto
-                    $info->neto = $info->total - $total_descto;
+                    $info->neto = $total - $total_descto;
 
                 }
 
@@ -110,7 +112,7 @@ class ReportCronograma implements ShouldQueue
         $pdf = PDF::loadView('pdf.planilla', compact('meses', 'metas', 'pagina'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
-        $ruta = "/pdf/planilla_metas_{$this->mes}_{$this->year}.pdf";
+        $ruta = "/pdf/planilla_metas_{$this->mes}_{$this->year}_{$this->adicional}.pdf";
         $pdf->save(storage_path("app/public") . $ruta);
 
         $users = User::all();

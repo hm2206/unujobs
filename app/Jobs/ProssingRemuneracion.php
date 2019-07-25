@@ -63,6 +63,7 @@ class ProssingRemuneracion implements ShouldQueue
             $hasRemuneraciones = Remuneracion::where("work_id", $job->id)
                 ->where("cargo_id", $info->cargo_id)
                 ->where("categoria_id", $info->categoria_id)
+                ->where("planilla_id", $info->planilla_id)
                 ->where("adicional", $cronograma->adicional)
                 ->where("dias", $cronograma->dias)
                 ->where("mes", $mes)
@@ -77,6 +78,7 @@ class ProssingRemuneracion implements ShouldQueue
                         "categoria_id" => $info->categoria_id,
                         "cronograma_id" => $cronograma->id,
                         "cargo_id" => $info->cargo_id,
+                        "planilla_id" => $info->planilla_id,
                         "type_remuneracion_id" => $remuneracion->id,
                         "mes" => $cronograma->mes,
                         "año" => $cronograma->año,
@@ -91,7 +93,7 @@ class ProssingRemuneracion implements ShouldQueue
             }else {
                 foreach ($types as $type) {
                     $config = DB::table("concepto_type_remuneracion")
-                        ->whereIn("concepto_id", $job->categoria->conceptos->pluck(["id"]))
+                        ->whereIn("concepto_id", $info->categoria->conceptos->pluck(["id"]))
                         ->where("categoria_id", $info->categoria_id)
                         ->where("type_remuneracion_id", $type->id)
                         ->get();
@@ -102,6 +104,7 @@ class ProssingRemuneracion implements ShouldQueue
                         "work_id" => $job->id,
                         "categoria_id" => $info->categoria_id,
                         "cargo_id" => $info->cargo_id,
+                        "planilla_id" => $info->planilla_id,
                         "cronograma_id" => $cronograma->id,
                         "type_remuneracion_id" => $type->id,
                         "mes" => $cronograma->mes,

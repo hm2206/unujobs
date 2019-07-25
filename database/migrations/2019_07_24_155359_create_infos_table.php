@@ -19,8 +19,14 @@ class CreateInfosTable extends Migration
             $table->integer('cargo_id');
             $table->integer('categoria_id');
             $table->integer('meta_id');
+            $table->integer('fuente_id')->nullable();
+            $table->integer('planilla_id')->nullable();
+            $table->string('plaza')->nullable();
+            $table->string('perfil')->nullable();
+            $table->string('escuela')->nullable();
             $table->integer('active')->default(1);
             $table->text('observacion')->nullable();
+            $table->string('ruc')->nullable();
             $table->double("total")->default(0);
             $table->timestamps();
         });

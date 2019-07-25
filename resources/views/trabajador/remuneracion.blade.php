@@ -155,6 +155,7 @@
 
                     <input type="hidden" name="categoria_id" value="{{ $current->categoria_id }}">
                     <input type="hidden" name="cargo_id" value="{{ $current->cargo_id }}">
+                    <input type="hidden" name="planilla_id" value="{{ $current->planilla_id }}">
 
                     <button class="btn btn-primary"><i class="fas fa-sync"></i> Actualizar</button>
                 </div>

@@ -53,14 +53,18 @@ class ReportBoleta implements ShouldQueue
                 $remuneraciones = Remuneracion::where("work_id", $work->id)
                     ->where("categoria_id", $info->categoria_id)
                     ->where("cargo_id", $info->cargo_id)
+                    ->where("planilla_id", $info->planilla_id)
                     ->where("adicional", $this->adicional)
                     ->get();
 
                 $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
                     ->where("categoria_id", $info->categoria_id)
                     ->where("cargo_id", $info->cargo_id)
+                    ->where("planilla_id", $info->planilla_id)
                     ->where("adicional", $this->adicional)
                     ->get();
+
+                $total = $remuneraciones->sum("monto");
                 
                 $info->remuneraciones = $remuneraciones;
                 $info->descuentos = $descuentos->chunk(2)->toArray();
@@ -75,7 +79,7 @@ class ReportBoleta implements ShouldQueue
                 $info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
 
                 //total neto
-                $info->neto = $info->total - $info->total_descuento;
+                $info->neto = $total - $info->total_descuento;
                 $info->total_aportes = $info->essalud + $info->accidentes;
 
             }
@@ -86,12 +90,12 @@ class ReportBoleta implements ShouldQueue
         //genera el pdf;
         $pdf = PDF::loadView("pdf.boleta_auto", compact('works'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $pdf->save(storage_path("app/public/pdf/boletas_{$this->mes}_{$this->year}.pdf"));
+        $pdf->save(storage_path("app/public/pdf/boletas_{$this->mes}_{$this->year}_{$this->adicional}.pdf"));
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/pdf/boletas_{$this->mes}_{$this->year}.pdf", 
+            $user->notify(new ReportNotification("/storage/pdf/boletas_{$this->mes}_{$this->year}_{$this->adicional}.pdf", 
                 "La boleta {$this->mes} del {$this->year} fué generada"
             ));
         }
