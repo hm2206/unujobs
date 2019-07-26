@@ -124,3 +124,7 @@ Route::get("user/unread", "UserController@unread");
 Route::post("user/{notify}/markasread", "UserController@markAsRead");
 
 
+//formatos de JSon
+Route::get('formato/json', 'FormatoController@json')->name('formato.json');
+
+

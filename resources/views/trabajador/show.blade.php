@@ -164,19 +164,53 @@
     
     <div class="card mt-3">
         <div class="card-header">
-            Cargos
+            Cargos Asociados
         </div>
         <div class="card-body">
             <div class="row">
                 @foreach ($job->infos as $info)
                     <div class="col-md-4">
-                        <button class="btn btn-primary">
-                            {{ $info->cargo ? $info->cargo->descripcion : '' }}
-                            <i class="fas fa-arrow-right text-warning"></i>
-                            <span class="btn btn-sm btn-danger">
-                                {{ $info->categoria ? $info->categoria->nombre : '' }}
-                            </span>
-                        </button>
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                {{ $info->cargo ? $info->cargo->descripcion : '' }}
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    <li>
+                                        <b>Categoria: <button class="btn btn-sm btn-danger">{{ $info->categoria ? $info->categoria->nombre : '' }}</button></b>
+                                    </li>
+                                    <li class="mt-1">
+                                        <b>Meta: <button class="btn btn-sm btn-danger">{{ $info->meta ? $info->meta->meta : '' }}</button></b>
+                                    </li>
+                                    <li class="mt-1">
+                                        <b>Perfil: <button class="btn btn-sm btn-danger">{{ $info->perfil }}</button></b>
+                                    </li>
+                                    @if ($info->plaza)
+                                        <li class="mt-1">
+                                            <b>Plaza: <button class="btn btn-sm btn-danger">{{ $info->plaza }}</button></b>
+                                        </li>
+                                    @endif
+
+                                    @if ($info->escuela)
+                                        <li class="mt-1">
+                                            <b>Escuela: <button class="btn btn-sm btn-danger">{{ $info->escuela }}</button></b>
+                                        </li>
+                                    @endif
+
+                                    @if ($info->fuente_id)
+                                        <li class="mt-1">
+                                            <b>Fuente de Ingreso: <button class="btn btn-sm btn-danger">{{ $info->functe_id }}</button></b>
+                                        </li>
+                                    @endif
+
+                                    @if ($info->ruc)
+                                        <li class="mt-1">
+                                            <b>RUC: <button class="btn btn-sm btn-danger">{{ $info->ruc }}</button></b>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -185,7 +219,7 @@
 
     <div class="card mt-3">
         <div class="card-header">
-            Sindicatos
+            Sindicatos Asociados
         </div>
         <div class="card-body">
             <div class="row">

@@ -76,8 +76,7 @@
                         <tr>
                             <th>#ID</th>
                             <th>Nombre Completo</th>
-                            <th>Meta</th>
-                            <th>Cargo</th>
+                            <th>Categorias</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -86,8 +85,13 @@
                             <tr>
                                 <th>{{ $job->id }}</th>
                                 <th class="uppercase">{{ $job->nombre_completo }}</th>
-                                <th class="uppercase">{{ $job->meta ? $job->meta->metaID : null }}</th>
-                                <th class="uppercase">{{ $job->cargo ? $job->cargo->descripcion : null }}</th>
+                                <th class="uppercase">
+                                    @foreach ($job->infos as $info)
+                                        <div class="btn btn-sm btn-danger">
+                                            {{ $info->categoria ? $info->categoria->nombre : '' }}
+                                        </div>
+                                    @endforeach
+                                </th>
                                 <th>
                                     <div class="btn-group">
                                         <a href="{{ route('job.show', $job->id) }}" class="btn btn-sm btn-primary">
