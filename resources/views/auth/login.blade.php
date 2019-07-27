@@ -18,7 +18,7 @@
         <div class="card-body p-0">
           <!-- Nested Row within Card Body -->
           <div class="row">
-            <div class="col-lg-6 d-none d-lg-block bg-login-image">
+            <div class="col-lg-6 d-none d-lg-block">
               <img src="{{ asset('img/logo.png') }}" alt="" style="width:100%;height:100%;object-fit:contain;padding:5em;">
             </div>
             <div class="col-lg-6">
