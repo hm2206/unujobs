@@ -35,11 +35,8 @@ class CronogramaController extends Controller
             ->paginate(20);
 
         //traer reportes
-        $report_planilla_metas = "pdf/planilla_metas_{$mes}_{$year}.pdf";
-
-
-        $report_boletas = Storage::disk('public')->exists("pdf/boletas_{$mes}_{$year}.pdf") ? 
-            "storage/pdf/boletas_{$mes}_{$year}.pdf" : "#";
+        $report_planilla_metas = "/storage/pdf/planilla_metas_{$mes}_{$year}_{$adicional}.pdf";
+        $report_boletas = "/storage/pdf/boletas_{$mes}_{$year}_{$adicional}.pdf";
 
 
         return view('cronogramas.index', 
@@ -87,7 +84,10 @@ class CronogramaController extends Controller
         ]);
 
         if($cronograma->adicional == 0) {
-            $jobs = Work::where('planilla_id', $cronograma->planilla_id)->get();
+            $jobs = Work::whereHas('infos', function($i) use($cronograma) {
+                    $i->where("planilla_id", $cronograma->planilla_id);
+                })->get();
+
             ProssingRemuneracion::dispatch($cronograma, $jobs);
             ProssingDescuento::dispatch($cronograma, $jobs);
         }elseif($cronograma->adicional == 1) {
@@ -149,7 +149,9 @@ class CronogramaController extends Controller
         $like = request()->query_search;
         $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
         $notIn = $remuneraciones->pluck(["work_id"]);
-        $jobs = Work::whereNotIn("id", $notIn)->where("planilla_id", $cronograma->planilla_id);
+        $jobs = Work::whereNotIn("id", $notIn)->whereHas('infos', function($i) use($cronograma) {
+            $i->where('infos.planilla_id', $cronograma->planilla_id);
+        });
 
         if($like) {
            $jobs->where("nombre_completo", "like", "%{$like}%");

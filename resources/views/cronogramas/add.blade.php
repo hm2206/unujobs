@@ -83,8 +83,7 @@
                             <th>Seleccionar</th>
                             <th>#ID</th>
                             <th>Nombre Completo</th>
-                            <th>Meta</th>
-                            <th>Cargo</th>
+                            <th>Categorias</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,8 +94,15 @@
                                 </th>
                                 <th>{{ $job->id }}</th>
                                 <th class="uppercase">{{ $job->nombre_completo }}</th>
-                                <th class="uppercase">{{ $job->meta ? $job->meta->metaID : null }}</th>
-                                <th class="uppercase">{{ $job->cargo ? $job->cargo->descripcion : null }}</th>
+                                <th class="uppercase">
+                                    <div class="btn-group">
+                                        @foreach ($job->infos as $info)
+                                            <div class="btn btn-sm btn-danger">
+                                                {{ $info->categoria ? $info->categoria->nombre : '' }}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </th>
                             </tr>
                         @empty
                             <tr>

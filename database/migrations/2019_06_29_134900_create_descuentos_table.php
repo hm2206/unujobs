@@ -16,7 +16,9 @@ class CreateDescuentosTable extends Migration
         Schema::create('descuentos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer("work_id");
+            $table->integer("cargo_id");
             $table->integer("categoria_id");
+            $table->integer("planilla_id");
             $table->integer("dias")->default(30);
             $table->integer("cronograma_id");
             $table->text("observaciones")->nullable();

@@ -11,13 +11,13 @@
 
 @section('content')
 
-<div class="col-md-12">
-    <a href="{{ route('job.show', $job->id) }}" class="btn btn-warning"><i class="fas fa-arrow-left"></i> atrás</a>
+<div class="col-md-12 mb-3">
+    <a href="{{ route('job.show', $job->id) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     @if ($cronograma)
         <a href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-calendar-week"></i> planilla</a>
     @endif
-    <a href="{{ route('job.remuneracion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn">remuneración</a>
-    <a href="{{ route('job.descuento', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn">descuento</a>
+    <a href="{{ route('job.remuneracion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark">Remuneración</a>
+    <a href="{{ route('job.descuento', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark">Descuento</a>
 </div>
 
 
@@ -26,65 +26,6 @@
         <b>{{ session('danger') }}</b>
     </div>
 @endif
-
-
-<div class="col-md-12">
-    <div class="card">
-        <h5 class="card-header">
-            <i class="fas fa-filter"></i> Filtro:
-        </h5>
-        <hr>
-        <form class="card-body" method="GET">
-            <div class="row">
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Mes</label>
-                        <input type="number" name="mes" class="form-control" min="1" max="12" value="{{ $mes }}">
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Año</label>
-                        <input type="number" name="year" class="form-control" min="{{ date('Y') - 2 }}" max="{{ date('Y') }}" value="{{ $year }}">
-                    </div>
-                </div>
-
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Adicional</label> <br>
-                        <input type="checkbox" name="adicional" {!! request()->input('adicional') ? 'checked' : null !!}>
-                    </div>
-                </div>
-
-                @if (request()->input('adicional'))
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="" class="form-control-label">Numero</label> <br>
-                            <select name="numero" class="form-control">
-                                @foreach ($seleccionar as $select)
-                                    <option value="{{ $select->numero }}" {!! $select->numero == $numero ? 'selected': null !!}>
-                                        {{ $select->numero }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                @endif
-
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <button class="btn btn-info">
-                            <i class="fas fa-search"></i> Buscar
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </form>
-    </div>
-</div>
 
 
 <div class="col-md-12">
@@ -103,6 +44,7 @@
                         <th>Beneficiario</th>
                         <th>N° de Identidad</th>
                         <th>Cuenta Banco de la Nación</th>
+                        <th>Monto</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,10 +67,7 @@
         </div>
         
         <div class="card-footer">
-            <hr>
-            <h4 class="text-left">
-                Total DSCTOS:  <b class="text-primary">S./ {{ $total }}</b>
-            </h4>
+            
         </div>
     </div>
 

@@ -24,6 +24,7 @@ class CreateWorksTable extends Migration
             $table->string("numero_de_documento")->unique();
             $table->string("fecha_de_nacimiento");
             $table->string("profesion");
+            $table->string("email")->nullable();
             $table->string("phone")->nullable();
             $table->date("fecha_de_ingreso");
             $table->integer("sexo");
@@ -37,17 +38,6 @@ class CreateWorksTable extends Migration
             $table->string("numero_de_cussp")->nullable();
             $table->integer("accidentes")->default(0);
             $table->integer("sindicato_id")->nullable();
-            $table->integer("categoria_id");
-            $table->integer("cargo_id");
-            $table->integer("meta_id");
-            $table->string("pea")->nullable();
-            $table->string("condicion_pap")->nullable();
-            $table->string("perfil")->nullable();
-            $table->string("ext_pptto")->nullable();
-            $table->string("escuela_id")->nullable();
-            $table->string("ruc")->nullable();
-            $table->string("fuente_id")->nullable();
-            $table->text("observaciones")->nullable();
             $table->integer("sede_id")->default(1);
             $table->integer("planilla_id")->nullable();
             $table->string('ley')->nullable();

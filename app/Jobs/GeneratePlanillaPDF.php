@@ -21,6 +21,7 @@ use App\Models\Work;
 use App\Notifications\ReportNotification;
 use \PDF;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 
 class GeneratePlanillaPDF implements ShouldQueue
@@ -51,6 +52,7 @@ class GeneratePlanillaPDF implements ShouldQueue
         $type_descuentos = TypeDescuento::where("config_afp", null)->get();
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $descuentos = Descuento::where('cronograma_id', $cronograma->id)->get();
+
         $afps = Afp::all();
         $works = Work::whereIn("id", $remuneraciones->pluck(['work_id']))->get();
 
@@ -139,12 +141,12 @@ class GeneratePlanillaPDF implements ShouldQueue
             $tmp_essalud = 0;
             $tmp_accidente = 0;
             $base = 0;
-            $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
+            $tmp_remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
                 ->where("work_id", $work->id)
                 ->where('base', 0)
                 ->get();
 
-            $base = $remuneraciones->sum('monto');
+            $base = $tmp_remuneraciones->sum('monto');
 
             //aportaciones current
             $tmp_essalud = $base < 930 ? 83.7 : $base * 0.09;
@@ -174,14 +176,15 @@ class GeneratePlanillaPDF implements ShouldQueue
 
 
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $ruta = "/pdf/planilla_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
-        $pdf->save(storage_path('app/public') . $ruta);
-        $cronograma->update(["pdf" => "storage{$ruta}", "pendiente" => 0]);
+        $nombre = "pdf/planilla_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
+
+        $pdf->save(storage_path("app/public") . "/{$nombre}");
+        $cronograma->update(["pdf" => "/storage/{$nombre}", "pendiente" => 0]);
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("storage" . $ruta, "La Planilla general se genero correctamente"));
+            $user->notify(new ReportNotification($cronograma->pdf ,"La Planilla general se genero correctamente"));
         }
 
 

@@ -11,6 +11,7 @@ use App\Models\Planilla;
 use App\Models\Afp;
 use App\Models\Banco;
 use App\Models\Sindicato;
+use App\Models\TypeCategoria;
 
 class ConfigSeed extends Seeder
 {
@@ -29,6 +30,7 @@ class ConfigSeed extends Seeder
         self::afps();
         self::bancos();
         self::sindicatos();
+        self::type_categorias();
 
     }
 
@@ -197,6 +199,24 @@ class ConfigSeed extends Seeder
 
         foreach ($sindicatos as $sindicato) {
             Sindicato::create($sindicato);
+        }
+
+    }
+
+    public function type_categorias()
+    {
+
+        TypeCategoria::truncate();
+
+        $types = [
+            ["descripcion" => "CARRERA ADMINISTRATIVA"],
+            ["descripcion" => "LEY UNIVERSITARIA"],
+            ["descripcion" => "PERSONAL HOBRERO"],
+            ["descripcion" => "PENSIONES"],
+        ];
+
+        foreach ($types as $type) {
+            TypeCategoria::create($type);
         }
 
     }

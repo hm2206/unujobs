@@ -38,35 +38,7 @@
             </span> Configurar Cargos
         </div>
         <div class="card-body">
-            <form class="row"  method="GET" id="form-cargo">
-                <div class="col-md-3">
-                    <label for="">Cargo <span class="text-danger">*</span></label>
-                    <select-change name="cargo_id" :datos="{{ json_encode($cargos) }}" 
-                        value="id" text="descripcion" for="form-cargo"
-                        :request="'{{ request()->input('cargo_id', 0) }}'"
-                    >
-                    </select-change>
-                </div>
-                <div class="col-md-3">
-                    <label for="">Categoria <span class="text-danger">*</span></label>
-                    <select-change name="categoria_id" :datos="{{ json_encode($categorias) }}" 
-                        value="id" text="nombre" for="form-cargo"
-                        :request="'{{ request()->input('categoria_id')  }}'"
-                    >
-                    </select-change>
-                </div>
-            </form>
-            
-            <form action="{{ route('job.config.store', $work->id) }}" method="POST" class="mt-3">
-                @csrf
-                <input type="hidden" name="cargo_id" value="{{ request()->input('cargo_id') }}">
-                <input type="hidden" name="categoria_id" value="{{ request()->input('categoria_id') }}">
-
-                <button class="btn btn-success">
-                    <i class="fas fa-save"></i> Guardar
-                </button>
-            </form>
-
+            <config-work token="{{ csrf_token() }}" :errors="{{ $errors }}" work_id="{{ $work->id }}"></config-work>
         </div>
         <hr>
         <div class="card-body">

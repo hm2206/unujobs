@@ -84,6 +84,7 @@
             <a class="collapse-item" href="{{ route('concepto.index') }}">Conceptos</a>
             <a class="collapse-item" href="{{ route('descuento.index') }}">Descuentos</a>
             <a class="collapse-item" href="{{ route('remuneracion.index') }}">Remuneraciones</a>
+            <a class="collapse-item" href="{{ route('afp.index') }}">Afps</a>
           </div>
         </div>
       </li>
@@ -98,59 +99,61 @@
     <div id="content-wrapper" class="d-flex flex-column">
 
       <!-- Main Content -->
-      <div id="app">
+      <div id="content">
 
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <div id="app">
+            <!-- Topbar -->
+              <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
 
-          <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto">
+                <!-- Topbar Navbar -->
+                <ul class="navbar-nav ml-auto">
 
-            <!-- Nav Item - Alerts -->
-            <notification></notification>
+                  <!-- Nav Item - Alerts -->
+                  <notification></notification>
 
-            <div class="topbar-divider d-none d-sm-block main"></div>
+                  <div class="topbar-divider d-none d-sm-block main"></div>
 
-            <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small capitalize">{{ auth()->user()->nombre_completo }}</span>
-                <img class="img-profile rounded-circle" src="{{ asset('img/perfil.png') }}">
-              </a>
-              <!-- Dropdown - User Information -->
-              <form method="POST" action="{{ route('logout') }}" class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                @csrf
-                {{-- <a class="dropdown-item" href="#">
-                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Profile
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Settings
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Activity Log
-                </a> --}}
-                {{-- <div class="dropdown-divider"></div> --}}
-                <button class="dropdown-item">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Cerrar Sesión
-                </button>
-              </form>
-            </li>
+                  <!-- Nav Item - User Information -->
+                  <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <span class="mr-2 d-none d-lg-inline text-gray-600 small capitalize">{{ auth()->user()->nombre_completo }}</span>
+                      <img class="img-profile rounded-circle" src="{{ asset('img/perfil.png') }}">
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <form method="POST" action="{{ route('logout') }}" class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                      @csrf
+                      {{-- <a class="dropdown-item" href="#">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Profile
+                      </a>
+                      <a class="dropdown-item" href="#">
+                        <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Settings
+                      </a>
+                      <a class="dropdown-item" href="#">
+                        <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Activity Log
+                      </a> --}}
+                      {{-- <div class="dropdown-divider"></div> --}}
+                      <button class="dropdown-item">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Cerrar Sesión
+                      </button>
+                    </form>
+                  </li>
 
-          </ul>
+                </ul>
 
-        </nav>
-        <!-- End of Topbar -->
+              </nav>
+              <!-- End of Topbar -->
 
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
+              <!-- Begin Page Content -->
+              <div class="container-fluid">
 
-          @yield('content')
+                @yield('content')
 
+              </div>
         </div>
         <!-- /.container-fluid -->
 

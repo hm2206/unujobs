@@ -70,11 +70,37 @@
                     </div>
                 @endif
 
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <button class="btn btn-info">
-                            <i class="fas fa-search"></i> Buscar
-                        </button>
+                <div class="col-md-12">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <select name="categoria_id" class="form-control">
+                                @foreach ($categorias as $categoria)
+                                    <option value="{{ $categoria->id }}" {!! request()->categoria_id == $categoria->id ? 'selected' : '' !!}>
+                                        {{ $categoria->categoria ? $categoria->categoria->nombre : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    Dias:
+                                </div>
+                                <div class="col-md-9">
+                                    <input disabled type="text" class="form-control" value="{{ $dias }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <button class="btn btn-info">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -93,14 +119,6 @@
             <span class="uppercase">{{ $job->nombre_completo }} </span>
         </h4>
         <form class="card-body" action="{{ route('job.descuento.update', $job->id) }}" method="POST">
-            <div class="mb-4">
-                Categoria: <b class="text-primary">{{ $categoria->nombre }}</b> <br>
-                <div class="row align-items-center">
-                    <div class="col-md-1"> Dias: </div>
-                    <b class="text-primary">{{ $dias }}</b>
-                </div>
-            </div>
-
             <div class="row mt-4">
                 @csrf
                 @method('PUT')
@@ -132,11 +150,15 @@
                     @if (isset($cronograma->id))
                         <input type="hidden" name="cronograma_id" value="{{ $cronograma->id }}">
                     @endif
+
+                    <input type="hidden" name="cargo_id" value="{{ $current->cargo_id }}">
+                    <input type="hidden" name="categoria_id" value="{{ $current->categoria_id }}">
+                    <input type="hidden" name="planilla_id" value="{{ $current->planilla_id }}">
+
                     <button class="btn btn-primary"><i class="fas fa-sync"></i> Actualizar</button>
                 </div>
 
             </div>
-
 
         </form>
 
