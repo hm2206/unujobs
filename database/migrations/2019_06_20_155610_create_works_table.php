@@ -24,6 +24,7 @@ class CreateWorksTable extends Migration
             $table->string("numero_de_documento")->unique();
             $table->string("fecha_de_nacimiento");
             $table->string("profesion");
+            $table->string("email")->nullable();
             $table->string("phone")->nullable();
             $table->date("fecha_de_ingreso");
             $table->integer("sexo");

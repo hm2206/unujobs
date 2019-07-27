@@ -96,6 +96,13 @@
                     </div>
                 </div>
 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Email</label>
+                        <input type="email" class="form-control" value="{{ old('email') }}" name="email">
+                        <b class="text-danger">{{ $errors->first('email') }}</b>
+                    </div>
+                </div>
 
                 <div class="col-md-6">
                     <div class="form-group">

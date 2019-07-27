@@ -15,7 +15,9 @@ use App\Models\TypeDescuento;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use \PDF;
+use \Mail;
 use App\Models\User;
+use App\Mail\SendBoleta;
 use App\Notifications\ReportNotification;
 
 
@@ -81,6 +83,22 @@ class ReportBoleta implements ShouldQueue
                 //total neto
                 $info->neto = $total - $info->total_descuento;
                 $info->total_aportes = $info->essalud + $info->accidentes;
+
+            }
+
+            if ($work->email) {
+
+                try {
+                    $year = $this->year;
+                    $mes = $this->mes;
+                    $pdf_tmp = PDF::loadView('pdf.send_boleta', compact('work', 'year', 'mes'));
+                    $pdf_tmp->setPaper('a4', 'landscape');
+
+                    Mail::to($work->email)
+                    ->send(new SendBoleta($work, $this->year, $this->mes, $this->adicional, $pdf_tmp));
+                } catch (\Throwable $th) {
+                    \Log::info('No se pudó enviar boleta de: ' . $work->email . " error: " . $th);
+                }
 
             }
 

@@ -12,7 +12,7 @@ class Work extends Model
         "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso",
         "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta",
         "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
-        "sindicato_id", "nombre_completo", "direccion", "total", "profesion"
+        "sindicato_id", "nombre_completo", "direccion", "total", "profesion", "email"
     ];
 
     public function banco()

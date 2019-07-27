@@ -29,6 +29,32 @@
 
 <div class="col-md-12 mt-5">
 
+    <div class="card mb-2">
+        <div class="card-header">
+            Filtrar
+        </div>
+        <form action="" class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" placeholder="Fecha Inicio: 07/2019">
+                </div>
+                <div class="col-md-1">
+                    <div class="text-center">
+                        <i class="fas fa-arrow-right text-danger"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" placeholder="Fecha Final: 08/2019">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-info">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <div class="card">
         <div class="card-header card-header-danger">
             <h4 class="card-title">Lista de Boletas</h4>
