@@ -19,7 +19,9 @@ class BolsaController extends Controller
     {
         $year = request()->input('year', date('Y'));
 
-        $convocatorias = Convocatoria::where("aceptado", 1)
+        $convocatorias = Convocatoria::with(['personals' => function($p) {
+            $p->where('personals.aceptado', 1);
+        }])->where("aceptado", 1)
             ->where("fecha_final", "<=", "$year-12-31")
             ->orderBy('fecha_final', 'DESC')->paginate(20);
 
@@ -29,7 +31,7 @@ class BolsaController extends Controller
     public function show($numero, $titulo)
     {
         $convocatoria = Convocatoria::findOrFail($numero);
-        $personal = Personal::where("slug", $titulo)->firstOrFail();
+        $personal = Personal::where("slug", $titulo)->where('aceptado', 1)->firstOrFail();
         $types = [];
 
         $idParse = request()->postulante ? \base64_decode(request()->postulante) : Cache::get('postulante');
@@ -50,7 +52,7 @@ class BolsaController extends Controller
         }
 
         $isExpire = $convocatoria->fecha_final < date('Y-m-d') ? true : false;
-        $mas = $convocatoria->personals->where("id", "<>", $personal->id);
+        $mas = $convocatoria->personals->where("id", "<>", $personal->id)->where('aceptado', 1);
 
         return view("bolsa.show", compact('convocatoria', 'personal', 'mas', 'postulante', 'auth', 'types', 'current', 'idParse', 'isExpire'));
     }
@@ -70,7 +72,12 @@ class BolsaController extends Controller
         $personal = $convocatoria->personals->where("aceptado", 1)->first();
         $year = isset(explode("-", $convocatoria->fecha_inicio)[0]) ? explode("-", $convocatoria->fecha_inicio)[0] : null;
 
-        return view("bolsa.postular", compact('convocatoria', 'year', 'personal', 'ubigeos'));
+        if ($personal) {
+            return view("bolsa.postular", compact('convocatoria', 'year', 'personal', 'ubigeos'));
+        }
+
+        return back();
+
     }
 
     public function authenticar(Request $request)
