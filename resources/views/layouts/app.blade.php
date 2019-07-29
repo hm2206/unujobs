@@ -84,7 +84,7 @@
             <a class="collapse-item" href="{{ route('concepto.index') }}">Conceptos</a>
             <a class="collapse-item" href="{{ route('descuento.index') }}">Descuentos</a>
             <a class="collapse-item" href="{{ route('remuneracion.index') }}">Remuneraciones</a>
-            <a class="collapse-item" href="{{ route('afp.index') }}">Afps</a>
+            <a class="collapse-item" href="{{ route('afp.index') }}">AFP</a>
           </div>
         </div>
       </li>
@@ -136,6 +136,12 @@
                         Activity Log
                       </a> --}}
                       {{-- <div class="dropdown-divider"></div> --}}
+
+                      <a class="dropdown-item" href="{{ url('/pdf/manual.pdf') }}" target="__blank">
+                        <i class="fas fa-file-pdf fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Manual de usuario
+                      </a> 
+
                       <button class="dropdown-item">
                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                         Cerrar Sesión

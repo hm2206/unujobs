@@ -24,4 +24,9 @@ class Cargo extends Model
         return $this->belongsToMany(TypeRemuneracion::class, 'cargo_type_remuneracion');
     }
 
+    public function planilla()
+    {
+        return $this->belongsTo(Planilla::class);
+    }
+
 }

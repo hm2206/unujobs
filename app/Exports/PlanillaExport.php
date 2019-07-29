@@ -3,16 +3,28 @@
 namespace App\Exports;
 
 use App\Models\Work;
-use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Illuminate\Contracts\View\View;
 
-class PlanillaExport implements FromView
+class PlanillaExport implements FromCollection
 {
-  
-    public function view(): View
+
+    private $limite = 0;
+    private $order = 'ASC';
+
+
+    public function __construct($limite = 0, $order = 'ASC')
     {
-        $works = Work::all();
-        return view('exports.cronograma', \compact('works'));
+        $this->limite = $limite;
+        $this->order = $order;
+    }
+
+  
+    public function collection()
+    {
+        return Work::orderBy('id', $this->order)
+            ->take()
+            ->get();
     }
 
 }

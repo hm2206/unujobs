@@ -26,10 +26,14 @@
 <div class="col-md-12">
 
     <div class="card">
-        <div class="card-header card-header-danger">
+        <form class="card-header" method="POST" action="{{ route('export.cargo') }}">
+            @csrf
             <h4 class="card-title">Lista de Cargos</h4>
             <p class="card-category">Sub Módulo de Gestión de cargos</p>
-        </div>
+            <button class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Exportar Cargos
+            </button>
+        </form>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table">

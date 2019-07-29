@@ -28,12 +28,15 @@
         </div>
     @endif
     
-    <div class="col-md-12 mt-3">
+    <div class="col-md-6 mt-3">
     
         <form method="GET" class="card">
+            <div class="card-header">
+                Buscar Trabajadores
+            </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="form-group">
                             <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
                         </div>
@@ -45,8 +48,39 @@
             </div>
         </form>
     </div>
+
+    <div class="col-md-6">
+        <form method="POST" class="card mt-3" action="{{ route('export.work') }}">
+            @csrf
+            <div class="card-header">
+                Exportación de trabajadores
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <small>Limite de trabajadores <span class="text-danger">{{ $jobs->count() }}</span></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="number" name="limite" class="form-control" value="{{ $jobs->count() }}" max="{{ $jobs->count() }}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <input type="checkbox" name="order" title="Ordenar Descendentemente"> <i class="fas fa-sort-alpha-up"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-success btn-sm">Exportar <i class="fas fa-file-excel"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
     
-    <div class="col-md-12 mt-5">
+    <div class="col-md-12 mt-3">
     
         {!! $jobs->appends(['query_search' => request('query_search')])->links() !!}
     
