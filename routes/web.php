@@ -120,6 +120,7 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 
 
 //notificaciones
+Route::get("user/unread/count", "UserController@countUnread");
 Route::get("user/unread", "UserController@unread");
 Route::post("user/{notify}/markasread", "UserController@markAsRead");
 

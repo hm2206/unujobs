@@ -215,13 +215,4 @@
         </div>
     </form>
 </div>
-
-<script>
-    function select(that) {
-        let categoria = document.getElementById('categoria');
-        categoria.value = "";
-        that.form.submit();
-    }
-</script>
-
 @endsection

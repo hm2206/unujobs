@@ -8,6 +8,11 @@ use App\Models\User;
 class UserController extends Controller
 {
     
+    public function countUnread()
+    {
+        return auth()->user()->unreadNotifications->count();
+    }
+
     public function unread()
     {   
         $user = auth()->user();
