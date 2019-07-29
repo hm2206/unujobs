@@ -3,30 +3,34 @@
         <a :class="`nav-link dropdown-toggle ${className}`" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-bell fa-fw"></i>
             <!-- Counter - Alerts -->
-            <span class="badge badge-danger badge-counter" v-text="count"></span>
+            <span class="badge badge-danger badge-counter" v-if="count > 0" v-text="count"></span>
         </a>
         <!-- Dropdown - Alerts -->
-        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in alert-height" aria-labelledby="alertsDropdown">
             <h6 class="dropdown-header">
                 Notificaciones
             </h6>
                 
             <span v-if="hasNotify">
-                <a class="dropdown-item d-flex align-items-center" 
-                    target="__blank" :href="notify.data ? notify.data.url : '#'" 
+                <div class="dropdown-item d-flex align-items-center" 
                     v-for="(notify, n) in notifications" :key="notify.id"
                     v-on:click="markAsRead(notify.id, n)"
                 >
-                    <div class="mr-3">
+                    <a class="mr-3" target="__blank" :href="notify.data ? notify.data.url : '#'" >
                         <div :class="`icon-circle ${notify.data ? notify.data.background : 'bg-primary'}`">
                             <i :class="`${notify.data ? notify.data.icono : 'fas fa-file-alt'} text-white`"></i>
                         </div>
-                    </div>
+                    </a>
                     <div>
                         <div class="small text-gray-500" v-text="getDate(notify.created_at)"></div>
-                        <span class="font-weight-bold" v-text="notify.data.body"></span>
+                        <a class="font-weight-bold" target="__blank" :href="notify.data ? notify.data.url : '#'" 
+                            v-text="notify.data.body">
+                        </a>
                     </div>
-                </a>
+                    <button class="btn btn-sm text-danger" v-on:click="leaveNotify(notify.id, n)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </span>
             
             <div class="dropdown-item  text-center" v-else>
@@ -44,14 +48,17 @@ export default {
     data() {
         return {
             notifications: [],
-            className: ""
+            className: "",
+            count: "",
         }
     },
     mounted() {
         let that = this;
         this.getNotify();
+        this.countUnread();
         this.intervalo = setInterval(function() {
             that.getNotify();
+            that.countUnread();
         }, 3000);
     },
     methods: {
@@ -85,12 +92,22 @@ export default {
                 alert("Ocurrio un error al actualizar las notificationes, Actualize la página");
                 clearTimeout(this.intervalo);
             });
+        },
+        countUnread() {
+            let api = axios.get('/user/unread/count');
+            api.then(res => {
+                this.count = res.data;
+            }).catch(err => {   
+                console.log(err);
+            });
+        },
+        leaveNotify(id, index) {
+            this.notifications.splice(index, 1);
+            this.count -= 1;
+            this.markAsRead(id, index);
         }
     },
     computed: {
-        count() {
-            return this.notifications.length > 0 ? this.notifications.length : "";
-        },
         hasNotify() {
             return this.notifications.length > 0 ? true : false;
         }
@@ -100,3 +117,14 @@ export default {
     }
 }
 </script>
+
+
+<style scoped>
+
+    .alert-height {
+        max-height: 300px;
+        overflow-y: auto;
+        scrollbar-width: 0.2em;
+    }
+
+</style>

@@ -1,26 +1,60 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Reporte - Planilla</title>
-</head>
-<body class="bg-white">
-    <div class="container-fluid mt-2">
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Mes</th>
+            <td>{{ $cronograma->mes }}</td>
+            <th>Año</th>
+            <td>{{ $cronograma->año }}</td>
+            <th>Planilla</th>
+            <td>{{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</td>
+        </tr>
+    </thead>
+</table>
+
+
+@foreach ($works as $work)
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre Completo</th>
+                <th>{{ $work->nombre_completo }}</th>
+            </tr>
+        </thead>
+    </table>
         
-        <div class="row">
-            <div class="col-xs ml-1 mb-0">
-            </div>
-            <div class="ml-1">
-                <h5 style="margin:0px;"><b>UNIVERSIDAD NACIONAL DE UCAYALI</b></h5>
-                <small>OFICINA GENERAL DE RECURSOS HUMANOS</small> <br>
-                <small>OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</small>
-            </div>
-        </div>
+    <table>
+        <tbody>
+            @foreach ($work->infos as $info)
+                <tr>
+                    <td>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="6">
+                                        Remuneraciones >> 
+                                        {{ $info->cargo ? $info->cargo->descripcion : '' }} >> 
+                                        {{ $info->categoria ? $info->categoria->nombre : '' }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($info->remuneraciones->chunk(6) as $body)
+                                    <tr>
+                                        @foreach ($body as $remuneracion)
+                                            <td colspan="2">{{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : '' }}</td>
+                                            <td>{{ $remuneracion->monto }}</td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 
-        <h6 class="text-center mt-3"></h6>
-
-    </div>
-</body>
-</html>
+    <br> <br>
+    @endforeach

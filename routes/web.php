@@ -102,6 +102,14 @@ Route::group(["prefix" => "export"], function() {
     Route::get("cronograma/{id}/pdf", "ExportCronogramaController@pdf")->name('export.cronograma.pdf');
     Route::get("reporte/mes/{mes}/year/{year}/adicional/{adicional}", 'ExportCronogramaController@reporte')->name('export.reporte');
 
+
+    //exportaciones generales
+    Route::post("work", "ExportController@work")->name("export.work");
+    Route::post("meta", "ExportController@meta")->name("export.meta");
+    Route::post("cargo", "ExportController@cargo")->name("export.cargo");
+    Route::post("categoria", "ExportController@categoria")->name("export.categoria");
+    Route::post("cronograma/{id}", "ExportController@cronograma")->name("export.cronograma");
+
 });
 
 
@@ -120,6 +128,7 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 
 
 //notificaciones
+Route::get("user/unread/count", "UserController@countUnread");
 Route::get("user/unread", "UserController@unread");
 Route::post("user/{notify}/markasread", "UserController@markAsRead");
 

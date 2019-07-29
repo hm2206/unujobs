@@ -28,8 +28,8 @@
 
     <div class="card">
         <div class="card-header card-header-danger">
-            <h4 class="card-title">Lista de Descuentos</h4>
-            <p class="card-category">Sub Módulo de Gestión de descuentos</p>
+            <h4 class="card-title">Lista de Remuneraciones</h4>
+            <p class="card-category">Sub Módulo de Gestión de remuneraciones</p>
         </div>
         <div class="card-body">
             <div class="table-responsive">
