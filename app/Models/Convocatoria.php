@@ -22,4 +22,10 @@ class Convocatoria extends Model
         return $this->hasMany(Actividad::class);
     }
 
+
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
 }

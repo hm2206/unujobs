@@ -39,19 +39,19 @@
                 <table class="table">
                     <thead class="text-primary">
                         <tr>
-                            <th>#ID</th>
+                            <th>N°</th>
                             <th>Descripción</th>
                             <th>Categorias</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($cargos as $cargo)
+                        @forelse ($cargos as $iter => $cargo)
                             <tr>
-                                <th>{{ $cargo->id }}</th>
+                                <th>{{ $iter + 1 }}</th>
                                 <th class="uppercase">{{ $cargo->descripcion }}</th>
                                 <th>
-                                    <a href="{{ route('cargo.categoria', $cargo->id) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>
+                                    <a href="{{ route('cargo.categoria', $cargo->slug()) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>
                                     @foreach ($cargo->categorias as $categoria)
                                         <a href="#" class="btn btn-sm btn-danger uppercase mt-1">
                                             {{ $categoria->nombre }}
@@ -60,10 +60,10 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('cargo.edit', $cargo->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-                                        <a href="{{ route('cargo.config', $cargo->id) }}" class="btn btn-sm btn-dark">
+                                        <a href="{{ route('cargo.config', $cargo->slug()) }}" class="btn btn-sm btn-dark">
                                             <i class="fas fa-cog"></i>
                                         </a>
                                     </div>

@@ -32,13 +32,13 @@
                         @foreach ($personals as $personal)
                             <tr>
                                 <td>
-                                    <a href="{{ route('personal.edit', $personal->id) }}">{{ $personal->sede ? $personal->sede->descripcion : null }}</a>
+                                    <a href="{{ route('personal.edit', $personal->slug) }}">{{ $personal->sede ? $personal->sede->descripcion : null }}</a>
                                 </td>
                                 <td>
-                                    <a href="{{ route('personal.edit', $personal->id) }}">{{ $personal->dependencia_txt }}</a>
+                                    <a href="{{ route('personal.edit', $personal->slug) }}">{{ $personal->dependencia_txt }}</a>
                                 </td>
                                 <td>
-                                    <a href="{{ route('personal.edit', $personal->id) }}">{{ $personal->cargo_txt }}</a>
+                                    <a href="{{ route('personal.edit', $personal->slug) }}">{{ $personal->cargo_txt }}</a>
                                 </td>
                                 <td class="text-center">
                                     <span class="btn btn-dark btn-sm"><small>{{ $personal->fecha_inicio }}</small></span>
@@ -47,7 +47,7 @@
                                     <span class="btn btn-dark btn-sm"><small>{{ $personal->fecha_final }}</small></span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('personal.pdf', $personal->id) }}" target="__blank" class="btn btn-sm btn-danger">
+                                    <a href="{{ route('personal.pdf', $personal->slug) }}" target="__blank" class="btn btn-sm btn-danger">
                                         <i class="fas fa-file-pdf"></i>
                                     </a>
                                 </td>
@@ -61,7 +61,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <form class="group" method="POST" action="{{ route('personal.aceptar', $personal->id) }}">
+                                    <form class="group" method="POST" action="{{ route('personal.aceptar', $personal->slug) }}">
                                         @csrf
                                         @if ($personal->aceptado)
                                             <button href=""class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Rechazar</button>

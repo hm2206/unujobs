@@ -73,14 +73,20 @@ class JobController extends Controller
     }
 
 
-    public function show(Work $job)
+    public function show($slug)
     {
+        //recuperar id
+        $id = \base64_decode($slug);
+        $job = Work::findOrFail($id);
         return view("trabajador.show", \compact('job'));
     }
 
 
-    public function edit(Work $job)
+    public function edit($slug)
     {
+        //recuperando el id
+        $id = \base64_decode($slug);
+        $job = Work::findOrFail($id);
         $bancos = Banco::get(["id", "nombre"]);
         $afps = Afp::get(["id", "nombre"]);
 
@@ -108,11 +114,15 @@ class JobController extends Controller
             ->orWhere("numero_de_documento", "like", "%{$like}%");
     }
 
-    public function remuneracion($id)
+    public function remuneracion($slug)
     {
+        //recuperar id
+        $id = \base64_decode($slug);
         $job = Work::findOrFail($id);
 
-        $current = request()->categoria_id ? $job->infos->find(request()->categoria_id) : $job->infos->first();
+        $categoria_id = \base64_decode(request()->categoria_id);
+
+        $current = request()->categoria_id ? $job->infos->find($categoria_id) : $job->infos->first();
         $categorias = $job->infos;
 
         $year = request()->year ? (int)request()->year : date('Y');
@@ -215,11 +225,14 @@ class JobController extends Controller
     }
 
 
-    public function descuento($id) 
+    public function descuento($slug) 
     {
+        $id = \base64_decode($slug);
         $job = Work::findOrFail($id);
 
-        $current = request()->categoria_id ? $job->infos->find(request()->categoria_id) : $job->infos->first();
+        $categoria_id = \base64_decode(request()->categoria_id);
+
+        $current = request()->categoria_id ? $job->infos->find($categoria_id) : $job->infos->first();
         $categorias = $job->infos;
 
         $year = request()->year ? (int)request()->year : date('Y');
@@ -317,8 +330,9 @@ class JobController extends Controller
     }
 
 
-    public function obligacion($id)
+    public function obligacion($slug)
     {
+        $id = \base64_decode($slug);
         $job = Work::findOrFail($id);
 
         $year = request()->year ? (int)request()->year : date('Y');
@@ -361,8 +375,10 @@ class JobController extends Controller
             compact('cronograma', 'year', 'mes', 'adicional', 'numero', 'dias', 'job', 'total', 'seleccionar'));
     }
 
-    public function boleta($id)
+    public function boleta($slug)
     {
+        //recuperar id
+        $id = \base64_decode($slug);
         $work = Work::findOrFail($id);
         $remuneraciones = Remuneracion::where('work_id', $work->id)->get();
         $cronogramas = Cronograma::whereIn("id", $remuneraciones->pluck(['cronograma_id']))
@@ -418,8 +434,10 @@ class JobController extends Controller
     }
 
 
-    public function config($id)
+    public function config($slug)
     {  
+        //recuperar id del trabajador
+        $id = \base64_decode($slug);
         $work = Work::with('infos')->findOrFail($id);
         $cargoNotIn = $work->infos->pluck(["id"]);
         $cargos = Cargo::whereNotIn("id", $cargoNotIn)->get();

@@ -12,8 +12,8 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-ban"></i> cancelar</a>
-    <a href="{{ route('job.show', $job->id) }}" class="btn btn-primary"><i class="fas fa-user"></i> perfil</a>
-    <a href="{{ route('job.config', $job->id) }}" class="btn btn-dark">
+    <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-primary"><i class="fas fa-user"></i> perfil</a>
+    <a href="{{ route('job.config', $job->slug()) }}" class="btn btn-dark">
         <i class="fas fa-cog"></i> Configuración
     </a>
 </div>

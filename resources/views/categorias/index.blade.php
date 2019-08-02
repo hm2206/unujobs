@@ -55,7 +55,7 @@
                                 <th>{{ $categoria->id }}</th>
                                 <th class="uppercase">{{ $categoria->nombre }}</th>
                                 <th>
-                                    <a href="{{ route('categoria.concepto', [$categoria->id, "page={$categorias->currentPage()}"]) }}" class="mb-1 btn btn-sm btn-primary">
+                                    <a href="{{ route('categoria.concepto', [$categoria->slug(), "page={$categorias->currentPage()}"]) }}" class="mb-1 btn btn-sm btn-primary">
                                         <i class="fas fa-plus"></i>
                                     </a>
                                     @foreach ($categoria->conceptos as $concepto)
@@ -69,10 +69,10 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('categoria.edit', $categoria->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('categoria.edit', $categoria->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-                                        <a target="__blank" href="{{ route('categoria.config', [$categoria->id, "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-success">
+                                        <a target="__blank" href="{{ route('categoria.config', [$categoria->slug(), "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>
                                     </div>

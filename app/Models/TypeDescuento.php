@@ -9,6 +9,11 @@ class TypeDescuento extends Model
     
     protected $fillable = ["descripcion", "key", "config_afp"];
 
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
     public function sindicatos()
     {
         return $this->belongsToMany(Sindicato::class, 'descuento_sindicato');

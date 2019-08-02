@@ -11,4 +11,10 @@ class TypeRemuneracion extends Model
         "key", "descripcion", "monto", "base"
     ];
 
+
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
 }

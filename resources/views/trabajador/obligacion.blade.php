@@ -12,12 +12,12 @@
 @section('content')
 
 <div class="col-md-12 mb-3">
-    <a href="{{ route('job.show', $job->id) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     @if ($cronograma)
-        <a href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-calendar-week"></i> planilla</a>
+        <a href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-primary"><i class="fas fa-calendar-week"></i> planilla</a>
     @endif
-    <a href="{{ route('job.remuneracion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark">Remuneración</a>
-    <a href="{{ route('job.descuento', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark">Descuento</a>
+    <a href="{{ route('job.remuneracion', $job->slug()) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark">Remuneración</a>
+    <a href="{{ route('job.descuento', $job->slug()) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark">Descuento</a>
 </div>
 
 

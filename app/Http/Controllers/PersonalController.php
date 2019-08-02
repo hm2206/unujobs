@@ -20,7 +20,7 @@ class PersonalController extends Controller
 
     public function index()
     {
-        $personals = Personal::paginate(20);
+        $personals = Personal::orderBy('id', 'DESC')->paginate(20);
         return view('personal.index', compact('personals'));
     }
 
@@ -68,7 +68,10 @@ class PersonalController extends Controller
         $requisitos = $request->input("requisitos", []);
 
         $personal = Personal::create($request->except(['aceptado', 'file', 'bases']));
-        $slug = \str_replace(" ", "-", $personal->cargo_txt) . "-" . date('Y');
+
+        //crear o cambiar slug
+        $slug = $personal->changeSlug($personal->cargo_txt, $personal->id);
+
         $personal->update([
             "bases" => json_encode($bases),
             "slug" => $slug
@@ -99,11 +102,11 @@ class PersonalController extends Controller
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
         $sedes = Sede::all();
         $metas = Meta::all();
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
         $questions = [];
 
         foreach ($personal->questions as $q) {
@@ -119,19 +122,24 @@ class PersonalController extends Controller
     }
 
 
-    public function update(PersonalRequest $request, $id)
+    public function update(PersonalRequest $request, $slug)
     {
-
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
 
         $bases = $request->input('bases', []);
         $requisitos = $request->input("requisitos", []);
 
+        //actualizando slug
+        $newSlug = $personal->changeSlug($personal->cargo_txt, $personal->id);
+
         $personal->update($request->except(['aceptado', 'file', 'bases']));
-        $personal->update(["bases" => json_encode($bases)]);
+        $personal->update([
+            "bases" => json_encode($bases),
+            "slug" => $newSlug
+        ]);
 
 
-        DB::table('questions')->where('personal_id', $id)->delete();
+        DB::table('questions')->where('personal_id', $personal->id)->delete();
 
         foreach ($requisitos as $key => $requisito) {
             $titulo = isset($requisito[0]) ? $requisito[0] : "";
@@ -147,7 +155,7 @@ class PersonalController extends Controller
 
         }
 
-        return back()->with(["success" => "EL registro se actualizó correctamente!"]);
+        return redirect()->route('personal.edit', $newSlug)->with(["success" => "EL registro se actualizó correctamente!"]);
     }
 
     /**
@@ -161,9 +169,9 @@ class PersonalController extends Controller
         //
     }
 
-    public function aceptar(Request $request, $id)
+    public function aceptar(Request $request, $slug)
     {
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
         $personal->update([
             "aceptado" => $personal->aceptado ? 0 : 1
         ]);
@@ -172,11 +180,12 @@ class PersonalController extends Controller
     }
 
 
-    public function pdf($id)
+    public function pdf($slug)
     {
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
         $bases = \json_decode($personal->bases);
         $pdf = PDF::loadView("pdf.requerimiento_personal", compact('personal', 'bases'));
         return $pdf->stream();
     }
+
 }

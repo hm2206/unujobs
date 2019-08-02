@@ -92,7 +92,7 @@
         @forelse ($metas as $meta)
 
         <h4 class="card-header">
-            <a href="{{ route('meta.edit', $meta->metaID) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Editar</a>
+            <a href="{{ route('meta.edit', $meta->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Editar</a>
         </h4>
 
         <div class="card-body">

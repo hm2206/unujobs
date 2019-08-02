@@ -19,12 +19,12 @@
                     @foreach ($convocatoria->personals as $personal)
                         <div class="col-md-3">
                             <div class="btn btn-{{ isset($current->id) && $personal->id ==  $current->id ? 'primary' : 'outline-primary' }}">
-                                <a href="{{ route('convocatoria.etapas', [$convocatoria->id, "personal={$personal->id}"]) }}"
+                                <a href="{{ route('convocatoria.etapas', [$convocatoria->slug(), "personal={$personal->slug}"]) }}"
                                     class="{{ isset($current->id) && $personal->id ==  $current->id ? 'text-white' : 'text-primary' }}"    
                                 >
-                                    {{ $personal->slug }}
+                                    {{ $personal->cargo_txt }}
                                 </a>
-                                <a href="{{ route('bolsa.resultados', [$convocatoria->id, $personal->id]) }}" 
+                                <a href="{{ route('bolsa.resultados', [$convocatoria->slug(), $personal->slug]) }}" 
                                     class="btn btn-sm btn-circle btn-danger"
                                     target="__blank"    
                                 >

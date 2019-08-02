@@ -19,4 +19,10 @@ class Categoria extends Model
         return $this->belongsToMany(Concepto::class, 'categoria_concepto')->withPivot('monto');
     }
 
+
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
 }

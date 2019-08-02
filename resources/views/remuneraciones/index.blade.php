@@ -48,7 +48,7 @@
                                 <th class="uppercase">{{ $remuneracion->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('remuneracion.edit', $remuneracion->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('remuneracion.edit', $remuneracion->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                     </div>

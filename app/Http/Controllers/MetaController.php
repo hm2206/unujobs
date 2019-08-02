@@ -38,12 +38,13 @@ class MetaController extends Controller
 
     public function show(Meta $meta)
     {
-        //
+        return back();
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
         $meta = Meta::where("metaID", $id)->firstOrFail();
         return view('meta.edit', \compact('meta'));
     }

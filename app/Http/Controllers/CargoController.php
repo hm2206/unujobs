@@ -41,12 +41,14 @@ class CargoController extends Controller
 
     public function show(Cargo $cargo)
     {
-        //
+        return back();
     }
 
 
-    public function edit(Cargo $cargo)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
+        $cargo = Cargo::findOrFail($id);
         $planillas = Planilla::all();
         return view('cargos.edit', \compact('planillas', 'cargo'));
     }
@@ -68,12 +70,13 @@ class CargoController extends Controller
 
     public function destroy(Cargo $cargo)
     {
-        //
+        return back();
     }
 
 
-    public function categoria($id)
+    public function categoria($slug)
     {
+        $id = \base64_decode($slug);
         $cargo = Cargo::findOrFail($id);
         $notIn = $cargo->categorias->pluck(["id"]);
         $categorias = Categoria::whereNotIn('id', $notIn)->orderBy('nombre', 'ASC')->get();
@@ -96,8 +99,9 @@ class CargoController extends Controller
     }
 
 
-    public function config($id)
+    public function config($slug)
     {
+        $id = \base64_decode($slug);
         $cargo = Cargo::findOrFail($id);
         $types = TypeRemuneracion::all();
 

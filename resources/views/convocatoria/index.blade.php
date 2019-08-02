@@ -32,7 +32,9 @@
                             @foreach ($convocatorias as $convocatoria)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('convocatoria.edit', $convocatoria->id) }}">N° {{ $convocatoria->numero_de_convocatoria }}</a>
+                                        <a href="{{ route('convocatoria.edit', $convocatoria->slug()) }}">
+                                            N° {{ $convocatoria->numero_de_convocatoria }} 
+                                        </a>
                                     </td>
                                     <td>
                                         <span class="btn btn-sm btn-dark">{{ $convocatoria->fecha_inicio }}</span>
@@ -41,12 +43,12 @@
                                         <span class="btn btn-sm btn-dark">{{ $convocatoria->fecha_final }}</span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('convocatoria.etapas', $convocatoria->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ route('convocatoria.etapas', $convocatoria->slug()) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>
                                     <td class="text-center">
-                                        <a target="__blank" href="{{ route('convocatoria.pdf', $convocatoria->id) }}" class="btn btn-sm btn-danger">
+                                        <a target="__blank" href="{{ route('convocatoria.pdf', $convocatoria->slug()) }}" class="btn btn-sm btn-danger">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
                                     </td>

@@ -127,20 +127,20 @@
                                         <th class="uppercase">{{ $cronograma->observacion }}</th>
                                     <th class="uppercase">{{ $cronograma->sede ? $cronograma->sede->descripcion : null }}</th>
                                     <th class="text-right">
-                                        <form class="btn-group text-right" method="POST" action="{{ route('export.cronograma', $cronograma->id) }}">
+                                        <form class="btn-group text-right" method="POST" action="{{ route('export.cronograma', $cronograma->slug()) }}">
                                             
                                             @csrf
 
-                                            <a target="blank" href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-sm btn-primary">
+                                            <a target="blank" href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('cronograma.edit', $cronograma->id) }}" class="btn btn-sm btn-warning">
+                                            <a href="{{ route('cronograma.edit', $cronograma->slug()) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </a>
 
                                             @if ($cronograma->adicional)
-                                                <a class="btn btn-sm btn-success" href="{{ route('cronograma.add', $cronograma->id) }}">
+                                                <a class="btn btn-sm btn-success" href="{{ route('cronograma.add', $cronograma->slug()) }}">
                                                     <i class="fas fa-plus"></i>
                                                 </a>  
                                             @endif
@@ -151,7 +151,7 @@
                                                     Generar PDF
                                                 </button>
                                             @else
-                                                <a title="PDF" href="{{ route('export.cronograma.pdf', $cronograma->id) }}" class="btn btn-sm btn-danger">
+                                                <a title="PDF" href="{{ route('export.cronograma.pdf', $cronograma->slug()) }}" class="btn btn-sm btn-danger">
                                                     Generar PDF
                                                 </a>
                                             @endif

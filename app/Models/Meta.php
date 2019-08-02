@@ -20,4 +20,10 @@ class Meta extends Model
         return $this->hasMany(Work::class);
     }
 
+    
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
 }

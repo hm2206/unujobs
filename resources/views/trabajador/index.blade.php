@@ -10,10 +10,6 @@
 
 @section('content')
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-</div>
-
 <div class="row">
     <div class="col-md-12">
         <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
@@ -112,13 +108,13 @@
                                     <th>{{ $job->numero_de_cuenta }}</th>
                                     <th>
                                         <div class="btn-group">
-                                            <a href="{{ route('job.edit', $job->id) }}" class="btn btn-circle btn-xs btn-warning">
+                                            <a href="{{ route('job.edit', $job->slug()) }}" class="btn btn-circle btn-xs btn-warning">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </a>
-                                            <a href="{{ route('job.show', $job->id) }}" class="btn btn-xs btn-primary">
+                                            <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-xs btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('job.boleta', $job->id) }}" target="blank" title="Boleta" class="btn btn-circle btn-xs btn-dark">
+                                            <a href="{{ route('job.boleta', $job->slug()) }}" target="blank" title="Boleta" class="btn btn-circle btn-xs btn-dark">
                                                 <i class="fas fa-file"></i>
                                             </a>
                                         </div>

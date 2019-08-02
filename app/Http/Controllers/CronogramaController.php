@@ -102,12 +102,17 @@ class CronogramaController extends Controller
 
     public function show(Cronograma $cronograma)
     {
-        //
+        return back();
     }
 
 
-    public function edit(Cronograma $cronograma)
+    public function edit($slug)
     {
+        //recuperar id
+        $id = \base64_decode($slug);
+        $cronograma = Cronograma::findOrFail($id);
+
+
         return view("cronogramas.edit", compact('cronograma'));
     }
 
@@ -125,8 +130,9 @@ class CronogramaController extends Controller
     }
 
 
-    public function job($id)
+    public function job($slug)
     {
+        $id = \base64_decode($slug);
         $cronograma = Cronograma::findOrFail($id);
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $jobs = [];
@@ -143,8 +149,10 @@ class CronogramaController extends Controller
         return view('cronogramas.job', compact('jobs', 'cronograma', 'like'));
     }
 
-    public function add($id)
+    public function add($slug)
     {
+        //recuperar id
+        $id = \base64_decode($slug);
         $cronograma = Cronograma::where("adicional", 1)->findOrFail($id);
         $like = request()->query_search;
         $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();

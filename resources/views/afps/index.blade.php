@@ -56,7 +56,7 @@
                                 <th class="uppercase">{{ $afp->prima }} %</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('afp.edit', $afp->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('afp.edit', $afp->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                     </div>

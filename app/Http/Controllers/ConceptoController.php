@@ -35,12 +35,13 @@ class ConceptoController extends Controller
 
     public function show(Concepto $concepto)
     {
-        //
+        return back();
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
         $concepto = Concepto::findOrFail($id);
         return view('conceptos.edit', \compact('concepto'));
     }
@@ -66,6 +67,6 @@ class ConceptoController extends Controller
      */
     public function destroy(Concepto $concepto)
     {
-        //
+        return back();
     }
 }

@@ -60,4 +60,10 @@ class Work extends Model
         return $this->hasMany(Remuneracion::class);
     }
 
+
+    public function slug()
+    {
+        return base64_encode($this->id);
+    }
+
 }

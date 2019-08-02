@@ -49,15 +49,31 @@ class EtapaController extends Controller
                     ->where("convocatoria_id", $request->convocatoria_id)
                     ->where("personal_id", $request->personal_id);
 
+
                 // Obteniendo la etapa actual del postulante
                 $etapa = $tmp_etapas->where("type_etapa_id", $request->type_etapa_id)->first();
 
-                // actualizando la etapa actual
-                $etapa->update([
-                    "puntaje" => $puntaje,
-                    "next" => $next,
-                    "current" => 0
-                ]);
+                //verificamos que el postulate este en la base de datos
+                if ($etapa) {
+
+                    // actualizando la etapa actual
+                    $etapa->update([
+                        "puntaje" => $puntaje,
+                        "next" => $next,
+                        "current" => 0
+                    ]);
+                }else {
+                    $etapa = Etapa::create([
+                        "postulante_id" => $tmp_postulante,
+                        "convocatoria_id" => $request->convocatoria_id,
+                        "personal_id" => $request->personal_id,
+                        "type_etapa_id" => $request->type_etapa_id,
+                        "puntaje" => $puntaje,
+                        "next" => $next,
+                        "current" => 0
+                    ]);
+                }
+
 
                 if ($etapa->next) {
 

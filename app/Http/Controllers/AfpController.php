@@ -40,12 +40,13 @@ class AfpController extends Controller
 
     public function show(Afp $afp)
     {
-        
+        return back();
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
         $afp = Afp::findOrFail($id);
 
         return view('afps.edit', compact('afp'));
@@ -76,6 +77,6 @@ class AfpController extends Controller
      */
     public function destroy(Afp $afp)
     {
-        //
+        return back();
     }
 }

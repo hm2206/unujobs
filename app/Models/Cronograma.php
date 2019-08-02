@@ -22,4 +22,9 @@ class Cronograma extends Model
         return $this->belongsTo(Planilla::class);
     }
 
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
 }

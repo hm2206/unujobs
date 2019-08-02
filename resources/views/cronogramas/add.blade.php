@@ -12,7 +12,7 @@
 
 <div class="col-md-12">
     <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-list"></i> Lista</a>
+    <a href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-primary"><i class="fas fa-list"></i> Lista</a>
 </div>
 
 <h3 class="text-center uppercase">

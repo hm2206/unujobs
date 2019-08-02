@@ -12,10 +12,10 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('job.edit', $job->id) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> editar</a>
-    <a href="{{ route('job.remuneracion', $job->id) }}" class="btn btn-dark">Remuneraciones</a>
-    <a href="{{ route('job.descuento', $job->id) }}" class="btn btn-dark">Descuentos</a>
-    <a href="{{ route('job.obligacion', $job->id) }}" class="btn btn-dark">Obligaciones Judiciales</a>
+    <a href="{{ route('job.edit', $job->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> editar</a>
+    <a href="{{ route('job.remuneracion', $job->slug()) }}" class="btn btn-dark">Remuneraciones</a>
+    <a href="{{ route('job.descuento', $job->slug()) }}" class="btn btn-dark">Descuentos</a>
+    <a href="{{ route('job.obligacion', $job->slug()) }}" class="btn btn-dark">Obligaciones Judiciales</a>
 </div>
 
 @if (session('success'))

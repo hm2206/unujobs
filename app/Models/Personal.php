@@ -32,4 +32,12 @@ class Personal extends Model
     {
         return $this->belongsToMany(Postulante::class, 'etapas');
     }
+
+
+    //cambiar o crear un nuevo slug
+    public function changeSlug($replace, $id)
+    {
+        return \str_replace(" ", "-", $replace) . "-" . date('Y') . "-" . base64_encode($id);
+    }
+
 }

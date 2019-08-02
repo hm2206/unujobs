@@ -107,12 +107,15 @@ class BolsaController extends Controller
     }
 
 
-    public function resultados($id, $personalID)
+    public function resultados($slugConvocatoria, $slugPersonal)
     {
+
+        $id = \base64_decode($slugConvocatoria);
+
         $convocatoria = Convocatoria::findOrFail($id);
         $year = isset(explode("-", $convocatoria->fecha_final)[0]) ? explode("-", $convocatoria->fecha_final)[0] : date('Y');
         $etapas = TypeEtapa::all();
-        $current = Personal::findOrFail($personalID);
+        $current = Personal::where("slug", $slugPersonal)->firstOrFail();
 
 
         foreach ($etapas as $etapa) {

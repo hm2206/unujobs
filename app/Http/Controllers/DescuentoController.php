@@ -38,12 +38,13 @@ class DescuentoController extends Controller
 
     public function show(Descuento $descuento)
     {
-        //
+        return back();
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
         $type = TypeDescuento::findOrFail($id);
         return view("descuentos.edit", \compact('type'));
     }
@@ -67,8 +68,9 @@ class DescuentoController extends Controller
         //
     }
 
-    public function config($id) 
+    public function config($slug) 
     {
+        $id = \base64_decode($slug);
         $type = TypeDescuento::findOrFail($id);
         $config = json_decode($type->config_afp);
         $sindicatos = Sindicato::all();

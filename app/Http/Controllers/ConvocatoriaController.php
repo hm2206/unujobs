@@ -18,7 +18,7 @@ class ConvocatoriaController extends Controller
 
     public function index()
     {
-        $convocatorias = Convocatoria::all();
+        $convocatorias = Convocatoria::orderBy("id", 'DESC')->paginate(20);
         return view('convocatoria.index', compact('convocatorias', 'personals'));
     }
 
@@ -46,14 +46,17 @@ class ConvocatoriaController extends Controller
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id =  \base64_decode($slug);
+        
+        $actividades = [];
+
         $convocatoria = Convocatoria::findOrFail($id);
         $personals = Personal::where("aceptado", 1)
             ->where("fecha_final", ">=", date('Y-m-d'))
+            ->whereIn("convocatoria_id", ["", 0, $convocatoria->id])
             ->get();
-
-        $actividades = [];
 
         foreach ($convocatoria->actividades as $actividad) {
             array_push($actividades, [
@@ -69,8 +72,10 @@ class ConvocatoriaController extends Controller
     }
 
 
-    public function update(ConvocatoriaUpdateRequest $request, $id)
+    public function update(ConvocatoriaUpdateRequest $request, $slug)
     {
+
+        $id = \base64_decode($slug);
 
         $convocatoria = Convocatoria::findOrFail($id);   
         $convocatoria->update($request->all());
@@ -150,21 +155,28 @@ class ConvocatoriaController extends Controller
         return back();
     }
 
-    public function pdf($id)
+    public function pdf($slug)
     {
+        $id = \base64_decode($slug);
+
         $convocatoria = Convocatoria::findOrFail($id);
         $year = isset(explode("-", $convocatoria->fecha_inicio)[0]) ? explode("-", $convocatoria->fecha_inicio)[0] : date('Y');
         $pdf = PDF::loadView('pdf.convocatoria', compact('convocatoria', 'year'));
         return $pdf->stream();
     }
 
-    public function etapas($id)
+    public function etapas($slug)
     {
+
+        $id = \base64_decode($slug);
+
         $convocatoria = Convocatoria::findOrFail($id);
         $year = isset(explode("-", $convocatoria->fecha_final)[0]) ? explode("-", $convocatoria->fecha_final)[0] : date('Y');
         $etapas = TypeEtapa::all();
 
-        $current = request()->personal ? $convocatoria->personals->find(request()->personal) : $convocatoria->personals->first();
+        $current = request()->personal 
+            ?   $convocatoria->personals->where("slug", request()->personal)->first() 
+            :   $convocatoria->personals->first();
 
         foreach ($etapas as $etapa) {
             $etapa->postulantes = Postulante::whereHas("etapas", function($e) use($current){

@@ -47,7 +47,7 @@
                                 <th class="uppercase">{{ $concepto->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('concepto.edit', $concepto->id) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <a href="{{ route('concepto.edit', $concepto->slug()) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
                                     </div>
                                 </th>
                             </tr>

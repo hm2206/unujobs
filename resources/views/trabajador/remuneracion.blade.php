@@ -12,12 +12,12 @@
 @section('content')
 
 <div class="col-md-12 mb-2">
-    <a href="{{ route('job.show', $job->id) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     @if ($cronograma)
-        <a href="{{ route('cronograma.job', $cronograma->id) }}" class="btn btn-primary capitalize"><i class="fas fa-calendar-week"></i> planilla</a>
+        <a href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-primary capitalize"><i class="fas fa-calendar-week"></i> planilla</a>
     @endif
-    <a href="{{ route('job.descuento', $job->id) . "?mes={$mes}&year={$year}&adicional=" . request()->adicional }}" class="capitalize btn btn-dark">descuento</a>
-    <a href="{{ route('job.obligacion', $job->id) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark capitalize">obligaciones judiciales</a>
+    <a href="{{ route('job.descuento', $job->slug()) . "?mes={$mes}&year={$year}&adicional=" . request()->adicional }}" class="capitalize btn btn-dark">descuento</a>
+    <a href="{{ route('job.obligacion', $job->slug()) . "?mes={$mes}&year={$year}" }}" class="btn btn-dark capitalize">obligaciones judiciales</a>
 </div>
 
 
@@ -76,7 +76,7 @@
                         <div class="col-md-3">
                             <select name="categoria_id" class="form-control">
                                 @foreach ($categorias as $categoria)
-                                    <option value="{{ $categoria->id }}" {!! request()->categoria_id == $categoria->id ? 'selected' : '' !!}>
+                                    <option value="{{ $categoria->slug() }}" {!! request()->categoria_id == $categoria->id ? 'selected' : '' !!}>
                                         {{ $categoria->categoria ? $categoria->categoria->nombre : '' }}
                                     </option>
                                 @endforeach

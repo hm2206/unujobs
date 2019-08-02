@@ -40,12 +40,13 @@ class TypeRemuneracionController extends Controller
 
     public function show(TypeRemuneracion $typeRemuneracion)
     {
-        //
+        return back();
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
         $remuneracion = TypeRemuneracion::findOrFail($id);
 
         return view('remuneraciones.edit', compact('remuneracion'));
@@ -75,6 +76,6 @@ class TypeRemuneracionController extends Controller
 
     public function destroy(TypeRemuneracion $typeRemuneracion)
     {
-        //
+        return back();
     }
 }

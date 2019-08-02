@@ -11,7 +11,7 @@
 @section('content')
 
 <div class="col-md-12 mb-2">
-    <a href="{{ route('job.edit', $work->id) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('job.edit', $work->slug()) }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
 </div>
 
 <h4 class="col-md-12 mt-3">

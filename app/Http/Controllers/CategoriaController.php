@@ -37,12 +37,13 @@ class CategoriaController extends Controller
 
     public function show(Categoria $categoria)
     {
-        //
+        return back();
     }
 
 
-    public function edit($id)
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
         $categoria = Categoria::findOrFail($id);
         return view("categorias.edit", compact('categoria'));
     }
@@ -64,12 +65,13 @@ class CategoriaController extends Controller
 
     public function destroy(Categoria $categoria)
     {
-        //
+        return back();
     }
 
 
-    public function concepto($id)
+    public function concepto($slug)
     {
+        $id = \base64_decode($slug);
         $categoria = Categoria::findOrFail($id);
         $notIn = $categoria->conceptos->pluck(["id"]);
         $conceptos = Concepto::whereNotIn("id", $notIn)->get();
@@ -93,8 +95,9 @@ class CategoriaController extends Controller
     }
 
 
-    public function config($id)
+    public function config($slug)
     {
+        $id = \base64_decode($slug);
         $categoria = Categoria::with(['conceptos' => function($c) {
             $c->orderBy('conceptos.key', 'ASC');
         }])->findOrFail($id);

@@ -14,7 +14,7 @@
 <div class="col-md-12 mb-2">
     <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     @if ($cronograma->adicional)
-        <a href="{{ route('cronograma.add', $cronograma->id) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar Trabajador</a>
+        <a href="{{ route('cronograma.add', $cronograma->slug()) }}" class="btn btn-primary"><i class="fas fa-plus"></i> Agregar Trabajador</a>
     @endif
 </div>
 
@@ -94,19 +94,19 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('job.show', $job->id) }}" class="btn btn-sm btn-primary">
+                                        <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a target="blank" 
                                             title="remuneracion"
-                                            href="{{ route('job.remuneracion', [$job->id, "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
+                                            href="{{ route('job.remuneracion', [$job->slug(), "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
                                             class="btn btn-sm btn-warning"
                                         >
                                             <i class="fas fa-coins"></i>
                                         </a>
                                         <a target="blank" 
                                             title="descuento"
-                                            href="{{ route('job.descuento', [$job->id, "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
+                                            href="{{ route('job.descuento', [$job->slug(), "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
                                             class="btn btn-sm btn-danger"
                                         >
                                             <i class="fab fa-creative-commons-nc"></i>

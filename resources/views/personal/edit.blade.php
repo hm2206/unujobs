@@ -13,13 +13,13 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('personal.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('personal.pdf', $personal->id) }}" target="__blank" class="btn btn-dark"><i class="fas fa-file-pdf"></i> Ver PDF</a>
+    <a href="{{ route('personal.pdf', $personal->slug) }}" target="__blank" class="btn btn-dark"><i class="fas fa-file-pdf"></i> Ver PDF</a>
 </div>
 
     
 <div class="col-md-12">
 
-    <form class="card" id="register" action="{{ route('personal.update', $personal->id) }}" method="post" enctype="multipart/form-data">
+    <form class="card" id="register" action="{{ route('personal.update', $personal->slug) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <h4 class="card-header"><b>Registro de Requerimiento de Personal</b></h4>
@@ -48,7 +48,7 @@
                                 @if (old('sede_id'))
                                     <option value="{{ $sede->id }}"  {!! old('sede_id') == $sede->id ? "selected" : "" !!}>{{ $sede->descripcion }}</option>
                                 @else
-                                 <option value="{{ $sede->id }}"  {!! $personal->id == $sede->id ? "selected" : "" !!}>{{ $sede->descripcion }}</option>
+                                 <option value="{{ $sede->id }}"  {!! $personal->sede_id == $sede->id ? "selected" : "" !!}>{{ $sede->descripcion }}</option>
                                 @endif
                             @endforeach
                         </select>

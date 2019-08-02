@@ -48,10 +48,10 @@
                                 <th class="uppercase">{{ $descuento->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('descuento.edit', $descuento->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('descuento.edit', $descuento->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-                                        <a target="blank" href="{{ route('descuento.config', $descuento->id) }}" class="btn btn-sm btn-success">
+                                        <a target="blank" href="{{ route('descuento.config', $descuento->slug()) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>
                                     </div>
