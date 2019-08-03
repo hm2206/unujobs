@@ -10,6 +10,7 @@ use App\Http\Requests\ConvocatoriaUpdateRequest;
 use App\Models\Actividad;
 use App\Models\TypeEtapa;
 use App\Models\Postulante;
+use App\Models\Etapa;
 use \DB;
 use \PDF;
 
@@ -178,12 +179,36 @@ class ConvocatoriaController extends Controller
             ?   $convocatoria->personals->where("slug", request()->personal)->first() 
             :   $convocatoria->personals->first();
 
-        foreach ($etapas as $etapa) {
-            $etapa->postulantes = Postulante::whereHas("etapas", function($e) use($current){
-                            $e->where("personal_id", isset($current->id) ? $current->id : 0);
+        if ($current) {
+
+            foreach ($etapas as $etapa) {
+                $tmp_postulantes = Postulante::whereHas("etapas", function($e) use($current){
+                            $e->where("personal_id", $current->id);
+                            $e->where("convocatoria_id", $current->convocatoria_id);
                         })->whereHas("etapas", function($e) use($etapa) {
                             $e->where("type_etapa_id", $etapa->id);
                         })->get(); 
+    
+                foreach ($tmp_postulantes as $postulante) {
+                    $tmp_etapa = Etapa::where("postulante_id", $postulante->id)
+                        ->where("type_etapa_id", $etapa->id)
+                        ->where("convocatoria_id", $current->convocatoria_id)
+                        ->where("personal_id", $current->id)
+                        ->first();
+
+                    $postulante->next = $tmp_etapa ? $tmp_etapa->next : 0;
+                    $postulante->puntaje = $tmp_etapa ? $tmp_etapa->puntaje : 0;
+    
+                }
+                
+                $etapa->postulantes = $tmp_postulantes;
+                
+            }
+        } else {
+            $etapas = $etapas->map(function($e) {
+                $e->postulantes = collect();
+                return $e;
+            });
         }
 
         $hasExpire = $convocatoria->fecha_final < date('Y-m-d') ? true : false;

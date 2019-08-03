@@ -5,7 +5,7 @@
     <div class="row mt-4">
 
         <div class="col-md-12">
-            <a href="{{ route('bolsa.show', [$convocatoria->id, $personal->slug]) }}" class="btn btn-danger">
+            <a href="{{ route('bolsa.show', [$convocatoria->slug(), $personal->slug]) }}" class="btn btn-danger">
                 <i class="fas fa-arrow-left"></i> atrás
             </a>
         </div>
@@ -108,7 +108,7 @@
 
                         <input type="hidden" name="personal_id" value="{{ $personal->id }}">
                         <input type="hidden" name="redirect" 
-                            value="{{ route('bolsa.show', [$convocatoria->id, $personal->slug]) }}"
+                            value="{{ route('bolsa.show', [$convocatoria->slug(), $personal->slug]) }}"
                         >
 
                         <div class="col-md-6">

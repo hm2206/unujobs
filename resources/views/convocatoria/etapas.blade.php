@@ -44,7 +44,7 @@
                 <div class="card-header bg-dark text-white">
                     Etapa <i class="fas fa-arrow-right text-warning"></i> {{ $etapa->descripcion }} 
                     @if ($etapa->postulantes->count() > 0)
-                        <a href="{{ route('etapa.pdf', [$etapa->id, $convocatoria->id]) }}" target="__blank" class="btn btn-sm btn-outline-warning">
+                        <a href="{{ route('etapa.pdf', [$etapa->slug(), $convocatoria->slug()]) }}" target="__blank" class="btn btn-sm btn-outline-warning">
                             <i class="fas fa-file-pdf"></i> ver reporte
                         </a>
                     @endif
@@ -56,6 +56,7 @@
                                 <tr>
                                     <th>#ID</th>
                                     <th>Postulante</th>
+                                    <th>CV</th>
                                     <th>Puntaje</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -70,32 +71,27 @@
                                             {{ $postulante->nombre_completo }}
                                         </td>
                                         <td>
-                                            @php 
-                                                $puntaje = isset($postulante->etapas)
-                                                ? $postulante->etapas->where('type_etapa_id', $etapa->id)->first()->puntaje
-                                                : 0
-                                            @endphp
+                                            @if ($postulante->cv)
+                                                <a href="{{ url($postulante->cv) }}" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-file-pdf"></i>
+                                                </a>
+                                            @endif
+                                        </td>
+                                        <td>
                                             <div class="col-md-3">
                                                 <input type="hidden" {!! $hasExpire ? 'disabled' : null !!} value="{{ $postulante->id }}" name="postulantes[{{ $iter }}][0]">
-                                                <input type="number" {!! $hasExpire ? 'disabled' : null !!} value="{{ $puntaje }}" class="form-control" name="postulantes[{{ $iter }}][1]">
+                                                <input type="number" {!! $hasExpire ? 'disabled' : null !!} value="{{ $postulante->puntaje }}" class="form-control" name="postulantes[{{ $iter }}][1]">
                                             </div>
                                         </td>
                                         <td>
                                             <div class="form-group">
-
-                                                @php
-                                                    $checked = isset($postulante->etapas)
-                                                        ? $postulante->etapas->where('type_etapa_id', $etapa->id)->first()->next
-                                                        : 0
-                                                @endphp
-
                                                 @if ($hasExpire)
-                                                    <button class="btn btn-sm btn-{{ $checked ? 'success' : 'outline-danger'}}" disabled>
+                                                    <button class="btn btn-sm btn-{{ $postulante->next ? 'success' : 'outline-danger'}}" disabled>
                                                         @php
                                                             $ok = $etapa->fin ? 'Ganó' : 'Pasó';
                                                             $fail = $etapa->fin ? 'Pedió' : 'No Pasó'
                                                         @endphp
-                                                        @if ($checked)
+                                                        @if ($postulante->next)
                                                             {{ $ok }}
                                                             <i class="fas fa-check ml-1"></i>
                                                         @else    
@@ -105,8 +101,8 @@
 
                                                     </button>
                                                 @else
-                                                    <label for="" class="btn btn-sm btn-{{ $checked ? 'primary' : 'outline-primary'}}">
-                                                        <input type="checkbox" name="nexts[{{ $iter }}]" {!! $checked ? 'checked' : null !!}>
+                                                    <label for="" class="btn btn-sm btn-{{ $postulante->next ? 'primary' : 'outline-primary'}}">
+                                                        <input type="checkbox"etapa; name="postulantes[{{ $iter }}][2]" {!! $postulante->next ? 'checked' : null !!}>
                                                         {{ $etapa->fin ? 'Ganador' : 'Continuar' }}
                                                     </label>
                                                 @endif

@@ -7,6 +7,7 @@ use App\Models\Categoria;
 use App\Models\Planilla;
 use App\Models\TypeRemuneracion;
 use Illuminate\Http\Request;
+use \Hash;
 
 class CargoController extends Controller
 {
@@ -96,6 +97,26 @@ class CargoController extends Controller
         $cargo = Cargo::findOrFail($id);
         $cargo->categorias()->syncWithoutDetaching($categorias);
         return back()->with(["success" => "La categoria se agrego correctamente"]);
+    }
+
+
+    public function categoriaDelete(Request $request, $id)
+    {
+        $auth = auth()->user();
+        $password = $request->password;
+        $categorias = $request->input('categorias', []);
+
+        $validation = Hash::check($password, $auth->password);
+
+        if ($validation) {
+
+            $cargo = Cargo::findOrFail($id);
+            $cargo->categorias()->detach($categorias);
+
+            return back()->with(["success" => "Los datos se eliminarón correctamente!"]);
+        }
+
+        return back()->with(["danger" => "La contraseña es incorrecta"]);
     }
 
 

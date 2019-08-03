@@ -59,6 +59,7 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     Route::resource('cargo', 'CargoController');
     Route::get('cargo/{id}/categoria', 'CargoController@categoria')->name('cargo.categoria');
     Route::post('cargo/{id}/categoria', 'CargoController@categoriaStore')->name('cargo.categoria.store');
+    Route::delete('cargo/{id}/categoria/delete', 'CargoController@categoriaDelete')->name('cargo.categoria.delete');
     Route::get('cargo/{id}/config', 'CargoController@config')->name('cargo.config');
     Route::post('cargo/{id}/config', 'CargoController@configStore')->name('cargo.config.store');
 
@@ -128,9 +129,9 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 
 
 //notificaciones
-Route::get("user/unread/count", "UserController@countUnread");
-Route::get("user/unread", "UserController@unread");
-Route::post("user/{notify}/markasread", "UserController@markAsRead");
+Route::get("user/unread/count", "UserController@countUnread")->middleware('auth');
+Route::get("user/unread", "UserController@unread")->middleware('auth');
+Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware('auth');
 
 
 //formatos de JSon

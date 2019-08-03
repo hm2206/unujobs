@@ -28,10 +28,14 @@ class BolsaController extends Controller
         return view("bolsa.index", compact('year', 'convocatorias'));
     }
 
-    public function show($numero, $titulo)
+    public function show($slugConvocatoria, $slug)
     {
-        $convocatoria = Convocatoria::findOrFail($numero);
-        $personal = Personal::where("slug", $titulo)->where('aceptado', 1)->firstOrFail();
+
+        //recuperar ids
+        $convocatoriaID = \base64_decode($slugConvocatoria);
+
+        $convocatoria = Convocatoria::findOrFail($convocatoriaID);
+        $personal = Personal::where("slug", $slug)->where('aceptado', 1)->firstOrFail();
         $types = [];
 
         $idParse = request()->postulante ? \base64_decode(request()->postulante) : Cache::get('postulante');

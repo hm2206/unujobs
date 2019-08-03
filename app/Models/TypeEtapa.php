@@ -10,6 +10,12 @@ class TypeEtapa extends Model
     protected $fillable = ['descripcion', 'icono', 'fin'];
 
 
+    public function slug()
+    {
+        return \base64_encode($this->id);
+    }
+
+
     public function postulantes()
     {
         return $this->belongsToMany(Postulante::class, 'etapas');

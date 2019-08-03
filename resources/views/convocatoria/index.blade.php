@@ -33,7 +33,10 @@
                                 <tr>
                                     <td>
                                         <a href="{{ route('convocatoria.edit', $convocatoria->slug()) }}">
-                                            N° {{ $convocatoria->numero_de_convocatoria }} 
+                                            @php
+                                                $year = explode("-", $convocatoria->fecha_final)[0];
+                                            @endphp
+                                            N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-UNU 
                                         </a>
                                     </td>
                                     <td>

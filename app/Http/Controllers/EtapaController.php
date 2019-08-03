@@ -15,13 +15,13 @@ class EtapaController extends Controller
 
     public function index()
     {
-        //
+        return back();
     }
 
  
     public function create()
     {
-        //
+        return back();
     }
 
 
@@ -34,15 +34,13 @@ class EtapaController extends Controller
             "personal_id" => "required"
         ]);
 
-
         foreach ($request->input('postulantes', []) as $key => $pos) {
 
-            $tmp_postulante = isset($request->postulantes[$key][0]) ? $request->postulantes[$key][0] : 0;
-            $puntaje = isset($request->postulantes[$key][1]) ? $request->postulantes[$key][1] : 0;
+            $tmp_postulante = isset($pos[0]) ? $pos[0] : 0;
+            $tmp_puntaje = isset($pos[1]) ? $pos[1] : 0;
+            $tmp_next = isset($pos[2]) ? 1 : 0;
 
             if($tmp_postulante) {
-
-                $next = isset($request->nexts[$key][0]) ? 1 : 0;
 
                 // Set up para etapas de usuario actual
                 $tmp_etapas = Etapa::where("postulante_id", $tmp_postulante)
@@ -58,18 +56,20 @@ class EtapaController extends Controller
 
                     // actualizando la etapa actual
                     $etapa->update([
-                        "puntaje" => $puntaje,
-                        "next" => $next,
+                        "puntaje" => $tmp_puntaje,
+                        "next" => $tmp_puntaje > 0 ? $tmp_next : 0,
                         "current" => 0
                     ]);
+
                 }else {
+                    // creamos una nueva etapa
                     $etapa = Etapa::create([
                         "postulante_id" => $tmp_postulante,
                         "convocatoria_id" => $request->convocatoria_id,
                         "personal_id" => $request->personal_id,
                         "type_etapa_id" => $request->type_etapa_id,
-                        "puntaje" => $puntaje,
-                        "next" => $next,
+                        "puntaje" => $tmp_puntaje,
+                        "next" => $tmp_next,
                         "current" => 0
                     ]);
                 }
@@ -91,13 +91,12 @@ class EtapaController extends Controller
 
                 }else {
 
-                    DB::table('etapas')->where("postulante_id", $tmp_postulante)
+                    $eliminar = DB::table('etapas')->where("postulante_id", $tmp_postulante)
                         ->where("personal_id", $etapa->personal_id)
                         ->orderBy('id', 'DESC')
                         ->where('type_etapa_id', '<>', $request->type_etapa_id)
                         ->where('type_etapa_id', '>', $request->type_etapa_id)
                         ->delete();
-
                 }
 
                 //recalcular current
@@ -163,8 +162,13 @@ class EtapaController extends Controller
         //
     }
 
-    public function pdf($id, $convocatoriaID)
+    public function pdf($slug, $slugConvocatoria)
     {
+        //recuperar ids
+        $id = \base64_decode($slug);
+        $convocatoriaID = \base64_decode($slugConvocatoria);
+
+
         $etapa = TypeEtapa::findOrFail($id);
         $convocatoria = Convocatoria::findOrFail($convocatoriaID);
 
