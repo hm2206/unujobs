@@ -16,10 +16,11 @@ class ImportController extends Controller
     
     public function work(Request $request)
     {
+        $this->validate(request(), [
+            "import" => "required|file|max:1024"
+        ]);
+        
         try {
-            $this->validate(request(), [
-                "import" => "required|file|max:1024"
-            ]);
             // configurar archivo de excel
             $name = "work_import_" . date('Y-m-d') . ".xlsx";
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
