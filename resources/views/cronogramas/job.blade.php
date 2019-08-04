@@ -27,29 +27,6 @@
     {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}
 </h3>
 
-<div class="col-md-12 mb-2">
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-filter"></i> Filtrar
-        </div>
-        <form class="card-body" method="GET">
-            <div class="row align-items-center">
-
-                <div class="col-md-4">
-                    <input type="text" class="form-control" name="query_search" value="{{ $like }}">
-                </div>
-
-                <div class="col-md-3">
-                    <button class="btn btn-info">
-                        <i class="fas fa-search"></i> Buscar
-                    </button>
-                </div>
-
-            </div>
-        </form>
-    </div>
-</div>
-
 @if (session('success'))
     <div class="col-md-12 mt-3 ">
         <div class="alert alert-success">
@@ -57,6 +34,80 @@
         </div>
     </div>
 @endif
+
+
+<div class="col-md-12 mb-2">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Importar Remuneraciones 
+                    <a href="{{ url('/formatos/remuneracion_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-file-excel"></i> Formato
+                    </a>
+                </div>
+                <form class="card-body" method="POST" 
+                    action="{{ route('import.remuneracion', $cronograma->slug()) }}"
+                    enctype="multipart/form-data"
+                >
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="import_remuneracion" class="btn btn-sm btn-block btn-outline-primary">
+                                <input type="file" name="import_remuneracion" id="import_remuneracion" hidden>
+                                <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            </label>
+                            <small class="text-danger">
+                                {{ $errors->first('import_remuneracion') }}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-sm btn-success">
+                                <i class="fas fa-file-excel"></i>
+                                Importar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Importar Descuentos
+                    <a href="{{ url('/formatos/descuento_import.xlsx') }}" class="btn btn-sm btn-outline-success" title="Fo">
+                        <i class="fas fa-file-excel"></i> Formato
+                    </a>
+                </div>
+                <form class="card-body" method="POST" 
+                    action="{{ route('import.descuento', $cronograma->slug()) }}"
+                    enctype="multipart/form-data"
+                >
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="import_descuento" class="btn btn-block btn-sm btn-outline-primary">
+                                <input type="file" name="import_descuento" id="import_descuento" hidden>
+                                <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            </label>
+                            <small class="text-danger">
+                                {{ $errors->first('import_descuento') }}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-success btn-sm">
+                                <i class="fas fa-file-excel"></i>
+                                Importar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="col-md-12">
 
@@ -71,6 +122,22 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
+
+                <form class="col-md-12 mb-3" method="GET">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="query_search" value="{{ $like }}">
+                        </div>
+        
+                        <div class="col-md-3">
+                            <button class="btn btn-info">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>    
+                    </div>
+                </form>
+
+
                 <table class="table">
                     <thead class="text-primary">
                         <tr>

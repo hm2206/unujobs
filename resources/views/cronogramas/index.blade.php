@@ -127,7 +127,7 @@
                                         <th class="uppercase">{{ $cronograma->observacion }}</th>
                                     <th class="uppercase">{{ $cronograma->sede ? $cronograma->sede->descripcion : null }}</th>
                                     <th class="text-right">
-                                        <form class="btn-group text-right" method="POST" action="{{ route('export.cronograma', $cronograma->slug()) }}">
+                                        <form class="btn-group text-right" method="POST" action="{{ route('export.cronograma', $cronograma->id) }}">
                                             
                                             @csrf
 

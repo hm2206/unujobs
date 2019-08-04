@@ -40,14 +40,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($info->remuneraciones->chunk(6) as $body)
-                                    <tr>
-                                        @foreach ($body as $remuneracion)
-                                            <td colspan="2">{{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : '' }}</td>
-                                            <td>{{ $remuneracion->monto }}</td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
+                                @if ($info->remuneraciones->count() > 0)
+                                    @foreach ($info->remuneraciones->chunk(6) as $body)
+                                        <tr>
+                                            @foreach ($body as $remuneracion)
+                                                <td colspan="2">{{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : '' }}</td>
+                                                <td>{{ $remuneracion->monto }}</td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </td>

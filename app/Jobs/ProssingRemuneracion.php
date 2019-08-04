@@ -73,7 +73,7 @@ class ProssingRemuneracion implements ShouldQueue
             
             if ($hasRemuneraciones->count() > 0) {
                 foreach ($hasRemuneraciones as $remuneracion) {
-                    Remuneracion::create([
+                    Remuneracion::updateOrCreate([
                         "work_id" => $job->id,
                         "categoria_id" => $info->categoria_id,
                         "cronograma_id" => $cronograma->id,
@@ -85,7 +85,7 @@ class ProssingRemuneracion implements ShouldQueue
                         "monto" => round($remuneracion->monto, 2),
                         "adicional" => $cronograma->adicional,
                         "dias" => $cronograma->dias,
-                        "base" => $type->base
+                        "base" => $remuneracion->base
                     ]);
 
                     $current_total += $remuneracion->monto;
@@ -100,7 +100,7 @@ class ProssingRemuneracion implements ShouldQueue
 
                     $suma = $config->sum("monto");
 
-                    Remuneracion::create([
+                    Remuneracion::updateOrCreate([
                         "work_id" => $job->id,
                         "categoria_id" => $info->categoria_id,
                         "cargo_id" => $info->cargo_id,
@@ -123,8 +123,6 @@ class ProssingRemuneracion implements ShouldQueue
             $total += $current_total;
 
         }
-        
-        $job->update(["total" => round($total)]);
 
     }
 

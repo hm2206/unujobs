@@ -90,7 +90,7 @@ class JobController extends Controller
         $bancos = Banco::get(["id", "nombre"]);
         $afps = Afp::get(["id", "nombre"]);
 
-        return view('trabajador.edit', compact('job','sindicatos', 'bancos', 'afps', 'cargos', 'categorias', 'metas'));
+        return view('trabajador.edit', compact('job', 'bancos', 'afps'));
     }
 
 
@@ -105,7 +105,7 @@ class JobController extends Controller
 
     public function destroy(Work $job)
     {
-        //
+        return back();
     }
 
     public function query($like, $jobs) 
@@ -130,6 +130,7 @@ class JobController extends Controller
         $adicional = request()->adicional ? 1 : 0;
         $numero = request()->numero ? request()->numero : 1;
         $remuneraciones = [];
+        $seleccionar = [];
         $dias = 30;
         $total = 0;
 
@@ -174,7 +175,7 @@ class JobController extends Controller
         
         return view("trabajador.remuneracion", 
             compact(
-                'job', 'categoria', 'remuneraciones', 'total', 
+                'job', 'categoria_id', 'remuneraciones', 'total', 
                 'dias', 'mes', 'year', 'cronograma', 'numero', 'seleccionar',
                 'current', 'categorias'
             )
@@ -231,6 +232,7 @@ class JobController extends Controller
         $job = Work::findOrFail($id);
 
         $categoria_id = \base64_decode(request()->categoria_id);
+        $seleccionar = [];
 
         $current = request()->categoria_id ? $job->infos->find($categoria_id) : $job->infos->first();
         $categorias = $job->infos;
@@ -289,7 +291,7 @@ class JobController extends Controller
         $total_neto = $job->total - $total;
 
         return view("trabajador.descuento", 
-            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria',
+            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria_id',
                 'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 
                 'total_neto', 'current', 'categorias'
             ));

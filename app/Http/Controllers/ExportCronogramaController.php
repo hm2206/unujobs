@@ -19,8 +19,9 @@ use App\Jobs\ReportBoleta;
 class ExportCronogramaController extends Controller
 {
     
-    public function pdf($id)
+    public function pdf($slug)
     {
+        $id = \base64_decode($slug);
         $cronograma = Cronograma::findOrFail($id);
         $cronograma->update(["pdf" => "", "pendiente" => 1]);
         GeneratePlanillaPDF::dispatch($cronograma);

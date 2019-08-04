@@ -28,6 +28,8 @@ class CronogramaController extends Controller
         $adicional = request()->adicional ? 1 : 0;
         $mes = $mes == 0 || $mes > 12 ? (int)date('m') : $mes;
         $year = $year > date('Y') ? date('Y') : $year;
+
+        $categoria_id = "";
         
         $cronogramas = Cronograma::where('mes', $mes)
             ->where('año', $year)

@@ -20,7 +20,7 @@ class ConvocatoriaController extends Controller
     public function index()
     {
         $convocatorias = Convocatoria::orderBy("id", 'DESC')->paginate(20);
-        return view('convocatoria.index', compact('convocatorias', 'personals'));
+        return view('convocatoria.index', compact('convocatorias'));
     }
 
 

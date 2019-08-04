@@ -114,6 +114,16 @@ Route::group(["prefix" => "export"], function() {
 });
 
 
+// Importaciones de datos en excel
+Route::group(["prefix" => "import"], function() {
+
+    Route::post("/work", "ImportController@work")->name("import.work");
+    Route::post("/remuneracion/{id}", "ImportController@remuneracion")->name("import.remuneracion");
+    Route::post("/descuento/{id}", "ImportController@descuento")->name("import.descuento");
+
+});
+
+
 
 //Bolsa de trabajo
 Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
