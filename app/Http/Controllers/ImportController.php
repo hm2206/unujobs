@@ -34,6 +34,7 @@ class ImportController extends Controller
     
             return back()->with(["success" => "La importación ha sido exitosa"]);
         } catch (\Throwable $th) {
+            \Log::info($th);
             return back()->with(["danger" => "La importación falló"]); 
         }
     }
@@ -58,6 +59,7 @@ class ImportController extends Controller
     
             return back()->with(["success" => "La importación ha sido exitosa"]);
         } catch (\Throwable $th) {
+            \Log::info($th);
             return back()->with(["danger" => "La importación falló"]); 
         }
     }
@@ -82,6 +84,7 @@ class ImportController extends Controller
     
             return back()->with(["success" => "La importación ha sido exitosa"]);
         } catch (\Throwable $th) {
+            \Log::info($th);
             return back()->with(["danger" => "La importación falló"]); 
         }
     }
