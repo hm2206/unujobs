@@ -52,6 +52,9 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     Route::post('job/{id}/config', 'JobController@configStore')->name('job.config.store');
     Route::post('job/{id}/sindicato', 'JobController@sindicatoStore')->name('job.sindicato.store');
 
+    //Obligaciones
+    Route::resource('obligacion', 'ObligacionController');
+
     //Metas
     Route::resource('meta', 'MetaController');
 

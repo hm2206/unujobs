@@ -61,6 +61,11 @@ class Work extends Model
     }
 
 
+    public function obligaciones()
+    {
+        return $this->hasMany(Obligacion::class);
+    }
+
     public function slug()
     {
         return base64_encode($this->id);
