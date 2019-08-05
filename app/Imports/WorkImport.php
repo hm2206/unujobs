@@ -56,7 +56,7 @@ class WorkImport implements ToCollection, WithHeadingRow
                     ]);
                 }
             } catch (\Throwable $th) {
-
+                return exit;
             }
 
         }

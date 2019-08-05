@@ -128,7 +128,7 @@ class CronogramaController extends Controller
 
     public function destroy(Cronograma $cronograma)
     {
-        //
+        return back();
     }
 
 
@@ -186,7 +186,7 @@ class CronogramaController extends Controller
         ProssingRemuneracion::dispatch($cronograma, $jobs);
         ProssingDescuento::dispatch($cronograma, $jobs);
 
-        return redirect()->route('cronograma.job', $cronograma->id)
+        return redirect()->route('cronograma.job', $cronograma->slug())
             ->with(["success" => "Los trabajadores fuerón agregados correctamente. Por favor espero actualize la página"]);
 
     }

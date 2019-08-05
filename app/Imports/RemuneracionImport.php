@@ -80,6 +80,7 @@ class RemuneracionImport implements ToCollection,WithChunkReading, WithHeadingRo
             }  
         } catch (\Throwable $th) {
             self::notify();
+            return exit;
         } 
     }
 

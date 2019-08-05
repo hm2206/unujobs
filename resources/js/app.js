@@ -27,6 +27,7 @@ Vue.component('locacion', require('./components/Locacion.vue').default);
 Vue.component('notification', require('./components/Notifications.vue').default);
 Vue.component('select-change', require('./components/SelectChange.vue').default);
 Vue.component('config-work', require('./components/ConfigWork.vue').default);
+Vue.component('validacion', require('./components/Validacion.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -43,7 +43,7 @@ class ConvocatoriaController extends Controller
 
     public function show(Convocatoria $convocatoria)
     {
-        //
+        return back();
     }
 
 
@@ -56,7 +56,8 @@ class ConvocatoriaController extends Controller
         $convocatoria = Convocatoria::findOrFail($id);
         $personals = Personal::where("aceptado", 1)
             ->where("fecha_final", ">=", date('Y-m-d'))
-            ->whereIn("convocatoria_id", ["", 0, $convocatoria->id])
+            ->whereIn("convocatoria_id", [0, $convocatoria->id])
+            ->orWhere("convocatoria_id", null)
             ->get();
 
         foreach ($convocatoria->actividades as $actividad) {
@@ -75,7 +76,6 @@ class ConvocatoriaController extends Controller
 
     public function update(ConvocatoriaUpdateRequest $request, $slug)
     {
-
         $id = \base64_decode($slug);
 
         $convocatoria = Convocatoria::findOrFail($id);   
@@ -142,7 +142,7 @@ class ConvocatoriaController extends Controller
 
     public function destroy(Convocatoria $convocatoria)
     {
-        //
+        return back();
     }
 
 

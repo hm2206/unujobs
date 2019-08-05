@@ -75,6 +75,14 @@
         </div>
     @endif
 
+    @if (session('danger'))
+        <div class="col-md-12 mt-3 ">
+            <div class="alert alert-danger">
+                {{ session('danger') }}       
+            </div>
+        </div>
+    @endif
+
     <div class="col-md-12">
 
         {{ $cronogramas->links() }}
@@ -163,9 +171,7 @@
                                                 </a>
                                             @endif
 
-                                            <button class="btn btn-sm btn-outline-success">
-                                                <i class="fas fa-file-excel"></i> Exportar
-                                            </button>
+                                            <validacion btn_text="Exportar" class="text-left"></validacion>
 
                                         </form>
                                     </th>

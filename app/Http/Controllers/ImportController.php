@@ -13,6 +13,11 @@ use App\Models\Cronograma;
 
 class ImportController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('validacion');
+    }
     
     public function work(Request $request)
     {
@@ -37,42 +42,52 @@ class ImportController extends Controller
     public function remuneracion(Request $request, $slug)
     {
         $this->validate(request(), [
-            "import_remuneracion" => "required|file"
-        ]);
-        // recuperar id
-        $id = \base64_decode($slug);
-        // obtener cronograma
-        $cronograma = Cronograma::findOrFail($id);
-        // configurar archivo de excel
-        $name = "remuneracion_import_" . date('Y-m-d') . ".xlsx";
-        $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_remuneracion'), $name);
-        // Procesar importacion
-        (new RemuneracionImport($cronograma, $name))->queue("/public/imports/{$name}")->chain([
-          new ImportQueue("#", $name),
+            "import_remuneracion" => "required|file|max:1024"
         ]);
 
-        return back()->with(["success" => "vuelva más tarde, nosotros le notificaremos"]);
+        try {
+            // recuperar id
+            $id = \base64_decode($slug);
+            // obtener cronograma
+            $cronograma = Cronograma::findOrFail($id);
+            // configurar archivo de excel
+            $name = "remuneracion_import_" . date('Y-m-d') . ".xlsx";
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_remuneracion'), $name);
+            // Procesar importacion
+            (new RemuneracionImport($cronograma, $name))->queue("/public/imports/{$name}")->chain([
+              new ImportQueue("#", $name),
+            ]);
+    
+            return back()->with(["success" => "vuelva más tarde, nosotros le notificaremos"]);
+        } catch (\Throwable $th) {
+            return back()->with(["danger" => "La importación falló"]); 
+        }
     }
 
 
     public function descuento(Request $request, $slug)
     {
         $this->validate(request(), [
-            "import_descuento" => "required|file"
-        ]);
-        // recuperar id
-        $id = \base64_decode($slug);
-        // obtener cronograma
-        $cronograma = Cronograma::findOrFail($id);
-        // configurar archivo de excel
-        $name = "descuento_import_" . date('Y-m-d') . ".xlsx";
-        $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_descuento'), $name);
-        // Procesar importacion
-        (new DescuentoImport($cronograma, $name))->queue("/public/imports/{$name}")->chain([
-            new ImportQueue("#", $name),
+            "import_descuento" => "required|file|max:1024"
         ]);
 
-        return back()->with(["success" => "vuelva más tarde, nosotros le notificaremos"]);
+        try {
+            // recuperar id
+            $id = \base64_decode($slug);
+            // obtener cronograma
+            $cronograma = Cronograma::findOrFail($id);
+            // configurar archivo de excel
+            $name = "descuento_import_" . date('Y-m-d') . ".xlsx";
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_descuento'), $name);
+            // Procesar importacion
+            (new DescuentoImport($cronograma, $name))->queue("/public/imports/{$name}")->chain([
+                new ImportQueue("#", $name),
+            ]);
+    
+            return back()->with(["success" => "vuelva más tarde, nosotros le notificaremos"]);
+        } catch (\Throwable $th) {
+            return back()->with(["danger" => "La importación falló"]); 
+        }
     }
 
 }

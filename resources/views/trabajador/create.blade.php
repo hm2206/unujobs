@@ -192,6 +192,19 @@
                     </div>
                 </div>
 
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Tipo de AFP</label>
+                        <select class="form-control" name="type_afp">
+                            <option value="">Seleccionar...</option>
+                            <option value="flujo" {!! old('type_afp') == 'flujo' ? 'selected' : null !!}>Flujo</option>
+                            <option value="mixta" {!! old('type_afp') == 'mixta' ? 'selected' : null !!}>Mixta</option>
+                        </select>
+                        <b class="text-danger">{{ $errors->first('type_afp') }}</b>
+                    </div>
+                </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Fecha de Afiliación</label>

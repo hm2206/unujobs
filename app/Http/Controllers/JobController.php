@@ -60,7 +60,7 @@ class JobController extends Controller
             }
         }
 
-        return view('trabajador.create', compact('decumento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
+        return view('trabajador.create', compact('documento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
     }
 
  
@@ -288,7 +288,7 @@ class JobController extends Controller
 
         $aporte = $base * 0.09;
         $aporte = $base < 930 ? 83.70 : $aporte;
-        $total_neto = $job->total - $total;
+        $total_neto = $current->total - $total;
 
         return view("trabajador.descuento", 
             compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria_id',
@@ -482,7 +482,7 @@ class JobController extends Controller
 
         $info->update($request->all());
 
-        return redirect()->route('job.config', $work->id);
+        return redirect()->route('job.config', $work->slug());
 
     }
 

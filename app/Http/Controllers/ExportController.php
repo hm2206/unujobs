@@ -14,6 +14,11 @@ use App\Jobs\ExportQueue;
 class ExportController extends Controller
 {
     
+    public function __construct()
+    {
+        $this->middleware('validacion')->only(['work', 'cronograma']);
+    }
+
     public function work(Request $request)
     {
         $this->validate(request(), [

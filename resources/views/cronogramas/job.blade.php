@@ -36,6 +36,15 @@
 @endif
 
 
+@if (session('danger'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ session('danger') }}       
+        </div>
+    </div>
+@endif
+
+
 <div class="col-md-12 mb-2">
     <div class="row">
         <div class="col-md-6">
@@ -62,12 +71,10 @@
                             </small>
                         </div>
                         <div class="col-md-6">
-                            <button class="btn btn-sm btn-success">
-                                <i class="fas fa-file-excel"></i>
-                                Importar
-                            </button>
+                            <validacion btn_text="Importar"></validacion>
                         </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -96,10 +103,7 @@
                             </small>
                         </div>
                         <div class="col-md-6">
-                            <button class="btn btn-success btn-sm">
-                                <i class="fas fa-file-excel"></i>
-                                Importar
-                            </button>
+                            <validacion btn_text="Importar"></validacion>
                         </div>
                     </div>
                 </form>

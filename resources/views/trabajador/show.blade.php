@@ -139,6 +139,13 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="" class="form-control-label">Tipo de AFP</label>
+                        <span class="form-control">{{ $job->type_afp }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="" class="form-control-label">Fecha de Afiliación</label>
                         <span class="form-control">{{ $job->fecha_de_afiliacion }}</span>
                     </div>

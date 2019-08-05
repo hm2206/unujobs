@@ -52,7 +52,7 @@
                         <small class="text-danger">{{ $errors->first('import') }}</small>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-success btn-sm">Importar <i class="fas fa-file-excel"></i></button>
+                        <validacion btn_text="Importar"></validacion>
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-success btn-sm">Exportar <i class="fas fa-file-excel"></i></button>
+                        <validacion btn_text="Exportar"></validacion>
                     </div>
                 </div>
             </div>

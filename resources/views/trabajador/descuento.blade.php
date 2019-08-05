@@ -76,7 +76,7 @@
                         <div class="col-md-3">
                             <select name="categoria_id" class="form-control">
                                 @foreach ($categorias as $categoria)
-                                    <option value="{{ $categoria->slug() }}" {!! request()->categoria_id == $categoria->id ? 'selected' : '' !!}>
+                                    <option value="{{ $categoria->slug() }}" {!! $categoria_id == $categoria->id ? 'selected' : '' !!}>
                                         {{ $categoria->categoria ? $categoria->categoria->nombre : '' }}
                                     </option>
                                 @endforeach

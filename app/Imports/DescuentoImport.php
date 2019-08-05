@@ -67,6 +67,7 @@ class DescuentoImport implements ToCollection,WithChunkReading, WithHeadingRow, 
             }   
         } catch (\Throwable $th) {
             self::notify();
+            return exit;
         }
     }
 

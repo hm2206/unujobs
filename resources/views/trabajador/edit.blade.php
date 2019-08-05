@@ -136,7 +136,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">N° Essalud Autogenerable <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">N° Essalud Autogenerable</label>
                         <input type="text" class="form-control" value="{{ $job->numero_de_essalud }}" name="numero_de_essalud">
                         <b class="text-danger">{{ $errors->first('numero_de_essalud') }}</b>
                     </div>
@@ -145,7 +145,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Banco <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Banco</label>
                         <select name="banco_id" class="form-control">
                             <option value="">Seleccionar...</option>
                             @foreach ($bancos as $banco)
@@ -158,7 +158,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Número de Cuenta <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Número de Cuenta</label>
                         <input type="text" class="form-control" value="{{ $job->numero_de_cuenta }}" name="numero_de_cuenta">
                         <b class="text-danger">{{ $errors->first('numero_de_cuenta') }}</b>
                     </div>
@@ -166,7 +166,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">AFP <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">AFP</label>
                         <select class="form-control" name="afp_id">
                             <option value="">Seleccionar...</option>
                             @foreach ($afps as $afp)
@@ -177,9 +177,28 @@
                     </div>
                 </div>
 
+
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Fecha de Afiliación <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Tipo de AFP</label>
+                        <select class="form-control" name="type_afp">
+                            <option value="">Seleccionar...</option>
+                            @if (old('type_afp'))
+                                <option value="flujo" {!! old('type_afp') == 'flujo' ? 'selected' : null !!}>Flujo</option>
+                                <option value="mixta" {!! old('type_afp') == 'mixta' ? 'selected' : null !!}>Mixta</option>
+                            @else   
+                                <option value="flujo" {!! $job->type_afp == 'flujo' ? 'selected' : null !!}>Flujo</option>
+                                <option value="mixta" {!! $job->type_afp == 'mixta' ? 'selected' : null !!}>Mixta</option>
+                            @endif
+                        </select>
+                        <b class="text-danger">{{ $errors->first('type_afp') }}</b>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Fecha de Afiliación</label>
                         <input type="date" class="form-control" value="{{ $job->fecha_de_afiliacion }}" name="fecha_de_afiliacion">
                         <b class="text-danger">{{ $errors->first('fecha_de_afiliacion') }}</b>
                     </div>
@@ -187,7 +206,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Número de cussp <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Número de cussp</label>
                         <input type="text" class="form-control" value="{{ $job->numero_de_cussp }}" name="numero_de_cussp">
                         <b class="text-danger">{{ $errors->first('numero_de_cussp') }}</b>
                     </div>
