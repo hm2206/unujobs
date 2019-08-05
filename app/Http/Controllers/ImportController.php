@@ -54,11 +54,9 @@ class ImportController extends Controller
             $name = "remuneracion_import_" . date('Y-m-d') . ".xlsx";
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_remuneracion'), $name);
             // Procesar importacion
-            (new RemuneracionImport($cronograma, $name))->queue("/public/imports/{$name}")->chain([
-              new ImportQueue("#", $name),
-            ]);
+            (new RemuneracionImport($cronograma, $name))->import("/imports/{$name}", "public");
     
-            return back()->with(["success" => "vuelva más tarde, nosotros le notificaremos"]);
+            return back()->with(["success" => "La importación ha sido exitosa"]);
         } catch (\Throwable $th) {
             return back()->with(["danger" => "La importación falló"]); 
         }
@@ -80,11 +78,9 @@ class ImportController extends Controller
             $name = "descuento_import_" . date('Y-m-d') . ".xlsx";
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_descuento'), $name);
             // Procesar importacion
-            (new DescuentoImport($cronograma, $name))->queue("/public/imports/{$name}")->chain([
-                new ImportQueue("#", $name),
-            ]);
+            (new DescuentoImport($cronograma, $name))->import("/imports/{$name}", "public");
     
-            return back()->with(["success" => "vuelva más tarde, nosotros le notificaremos"]);
+            return back()->with(["success" => "La importación ha sido exitosa"]);
         } catch (\Throwable $th) {
             return back()->with(["danger" => "La importación falló"]); 
         }
