@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/JobController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Work;
@@ -23,6 +27,11 @@ use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCronograma;
 use \PDF;
 
+/**
+ * Class JobController
+ * 
+ * @category Controllers
+ */
 class JobController extends Controller
 {
 
@@ -136,6 +145,8 @@ class JobController extends Controller
 
 
     /**
+     * Uncomented
+     * 
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Work $job)
@@ -145,7 +156,7 @@ class JobController extends Controller
 
 
     /** 
-     * Realiza
+     * Realiza busqueda del trabajador
      * @param  string  $like
      * @param  \Illuminate\Database\Eloquent\Builder  $job
      * @return \Illuminate\Database\Eloquent\Builder

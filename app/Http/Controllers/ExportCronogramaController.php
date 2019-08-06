@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/ExportCronogramaController.php
+ * 
+ * @author Hans <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -16,6 +20,11 @@ use App\Jobs\GeneratePlanillaPDF;
 use App\Jobs\ReportCronograma;
 use App\Jobs\ReportBoleta;
 
+/**
+ * Class ExportCronogramaController
+ * 
+ * @category Controllers
+ */
 class ExportCronogramaController extends Controller
 {
     /**

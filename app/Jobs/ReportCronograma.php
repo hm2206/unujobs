@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -16,6 +15,9 @@ use \PDF;
 use App\Models\User;
 use App\Notifications\ReportNotification;
 
+/**
+ * Genera Reportes
+ */
 class ReportCronograma implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -24,6 +26,11 @@ class ReportCronograma implements ShouldQueue
     private $year;
     private $adicional;
 
+    /**
+     * @param string $mes
+     * @param string $year
+     * @param string $adicional
+     */
     public function __construct($mes, $year, $adicional)
     {
         $this->mes = $mes;
@@ -31,7 +38,11 @@ class ReportCronograma implements ShouldQueue
         $this->adicional = $adicional;
     }
 
-
+    /**
+     * Genera un reporte en pdf del cronograma
+     *
+     * @return void
+     */
     public function handle()
     {
         $metas = $metas = Meta::all();
@@ -55,12 +66,14 @@ class ReportCronograma implements ShouldQueue
                 foreach ($work->infos as $info) {
 
                     //obtenemos las remuneraciones actuales del trabajador
-                    $info->remuneraciones = $work->remuneraciones->where('año', $meta->year)
-                        ->where('mes', $meta->mes)
-                        ->where('adicional', $this->adicional)
-                        ->where('cargo_id', $info->cargo_id)
-                        ->where('planilla_id', $info->planilla_id)
-                        ->where('categoria_id', $info->categoria_id);
+                    $info->remuneraciones = Remuneracion::where("work_id", $work->id)
+                            ->where("categoria_id", $info->categoria_id)
+                            ->where("cargo_id", $info->cargo_id)
+                            ->where("planilla_id", $info->planilla_id)
+                            ->where("adicional", $this->adicional)
+                            ->where("mes", $this->mes)
+                            ->where("año", $this->year)
+                            ->get();
                     
                     $total = $info->remuneraciones->sum('monto');
 
@@ -74,7 +87,8 @@ class ReportCronograma implements ShouldQueue
                     ]);
 
                     //obtenemos los descuentos actuales del trabajador
-                    $info->descuentos = Descuento::where('año', $meta->year)
+                    $info->descuentos = Descuento::where("work_id", $work->id)
+                            ->where('año', $meta->year)
                             ->where('mes', $meta->mes)
                             ->where('adicional', $this->adicional)
                             ->where('cargo_id', $info->cargo_id)

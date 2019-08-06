@@ -1,17 +1,26 @@
 <?php
-
+/**
+ * Models/User.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Modelo de la tabla users
+ * 
+ * @category Models
+ */
 class User extends Authenticatable
 {
     use Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Los campos que solo serán alterados en la base de datos
      *
      * @var array
      */
@@ -20,7 +29,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * Los campos que no se mostrarán
      *
      * @var array
      */

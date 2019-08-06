@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -14,13 +13,27 @@ use App\Models\Descuento;
 use App\Models\User;
 use App\Notifications\ReportNotification;
 
+/**
+ * Genera un pdf de las planillas meta por meta 
+ */
 class GeneratePlanillaMetaPDF implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
- 
+    /**
+     * Obtenemos a las metas presupuestales
+     *
+     * @var array
+     */
     private $metas = [];
-    private $config;
+
+
+    /**
+     * Obtenemos las configuraciones del usuario
+     *
+     * @var array
+     */
+    private $config = [];
 
     public function __construct($metas, array $config)
     {
@@ -29,6 +42,11 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
     }
 
 
+    /**
+     * Procesamos y creamos el PDF de la planilla
+     *
+     * @return void
+     */
     public function handle()
     {
         $metas = $this->metas;

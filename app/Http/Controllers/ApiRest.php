@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * ./app/Http/Controllers/ApiRest.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -7,6 +11,11 @@ use App\Models\Planilla;
 use App\Models\Cargo;
 use App\Models\Meta;
 
+/**
+ * Class ApiRest
+ * 
+ * @category Controllers
+ */
 class ApiRest extends Controller
 {
     /**

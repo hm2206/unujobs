@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * Http/Controllers/ObligacionController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Obligacion;
 use Illuminate\Http\Request;
 
+/**
+ * Class ObligacionController
+ * 
+ * @category Controllers
+ */
 class ObligacionController extends Controller
 {
     /**

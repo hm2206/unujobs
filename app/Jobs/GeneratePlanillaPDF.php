@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -23,7 +22,9 @@ use \PDF;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
-
+/**
+ * Genera pdf de la planilla
+ */
 class GeneratePlanillaPDF implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -31,12 +32,21 @@ class GeneratePlanillaPDF implements ShouldQueue
 
     private $cronograma;
 
+    /**
+     * configuramos un poco
+     *
+     * @param \App\Models\Cronograma $cronograma
+     */
     public function __construct($cronograma)
     {
         $this->cronograma = $cronograma;
     }
 
-
+    /**
+     * Generamos el pdf de las planilas generales
+     *
+     * @return void
+     */
     public function handle()
     {
         $meses = [

@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * Http/Controllers/PlanillaController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Planilla;
 use Illuminate\Http\Request;
 
+/**
+ * Class PlanillaController
+ * 
+ * @category Controllers
+ */
 class PlanillaController extends Controller
 {
     /**

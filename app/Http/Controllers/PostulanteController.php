@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/PostulanteController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Postulante;
@@ -10,6 +14,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Etapa;
 use App\Models\Personal;
+
+/**
+ * Class PostulanteController
+ * 
+ * @category Controllers
+ */
 class PostulanteController extends Controller
 {
 
@@ -81,8 +91,10 @@ class PostulanteController extends Controller
     }
 
     /**
-     * @param  \App\Models\Postulante  $postulante
-     * @return \Illuminate\Http\RedirectResponse
+     * Undocumented function
+     *
+     * @param Postulante $postulante
+     * @return void
      */
     public function show(Postulante $postulante)
     {
@@ -113,6 +125,8 @@ class PostulanteController extends Controller
     }
 
     /**
+     * Uncommented
+     * 
      * @param  \App\Postulante  $postulante
      * @return \Illuminate\Http\RedirectResponse
      */

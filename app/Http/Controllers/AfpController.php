@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * ./app/Http/Controllers/AfpController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Afp;
 use Illuminate\Http\Request;
 
+/**
+ * Controla las acciones en al ruta afp
+ * 
+ * @category Controllers
+ */
 class AfpController extends Controller
 {
 
@@ -103,7 +112,7 @@ class AfpController extends Controller
     }
 
     /**
-     * No hace nado :)
+     * No hace nada :)
      *
      * @param  \App\Models\Afp  $afp
      * @return \Illuminate\Http\Response

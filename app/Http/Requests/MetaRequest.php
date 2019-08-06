@@ -1,9 +1,18 @@
 <?php
-
+/**
+ * Http/Requests/MetaRequest.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Valida peticiones
+ * 
+ * @category Requests
+ */
 class MetaRequest extends FormRequest
 {
     /**
@@ -17,12 +26,24 @@ class MetaRequest extends FormRequest
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param string $default
+     * @param string $newValue
+     * @return void
+     */
     public function update($default, $newValue)
     {
         return request()->_method == "PUT" ? $newValue : $default;
     } 
 
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [

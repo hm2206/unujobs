@@ -7,6 +7,9 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Modelo de mail para notificar al trabajador sobre su boleta
+ */
 class SendBoleta extends Mailable
 {
     use Queueable, SerializesModels;
@@ -17,6 +20,13 @@ class SendBoleta extends Mailable
     public $adicional;
     public $pdf;
 
+    /**
+     * @param \App\Models\Work $work
+     * @param string $year
+     * @param string $mes
+     * @param string $adicional
+     * @param \PDF $pdf
+     */
     public function __construct($work, $year, $mes, $adicional, $pdf)
     {
         $this->work = $work;

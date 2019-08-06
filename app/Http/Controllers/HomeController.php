@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/HomeController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -7,9 +11,19 @@ use Illuminate\Http\Request;
 use App\Models\Work;
 use App\Models\Postulante;
 
+/**
+ * Class HomeController
+ * 
+ * @category Controllers
+ */
 class HomeController extends Controller
 {
 
+    /**
+     * Constructor
+     * 
+     * @return void
+     */
     function __construct() {
         $this->middleware("auth"); 
     }

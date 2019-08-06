@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * Http/Controllers/ConceptoController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Concepto;
 use Illuminate\Http\Request;
 
+/**
+ * Class ConceptoController
+ * 
+ * @category Controllers
+ */
 class ConceptoController extends Controller
 {
     /**
@@ -45,7 +54,12 @@ class ConceptoController extends Controller
         return back()->with(["success" => "El registro se guardo correctamente"]);
     }
 
-
+    /**
+     * Undocumented function
+     *
+     * @param Concepto $concepto
+     * @return void
+     */
     public function show(Concepto $concepto)
     {
         return back();

@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/EtapaController.php
+ * 
+ * @author Hans <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Etapa;
@@ -10,15 +14,30 @@ use \DB;
 use \PDF;
 use App\Models\Postulante;
 
+/**
+ * Class EtapaController
+ * 
+ * @category Controllers
+ */
 class EtapaController extends Controller
 {
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function index()
     {
         return back();
     }
 
- 
+    
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function create()
     {
         return back();

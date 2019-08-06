@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/ImportController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,6 +15,11 @@ use App\Imports\RemuneracionImport;
 use App\Imports\DescuentoImport;
 use App\Models\Cronograma;
 
+/**
+ * Class ImportController
+ * 
+ * @category Controllers
+ */
 class ImportController extends Controller
 {
 

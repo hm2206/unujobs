@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -20,6 +19,9 @@ use App\Models\User;
 use App\Notifications\BasicNotification;
 use App\Models\Sindicato;
 
+/**
+ * Procesa los descuentos de los trabajadores
+ */
 class ProssingDescuento implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -28,7 +30,11 @@ class ProssingDescuento implements ShouldQueue
     private $cronograma;
     private $jobs;
 
-
+    /**
+     * @param object $cronograma
+     * @param object $jobs
+     * @return void
+     */
     public function __construct($cronograma, $jobs)
     {
         $this->cronograma = $cronograma;
@@ -36,7 +42,11 @@ class ProssingDescuento implements ShouldQueue
     }
 
 
-
+    /**
+     * Se ejecuta automaticamente en las colas de trabajos
+     *
+     * @return void
+     */
     public function handle()
     {
         $cronograma = $this->cronograma;
@@ -56,6 +66,15 @@ class ProssingDescuento implements ShouldQueue
 
     }
 
+
+    /**
+     * Se encarga de configurar y procesar los descuentos de cada trabajador
+     *
+     * @param \App\Models\TypeDescuento $types
+     * @param \App\Models\Cronograma $cronograma
+     * @param \App\Models\Work $job
+     * @return void
+     */
     private function configurarDescuento($types, $cronograma, $job)
     {
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;

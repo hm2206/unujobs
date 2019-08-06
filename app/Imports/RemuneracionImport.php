@@ -16,6 +16,9 @@ use App\Jobs\ImportQueue;
 use App\Models\User;
 use App\Notifications\BasicNotification;
 
+/**
+ * modelo de importación de remuneraciones de los trabajadores
+ */
 class RemuneracionImport implements ToCollection, WithHeadingRow
 {
     
@@ -23,12 +26,22 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
 
     private $cronograma;
 
+    /**
+     * @param \App\Models\Cronograma $cronograma
+     * @param string $name
+     */
     public function __construct($cronograma, $name)
     {
         $this->cronograma = $cronograma;
         $this->name = $name;
     }
 
+    /**
+     * Ejecuta el archivo excel guardando los datos de las remuneraciones.
+     *
+     * @param Collection $collection
+     * @return void
+     */
     public function collection(Collection $collection)
     {
         foreach ($collection as $row) {

@@ -1,5 +1,9 @@
 <?php
 	namespace App\Tools;
+
+	/**
+	 * Mapear los arreglos en objectos json y xml
+	 */
 	class Obj
 	{
 		public function __construct( array $value = array() )

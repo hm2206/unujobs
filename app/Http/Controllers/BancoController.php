@@ -1,10 +1,20 @@
 <?php
+/**
+ * ./app/Http/Controllers/BancoController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 
 namespace App\Http\Controllers;
 
 use App\Banco;
 use Illuminate\Http\Request;
 
+/**
+ * Class BancoController
+ * 
+ * @category Controllers
+ */
 class BancoController extends Controller
 {
     /**

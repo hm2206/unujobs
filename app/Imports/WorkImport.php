@@ -14,13 +14,20 @@ use App\Models\Work;
 use App\Models\User;
 use App\Notifications\BasicNotification;
 
-
+/**
+ * Modelo de importación de los Trabajadores
+ */
 class WorkImport implements ToCollection, WithHeadingRow
 {
 
     use Importable;
 
-
+    /**
+     * Ejecuta el archivo de excel y almacena los datos de los nuevos trabajadores
+     *
+     * @param Collection $collection
+     * @return void
+     */
     public function collection(Collection $collection)
     {
         foreach ($collection as $row) {
@@ -58,7 +65,11 @@ class WorkImport implements ToCollection, WithHeadingRow
 
     }
 
-    
+    /**
+     * Indica la cabecera esa en la primera fila del archivo de excel
+     *
+     * @return integer
+     */
     public function headingRow(): int
     {
         return 1;

@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * Http/Controllers/TypeRemuneracionController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\TypeRemuneracion;
 use Illuminate\Http\Request;
 
+/**
+ * Class TypeRemuneracionController
+ * 
+ * @category Controllers
+ */
 class TypeRemuneracionController extends Controller
 {
 
@@ -52,7 +61,12 @@ class TypeRemuneracionController extends Controller
         return back()->with(["success" => "Los datos se guardarón correctamente"]);
     }
 
-
+    /**
+     * Undocumented function
+     *
+     * @param TypeRemuneracion $typeRemuneracion
+     * @return void
+     */
     public function show(TypeRemuneracion $typeRemuneracion)
     {
         return back();
@@ -101,6 +115,12 @@ class TypeRemuneracionController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param TypeRemuneracion $typeRemuneracion
+     * @return void
+     */
     public function destroy(TypeRemuneracion $typeRemuneracion)
     {
         return back();

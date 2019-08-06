@@ -1,4 +1,9 @@
 <?php
+/**
+ * ./app/Http/Controllers/BolsaController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 
 namespace App\Http\Controllers;
 
@@ -12,6 +17,11 @@ use App\Models\TypeEtapa;
 use \PDF;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Class BolsaController
+ * 
+ * @category Controllers
+ */
 class BolsaController extends Controller
 {
     /**

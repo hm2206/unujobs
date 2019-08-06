@@ -26,9 +26,6 @@ Route::group(["prefix" => "RRHH"], function() {
     Route::resource("postulante", "PostulanteController");
     Route::post("postulante/{id}/cv", "PostulanteController@upload")->name('postulante.cv');
 
-    //Evaluaciones
-    //Route::resource("evaluacion", "EvaluacionController");
-
 
     //Etapas
     Route::resource('etapa', 'EtapaController');
@@ -147,7 +144,6 @@ Route::get("user/unread", "UserController@unread")->middleware('auth');
 Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware('auth');
 
 
-//formatos de JSon
-Route::get('formato/json', 'FormatoController@json')->name('formato.json');
+
 
 

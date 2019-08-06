@@ -15,6 +15,9 @@ use App\Models\TypeDescuento;
 use App\Models\User;
 use App\Notifications\BasicNotification;
 
+/**
+ * Modelo de importacion de descuentos en excel
+ */
 class DescuentoImport implements ToCollection, WithHeadingRow
 {
     
@@ -22,12 +25,23 @@ class DescuentoImport implements ToCollection, WithHeadingRow
 
     private $cronograma;
 
+    /**
+     * @param \App\Models\Cronograma $cronograma
+     * @param string $name
+     */
     public function __construct($cronograma, $name)
     {
         $this->cronograma = $cronograma;
         $this->name = $name;
     }
 
+
+    /**
+     * Ejecuta el archivo de excel cuardando los datos correspondiente
+     *
+     * @param Collection $collection
+     * @return void
+     */
     public function collection(Collection $collection)
     {
         foreach ($collection as $iter => $row) {

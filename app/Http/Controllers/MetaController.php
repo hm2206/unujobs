@@ -1,11 +1,20 @@
 <?php
-
+/**
+ * Http/Controllers/MetaController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Meta;
 use Illuminate\Http\Request;
 use App\Http\Requests\MetaRequest;
 
+/**
+ * Class MetaController
+ * 
+ * @category Controllers
+ */
 class MetaController extends Controller
 {
 
@@ -52,6 +61,12 @@ class MetaController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Meta $meta
+     * @return void
+     */
     public function show(Meta $meta)
     {
         return back();

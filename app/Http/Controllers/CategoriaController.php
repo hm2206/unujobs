@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/CategoriaController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
@@ -8,6 +12,11 @@ use Illuminate\Http\Request;
 use App\Models\TypeRemuneracion;
 use \DB;
 
+/**
+ * Class CategoriaController
+ * 
+ * @category Controllers
+ */
 class CategoriaController extends Controller
 {
     /**
@@ -50,6 +59,12 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Redirige a la ruta origen
+     * 
+     * @param Categoria $categoria
+     * @return void
+     */
     public function show(Categoria $categoria)
     {
         return back();
@@ -90,6 +105,12 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Redirige a la ruta origen
+     * 
+     * @param Categoria $categoria
+     * @return void
+     */
     public function destroy(Categoria $categoria)
     {
         return back();

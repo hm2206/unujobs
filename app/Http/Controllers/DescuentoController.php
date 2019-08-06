@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/DescuentoController.php
+ * 
+ * @author Hans <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\TypeDescuento;
@@ -7,6 +11,11 @@ use Illuminate\Http\Request;
 use App\Models\Sindicato;
 use App\Models\Afp;
 
+/**
+ * Class DescuentoController
+ * 
+ * @category Controllers
+ */
 class DescuentoController extends Controller
 {
 
@@ -49,6 +58,12 @@ class DescuentoController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Descuento $descuento
+     * @return void
+     */
     public function show(Descuento $descuento)
     {
         return back();
@@ -89,6 +104,12 @@ class DescuentoController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Descuento $descuento
+     * @return void
+     */
     public function destroy(Descuento $descuento)
     {
         return back();

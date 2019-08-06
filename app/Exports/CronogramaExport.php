@@ -13,18 +13,29 @@ use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
 use App\Models\Work;
 
+/**
+ * Modelo de exportación del cronograma
+ */
 class CronogramaExport implements FromView, ShouldQueue
 {
     use Exportable;
     
     private $id; 
 
+    /**
+     * @param int $id
+     */
     public function __construct($id)
     {
         $this->id = $id;
     }
 
 
+    /**
+     * Genera el archivo de exportación en excel
+     *
+     * @return View
+     */
     public function view() : View
     {
         $cronograma = Cronograma::findOrFail($this->id);

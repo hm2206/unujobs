@@ -1,10 +1,17 @@
-<?php
-
+<?php 
+/**
+ * Http/Middleware/TrustProxies.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Fideloper\Proxy\TrustProxies as Middleware;
 
+/**
+ * TrustProxies
+ */
 class TrustProxies extends Middleware
 {
     /**

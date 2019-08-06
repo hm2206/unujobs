@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -20,7 +19,9 @@ use App\Models\User;
 use App\Mail\SendBoleta;
 use App\Notifications\ReportNotification;
 
-
+/**
+ * Generar Archivo PDF de las Boletas mesuales de un determinado cronograma
+ */
 class ReportBoleta implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -29,6 +30,11 @@ class ReportBoleta implements ShouldQueue
     private $year;
     private $adicional;
 
+    /**
+     * @param string $mes
+     * @param string $year
+     * @param string $adicional
+     */
     public function __construct($mes, $year, $adicional)
     {
         $this->mes = $mes;
@@ -36,7 +42,11 @@ class ReportBoleta implements ShouldQueue
         $this->adicional = $adicional;
     }
 
-
+    /**
+     * Genera y procesa las boletas de los trabajadores
+     *
+     * @return void
+     */
     public function handle()
     {
 
@@ -57,6 +67,8 @@ class ReportBoleta implements ShouldQueue
                     ->where("cargo_id", $info->cargo_id)
                     ->where("planilla_id", $info->planilla_id)
                     ->where("adicional", $this->adicional)
+                    ->where("mes", $this->mes)
+                    ->where("año", $this->year)
                     ->get();
 
                 $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
@@ -64,6 +76,8 @@ class ReportBoleta implements ShouldQueue
                     ->where("cargo_id", $info->cargo_id)
                     ->where("planilla_id", $info->planilla_id)
                     ->where("adicional", $this->adicional)
+                    ->where("mes", $this->mes)
+                    ->where("año", $this->year)
                     ->get();
 
                 $total = $remuneraciones->sum("monto");

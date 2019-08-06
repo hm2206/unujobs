@@ -1,9 +1,18 @@
 <?php
-
+/**
+ * Http/Requests/ConvocatoriaRequest.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Valida peticiones
+ * 
+ * @category Requests
+ */
 class ConvocatoriaRequest extends FormRequest
 {
     /**

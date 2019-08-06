@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/ConvocatoriaController.php
+ * 
+ * @author Hans <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Convocatoria;
@@ -14,6 +18,11 @@ use App\Models\Etapa;
 use \DB;
 use \PDF;
 
+/**
+ * Class ConvocatoriaController
+ * 
+ * @category Controllers
+ */
 class ConvocatoriaController extends Controller
 {
     /**
@@ -54,7 +63,12 @@ class ConvocatoriaController extends Controller
         return back()->with(["success" => "Los datos se guardaron correctamente!"]);
     }
 
-
+    /**
+     * Undocumented function
+     *
+     * @param Convocatoria $convocatoria
+     * @return void
+     */
     public function show(Convocatoria $convocatoria)
     {
         return back();
@@ -167,6 +181,12 @@ class ConvocatoriaController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Convocatoria $convocatoria
+     * @return void
+     */
     public function destroy(Convocatoria $convocatoria)
     {
         return back();

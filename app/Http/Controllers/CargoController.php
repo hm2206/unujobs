@@ -1,4 +1,9 @@
 <?php
+/**
+ * ./app/Http/Controllers/CargoController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 
 namespace App\Http\Controllers;
 
@@ -9,6 +14,11 @@ use App\Models\TypeRemuneracion;
 use Illuminate\Http\Request;
 use \Hash;
 
+/**
+ * Class CargoController
+ * 
+ * @category Controllers
+ */
 class CargoController extends Controller
 {
 

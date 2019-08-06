@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * Http/Controllers/UserController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
 
+/**
+ * Class UserController
+ * 
+ * @category Controllers
+ */
 class UserController extends Controller
 {
     

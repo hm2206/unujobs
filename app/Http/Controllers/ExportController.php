@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/ExportController.php
+ * 
+ * @author Hans <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -10,10 +14,19 @@ use App\Exports\CategoriaExport;
 use App\Exports\CronogramaExport;
 use App\Jobs\ExportQueue;
 
-
+/**
+ * Class ExportController
+ * 
+ * @category Controllers
+ */
 class ExportController extends Controller
 {
     
+    /**
+     * Constructor
+     * 
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('validacion')->only(['work', 'cronograma']);

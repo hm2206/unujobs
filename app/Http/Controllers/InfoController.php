@@ -1,10 +1,19 @@
 <?php
-
+/**
+ * Http/Controllers/InfoController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Info;
 use Illuminate\Http\Request;
 
+/**
+ * Class InfoController
+ * 
+ * @category Controllers
+ */
 class InfoController extends Controller
 {
     /**

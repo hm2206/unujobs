@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -16,6 +15,9 @@ use App\Models\Remuneracion;
 use App\Models\User;
 use App\Notifications\BasicNotification;
 
+/**
+ * Procesa las remuneraciones de los trabajadores
+ */
 class ProssingRemuneracion implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -24,14 +26,22 @@ class ProssingRemuneracion implements ShouldQueue
     private $cronograma;
     private $jobs;
      
-
+    /**
+     * @param \App\Models\Cronograma $cronograma
+     * @param \App\Models\Work $jobs
+     * @return void
+     */
     public function __construct($cronograma, $jobs)
     {
         $this->cronograma = $cronograma;
         $this->jobs = $jobs;
     }
 
-
+    /**
+     * Se ejecuta automaticamente en las colas de trabajos
+     *
+     * @return void
+     */
     public function handle()
     {
         $cronograma = $this->cronograma;
@@ -49,7 +59,14 @@ class ProssingRemuneracion implements ShouldQueue
         }
     }
 
-
+    /**
+     * Se encarga de configurar y procesar las remuneraciones de cada trabajador
+     *
+     * @param \App\Models\TypeRemuneracion $types
+     * @param \App\Models\Cronograma $cronograma
+     * @param \App\Models\Work $job
+     * @return void
+     */
     private function configurarRemuneracion($types, $cronograma, $job)
     {
         $total = 0;

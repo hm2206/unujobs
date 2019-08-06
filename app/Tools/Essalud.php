@@ -1,7 +1,12 @@
 <?php
 	namespace App\Tools;
+
+	/**
+	 * WebScrapping a la web de essalud
+	 */
 	class EsSalud
 	{
+
 		function __construct()
 		{
 			$this->cc = new Curl();

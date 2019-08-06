@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/CronogramaController.php
+ * 
+ * @author Hans <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Cronograma;
@@ -18,6 +22,11 @@ use App\Jobs\ReportCronograma;
 use Illuminate\Support\Facades\Storage;
 use \DB;
 
+/**
+ * Class CronogramaController
+ * 
+ * @category Controllers
+ */
 class CronogramaController extends Controller
 {
     /**
@@ -115,6 +124,12 @@ class CronogramaController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Cronograma $cronograma
+     * @return void
+     */
     public function show(Cronograma $cronograma)
     {
         return back();
@@ -152,6 +167,12 @@ class CronogramaController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Cronograma $cronograma
+     * @return void
+     */
     public function destroy(Cronograma $cronograma)
     {
         return back();
