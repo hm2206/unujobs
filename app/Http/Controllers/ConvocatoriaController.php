@@ -16,14 +16,22 @@ use \PDF;
 
 class ConvocatoriaController extends Controller
 {
-
+    /**
+     * Muestra una lista de convocatorias
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $convocatorias = Convocatoria::orderBy("id", 'DESC')->paginate(20);
         return view('convocatoria.index', compact('convocatorias'));
     }
 
-
+    /**
+     * Muestra un formulario para crear una nueva convocatoria
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $personals = Personal::where("aceptado", 1)
@@ -33,7 +41,13 @@ class ConvocatoriaController extends Controller
         return view("convocatoria.create", \compact('personals'));
     }
 
-
+    
+    /**
+     * Almacena una convocatoria recien creada
+     *
+     * @param  \App\Http\Request\ConvocatoriaRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(ConvocatoriaRequest $request)
     {   
         $convocatoria = Convocatoria::create($request->except('aceptado'));
@@ -47,6 +61,12 @@ class ConvocatoriaController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para editar una convocatoria
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id =  \base64_decode($slug);
@@ -74,6 +94,13 @@ class ConvocatoriaController extends Controller
     }
 
 
+    /**
+     * Actualiza una convocatoria recien modificada
+     *
+     * @param  \App\Http\Requests\ConvocatoriaUpdateRequest  $request
+     * @param  int  $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(ConvocatoriaUpdateRequest $request, $slug)
     {
         $id = \base64_decode($slug);
@@ -146,6 +173,13 @@ class ConvocatoriaController extends Controller
     }
 
 
+    /**
+     * Actualiza el estado de la convocatoria  "aceptado" o "rechazado"
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id
+     * @return \Illuminate\View\View  
+     */
     public function aceptar(Request $request, $id)
     {
         $convocatoria = Convocatoria::findOrFail($id);
@@ -156,6 +190,12 @@ class ConvocatoriaController extends Controller
         return back();
     }
 
+    /**
+     * Genera un archivo PDF de la convocatoria
+     *
+     * @param  string  $slug
+     * @return \PDF
+     */
     public function pdf($slug)
     {
         $id = \base64_decode($slug);
@@ -166,6 +206,13 @@ class ConvocatoriaController extends Controller
         return $pdf->stream();
     }
 
+
+    /**
+     * Muestra una convocatoria con sus respectivos requerimientos de personal y etapas
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function etapas($slug)
     {
 

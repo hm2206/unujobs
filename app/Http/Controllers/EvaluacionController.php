@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class EvaluacionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de las evaluaciones
      *
      * @return \Illuminate\Http\Response
      */

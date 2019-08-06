@@ -10,7 +10,11 @@ use \DB;
 
 class CategoriaController extends Controller
 {
-
+    /**
+     * Muestra una lista de categorias
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $categorias = Categoria::paginate(20);
@@ -18,12 +22,23 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para crear una nueva categoria
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('categorias.create');
     }
 
- 
+    
+    /**
+     * Almacena una categoria recien creada
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
@@ -41,6 +56,12 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para editar una categoria
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id = \base64_decode($slug);
@@ -48,7 +69,13 @@ class CategoriaController extends Controller
         return view("categorias.edit", compact('categoria'));
     }
 
-
+    /**
+     * Actualiza una categoria recien modificada
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $payload = $this->validate(request(), [
@@ -69,6 +96,12 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para agregra un concepto a la categoria
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function concepto($slug)
     {
         $id = \base64_decode($slug);
@@ -78,6 +111,14 @@ class CategoriaController extends Controller
         return view("categorias.concepto", compact('categoria', 'conceptos'));
     }
 
+
+    /**
+     * Almacena el concepto recien agregado a la categoria
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function conceptoStore(Request $request, $id)
     {
         $this->validate(request(), [
@@ -95,6 +136,12 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Muestra un panel con chechbox para agregar la configuración los tipos de remuneraciones por categoria
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function config($slug)
     {
         $id = \base64_decode($slug);
@@ -142,6 +189,13 @@ class CategoriaController extends Controller
     }
 
 
+    /**
+     * Almacena un nueva configuracion para los tipos de remuneraciones por categoria
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function configStore(Request $request, $id)
     {
         $this->validate(request(), [

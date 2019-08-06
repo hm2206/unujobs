@@ -27,7 +27,7 @@ Route::group(["prefix" => "RRHH"], function() {
     Route::post("postulante/{id}/cv", "PostulanteController@upload")->name('postulante.cv');
 
     //Evaluaciones
-    Route::resource("evaluacion", "EvaluacionController");
+    //Route::resource("evaluacion", "EvaluacionController");
 
 
     //Etapas

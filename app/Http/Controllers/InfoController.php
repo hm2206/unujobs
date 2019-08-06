@@ -14,7 +14,7 @@ class InfoController extends Controller
      */
     public function index()
     {
-        //
+        return back();
     }
 
     /**
@@ -24,7 +24,7 @@ class InfoController extends Controller
      */
     public function create()
     {
-        //
+        return back();
     }
 
     /**
@@ -35,7 +35,7 @@ class InfoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return back();
     }
 
     /**
@@ -46,7 +46,7 @@ class InfoController extends Controller
      */
     public function show(Info $info)
     {
-        //
+        return back();
     }
 
     /**
@@ -57,7 +57,7 @@ class InfoController extends Controller
      */
     public function edit(Info $info)
     {
-        //
+        return back();
     }
 
     /**
@@ -69,7 +69,7 @@ class InfoController extends Controller
      */
     public function update(Request $request, Info $info)
     {
-        //
+        return back();
     }
 
     /**
@@ -80,6 +80,6 @@ class InfoController extends Controller
      */
     public function destroy(Info $info)
     {
-        //
+        return back();
     }
 }

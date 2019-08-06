@@ -13,12 +13,20 @@ use App\Models\Personal;
 class PostulanteController extends Controller
 {
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function index()
     {
-        //
+        return back();
     }
 
- 
+    
+    /**
+     * Muestra un formulario para crear un nuevo postulante
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $documento = request()->input("documento", null);
@@ -33,7 +41,12 @@ class PostulanteController extends Controller
         return view("postulante.create", \compact('exists', 'result'));
     }
 
-
+    /**
+     * Almacena un postulante recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(PostulanteRequest $request)
     {
         $postulante = Postulante::where("numero_de_documento", $request->numero_de_documento)->first();
@@ -68,14 +81,12 @@ class PostulanteController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Postulante  $postulante
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Postulante  $postulante
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function show(Postulante $postulante)
     {
-        //
+        return back();
     }
 
     /**
@@ -86,33 +97,36 @@ class PostulanteController extends Controller
      */
     public function edit(Postulante $postulante)
     {
-        //
+        return back();
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Postulante  $postulante
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Postulante  $postulante
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Postulante $postulante)
     {
-        //
+        return back();
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
      * @param  \App\Postulante  $postulante
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Postulante $postulante)
     {
-        //
+        return  back();
     }
 
-
+    /**
+     * Sube el postulante su curriculum-vitae
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function upload(Request $request, $id)
     {
         $this->validate(request(), [

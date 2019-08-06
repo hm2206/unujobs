@@ -19,6 +19,13 @@ class ExportController extends Controller
         $this->middleware('validacion')->only(['work', 'cronograma']);
     }
 
+
+    /**
+     * Crea un archivo de excel de los trabajadores
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function work(Request $request)
     {
         $this->validate(request(), [
@@ -37,6 +44,13 @@ class ExportController extends Controller
         return back()->with(["success" => "Le notificaremos cuando la exportación esté lista"]);
     }
 
+
+    /**
+     * Crea un archivo de excel de las metas presupuestales
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function meta(Request $request)
     {
         $this->validate(request(), [
@@ -55,6 +69,12 @@ class ExportController extends Controller
         return back()->with(["success" => "Le notificaremos cuando la exportación esté lista."]);
     }
 
+
+    /**
+     * Crea un archivo de excel de los cargos
+     *
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function cargo()
     {
         $name = 'cargo_' . date('Y-m-d') . '.xlsx';
@@ -67,6 +87,12 @@ class ExportController extends Controller
         return back()->with(["success" => "Le notificaremos cuando la exportación esté lista."]);
     }
 
+
+    /**
+     * Crea un archivo de excel de las categorias
+     *
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function categoria()
     {
         $name = 'categoria_' . date('Y-m-d') . '.xlsx';
@@ -79,6 +105,14 @@ class ExportController extends Controller
         return back()->with(["success" => "Le notificaremos cuando la exportación esté lista."]);
     }
 
+
+    /**
+     * Crea un archivo de excel de los cronogramas
+     *
+     * @param  \Illuminate\Http\Request
+     * @param  string  $id   
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function cronograma(Request $request, $id)
     {
         $name = 'cronograma_' . date('Y-m-d') . '.xlsx';

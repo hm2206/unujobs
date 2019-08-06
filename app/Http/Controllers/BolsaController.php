@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Cache;
 
 class BolsaController extends Controller
 {
-    
+    /**
+     * Muestra una lista de recursos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $year = request()->input('year', date('Y'));
@@ -28,6 +32,14 @@ class BolsaController extends Controller
         return view("bolsa.index", compact('year', 'convocatorias'));
     }
 
+
+    /**
+     * Muestra un recurso específico
+     *
+     * @param  string $slugConvocatoria
+     * @param  string $slug
+     * @return \Illuminate\View\View
+     */
     public function show($slugConvocatoria, $slug)
     {
 
@@ -61,6 +73,14 @@ class BolsaController extends Controller
         return view("bolsa.show", compact('convocatoria', 'personal', 'mas', 'postulante', 'auth', 'types', 'current', 'idParse', 'isExpire'));
     }
 
+
+    /**
+     * Muestra un formulario de registro de postulacion
+     *
+     * @param  int $numero
+     * @param  string $titulo
+     * @return \Illuminate\Http\Response|Illuminate\View\View
+     */
     public function postular($numero, $titulo)
     {
         $ubigeos = Ubigeo::with(['departamentos' => function($d) {
@@ -84,6 +104,13 @@ class BolsaController extends Controller
 
     }
 
+
+    /**
+     * Valida y autentica a un postulante
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
     public function authenticar(Request $request)
     {
         $this->validate(request(), [
@@ -111,6 +138,13 @@ class BolsaController extends Controller
     }
 
 
+    /**
+     * Muestra un resultado determinado de las postulaciones
+     *
+     * @param  string $slugConvocatoria
+     * @param  string $slugPersonal
+     * @return PDF
+     */
     public function resultados($slugConvocatoria, $slugPersonal)
     {
 

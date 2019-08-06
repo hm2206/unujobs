@@ -20,7 +20,11 @@ use \DB;
 
 class CronogramaController extends Controller
 {
- 
+    /**
+     * Muestra una lista cronogramas de planillas
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $mes = request()->mes ? (int)request()->mes : (int)date('m');
@@ -48,14 +52,23 @@ class CronogramaController extends Controller
             ));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo cronograma
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $planillas = Planilla::all();
         return view("cronogramas.create", compact('planillas'));
     }
 
-
+    /**
+     * Almacena un cronograma recien creada
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
@@ -108,6 +121,12 @@ class CronogramaController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para editar un cronograma
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         //recuperar id
@@ -118,7 +137,14 @@ class CronogramaController extends Controller
         return view("cronogramas.edit", compact('cronograma'));
     }
 
- 
+    
+    /**
+     * Actualiza un cronograma recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Cronograma $cronograma
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, Cronograma $cronograma)
     {
         $cronograma->update(["observacion" => $request->observacion]);
@@ -131,7 +157,12 @@ class CronogramaController extends Controller
         return back();
     }
 
-
+    /**
+     * Muestra al cronograma con sus respectivos trabajadores
+     *
+     * @param  string $slug
+     * @return \Illuminate\View\View
+     */
     public function job($slug)
     {
         $id = \base64_decode($slug);
@@ -151,6 +182,13 @@ class CronogramaController extends Controller
         return view('cronogramas.job', compact('jobs', 'cronograma', 'like'));
     }
 
+
+    /**
+     * Muestra un formulario para agregar a los trabajadores a un cronograma
+     *
+     * @param  string $slug
+     * @return \Illuminate\View\View
+     */
     public function add($slug)
     {
         //recuperar id
@@ -173,6 +211,13 @@ class CronogramaController extends Controller
     }
 
 
+    /**
+     * Almacena a los trabajadores agregador recientemente al cronograma
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function addStore(Request $request, $id)
     {
         $this->validate(request(), [

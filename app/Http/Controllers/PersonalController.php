@@ -17,14 +17,22 @@ use \DB;
 
 class PersonalController extends Controller
 {
-
+    /**
+     * Muestra una lista de los requerimientos de personal
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $personals = Personal::orderBy('id', 'DESC')->paginate(20);
         return view('personal.index', compact('personals'));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo requerimiento de personal
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $sedes = Sede::get(["id", "descripcion"]);
@@ -61,6 +69,12 @@ class PersonalController extends Controller
         return view("personal.create", \compact('sedes', 'dependencias', 'oficinas', 'cargos', 'lugares', 'metas'));
     }
 
+    /**
+     * Almacena un requerimiento de personal recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(PersonalRequest $request)
     {
         
@@ -95,13 +109,23 @@ class PersonalController extends Controller
     }
 
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function show($id)
     {
-        $personal = Personal::findOrFail($id);
-        return view("personal.show", \compact('personal'));
+        return back();
+        //$personal = Personal::findOrFail($id);
+        //return view("personal.show", \compact('personal'));
     }
 
 
+    /**
+     * Muestra un formulario para editar un requerimiento de personal
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $sedes = Sede::all();
@@ -122,6 +146,13 @@ class PersonalController extends Controller
     }
 
 
+    /**
+     * Actualiza un requerimiento de personal recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $slug
+     * @return \Illuminate\Http\Redirect
+     */
     public function update(PersonalRequest $request, $slug)
     {
         $personal = Personal::where("slug", $slug)->firstOrFail();
@@ -159,16 +190,20 @@ class PersonalController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Personal  $personal
      * @return \Illuminate\Http\Response
      */
     public function destroy(Personal $personal)
     {
-        //
+        return back();
     }
 
+    /**
+     * Actualiza el estado de la convocatoria  "aceptado" o "rechazado"
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function aceptar(Request $request, $slug)
     {
         $personal = Personal::where("slug", $slug)->firstOrFail();
@@ -179,7 +214,12 @@ class PersonalController extends Controller
         return back();
     }
 
-
+    /**
+     * Genera un archivo PDF del requerimiento de personal
+     *
+     * @param  string  $slug
+     * @return \PDF
+     */
     public function pdf($slug)
     {
         $personal = Personal::where("slug", $slug)->firstOrFail();

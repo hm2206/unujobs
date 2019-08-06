@@ -7,20 +7,33 @@ use Illuminate\Http\Request;
 
 class ConceptoController extends Controller
 {
-
+    /**
+     * Muestra una lista de conceptos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $conceptos = Concepto::all();
         return view('conceptos.index', compact('conceptos'));
     }
 
- 
+    /**
+     * Muestra un formulario para crear una nuevo concepto
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('conceptos.create');
     }
 
-
+    /**
+     * Almacena un concepto recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
@@ -38,7 +51,12 @@ class ConceptoController extends Controller
         return back();
     }
 
-
+    /**
+     * Muestra un formulario para editar un concepto
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id = \base64_decode($slug);
@@ -47,6 +65,13 @@ class ConceptoController extends Controller
     }
 
 
+    /**
+     * Actualiza una categoria recien modificada
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
@@ -62,7 +87,7 @@ class ConceptoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Concepto  $concepto
+     * @param  \App\Models\Concepto  $concepto
      * @return \Illuminate\Http\Response
      */
     public function destroy(Concepto $concepto)

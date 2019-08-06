@@ -26,6 +26,11 @@ use \PDF;
 class JobController extends Controller
 {
 
+    /**
+     * Muestra una lista de los trabajadores
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $jobs = Work::orderBy('id', 'DESC');
@@ -39,7 +44,11 @@ class JobController extends Controller
         return view('trabajador.index', \compact('jobs'));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo trabajador
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $documento = request()->input("documento", null);
@@ -63,7 +72,13 @@ class JobController extends Controller
         return view('trabajador.create', compact('documento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
     }
 
- 
+
+    /**
+     * Almacena un a nuevo trabajador
+     *
+     * @param  \App\Http\Requests\JobRequest  $request
+     * @return \Illuminate\Http\Redirect
+     */
     public function store(JobRequest $request)
     {
         $job = Work::create($request->all());
@@ -73,6 +88,12 @@ class JobController extends Controller
     }
 
 
+    /**
+     * Muestra a un trabajador específico
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function show($slug)
     {
         //recuperar id
@@ -81,7 +102,12 @@ class JobController extends Controller
         return view("trabajador.show", \compact('job'));
     }
 
-
+    /**
+     * Muestra un formulario para editar a un trabajador
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         //recuperando el id
@@ -93,7 +119,13 @@ class JobController extends Controller
         return view('trabajador.edit', compact('job', 'bancos', 'afps'));
     }
 
-
+    /**
+     * Actualiza a un trabajador recien modificado
+     *
+     * @param  \App\Http\Requests\JobRequest  $request
+     * @param  \App\Models\Work  $job
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(JobRequest $request, Work $job)
     {
         $job->update($request->all());
@@ -103,17 +135,34 @@ class JobController extends Controller
     }
 
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Work $job)
     {
         return back();
     }
 
-    public function query($like, $jobs) 
+
+    /** 
+     * Realiza
+     * @param  string  $like
+     * @param  \Illuminate\Database\Eloquent\Builder  $job
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function query($like, \Illuminate\Database\Eloquent\Builder $jobs) 
     {
         return $jobs->where("nombre_completo", "like", "%{$like}%")
             ->orWhere("numero_de_documento", "like", "%{$like}%");
     }
 
+
+    /**
+     * Muestra un formulario para visualizar y editar las remuneraciones del trabajador
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function remuneracion($slug)
     {
         //recuperar id
@@ -183,6 +232,13 @@ class JobController extends Controller
     }
 
 
+    /**
+     * Almacena las remuneraciones del trabajador según el cronograma y el cargo
+     *
+     * @param  \Illuminate\Http\Request
+     * @param  string  $id
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function remuneracionUpdate(Request $request, $id)
     {
 
@@ -226,6 +282,12 @@ class JobController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para visualizar y editar los descuentos del trabajador
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function descuento($slug) 
     {
         $id = \base64_decode($slug);
@@ -297,7 +359,13 @@ class JobController extends Controller
             ));
     }
 
-
+    /**
+     * Almacena los descuentos del trabajador según el cronograma y el cargo
+     *
+     * @param  \Illuminate\Http\Request
+     * @param  string  $id
+     * @return  \Illuminate\Http\RedirectResponse
+     */
     public function descuentoUpdate(Request $request, $id)
     {
         $this->validate(request(), [
@@ -332,6 +400,12 @@ class JobController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para visualizar, crear y editar las obligaciones judiciales del trabajador
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function obligacion($slug)
     {
         $id = \base64_decode($slug);
@@ -342,6 +416,13 @@ class JobController extends Controller
             compact('job'));
     }
 
+
+    /**
+     * Muestra un panel de checkbox para generar las boletas de todos los cronogramas seleccionados
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function boleta($slug)
     {
         //recuperar id
@@ -359,6 +440,13 @@ class JobController extends Controller
         return view('trabajador.boleta', compact('work', 'cronogramas', 'meses'));
     }
 
+    /**
+     * Genera un pdf de los cronogramas seleccionados recientemente en formato de boletas
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\View\View
+     */
     public function boletaStore(Request $request, $id)
     {
         $work = Work::findOrFail($id);
@@ -401,6 +489,13 @@ class JobController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para configurar los cargos
+     * Y un panel con checkbox para configurar los sindicatos
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function config($slug)
     {  
         //recuperar id del trabajador
@@ -424,6 +519,13 @@ class JobController extends Controller
         return view('trabajador.configuracion', compact('work', 'cargos', 'categorias', 'current', 'sindicatos', 'metas'));
     }
 
+    /**
+     * Almacena la configuracion de los cargos del trabajador creados recientemente
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return  \illuminate\Http\RedirectResponse
+     */
     public function configStore(Request $request, $id)
     {
 
@@ -452,6 +554,13 @@ class JobController extends Controller
     }
 
     
+    /**
+     * Almacena la configuracion de los sindicatos del trabajador agregados recientemente
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return  \illuminate\Http\RedirectResponse
+     */
     public function sindicatoStore(Request $request, $id)
     {
         $work = Work::findOrFail($id);

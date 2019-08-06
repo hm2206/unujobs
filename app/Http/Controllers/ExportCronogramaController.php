@@ -18,7 +18,11 @@ use App\Jobs\ReportBoleta;
 
 class ExportCronogramaController extends Controller
 {
-    
+    /**
+     * Crea un archivo de pdf del cronograma
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function pdf($slug)
     {
         $id = \base64_decode($slug);
@@ -28,6 +32,11 @@ class ExportCronogramaController extends Controller
         return back()->with(["success" => "Este proceso durará unos minutos... Vuelva más tarde"]);
     }
 
+    /**
+     * Crea un archivos pdf del cronograma
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function reporte($mes, $year, $condicion)
     {
         ReportCronograma::dispatch($mes, $year, $condicion);

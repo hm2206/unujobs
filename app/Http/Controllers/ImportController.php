@@ -19,6 +19,13 @@ class ImportController extends Controller
         $this->middleware('validacion');
     }
     
+    
+    /**
+     * Realizar la importacion de trabajadores desde un archivo excel
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function work(Request $request)
     {
         $this->validate(request(), [
@@ -40,6 +47,13 @@ class ImportController extends Controller
     }
 
 
+    /**
+     * Realizar la importación de las remuneraciones con respecto al cronograma, desde un archivo de excel
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function remuneracion(Request $request, $slug)
     {
         $this->validate(request(), [
@@ -64,7 +78,13 @@ class ImportController extends Controller
         }
     }
 
-
+    /**
+     * Realizar la importación de los descuentos con respecto al cronograma, desde un archivo de excel
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function descuento(Request $request, $slug)
     {
         $this->validate(request(), [

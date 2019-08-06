@@ -8,34 +8,28 @@ use Illuminate\Http\Request;
 class SedeController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index()
     {
-        //
+        return back();
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function create()
     {
-        //
+        return back();
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        //
+        return back();
     }
 
     /**
@@ -46,7 +40,7 @@ class SedeController extends Controller
      */
     public function show(Sede $sede)
     {
-        //
+        return back();
     }
 
     /**
@@ -57,7 +51,7 @@ class SedeController extends Controller
      */
     public function edit(Sede $sede)
     {
-        //
+        return back();
     }
 
     /**
@@ -69,7 +63,7 @@ class SedeController extends Controller
      */
     public function update(Request $request, Sede $sede)
     {
-        //
+        return back();
     }
 
     /**
@@ -80,6 +74,6 @@ class SedeController extends Controller
      */
     public function destroy(Sede $sede)
     {
-        //
+        return back();
     }
 }

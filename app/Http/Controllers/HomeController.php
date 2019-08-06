@@ -14,6 +14,11 @@ class HomeController extends Controller
         $this->middleware("auth"); 
     }
 
+    /**
+     * Muestra una vista de bienvenidad
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $works = Work::get()->count();
@@ -21,6 +26,11 @@ class HomeController extends Controller
         return view('home', \compact('works', 'postulantes'));
     }
 
+    /**
+     * Muestra una vista de las planillas
+     *
+     * @return \Illuminate\View\View
+     */
     public function planilla() 
     {
         return view("planilla");

@@ -12,20 +12,34 @@ use \Hash;
 class CargoController extends Controller
 {
 
+    /**
+     * Muestra una lista de cargos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $cargos = Cargo::all();
         return view("cargos.index", compact('cargos'));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo cargo
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $planillas = Planilla::all();
         return view('cargos.create', \compact('planillas'));
     }
 
-
+    /**
+     * Almacena un cargo recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
@@ -45,7 +59,12 @@ class CargoController extends Controller
         return back();
     }
 
-
+    /**
+     * Muestra un formulario para editar un cargo
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id = \base64_decode($slug);
@@ -54,7 +73,13 @@ class CargoController extends Controller
         return view('cargos.edit', \compact('planillas', 'cargo'));
     }
 
-
+    /**
+     * Actualiza un cargo recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Cargo $cargo
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, Cargo $cargo)
     {
         $this->validate(request(), [
@@ -75,6 +100,12 @@ class CargoController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para agregra una categoria al cargo
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function categoria($slug)
     {
         $id = \base64_decode($slug);
@@ -85,7 +116,13 @@ class CargoController extends Controller
         return view("cargos.categoria", compact('cargo', 'categorias'));
     }
 
-
+    /**
+     * Almacena la categoria recien agregada al cargo
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function categoriaStore(Request $request, $id)
     {
         $this->validate(request(), [
@@ -100,6 +137,13 @@ class CargoController extends Controller
     }
 
 
+    /**
+     * Eliminar una categoria agregada al cargo
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function categoriaDelete(Request $request, $id)
     {
         $auth = auth()->user();
@@ -120,6 +164,12 @@ class CargoController extends Controller
     }
 
 
+    /**
+     * Muestra un panel con chechbox para agregar la configuración de los aportes
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function config($slug)
     {
         $id = \base64_decode($slug);
@@ -140,6 +190,14 @@ class CargoController extends Controller
         return view("cargos.config", compact('cargo', 'types'));
     }
 
+
+    /**
+     * Almacena un nueva configuracion al cargo
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function configStore(Request $request, $id)
     {
         $cargo = Cargo::findOrFail($id);

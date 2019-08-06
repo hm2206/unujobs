@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 class AfpController extends Controller
 {
 
+    /**
+     * Muetra una lista de las recursos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $afps = Afp::all();
@@ -16,12 +21,22 @@ class AfpController extends Controller
     }
 
     
+    /**
+     * Muesta un formulario para crear un nuevo recurso
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('afps.create');
     }
 
-
+    /**
+     * Almacena un recurso recién creado en el almacenaciento
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
@@ -37,13 +52,24 @@ class AfpController extends Controller
         return back()->with(["success" => "Los datos se guardarón correctamente"]);
     }
 
-
+    /**
+     * Muestra un recurso específico
+     *
+     * @param  \App\Models\Afp $actividad
+     * @return \Illuminate\Http\Response
+     */
     public function show(Afp $afp)
     {
         return back();
     }
 
 
+    /**
+     * Muestra un formulario para editar un recurso específico
+     *
+     * @param  \App\Models\Afp  $actividad
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id = \base64_decode($slug);
@@ -53,6 +79,13 @@ class AfpController extends Controller
     }
 
 
+    /**
+     * Actualiza el recurso especificado en el almacenamiento.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $id
+     * @return \Illuminate\View\View
+     */
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
@@ -70,9 +103,9 @@ class AfpController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * No hace nado :)
      *
-     * @param  \App\Afp  $afp
+     * @param  \App\Models\Afp  $afp
      * @return \Illuminate\Http\Response
      */
     public function destroy(Afp $afp)

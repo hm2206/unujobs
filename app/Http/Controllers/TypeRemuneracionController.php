@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 class TypeRemuneracionController extends Controller
 {
 
+    /**
+     * Muestra una lista de los tipos de remuneracion
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $remuneraciones = TypeRemuneracion::all();
@@ -15,13 +20,23 @@ class TypeRemuneracionController extends Controller
         return view('remuneraciones.index', compact('remuneraciones'));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo tipo de remuneración
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('remuneraciones.create');
     }
 
 
+    /**
+     * Almacena un tipo de remuneración recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $payload = $this->validate(request(), [
@@ -44,6 +59,12 @@ class TypeRemuneracionController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para editar un tipo de remuneración
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id = \base64_decode($slug);
@@ -52,7 +73,13 @@ class TypeRemuneracionController extends Controller
         return view('remuneraciones.edit', compact('remuneracion'));
     }
 
-
+    /**
+     * Actualiza un tipo de remuneración recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $this->validate(request(), [

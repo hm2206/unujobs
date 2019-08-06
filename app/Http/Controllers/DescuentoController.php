@@ -10,20 +10,33 @@ use App\Models\Afp;
 class DescuentoController extends Controller
 {
 
-
+    /**
+     * Muestra una lista de los tipos de descuentos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $descuentos = TypeDescuento::all();
         return view('descuentos.index', compact(['descuentos']));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo tipo de descuento
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view("descuentos.create");
     }
 
-
+    /**
+     * Almacena un tipo de descuento recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
@@ -42,6 +55,12 @@ class DescuentoController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para editar un tipo de descuento
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function edit($slug)
     {
         $id = \base64_decode($slug);
@@ -50,6 +69,13 @@ class DescuentoController extends Controller
     }
 
 
+    /**
+     * Actualiza un tipo de descuento recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
@@ -65,9 +91,16 @@ class DescuentoController extends Controller
 
     public function destroy(Descuento $descuento)
     {
-        //
+        return back();
     }
 
+
+    /**
+     * Muestra un planel con checkbox para configurar los sindicatos y las afp's
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function config($slug) 
     {
         $id = \base64_decode($slug);
@@ -109,6 +142,13 @@ class DescuentoController extends Controller
         return view('descuentos.config', compact('type', 'sindicatos', 'config', 'seguros'));
     }
 
+    /**
+     * Almacena las configuraciones de los sindicatos y afp's del tipo de descuento
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function configStore(Request $request, $id)
     {
         $type = TypeDescuento::findOrFail($id);

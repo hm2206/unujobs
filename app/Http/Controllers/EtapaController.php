@@ -25,6 +25,12 @@ class EtapaController extends Controller
     }
 
 
+    /**
+     * Almacena una etapa recien creada
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
 
@@ -120,51 +126,59 @@ class EtapaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Etapa  $etapa
+     * @param  \App\Models\Etapa  $etapa
      * @return \Illuminate\Http\Response
      */
     public function show(Etapa $etapa)
     {
-        //
+        return back();
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Etapa  $etapa
+     * @param  \App\Models\Etapa  $etapa
      * @return \Illuminate\Http\Response
      */
     public function edit(Etapa $etapa)
     {
-        //
+        return back();
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Etapa  $etapa
+     * @param  \App\Models\Etapa  $etapa
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Etapa $etapa)
     {
-        //
+        return back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Etapa  $etapa
+     * @param  \App\Models\Etapa  $etapa
      * @return \Illuminate\Http\Response
      */
     public function destroy(Etapa $etapa)
     {
-        //
+        return back();
     }
 
+
+    /**
+     * Genera un archivo PDF de la etapa
+     *
+     * @param  string  $slug
+     * @param  string  $slugConvocatoria   
+     * @return \PDF
+     */
     public function pdf($slug, $slugConvocatoria)
     {
-        //recuperar ids
+        //recuperar id
         $id = \base64_decode($slug);
         $convocatoriaID = \base64_decode($slugConvocatoria);
 

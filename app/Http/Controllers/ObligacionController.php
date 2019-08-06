@@ -14,7 +14,7 @@ class ObligacionController extends Controller
      */
     public function index()
     {
-        //
+        return back();
     }
 
     /**
@@ -24,14 +24,14 @@ class ObligacionController extends Controller
      */
     public function create()
     {
-        //
+        return back();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena una obligacion recien creada
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -56,7 +56,7 @@ class ObligacionController extends Controller
      */
     public function show(Obligacion $obligacion)
     {
-        //
+        return back();
     }
 
     /**
@@ -67,10 +67,16 @@ class ObligacionController extends Controller
      */
     public function edit(Obligacion $obligacion)
     {
-        //
+        return back();
     }
 
-
+    /**
+     * Actualiza una obligacion recien modificada
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
@@ -93,7 +99,12 @@ class ObligacionController extends Controller
         return back()->with(["update" => "Los datos se actualizarón correctamente!"]);
     }
 
-
+    /**
+     * Remueve una obligacion específica
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
     public function destroy($id)
     {
         $obligacion = Obligacion::findOrFail($id);
