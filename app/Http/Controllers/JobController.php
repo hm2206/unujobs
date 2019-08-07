@@ -439,13 +439,10 @@ class JobController extends Controller
         $work = Work::findOrFail($id);
         $remuneraciones = Remuneracion::where('work_id', $work->id)->get();
         $cronogramas = Cronograma::with("planilla")->whereIn("id", $remuneraciones->pluck(['cronograma_id']))
-            ->orderBy('id', 'ASC')->paginate(30);
+            ->orderBy('id', 'DESC')->paginate(2);
 
         
         return $cronogramas;
-
-
-        return view('trabajador.boleta', compact('work', 'cronogramas'));
     }
 
     /**

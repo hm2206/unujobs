@@ -9,18 +9,11 @@
             </button>
         </div>
 
-        <span class="scroll">
-            <slot name="content"></slot>
-        </span>
+
+        <slot name="content"></slot>
+        
     </div>
 </template>
-
-<style scoped>
-    .scroll {
-        overflow-y: auto;
-    }
-</style>
-
 
 <script>
 export default {

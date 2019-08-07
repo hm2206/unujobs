@@ -12,8 +12,8 @@
                         <i class="fas fa-arrow-right text-danger"></i> 
                         <span v-text="nombre_completo"></span>
                     </template>
-                    <template slot="content" class="p-relative">
-                        <div class="card-body">
+                    <template slot="content">
+                        <div class="card-body p-relative scroll-y">
                              <form class="table-responsive" method="POST" :action="url"
                                 v-on:submit="loader = true"
                              >
@@ -29,7 +29,7 @@
                                             <th class="text-center">Año</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody v-if="!loader">
                                         <tr v-for="(cronograma, c) in cronograma.data" :key="c">
                                             <td>
                                                 <input type="checkbox" :value="cronograma.id" name="cronogramas[]" 
@@ -54,29 +54,45 @@
                                                 </span>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="6" class="text-center" v-if="loader">
-                                                <div class="spinner-border text-primary" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                                </div>
-                                            </td>
-                                            <td v-if="!loader && cronograma.total == 0" 
-                                                class="text-center" colspan="6"
-                                            >
-                                                No hay registros disponibles
-                                            </td>
-                                        </tr>
                                     </tbody>
+                                    <tr>
+                                        <td colspan="6" class="text-center" v-if="loader">
+                                            <div class="spinner-border text-primary" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </td>
+                                        <td v-if="!loader && cronograma.total == 0" 
+                                            class="text-center" colspan="6"
+                                        >
+                                            <small>No hay registros disponibles, vuelva a recargar
+                                            </small>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-dark"
+                                                    v-on:click="getBoletas"
+                                                >
+                                                    <i class="fas fa-sync"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </table>
                                 
                                 <button class="btn-fixed btn btn-success btn-circle btn-lg" 
                                     :disabled="loader"
                                     v-if="cronograma.total > 0 && count > 0"
                                 >
-                                    <i class="fa fa-sync"></i>
+                                    <i class="fa fa-download"></i>
                                 </button>
 
+
                             </form>
+                        </div>
+                        <div class="card-footer" v-if="!loader">
+                            <btn-more :config="['btn-block']" 
+                                :url="cronograma.next_page_url"   
+                                @get-data="getData"
+                            >
+                            </btn-more>
                         </div>
                     </template>
                 </modal>
@@ -110,7 +126,12 @@ export default {
         close() {
             this.show = false;
         },
-        async getBoletas() {
+        async getBoletas(e) {
+            
+            if (e) {
+                e.preventDefault();
+            }
+
             this.loader = true;
             let api = unujobs("get", `/boleta/${this.param}`);
             await api.then(res => {
@@ -125,6 +146,12 @@ export default {
             let { checked } = e.target;
             this.count = checked ? this.count + 1 : this.count - 1;
         },
+        getData(e) {
+            this.cronograma.next_page_url = e.next;
+            this.cronograma.total = e.total;
+            this.cronograma.path = e.path;
+            this.cronograma.data = [...this.cronograma.data, ...e.data];
+        }
     }
 }
 </script>
@@ -140,5 +167,9 @@ export default {
         position: absolute;
         bottom: 20px;
         right: 20px;
+    }
+
+    .min-height {
+        height: 100%;
     }
 </style>

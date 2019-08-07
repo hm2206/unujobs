@@ -30,8 +30,7 @@ export default {
         top: 0px;
         left: 0px;
         overflow: hidden;
-        padding-top: 2em;
-        padding-bottom: 2em;
+        padding: 2em 1em;
     }
 </style>
 

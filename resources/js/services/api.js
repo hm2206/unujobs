@@ -30,5 +30,17 @@ export const unujobs = async (method = "get", ruta, body = {}) => {
         path_verify = path + ruta.slice(1, ruta.length);
     }
 
+    /**
+     * Expresión regular para saber si la ruta esta con algun origen [http://api/example] o [https://api/example]
+     */
+    let is_path_with_http = /^http?/;
+
+    /**
+     * Guardar ruta con origen como una ruta verificada
+     */
+    if (is_path_with_http.test(ruta)) {
+        path_verify = ruta;
+    }
+    
     return await axios[method](path_verify, body);
 };
