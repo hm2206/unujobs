@@ -99,7 +99,7 @@
                                 </td>
                                 <td>
                                     <b class="btn btn-sm btn-warning">
-                                        {{ $meses[$cronograma->mes - 1] }}
+                                       
                                     </b>
                                 </td>
                                 <td>

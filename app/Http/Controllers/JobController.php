@@ -434,21 +434,18 @@ class JobController extends Controller
      * @param  string  $slug
      * @return \Illuminate\View\View
      */
-    public function boleta($slug)
+    public function boleta($id)
     {
-        //recuperar id
-        $id = \base64_decode($slug);
         $work = Work::findOrFail($id);
         $remuneraciones = Remuneracion::where('work_id', $work->id)->get();
-        $cronogramas = Cronograma::whereIn("id", $remuneraciones->pluck(['cronograma_id']))
+        $cronogramas = Cronograma::with("planilla")->whereIn("id", $remuneraciones->pluck(['cronograma_id']))
             ->orderBy('id', 'ASC')->paginate(30);
 
-        $meses = [
-            "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-            "Julio", "Agosto","Septiembre","Octubre","Noviembre","Diciembre"
-        ];
+        
+        return $cronogramas;
 
-        return view('trabajador.boleta', compact('work', 'cronogramas', 'meses'));
+
+        return view('trabajador.boleta', compact('work', 'cronogramas'));
     }
 
     /**
@@ -462,39 +459,48 @@ class JobController extends Controller
     {
         $work = Work::findOrFail($id);
         $whereIn = $request->input('cronogramas', []);
-        $cronogramas = Cronograma::whereIn("id", $whereIn)->get();
 
-        $cronogramas->map(function($q) use($work) {
-            $remuneraciones = Remuneracion::where("work_id", $work->id)
-                ->where("cronograma_id", $q->id)
-                ->get();
+        $infos = $work->infos;
 
-            $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
-                ->where("cronograma_id", $q->id)
-                ->get();
+        foreach ($infos as $info) {
             
-            $q->remuneraciones = $remuneraciones;
-            $q->descuentos = $descuentos->chunk(2)->toArray();
-            $q->total_descuento = $descuentos->sum('monto');
+            $info->cronogramas = Cronograma::whereIn("id", $whereIn)->take(3)->get();
 
+            foreach ($info->cronogramas as $cro) {
+                $cro->tmp_remuneraciones = Remuneracion::where("work_id", $work->id)
+                    ->where("planilla_id", $info->planilla_id)
+                    ->where("cargo_id", $info->cargo_id)
+                    ->where("categoria_id", $info->categoria_id)
+                    ->where("cronograma_id", $cro->id)
+                    ->get();
+    
+                $cro->tmp_descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
+                    ->where("planilla_id", $info->planilla_id)
+                    ->where("cargo_id", $info->cargo_id)
+                    ->where("categoria_id", $info->categoria_id)
+                    ->where("cronograma_id", $cro->id)
+                    ->get();
+                
+                $cro->total_descuento = $cro->tmp_descuentos->sum("monto");
+                $cro->total_remuneracion = $cro->tmp_remuneraciones->sum("monto");
+    
+    
+                //base imponible
+                $cro->base = $cro->tmp_remuneraciones->where('base', 0)->sum('monto');
+                
+                //aportes
+                $cro->essalud = $cro->base < 930 ? 83.7 : $cro->base * 0.09;
+                $cro->accidentes = $work->accidentes ? ($base * 1.55) / 100 : 0;
+                
+                //total neto
+                $cro->neto = $cro->total_remuneracion - $cro->total_descuento;
+                $cro->total_aportes = $cro->essalud + $cro->accidentes;
+                
+            }
+        }
 
-            //base imponible
-            $q->base = $remuneraciones->where('base', 0)->sum('monto');
-
-            //aportes
-            $q->essalud = $q->base < 930 ? 83.7 : $q->base * 0.09;
-            $q->accidentes = $work->accidentes ? ($base * 1.55) / 100 : 0;
-
-            //total neto
-            $q->neto = $work->total - $q->total_descuento;
-            $q->total_aportes = $q->essalud + $q->accidentes;
-
-            return $q;
-        });
-
-        // return $cronogramas;
-
-        $pdf = PDF::loadView("pdf.boleta", compact('work', 'cronogramas'));
+        //return $infos;
+        $pdf = PDF::loadView("pdf.boleta", compact('work', 'infos'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
         return $pdf->stream("boleta - {$work->nombre_completo}");
     }

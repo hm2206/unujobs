@@ -83,7 +83,7 @@
             <div class="card">
                 <div class="card-header">
                     Importar Descuentos
-                    <a href="{{ url('/formatos/descuento_import.xlsx') }}" class="btn btn-sm btn-outline-success" title="Fo">
+                    <a href="{{ url('/formatos/descuento_import.xlsx') }}" class="btn btn-sm btn-outline-success">
                         <i class="fas fa-file-excel"></i> Formato
                     </a>
                 </div>
@@ -168,15 +168,13 @@
                                         <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a target="blank" 
-                                            title="remuneracion"
+                                        <a title="remuneracion"
                                             href="{{ route('job.remuneracion', [$job->slug(), "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
                                             class="btn btn-sm btn-warning"
                                         >
                                             <i class="fas fa-coins"></i>
                                         </a>
-                                        <a target="blank" 
-                                            title="descuento"
+                                        <a title="descuento"
                                             href="{{ route('job.descuento', [$job->slug(), "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
                                             class="btn btn-sm btn-danger"
                                         >

@@ -1,6 +1,10 @@
 <?php
 
+// authenticacion de perdida de sesion
+Route::post('current', 'UserController@current');
 
+
+// ruta de authenticacion
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');

@@ -245,7 +245,7 @@ class CategoriaController extends Controller
         DB::table('concepto_type_remuneracion')->insert($payload);
         $config = "page={$request->page}#type-{$request->type_remuneracion_id}";
 
-        return redirect()->route("categoria.config", [$id, $config]);
+        return redirect()->route("categoria.config", [$categoria->slug(), $config]);
 
     }
 

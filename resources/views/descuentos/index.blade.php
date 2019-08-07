@@ -51,7 +51,7 @@
                                         <a href="{{ route('descuento.edit', $descuento->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
-                                        <a target="blank" href="{{ route('descuento.config', $descuento->slug()) }}" class="btn btn-sm btn-success">
+                                        <a href="{{ route('descuento.config', $descuento->slug()) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>
                                     </div>

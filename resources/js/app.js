@@ -19,7 +19,9 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('ventana', require('./components/Ventana.vue').default);
+Vue.component('modal', require('./components/Modal.vue').default);
+Vue.component('authentication', require('./components/Authentication.vue').default);
 Vue.component('add-question', require('./components/AddQuestion.vue').default);
 Vue.component('add-base', require('./components/AddBase.vue').default);
 Vue.component('add-actividades', require('./components/AddActividades.vue').default);
@@ -29,6 +31,7 @@ Vue.component('select-change', require('./components/SelectChange.vue').default)
 Vue.component('config-work', require('./components/ConfigWork.vue').default);
 Vue.component('validacion', require('./components/Validacion.vue').default);
 Vue.component('btn-delete', require('./components/BtnDelete.vue').default);
+Vue.component('btn-boleta', require('./components/BtnBoleta.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -39,4 +42,3 @@ Vue.component('btn-delete', require('./components/BtnDelete.vue').default);
 const app = new Vue({
     el: '#app',
 });
-

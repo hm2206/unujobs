@@ -54,4 +54,23 @@ class UserController extends Controller
         return $user->unreadNotifications->take(10);
     }
 
+    
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function current()
+    {
+        try {
+            $auth = \auth()->user();
+            return [
+                "id" => $auth->id,
+                "nombre_completo" => $auth->nombre_completo,
+                "email" => $auth->email
+            ];
+        } catch (\Throwable $th) {
+            return abort(401);
+        }
+    }
 }

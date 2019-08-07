@@ -44,6 +44,7 @@
 
 <script>
 import { setInterval, setTimeout, clearTimeout } from 'timers';
+import notify from 'sweetalert';
 export default {
     data() {
         return {
@@ -75,7 +76,6 @@ export default {
                 this.notifications = res.data;
 
             }).catch(err => {
-                alert("No se pudó obtener las notificaciones, Actualize la página");
                 clearTimeout(this.intervalo);
             })
         },
@@ -89,7 +89,6 @@ export default {
             api.then(res => {
                 this.notifications = res.data;
             }).catch(err => {
-                alert("Ocurrio un error al actualizar las notificationes, Actualize la página");
                 clearTimeout(this.intervalo);
             });
         },

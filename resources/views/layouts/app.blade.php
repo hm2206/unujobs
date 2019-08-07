@@ -102,6 +102,8 @@
       <div id="content">
 
         <div id="app">
+
+            <authentication></authentication>
             <!-- Topbar -->
               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 

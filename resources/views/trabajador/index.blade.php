@@ -142,9 +142,16 @@
                                             <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-xs btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('job.boleta', $job->slug()) }}" target="blank" title="Boleta" class="btn btn-circle btn-xs btn-dark">
-                                                <i class="fas fa-file"></i>
-                                            </a>
+
+                                            <btn-boleta theme="btn-dark btn-circle"
+                                                param="{{ $job->id }}"
+                                                url="{{ route('job.boleta.store', $job->id) }}"
+                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                token="{{ csrf_token() }}"
+                                            >
+                                                <i class="fas fa-file-alt"></i>
+                                            </btn-boleta>
+
                                         </div>
                                     </th>
                                 </tr>
