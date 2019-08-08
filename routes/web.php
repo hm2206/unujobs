@@ -80,7 +80,6 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     //cronogramas
     Route::resource('cronograma', 'CronogramaController');
     Route::get('/cronograma/{id}/job', 'CronogramaController@job')->name('cronograma.job');
-    // Route::post('/cronograma/{id}/add', 'CronogramaController@addStore')->name('cronograma.add.store');
 
     
     //Descuentos
@@ -145,8 +144,7 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 Route::get("user/unread/count", "UserController@countUnread")->middleware('auth');
 Route::get("user/unread", "UserController@unread")->middleware('auth');
 Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware('auth');
-
-
-
+// Recuperar sesión
+Route::post("user/recovery", "UserController@recovery");
 
 

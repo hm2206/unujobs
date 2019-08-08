@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ventana v-if="!sesion">
+        <ventana v-show="!sesion">
             <div class="col-md-4">
                 <div class="card mt-5">
                     <div class="card-header">
@@ -20,6 +20,7 @@
                             <input type="password" class="form-control" 
                                 placeholder="Ingrese su contraseña"
                                 name="password"
+                                v-model="password"
                             >
                             <input type="hidden" name="email" v-model="auth.email">
                         </div>
@@ -50,7 +51,8 @@ export default {
             count: 0,
             sesion: true,
             loading: true,
-            intereval: ""
+            intereval: "",
+            password: ""
         }
     },
     mounted() {
@@ -93,8 +95,11 @@ export default {
         login(e) {
             e.preventDefault();
             this.loading = true;
-            const form = new FormData(document.getElementById('form-authentication'));
-            axios.post("/login", form).then(res => {
+
+            axios.post("/login", {
+                email: this.auth.email,
+                password: this.password
+            }).then(res => {
                 this.sesion = true;
                 this.loading = false;
                 notify({icon: "success", text: "La sesión fue recuperada correctamente"});

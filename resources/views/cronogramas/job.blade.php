@@ -186,6 +186,14 @@
                                         >
                                             <i class="fab fa-creative-commons-nc"></i>
                                         </a>
+                                        <btn-boleta theme="btn-dark btn-sm"
+                                            param="{{ $job->id }}"
+                                            url="{{ route('job.boleta.store', $job->id) }}"
+                                            nombre_completo="{{ $job->nombre_completo }}"
+                                            token="{{ csrf_token() }}"
+                                        >
+                                            <i class="fas fa-file-alt"></i>
+                                        </btn-boleta>
                                     </div>
                                 </th>
                             </tr>

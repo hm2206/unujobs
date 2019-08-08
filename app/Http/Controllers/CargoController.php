@@ -58,9 +58,23 @@ class CargoController extends Controller
             "tag" => "required"
         ]);
 
-        Cargo::create($request->all());
+        try {
+            
+            Cargo::create($request->all());
+            return [
+                "status" => true,
+                "message" => "El registro se guardo correctamente!"
+            ];
 
-        return back()->with(["success" => "El registro se guardo correctamente!"]);
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación"
+            ];
+
+        }
+
     }
 
 
@@ -90,7 +104,7 @@ class CargoController extends Controller
      * @param  \App\Models\Cargo $cargo
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Cargo $cargo)
+    public function update(Request $request, $id)
     {
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos,id,".$request->descripcion,
@@ -98,9 +112,24 @@ class CargoController extends Controller
             "tag" => "required"
         ]);
 
-        $cargo->update($request->all());
+        try {
+            
+            $cargo = Cargo::findOrFail($id);
+            $cargo->update($request->all());
 
-        return back()->with(["success" => "El registro se actualizó correctamente!"]);
+            return [
+                "status" => true,
+                "message" => "El registro se actualizó correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación"
+            ];
+
+        }
     }
 
 

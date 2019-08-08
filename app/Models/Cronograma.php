@@ -23,8 +23,16 @@ class Cronograma extends Model
      */
     protected $fillable = [
         "mes", "año", "planilla_id", "adicional", "sede_id", "numero", "dias",
-        "pdf", "pendiente", "observacion"
+        "pdf", "pendiente", "observacion", "token", "estado", "ruta"
     ];
+
+
+    /**
+     * Campos ocultos
+     *
+     * @var array
+     */
+    protected $hidden = ["token"];
     
 
     /**

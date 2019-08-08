@@ -73,4 +73,37 @@ class UserController extends Controller
             return abort(401);
         }
     }
+
+
+    public function recovery(Request $request)
+    {
+        $this->validate(\request(), [
+            "email" => "required",
+            "password" => "required"
+        ]);
+
+        try {
+
+            $user = User::where("email", $request->email)->firsOrFail();
+
+            if (\Hash::check($request->password, $user->password)) {
+                auth()->login($user);
+
+                return [
+                    "status" => true,
+                    "message" => "La sesión fue recuperada correctamente"
+                ];
+            }
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Las credenciales son incorrectas"
+            ];
+
+        }
+
+    }
+
 }

@@ -12,7 +12,12 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cargo.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-cargo
+        theme="btn-primary"
+        redirect="{{ route('cargo.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-cargo>
 </div>
 
 @if (session('success'))
@@ -60,9 +65,14 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('cargo.edit', $cargo->slug()) }}" class="btn btn-sm btn-warning">
+                                        <btn-cargo
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('cargo.index')}}"
+                                            :datos="{{ $cargo }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
+                                        </btn-cargo>
+
                                         <a href="{{ route('cargo.config', $cargo->slug()) }}" class="btn btn-sm btn-dark">
                                             <i class="fas fa-cog"></i>
                                         </a>

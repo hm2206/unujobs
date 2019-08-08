@@ -35,7 +35,7 @@
                 
                     <div class="text-md uppercase">
                         <b> 
-                            Actividad: {{ $work->meta ? $work->meta->actividadID : null }} {{ $work->meta ? $work->meta->actividad : null }}
+                            Actividad: {{ $info->meta ? $info->meta->actividadID : null }} {{ $info->meta ? $info->meta->actividad : null }}
                         </b>
                     </div>
                     
@@ -111,14 +111,14 @@
                                                         {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : null }}
                                                     </td>
                                                     <td class="py-0 text-right" width="5%">
-                                                        {{ $remuneracion->monto }}
+                                                        {{ round($remuneracion->monto, 2) }}
                                                     </td>
                                                 </tr>
                                             @endforeach
                                             <tr>
                                                 <td></td>
                                                 <th class="text-right bbt-1">
-                                                    {{ $info->total}}
+                                                    {{ round($info->total, 2) }}
                                                 </th>
                                             </tr>
                                         </tbody>
@@ -135,7 +135,7 @@
                                                             <span>.-</span>
                                                             {{ $descuento['type_descuento'] ? $descuento['type_descuento']['descripcion'] : null }}
                                                         </td>
-                                                        <td class="py-0 text-right">{{ $descuento['monto'] }}</td>
+                                                        <td class="py-0 text-right">{{ round($descuento['monto'], 2) }}</td>
                                                     @endforeach
                                                 </tr>
                                             @endforeach
@@ -146,13 +146,13 @@
                                             <tr>
                                                 <th class="py-0">TOTAL DESCUENTOS</th>
                                                 <th class="py-0 bbt-1 text-center" colspan="3">
-                                                    {{ $info->total_descuento }}
+                                                    {{ round($info->total_descuento, 2) }}
                                                 </th>
                                             </tr>
                                             <tr>
                                                 <th class="py-0">NETO A PAGAR</th>
                                                 <th class="py-0 bbt-1 text-center" colspan="3">
-                                                    {{ $info->neto }}
+                                                    {{ round($info->neto, 2) }}
                                                 </th>
                                             </tr>
                                         </tbody>

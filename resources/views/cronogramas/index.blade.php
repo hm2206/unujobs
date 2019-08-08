@@ -183,7 +183,15 @@
                                                 </a>
                                             @endif
 
-                                            <validacion btn_text="Exportar" class="text-left"></validacion>
+                                            <validacion 
+                                                btn_text="Exportar" 
+                                                class="text-left"
+                                                url="{{ route('export.cronograma', $cronograma->id) }}"
+                                                method="post"
+                                                token="{{ csrf_token() }}"
+                                                id="exportar-cronograma"
+                                            >
+                                            </validacion>
 
                                         </div>
                                     </th>

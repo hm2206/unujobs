@@ -31,64 +31,15 @@
             </div>
         </div>
     @endif
-    
-    <div class="col-md-6 mt-3">
 
-        <form method="POST" class="card" action="{{ route('import.work') }}" enctype="multipart/form-data">
-            @csrf
-            <div class="card-header">
-                Importar trabajadores
-                <a href="{{ url('/formatos/work_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                    <i class="fas fa-file-excel"></i> Formato
-                </a>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="import" class="btn btn-sm btn-block btn-outline-primary">
-                            <input type="file" name="import" id="import" hidden>
-                            <i class="fas fa-upload"></i> Subir Archivo de Excel
-                        </label>
-                        <small class="text-danger">{{ $errors->first('import') }}</small>
-                    </div>
-                    <div class="col-md-3">
-                        <validacion btn_text="Importar"></validacion>
-                    </div>
-                </div>
-            </div>
-        </form>
+    @if ($errors->first('import'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ $errors->first('import') }}       
+        </div>
     </div>
+@endif
 
-    <div class="col-md-6">
-        <form method="POST" class="card mt-3" action="{{ route('export.work') }}">
-            @csrf
-            <div class="card-header">
-                Exportación de trabajadores
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <small>Limite de trabajadores <span class="text-danger">{{ $jobs->count() }}</span></small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <input type="number" name="limite" class="form-control" value="{{ $jobs->count() }}" max="{{ $jobs->count() }}">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <input type="checkbox" name="order" title="Ordenar Descendentemente"> <i class="fas fa-sort-alpha-up"></i>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <validacion btn_text="Exportar"></validacion>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
     
     <div class="col-md-12 mt-3">
     
@@ -103,13 +54,65 @@
 
                 <form method="GET card-body">
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <button class="btn btn-info">Buscar <i class="fas fa-search"></i></button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="row justify-content-around">
+                                <validacion 
+                                    btn_text="Importar"
+                                    method="post"
+                                    token="{{ csrf_token() }}"
+                                    url="{{ route('import.work') }}"
+                                >
+    
+                                    <div class="form-group">
+                                        <a href="{{ url('/formatos/work_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-file-excel"></i> Formato de importación
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="import" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                                            <input type="file" name="import" id="import" hidden>
+                                        </label>
+                                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                                    </div>
+    
+                                </validacion>
+    
+                                <validacion 
+                                    btn_text="Exportar"
+                                    method="post"
+                                    token="{{ csrf_token() }}"
+                                    url="{{ route('export.work') }}"
+                                >
+    
+                                
+                                    <div class="form-group">
+                                        <small>Limite de trabajadores: <span class="text-danger">{{ $jobs->count() }}</span></small>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <input type="number" name="limite" class="form-control" value="{{ $jobs->count() }}" max="{{ $jobs->count() }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <input type="checkbox" name="order" title="Ordenar Descendentemente"> 
+                                        <i class="fas fa-sort-alpha-up"></i> Ordenar Descendentemente
+                                    </div>
+    
+                                    <hr>
+    
+                                </validacion>
+                            </div>
                         </div>
                     </div>
                 </form>

@@ -50,8 +50,22 @@ class ConceptoController extends Controller
             "descripcion" => "required"
         ]);
 
-        $concepto = Concepto::create($request->all());
-        return back()->with(["success" => "El registro se guardo correctamente"]);
+        try {
+
+            $concepto = Concepto::create($request->all());
+            return [
+                "status" => true,
+                "message" => "El registro se guardo correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+            
+        }
     }
 
     /**

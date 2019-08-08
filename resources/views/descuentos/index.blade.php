@@ -12,7 +12,12 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('descuento.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-descuento
+        theme="btn-primary"
+        redirect="{{ route('descuento.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-descuento>
 </div>
 
 @if (session('success'))
@@ -48,9 +53,13 @@
                                 <th class="uppercase">{{ $descuento->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('descuento.edit', $descuento->slug()) }}" class="btn btn-sm btn-warning">
+                                        <btn-descuento
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('descuento.index')}}"
+                                            :datos="{{ $descuento }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
+                                        </btn-descuento>
                                         <a href="{{ route('descuento.config', $descuento->slug()) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>

@@ -8,7 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <meta mame="csrf-token" content="{{ csrf_token() }}">
+
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <title>Sistema Recursos Humanos @yield('titulo')</title>
 
@@ -97,12 +98,14 @@
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
+      
 
       <!-- Main Content -->
       <div id="content">
 
         <div id="app">
 
+            
             <authentication></authentication>
             <!-- Topbar -->
               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">

@@ -54,8 +54,23 @@ class CategoriaController extends Controller
             "nombre" => "required"
         ]);
 
-        $categoria = Categoria::create($request->all());
-        return back()->with(["success" => "El registro se guardo correctamente"]);
+        try {
+
+            $categoria = Categoria::create($request->all());
+
+            return [
+                "status" => true,
+                "message" => "El registro se guardo correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
 
@@ -97,11 +112,24 @@ class CategoriaController extends Controller
             "nombre" => "required"
         ]); 
 
-        $categoria = Categoria::findOrFail($id);
+        try {
 
-        $categoria->update($payload);
+            $categoria = Categoria::findOrFail($id);
+            $categoria->update($payload);
 
-        return back()->with(["success" => "El registro se actualizó correctamente"]);
+            return [
+                "status" => true,
+                "message" => "El registro se actualizó correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
 

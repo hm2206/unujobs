@@ -35,7 +35,7 @@
                 
                     <div class="text-md uppercase">
                         <b> 
-                            Actividad: {{ $work->meta ? $work->meta->actividadID : null }} {{ $work->meta ? $work->meta->actividad : null }}
+                            Actividad: {{ $info->meta ? $info->meta->actividadID : null }} {{ $info->meta ? $info->meta->actividad : null }}
                         </b>
                     </div>
                     
@@ -64,15 +64,15 @@
                                 </tr>
                                 <tr>
                                     <td class="py-0 pl-3">Condición Laboral</td>
-                                    <td colspan="3" class="uppercase py-0">{{ $work->cargo ? $work->cargo->descripcion : null }} - {{ $work->condicion_pap }}</td>
+                                    <td colspan="3" class="uppercase py-0">{{ $info->cargo ? $info->cargo->descripcion : null }} - {{ $info->condicion_pap }}</td>
                                     <td class="py-0" width="10%">Meta Siaf:</td>
                                     <td class="py-0">{{ $info->meta ? $info->meta->metaID : null }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-0 pl-3 pb-1">Cargo</td>
-                                    <td colspan="3" class="uppercase py-0 pb-1">{{ $work->perfil }}</td>
+                                    <td colspan="3" class="uppercase py-0 pb-1">{{ $info->perfil }}</td>
                                     <td class="py-0 pb-1" width="10%">Categoría</td>
-                                    <td class="uppercase py-0 pb-1">{{ $work->categoria ? $work->categoria->nombre : null }}</td>
+                                    <td class="uppercase py-0 pb-1">{{ $info->categoria ? $info->categoria->nombre : null }}</td>
                                 </tr>
                             </thead>
                         </table>
@@ -111,14 +111,14 @@
                                                         {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : null }}
                                                     </td>
                                                     <td class="py-0 text-right" width="5%">
-                                                        {{ $remuneracion->monto }}
+                                                        {{ round($remuneracion->monto, 2) }}
                                                     </td>
                                                 </tr>
                                             @endforeach
                                             <tr>
                                                 <td></td>
                                                 <th class="text-right bbt-1">
-                                                    {{ $cronograma->total_remuneracion }}
+                                                    {{ round($cronograma->total_remuneracion, 2) }}
                                                 </th>
                                             </tr>
                                         </tbody>
@@ -135,7 +135,7 @@
                                                             <span>.-</span>
                                                             {{ $descuento['type_descuento'] ? $descuento['type_descuento']['descripcion'] : null }}
                                                         </td>
-                                                        <td class="py-0 text-right">{{ $descuento['monto'] }}</td>
+                                                        <td class="py-0 text-right">{{ round($descuento['monto'], 2) }}</td>
                                                     @endforeach
                                                 </tr>
                                             @endforeach
@@ -146,13 +146,13 @@
                                             <tr>
                                                 <th class="py-0">TOTAL DESCUENTOS</th>
                                                 <th class="py-0 bbt-1 text-center" colspan="3">
-                                                    {{ $cronograma->total_descuento }}
+                                                    {{ round($cronograma->total_descuento, 2) }}
                                                 </th>
                                             </tr>
                                             <tr>
                                                 <th class="py-0">NETO A PAGAR</th>
                                                 <th class="py-0 bbt-1 text-center" colspan="3">
-                                                    {{ $cronograma->neto }}
+                                                    {{ round($cronograma->neto, 2) }}
                                                 </th>
                                             </tr>
                                         </tbody>
@@ -162,7 +162,7 @@
                                     <table class="p-absolute top-0 w-100">
                                         <tr>
                                             <td class="py-0">80.-ESSALUD (APORTES)</td>
-                                            <td class="py-0">{{ $cronograma->essalud }}</td>
+                                            <td class="py-0">{{ round($cronograma->essalud, 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="py-0">81.-I.E.S.(APORT)</td>
@@ -174,11 +174,11 @@
                                         </tr>
                                         <tr>
                                             <td class="py-0">83.-A.C.C DE TRABAJO</td>
-                                            <td class="py-0">{{ $cronograma->accidentes }}</td>
+                                            <td class="py-0">{{ round($cronograma->accidentes, 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="py-0">84.-TOTAL APORTE</td>
-                                            <td class="py-0 bbt-1">{{ $cronograma->total_aportes }}</td>
+                                            <td class="py-0 bbt-1">{{ round($cronograma->total_aportes, 2) }}</td>
                                         </tr>
 
                                         <tr>
@@ -188,7 +188,7 @@
 
                                         <tr>
                                             <td class="py-0">90.-BASE IMPONIBLE</td>
-                                            <td class="py-0">{{ $cronograma->base }}</td>
+                                            <td class="py-0">{{ round($cronograma->base, 2) }}</td>
                                         </tr>
                                         @for ($i = 0; $i < 15; $i++)
                                             <tr>

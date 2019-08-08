@@ -12,7 +12,12 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('concepto.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-concepto
+        theme="btn-primary"
+       redirect="{{ route('concepto.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-concepto>
 </div>
 
 @if (session('success'))
@@ -47,7 +52,13 @@
                                 <th class="uppercase">{{ $concepto->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('concepto.edit', $concepto->slug()) }}" class="btn btn-sm btn-warning"><i class="fas fa-pencil-alt"></i></a>
+                                        <btn-concepto
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('concepto.index')}}"
+                                            :datos="{{ $concepto }}"
+                                        >
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </btn-concepto>
                                     </div>
                                 </th>
                             </tr>

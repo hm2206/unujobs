@@ -12,7 +12,12 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('remuneracion.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-remuneracion
+        theme="btn-primary"
+        redirect="{{ route('remuneracion.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-remuneracion>
 </div>
 
 @if (session('success'))
@@ -48,9 +53,13 @@
                                 <th class="uppercase">{{ $remuneracion->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('remuneracion.edit', $remuneracion->slug()) }}" class="btn btn-sm btn-warning">
+                                        <btn-remuneracion
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('remuneracion.index')}}"
+                                            :datos="{{ $remuneracion }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
+                                        </btn-remuneracion>
                                     </div>
                                 </th>
                             </tr>

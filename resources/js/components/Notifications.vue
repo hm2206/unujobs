@@ -16,14 +16,14 @@
                     v-for="(notify, n) in notifications" :key="notify.id"
                     v-on:click="markAsRead(notify.id, n)"
                 >
-                    <a class="mr-3" target="__blank" :href="notify.data ? notify.data.url : '#'" >
+                    <a class="mr-3" :href="notify.data ? notify.data.url : '#'" >
                         <div :class="`icon-circle ${notify.data ? notify.data.background : 'bg-primary'}`">
                             <i :class="`${notify.data ? notify.data.icono : 'fas fa-file-alt'} text-white`"></i>
                         </div>
                     </a>
                     <div>
                         <div class="small text-gray-500" v-text="getDate(notify.created_at)"></div>
-                        <a class="font-weight-bold" target="__blank" :href="notify.data ? notify.data.url : '#'" 
+                        <a class="font-weight-bold" :href="notify.data ? notify.data.url : '#'" 
                             v-text="notify.data.body">
                         </a>
                     </div>

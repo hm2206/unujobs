@@ -12,7 +12,12 @@
 
 <div class="col-md-12">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('categoria.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-categoria
+        theme="btn-primary"
+        redirect="{{ route('categoria.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-categoria>
 </div>
 
 @if (session('success'))
@@ -69,9 +74,14 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('categoria.edit', $categoria->slug()) }}" class="btn btn-sm btn-warning">
+                                        <btn-categoria
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('categoria.index')}}"
+                                            :datos="{{ $categoria }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
+                                        </btn-categoria>
+
                                         <a href="{{ route('categoria.config', [$categoria->slug(), "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>

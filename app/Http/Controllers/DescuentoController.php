@@ -53,8 +53,23 @@ class DescuentoController extends Controller
             "key" => "required|unique:type_descuentos,key"
         ]);
 
-        $type = TypeDescuento::create($request->all());
-        return back()->with(["success" => "Los datos se guardarón correctamente"]);
+        try {
+
+            $type = TypeDescuento::create($request->all());
+
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
 
@@ -94,13 +109,27 @@ class DescuentoController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
-            "key" => "required",
             "descripcion" => "required"
         ]);
 
-        $type = TypeDescuento::findOrFail($id);
-        $type->update($request->all());
-        return back()->with(["success" => "Los datos se actualizarón correctamente"]);
+        try {
+            
+            $type = TypeDescuento::findOrFail($id);
+            $type->update($request->except('key'));
+            
+            return [
+                "status" => true,
+                "message" => "Los datos se actualizarón correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
 

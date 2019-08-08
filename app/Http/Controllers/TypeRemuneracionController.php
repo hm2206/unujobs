@@ -53,12 +53,26 @@ class TypeRemuneracionController extends Controller
             "descripcion" => "required",
         ]);
         
-        $base = $request->base ? 1 : 0;
+        try {
+            
+            $base = $request->base ? 1 : 0;
 
-        $type = TypeRemuneracion::create($payload);
-        $type->update(["base" => $base]);
-        
-        return back()->with(["success" => "Los datos se guardarón correctamente"]);
+            $type = TypeRemuneracion::create($payload);
+            $type->update(["base" => $base]);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => true,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
     /**
@@ -97,21 +111,33 @@ class TypeRemuneracionController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
-            "key" => "required|unique:type_remuneracions,key,".$id,
             "descripcion" => "required",
         ]);
 
-        $remuneracion = TypeRemuneracion::findOrFail($id);
+        try {
 
-        $base = $request->base ? 1 : 0;
+            $remuneracion = TypeRemuneracion::findOrFail($id);
 
-        $remuneracion->update([
-            "key" => $request->key,
-            "descripcion" => $request->descripcion,
-            "base" => $base
-        ]);
+            $base = $request->base ? 1 : 0;
 
-        return back()->with(["success" => "Los datos se actualizarón correctamente"]);
+            $remuneracion->update([
+                "descripcion" => $request->descripcion,
+                "base" => $base
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se actualizarón correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => true,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
 

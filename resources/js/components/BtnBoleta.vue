@@ -13,10 +13,10 @@
             </template>
             <template slot="content">
                 <div class="card-body p-relative scroll-y">
-                    <form class="table-responsive" method="POST" :action="url"
-                        v-on:submit="loader = true"
+                    <form class="table-responsive" method="POST" :action="url" id="generate-boletas"
+                        v-on:submit="generate"
                     >
-                        <input type="hidden" name="_token" :value="token">
+                        <input type="hidden" name="_token" :value="token"/>
                         <table class="table">
                             <thead class="text-primary">
                                 <tr>
@@ -33,6 +33,7 @@
                                     <td>
                                         <input type="checkbox" :value="cronograma.id" name="cronogramas[]" 
                                             v-on:change="validate"
+                                            v-model="check_cronogramas"
                                         >
                                     </td>
                                     <td>{{ cronograma.planilla ? cronograma.planilla.descripcion : '' }}</td>
@@ -99,6 +100,7 @@
 <script>
 
 import { unujobs } from '../services/api';
+import notify from 'sweetalert';
 
 export default {
     props: ["theme", 'param', "url", "nombre_completo", "token"],
@@ -107,7 +109,8 @@ export default {
             show: false,
             loader: true,
             cronograma: {},
-            count: 0
+            count: 0,
+            check_cronogramas: []
         }
     },
     watch: {
@@ -143,6 +146,24 @@ export default {
             this.cronograma.total = e.total;
             this.cronograma.path = e.path;
             this.cronograma.data = [...this.cronograma.data, ...e.data];
+        },
+        async generate(e) {
+
+            e.preventDefault();
+            this.loader = true
+
+            const form = new FormData(document.getElementById('generate-boletas'));
+
+            let api = unujobs("post", `/boleta/${this.param}`, form);
+
+            await api.then(res => {
+                notify({icon: 'success', text: 'Las boletas están siendo procesadas. Nosotros le notificaremos'});
+                this.check_cronogramas = [];
+            }).catch(err => {
+                notify({icon: 'error', text: 'Ocurrio un error al procesar la solicitud'});
+            });
+
+            this.loader = false;
         }
     }
 }

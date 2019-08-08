@@ -34,6 +34,11 @@ Vue.component('validacion', require('./components/Validacion.vue').default);
 Vue.component('btn-delete', require('./components/BtnDelete.vue').default);
 Vue.component('btn-boleta', require('./components/BtnBoleta.vue').default);
 Vue.component('btn-cronograma', require('./components/BtnCronograma.vue').default);
+Vue.component('btn-cargo', require('./components/BtnCargo.vue').default);
+Vue.component('btn-categoria', require('./components/BtnCategoria.vue').default);
+Vue.component('btn-concepto', require('./components/BtnConcepto.vue').default);
+Vue.component('btn-descuento', require('./components/BtnDescuento.vue').default);
+Vue.component('btn-remuneracion', require('./components/BtnRemuneracion.vue').default);
 Vue.component('btn-validate', require('./components/BtnValidate.vue').default);
 Vue.component('add-work', require('./components/AddWork.vue').default);
 
