@@ -4,100 +4,95 @@
             <slot></slot>
         </button>
 
-        <ventana opacity="0.3" index="90" v-if="show">
-            <div class="col-md-10">
-                <modal @click="close">
-                    <template slot="header">
-                        Lista de boletas de 
-                        <i class="fas fa-arrow-right text-danger"></i> 
-                        <span v-text="nombre_completo"></span>
-                    </template>
-                    <template slot="content">
-                        <div class="card-body p-relative scroll-y">
-                             <form class="table-responsive" method="POST" :action="url"
-                                v-on:submit="loader = true"
-                             >
-                                <input type="hidden" name="_token" :value="token">
-                                <table class="table">
-                                    <thead class="text-primary">
-                                        <tr>
-                                            <th>Seleccionar</th>
-                                            <th>Planilla</th>
-                                            <th>Observación</th>
-                                            <th class="text-center">Adicional</th>
-                                            <th class="text-center">Mes</th>
-                                            <th class="text-center">Año</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody v-if="!loader">
-                                        <tr v-for="(cronograma, c) in cronograma.data" :key="c">
-                                            <td>
-                                                <input type="checkbox" :value="cronograma.id" name="cronogramas[]" 
-                                                    v-on:change="validate"
-                                                >
-                                            </td>
-                                            <td>{{ cronograma.planilla ? cronograma.planilla.descripcion : '' }}</td>
-                                            <td>{{ cronograma.observacion }}</td>
-                                            <td class="text-center">
-                                                <span :class="`btn btn-sm btn-${cronograma.adicional ? 'primary' : 'danger'}`">
-                                                    {{ cronograma.adicional ? cronograma.numero : 'No' }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="btn btn-sm btn-dark">
-                                                    {{ cronograma.mes }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="btn btn-sm btn-dark">
-                                                    {{ cronograma['año'] }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                    <tr>
-                                        <td colspan="6" class="text-center" v-if="loader">
-                                            <div class="spinner-border text-primary" role="status">
-                                                    <span class="sr-only">Loading...</span>
-                                            </div>
-                                        </td>
-                                        <td v-if="!loader && cronograma.total == 0" 
-                                            class="text-center" colspan="6"
+        
+        <modal @close="show = false" col="col-md-10" :show="show">
+            <template slot="header">
+                Lista de boletas de 
+                <i class="fas fa-arrow-right text-danger"></i> 
+                <span v-text="nombre_completo"></span>
+            </template>
+            <template slot="content">
+                <div class="card-body p-relative scroll-y">
+                    <form class="table-responsive" method="POST" :action="url"
+                        v-on:submit="loader = true"
+                    >
+                        <input type="hidden" name="_token" :value="token">
+                        <table class="table">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>Seleccionar</th>
+                                    <th>Planilla</th>
+                                    <th>Observación</th>
+                                    <th class="text-center">Adicional</th>
+                                    <th class="text-center">Mes</th>
+                                    <th class="text-center">Año</th>
+                                </tr>
+                             </thead>
+                            <tbody v-if="!loader">
+                                <tr v-for="(cronograma, c) in cronograma.data" :key="c">
+                                    <td>
+                                        <input type="checkbox" :value="cronograma.id" name="cronogramas[]" 
+                                            v-on:change="validate"
                                         >
-                                            <small>No hay registros disponibles, vuelva a recargar
-                                            </small>
-                                            <div>
-                                                <button class="btn btn-sm btn-outline-dark"
-                                                    v-on:click="getBoletas"
-                                                >
-                                                    <i class="fas fa-sync"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                                
-                                <button class="btn-fixed btn btn-success btn-circle btn-lg" 
-                                    :disabled="loader"
-                                    v-if="cronograma.total > 0 && count > 0"
+                                    </td>
+                                    <td>{{ cronograma.planilla ? cronograma.planilla.descripcion : '' }}</td>
+                                    <td>{{ cronograma.observacion }}</td>
+                                    <td class="text-center">
+                                        <span :class="`btn btn-sm btn-${cronograma.adicional ? 'primary' : 'danger'}`">
+                                            {{ cronograma.adicional ? cronograma.numero : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="btn btn-sm btn-dark">
+                                            {{ cronograma.mes }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="btn btn-sm btn-dark">
+                                            {{ cronograma['año'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tr>
+                                <td colspan="6" class="text-center" v-if="loader">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </td>
+                                <td v-if="!loader && cronograma.total == 0" 
+                                    class="text-center" colspan="6"
                                 >
-                                    <i class="fa fa-download"></i>
-                                </button>
+                                    <small>No hay registros disponibles, vuelva a recargar</small>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-dark"
+                                            v-on:click="getBoletas"
+                                        >
+                                            <i class="fas fa-sync"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                                
+                        <button class="btn-fixed btn btn-success btn-circle btn-lg" 
+                            :disabled="loader"
+                            v-if="cronograma.total > 0 && count > 0"
+                        >
+                            <i class="fa fa-download"></i>
+                        </button>
 
-
-                            </form>
-                        </div>
-                        <div class="card-footer" v-if="!loader">
-                            <btn-more :config="['btn-block']" 
-                                :url="cronograma.next_page_url"   
-                                @get-data="getData"
-                            >
-                            </btn-more>
-                        </div>
-                    </template>
-                </modal>
-            </div>
-        </ventana>
+                    </form>
+                </div>
+                <div class="card-footer" v-if="!loader">
+                    <btn-more :config="['btn-block']" 
+                        :url="cronograma.next_page_url"   
+                        @get-data="getData"
+                    >
+                    </btn-more>
+                </div>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -123,9 +118,6 @@ export default {
         }
     },
     methods: {
-        close() {
-            this.show = false;
-        },
         async getBoletas(e) {
             
             if (e) {

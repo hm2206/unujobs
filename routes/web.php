@@ -80,8 +80,7 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     //cronogramas
     Route::resource('cronograma', 'CronogramaController');
     Route::get('/cronograma/{id}/job', 'CronogramaController@job')->name('cronograma.job');
-    Route::get('/cronograma/{id}/add', 'CronogramaController@add')->name('cronograma.add');
-    Route::post('/cronograma/{id}/add', 'CronogramaController@addStore')->name('cronograma.add.store');
+    // Route::post('/cronograma/{id}/add', 'CronogramaController@addStore')->name('cronograma.add.store');
 
     
     //Descuentos

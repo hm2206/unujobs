@@ -21,6 +21,7 @@ window.Vue = require('vue');
 
 Vue.component('ventana', require('./components/Ventana.vue').default);
 Vue.component('modal', require('./components/Modal.vue').default);
+Vue.component('btn-more', require('./components/BtnMore.vue').default);
 Vue.component('authentication', require('./components/Authentication.vue').default);
 Vue.component('add-question', require('./components/AddQuestion.vue').default);
 Vue.component('add-base', require('./components/AddBase.vue').default);
@@ -32,7 +33,9 @@ Vue.component('config-work', require('./components/ConfigWork.vue').default);
 Vue.component('validacion', require('./components/Validacion.vue').default);
 Vue.component('btn-delete', require('./components/BtnDelete.vue').default);
 Vue.component('btn-boleta', require('./components/BtnBoleta.vue').default);
-Vue.component('btn-more', require('./components/BtnMore.vue').default);
+Vue.component('btn-cronograma', require('./components/BtnCronograma.vue').default);
+Vue.component('btn-validate', require('./components/BtnValidate.vue').default);
+Vue.component('add-work', require('./components/AddWork.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

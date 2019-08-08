@@ -50,6 +50,16 @@ class Cronograma extends Model
 
 
     /**
+     * Relacion de muchos a muchos con la tabla works
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function works()
+    {
+        return $this->belongsToMany(Work::class, "work_cronograma");
+    }
+
+    /**
      * Slug para proteger los id en las urls
      *
      * @return string

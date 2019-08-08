@@ -62,14 +62,13 @@ class CronogramaController extends Controller
     }
 
     /**
-     * Muestra un formulario para crear un nuevo cronograma
+     * Redirecciona a la ruta de origen
      *
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function create()
     {
-        $planillas = Planilla::all();
-        return view("cronogramas.create", compact('planillas'));
+        return back();
     }
 
     /**
@@ -95,9 +94,15 @@ class CronogramaController extends Controller
             ->where('mes', $mes)->get();
 
         if ($adicional == 0 && $cronogramas->count() > 0) {
-            return back()->with(["danger" => "El cronograma ya existe"]);
+            return [
+                "status" => false,
+                "message" => "El cronograma ya existe"
+            ];
         }elseif($adicional == 1 && $cronogramas->count() < 1) {
-            return back()->with(["danger" => "El cronograma principal aun no está creado"]);
+            return [
+                "status" => false,
+                "message" => "El cronograma principal aun no está creado"
+            ];
         }
 
         $cronograma = Cronograma::create($request->except('adicional'));
@@ -120,7 +125,10 @@ class CronogramaController extends Controller
             ]);
         }
 
-        return back()->with(["success" => "Los datos se guardarón correctamente"]);
+        return [
+            "status" => true,
+            "message" => "Los datos se guardarón correctamente"
+        ];
     }
 
 
@@ -132,7 +140,7 @@ class CronogramaController extends Controller
      */
     public function show(Cronograma $cronograma)
     {
-        return back();
+        return $cronograma;
     }
 
 
@@ -144,12 +152,7 @@ class CronogramaController extends Controller
      */
     public function edit($slug)
     {
-        //recuperar id
-        $id = \base64_decode($slug);
-        $cronograma = Cronograma::findOrFail($id);
-
-
-        return view("cronogramas.edit", compact('cronograma'));
+        return back();
     }
 
     
@@ -160,10 +163,19 @@ class CronogramaController extends Controller
      * @param  \App\Models\Cronograma $cronograma
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Cronograma $cronograma)
+    public function update(Request $request, $id)
     {
+        $this->validate(request(), [
+            "planilla_id" => "required",
+            "observacion" => "max:225"
+        ]);
+
+        $cronograma = Cronograma::findOrFail($id);
         $cronograma->update(["observacion" => $request->observacion]);
-        return back()->with(["success" => "Los datos se actualizarón correctamente"]);
+        return [
+            "status" => true,
+            "message" => "Los datos se actualizarón correctamente"
+        ];
     }
 
 
@@ -187,7 +199,7 @@ class CronogramaController extends Controller
     public function job($slug)
     {
         $id = \base64_decode($slug);
-        $cronograma = Cronograma::findOrFail($id);
+        $cronograma = Cronograma::with("planilla")->findOrFail($id);
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $jobs = [];
         $like = request()->query_search;
@@ -210,25 +222,24 @@ class CronogramaController extends Controller
      * @param  string $slug
      * @return \Illuminate\View\View
      */
-    public function add($slug)
+    public function add($id)
     {
-        //recuperar id
-        $id = \base64_decode($slug);
         $cronograma = Cronograma::where("adicional", 1)->findOrFail($id);
         $like = request()->query_search;
-        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
-        $notIn = $remuneraciones->pluck(["work_id"]);
-        $jobs = Work::whereNotIn("id", $notIn)->whereHas('infos', function($i) use($cronograma) {
-            $i->where('infos.planilla_id', $cronograma->planilla_id);
-        });
+        $notIn = $cronograma->works->pluck(["id"]);
+
+        $jobs = Work::whereNotIn("id", $notIn)
+            ->with(["infos" => function($q) {
+                $q->with(["cargo", "categoria"]);
+            }])->whereHas('infos', function($i) use($cronograma) {
+                $i->where('infos.planilla_id', $cronograma->planilla_id);
+            });
 
         if($like) {
            $jobs->where("nombre_completo", "like", "%{$like}%");
         }
 
-        $jobs = $jobs->paginate(20);
-
-        return view("cronogramas.add", compact('jobs', 'cronograma', 'like'));
+        return $jobs->paginate(20);
     }
 
 
@@ -245,15 +256,31 @@ class CronogramaController extends Controller
             "jobs" => "required"
         ]);
 
-        $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
-        $tmp_jobs = $request->input('jobs', []);
-        $jobs = Work::whereIn("id", $tmp_jobs)->get();
+        try {
+            $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
+            
+            $tmp_jobs = $request->input('jobs', []);
+            
+            $cronograma->works()->syncWithoutDetaching($tmp_jobs);
 
-        ProssingRemuneracion::dispatch($cronograma, $jobs);
-        ProssingDescuento::dispatch($cronograma, $jobs);
+            $jobs = Work::whereIn("id", $tmp_jobs)->get();
 
-        return redirect()->route('cronograma.job', $cronograma->slug())
-            ->with(["success" => "Los trabajadores fuerón agregados correctamente. Por favor espero actualize la página"]);
+            ProssingRemuneracion::dispatch($cronograma, $jobs);
+            ProssingDescuento::dispatch($cronograma, $jobs);
+            
+            return [
+                "status" => true,
+                "message" => "Los trabajadores están siendo procesados. Nosotros le notificaremos"
+            ];
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación"
+            ];
+        }
 
     }
 

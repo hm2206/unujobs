@@ -11,11 +11,11 @@ export default {
     props: {
         opacity: {
             type: String,
-            default: 0.5
+            default: "0.5"
         },
         index: {
             type: String,
-            default: 100
+            default: "100"
         }
     }
 }

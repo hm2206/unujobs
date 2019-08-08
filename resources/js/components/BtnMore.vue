@@ -36,7 +36,7 @@ export default {
         },
         text: {
             type: String,
-            default: 'ver más'
+            default: 'obtener más registros'
         },
         config: {
             type: Array

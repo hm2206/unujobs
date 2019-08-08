@@ -24,7 +24,12 @@
 <div class="row">
     <div class="col-md-12 mb-2">
         <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-        <a href="{{ route('cronograma.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+        <btn-cronograma 
+            theme="btn-primary"
+            redirect="{{ route('cronograma.index', ['mes=' . $mes, 'year=' . $year])}}"
+        >
+            <i class="fas fa-plus"></i> Nuevo
+        </btn-cronograma>
     </div>
 
 
@@ -134,23 +139,30 @@
                                         @endif
                                         <th class="uppercase">{{ $cronograma->observacion }}</th>
                                     <th class="uppercase">{{ $cronograma->sede ? $cronograma->sede->descripcion : null }}</th>
-                                    <th class="text-right">
-                                        <form class="btn-group text-right" method="POST" action="{{ route('export.cronograma', $cronograma->id) }}">
-                                            
-                                            @csrf
+                                    <th class="">
+                                        <div class="text-right">
 
-                                            <a target="blank" href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-sm btn-primary">
+                                            <a href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('cronograma.edit', $cronograma->slug()) }}" class="btn btn-sm btn-warning">
+                                            <btn-cronograma
+                                                theme="btn-warning btn-sm"
+                                                class="text-left"
+                                                :datos="{{ $cronograma }}"
+                                                redirect="{{ route('cronograma.index', ['mes=' . $mes, 'year=' . $year])}}"
+                                            >
                                                 <i class="fas fa-pencil-alt"></i>
-                                            </a>
+                                            </btn-cronograma>
 
+                                            
                                             @if ($cronograma->adicional)
-                                                <a class="btn btn-sm btn-success" href="{{ route('cronograma.add', $cronograma->slug()) }}">
-                                                    <i class="fas fa-plus"></i>
-                                                </a>  
+                                                <add-work
+                                                    theme="btn-dark btn-sm"
+                                                    class="text-left"
+                                                    :cronograma="{{ $cronograma }}"
+                                                >
+                                                </add-work>
                                             @endif
 
 
@@ -173,7 +185,7 @@
 
                                             <validacion btn_text="Exportar" class="text-left"></validacion>
 
-                                        </form>
+                                        </div>
                                     </th>
                                 </tr>
                             @empty

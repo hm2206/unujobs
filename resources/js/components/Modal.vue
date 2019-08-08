@@ -1,18 +1,22 @@
 <template>
-    <div class="card" :style="`height: ${height}`" v-if="show">
-        <div class="card-header">
+    <ventana v-if="show" index="90">
+        <div :class="col">
+            <div class="card" :style="`height: ${height}`">
+                <div class="card-header">
 
-            <slot name="header"></slot>
-            
-            <button class="close" v-on:click="close">
-                <small><i class="fas fa-times"></i></small>
-            </button>
+                    <slot name="header"></slot>
+                    
+                    <button class="close" v-on:click="close">
+                        <small><i class="fas fa-times"></i></small>
+                    </button>
+                </div>
+
+
+                <slot name="content"></slot>
+                
+            </div>
         </div>
-
-
-        <slot name="content"></slot>
-        
-    </div>
+    </ventana>
 </template>
 
 <script>
@@ -21,17 +25,19 @@ export default {
         height: {
             type: String,
             default: "90vh"
+        },
+        col: {
+            type: String,
+            default: "col-md-5"
+        },
+        show: {
+            type: Boolean,
+            default: true
         }
-    },
-    data() {
-        return {
-            show: true
-        }
-    },
+    },  
     methods: {
         close() {
-            this.$emit("click", false);
-            this.show = false;
+            this.$emit("close");
         }
     }
 }
