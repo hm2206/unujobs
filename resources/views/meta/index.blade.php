@@ -28,9 +28,24 @@
     </div>
 @endif
 
+@if (session('danger'))
+    <div class="col-md-12 mt-3">
+        <div class="alert alert-danger">
+            {{ session('danger') }}       
+        </div>
+    </div>
+@endif
+
+@if ($errors->first('import'))
+    <div class="col-md-12 mt-3">
+        <div class="alert alert-danger">
+            {{ $errors->first('import')}}       
+        </div>
+    </div>
+@endif
 
 <div class="row mb-3">
-    <div class="col-md-6 mt-3">
+    <div class="col-md-12 mt-3">
     
         <form method="GET" class="card">
             <div class="card-header">
@@ -50,50 +65,73 @@
             </div>
         </form>
     </div>
-
-    <div class="col-md-6">
-        <form method="POST" class="card mt-3" action="{{ route('export.meta') }}">
-            @csrf
-            <div class="card-header">
-                Exportación de trabajadores
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <small>Limite de metas <span class="text-danger">{{ $metas->count() }}</span></small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <input type="number" name="limite" class="form-control" value="{{ $metas->count() }}" max="{{ $metas->count() }}">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <input type="checkbox" name="order" title="Ordenar Descendentemente"> <i class="fas fa-sort-alpha-up"></i>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-success btn-sm">Exportar <i class="fas fa-file-excel"></i></button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
 </div>
 
 
-<div class="col-md-12 mb-2">
+<div class="col-md-12 mb-2 mt-2">
 
     {!! $metas->appends(['query_search' => request('query_search')])->links() !!}
 
     <form class="card">
         @forelse ($metas as $meta)
 
-        <h4 class="card-header">
-            <a href="{{ route('meta.edit', $meta->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Editar</a>
-        </h4>
+        <div class="card-header">
+            <div class="row">
+                <a href="{{ route('meta.edit', $meta->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Editar</a>
+
+                <validacion 
+                    btn_text="Importar"
+                    method="post"
+                    theme="btn-success ml-1"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.meta') }}"
+                >
+
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/meta_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="import" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+
+                </validacion>
+
+                <validacion 
+                    btn_text="Exportar"
+                    method="post"
+                    theme="btn-success ml-1"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('export.meta') }}"
+                >
+                                
+                    <div class="form-group">
+                        <small>Limite de trabajadores: <span class="text-danger">{{ $metas->count() }}</span></small>
+                    </div>
+    
+                    <div class="form-group">
+                        <input type="number" name="limite" class="form-control" value="{{ $metas->count() }}" max="{{ $metas->count() }}">
+                    </div>
+                                    
+                    <div class="form-group">
+                        <input type="checkbox" name="order" title="Ordenar Descendentemente"> 
+                        <i class="fas fa-sort-alpha-up"></i> Ordenar Descendentemente
+                    </div>
+    
+                    <hr>
+
+                </validacion>
+
+                
+            </div>
+
+        </div>
 
         <div class="card-body">
                 <div class="row">

@@ -156,12 +156,11 @@
                                             </btn-boleta>
 
                                             <btn-liquidar theme="btn-danger btn-sm btn-circle"
-                                                param="{{ $job->id }}"
                                                 nombre_completo="{{ $job->nombre_completo }}"
                                                 fecha_de_inicio="{{ $job->fecha_de_ingreso }}"
-                                                url="{{ route('job.boleta.store', $job->id) }}"
+                                                redirect="{{ route('job.index') }}"
                                                 nombre_completo="{{ $job->nombre_completo }}"
-                                                token="{{ csrf_token() }}"
+                                                id="{{ $job->id }}"
                                             >
                                                 <i class="fas fa-trash"></i>
                                             </btn-liquidar>

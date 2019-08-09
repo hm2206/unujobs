@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Modelo de la tabla works
@@ -15,7 +16,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Work extends Model
 {
+
+    use SoftDeletes;
     
+
+    protected $dates = ['deleted_at'];
+
     /**
      * Los campos que solo serán alterados en la base de datos
      *

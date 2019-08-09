@@ -59,5 +59,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/user", "UserController@store");
     Route::put("/user/{id}", "UserController@update");
 
+    // Liquidar trabajador
+    Route::post("/liquidar", "LiquidarController@store");
+
 
 });

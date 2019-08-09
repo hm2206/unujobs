@@ -7,22 +7,31 @@
 
         <modal :show="show" @close="show = false">
             <template slot="header">
-                Calular y Liquidar al trabajador <b class="text-danger">{{ nombre_completo }}</b>
+                Liquidar al trabajador <b class="text-danger">{{ nombre_completo }}</b>
             </template>
             <template slot="content">
-                <form class="card-body" id="register-descuento" v-on:submit="submit">
+                <form class="card-body scroll-y" id="register-descuento" v-on:submit="submit">
 
                     <div class="form-group">
                         <label for="">Fecha de Ingreso <small class="text-danger">*</small></label>
                         <input type="date" class="form-control" name="key" v-model="fecha_de_inicio" :disabled="true">
-                        <small class="text-danger">{{ errors.key ? errors.key[0] : '' }}</small>
+                        <input type="hidden" name="fecha_de_ingreso" :value="fecha_de_inicio">
+                        <small class="text-danger">{{ errors.fecha_de_inicio ? errors.fecha_de_inicio[0] : '' }}</small>
                     </div>
 
                     <div class="form-group">
                         <label for="">Fecha de Cese <small class="text-danger">*</small></label>
-                        <input type="date" class="form-control" name="key" v-model="cese">
-                        <small class="text-danger">{{ errors.key ? errors.key[0] : '' }}</small>
+                        <input type="date" class="form-control" name="fecha_de_cese" v-model="cese">
+                        <small class="text-danger">{{ errors.fecha_de_cese ? errors.fecha_de_cese[0] : '' }}</small>
                     </div>
+
+                    <div class="form-group">
+                        <label for="">Monto <small class="text-danger">*</small></label>
+                        <input type="number" class="form-control" name="monto" v-model="monto">
+                        <small class="text-danger">{{ errors.monto ? errors.monto[0] : '' }}</small>
+                    </div>
+
+                    <input type="hidden" name="work_id" :value="id">
 
                 </form>
                 <div class="card-footer text-right">
@@ -41,25 +50,14 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ["redirect", "datos", "theme", "nombre_completo", "fecha_de_inicio"],
+    props: ["redirect", "id", "theme", "nombre_completo", "fecha_de_inicio"],
     data() {
         return {
             show: false,
-            form: {
-                key: '',
-                descripcion: ''
-            },  
-            errors: {},
             loader: false,
-            edit: false,
-            cese: ''
-        }
-    },
-    mounted() {
-
-        if (this.datos) {
-            this.edit = true;
-            this.form = this.datos;
+            monto: '',
+            cese: '',
+            errors: {},
         }
     },
     methods: {
@@ -70,16 +68,7 @@ export default {
             this.loader = true;
             this.errors = {};
 
-            if (this.edit) {
-                form.append("_method", "PUT");
-                this.request("post", `/descuento/${this.form.id}`, form);
-            }else {
-                this.request("post", `/descuento`, form);
-            }
-        },
-        async request(method, ruta, form) {
-
-            let api = unujobs(method, ruta, form);
+            let api = unujobs("post", "/liquidar", form);
             await api.then(async res => {
 
                 let { status, message } = res.data; 
@@ -96,6 +85,7 @@ export default {
             });
 
             this.loader = false;
+
         }
     }
 }

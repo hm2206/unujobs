@@ -44,6 +44,7 @@ class CreateWorksTable extends Migration
             $table->double('total')->nullable();
             $table->date("fecha_de_cese")->nullable();
             $table->integer("descanso")->default(0);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

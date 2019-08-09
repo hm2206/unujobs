@@ -4118,98 +4118,66 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["redirect", "datos", "theme", "nombre_completo", "fecha_de_inicio"],
+  props: ["redirect", "id", "theme", "nombre_completo", "fecha_de_inicio"],
   data: function data() {
     return {
       show: false,
-      form: {
-        key: '',
-        descripcion: ''
-      },
-      errors: {},
       loader: false,
-      edit: false,
-      cese: ''
+      monto: '',
+      cese: '',
+      errors: {}
     };
-  },
-  mounted: function mounted() {
-    if (this.datos) {
-      this.edit = true;
-      this.form = this.datos;
-    }
   },
   methods: {
     submit: function () {
       var _submit = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
-        var form;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+        var _this = this;
+
+        var form, api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 e.preventDefault();
                 form = new FormData(document.getElementById('register-descuento'));
                 this.loader = true;
                 this.errors = {};
-
-                if (this.edit) {
-                  form.append("_method", "PUT");
-                  this.request("post", "/descuento/".concat(this.form.id), form);
-                } else {
-                  this.request("post", "/descuento", form);
-                }
-
-              case 5:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function submit(_x) {
-        return _submit.apply(this, arguments);
-      }
-
-      return submit;
-    }(),
-    request: function () {
-      var _request = _asyncToGenerator(
-      /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(method, ruta, form) {
-        var _this = this;
-
-        var api;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])(method, ruta, form);
-                _context3.next = 3;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/liquidar", form);
+                _context2.next = 7;
                 return api.then(
                 /*#__PURE__*/
                 function () {
                   var _ref = _asyncToGenerator(
                   /*#__PURE__*/
-                  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(res) {
+                  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(res) {
                     var _res$data, status, message;
 
-                    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+                    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
                       while (1) {
-                        switch (_context2.prev = _context2.next) {
+                        switch (_context.prev = _context.next) {
                           case 0:
                             _res$data = res.data, status = _res$data.status, message = _res$data.message;
 
                             if (!status) {
-                              _context2.next = 7;
+                              _context.next = 7;
                               break;
                             }
 
-                            _context2.next = 4;
+                            _context.next = 4;
                             return sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                               icon: 'success',
                               text: message
@@ -4217,11 +4185,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                           case 4:
                             location.href = _this.redirect;
-                            _context2.next = 9;
+                            _context.next = 9;
                             break;
 
                           case 7:
-                            _context2.next = 9;
+                            _context.next = 9;
                             return sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                               icon: 'error',
                               text: message
@@ -4229,35 +4197,35 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                           case 9:
                           case "end":
-                            return _context2.stop();
+                            return _context.stop();
                         }
                       }
-                    }, _callee2);
+                    }, _callee);
                   }));
 
-                  return function (_x5) {
+                  return function (_x2) {
                     return _ref.apply(this, arguments);
                   };
                 }())["catch"](function (err) {
                   _this.errors = err.response.data.errors;
                 });
 
-              case 3:
+              case 7:
                 this.loader = false;
 
-              case 4:
+              case 8:
               case "end":
-                return _context3.stop();
+                return _context2.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee2, this);
       }));
 
-      function request(_x2, _x3, _x4) {
-        return _request.apply(this, arguments);
+      function submit(_x) {
+        return _submit.apply(this, arguments);
       }
 
-      return request;
+      return submit;
     }()
   }
 });
@@ -46111,7 +46079,7 @@ var render = function() {
         },
         [
           _c("template", { slot: "header" }, [
-            _vm._v("\n            Calular y Liquidar al trabajador "),
+            _vm._v("\n            Liquidar al trabajador "),
             _c("b", { staticClass: "text-danger" }, [
               _vm._v(_vm._s(_vm.nombre_completo))
             ])
@@ -46121,7 +46089,7 @@ var render = function() {
             _c(
               "form",
               {
-                staticClass: "card-body",
+                staticClass: "card-body scroll-y",
                 attrs: { id: "register-descuento" },
                 on: { submit: _vm.submit }
               },
@@ -46154,8 +46122,19 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
+                  _c("input", {
+                    attrs: { type: "hidden", name: "fecha_de_ingreso" },
+                    domProps: { value: _vm.fecha_de_inicio }
+                  }),
+                  _vm._v(" "),
                   _c("small", { staticClass: "text-danger" }, [
-                    _vm._v(_vm._s(_vm.errors.key ? _vm.errors.key[0] : ""))
+                    _vm._v(
+                      _vm._s(
+                        _vm.errors.fecha_de_inicio
+                          ? _vm.errors.fecha_de_inicio[0]
+                          : ""
+                      )
+                    )
                   ])
                 ]),
                 _vm._v(" "),
@@ -46175,7 +46154,7 @@ var render = function() {
                       }
                     ],
                     staticClass: "form-control",
-                    attrs: { type: "date", name: "key" },
+                    attrs: { type: "date", name: "fecha_de_cese" },
                     domProps: { value: _vm.cese },
                     on: {
                       input: function($event) {
@@ -46188,9 +46167,53 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("small", { staticClass: "text-danger" }, [
-                    _vm._v(_vm._s(_vm.errors.key ? _vm.errors.key[0] : ""))
+                    _vm._v(
+                      _vm._s(
+                        _vm.errors.fecha_de_cese
+                          ? _vm.errors.fecha_de_cese[0]
+                          : ""
+                      )
+                    )
                   ])
-                ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "" } }, [
+                    _vm._v("Monto "),
+                    _c("small", { staticClass: "text-danger" }, [_vm._v("*")])
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.monto,
+                        expression: "monto"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "number", name: "monto" },
+                    domProps: { value: _vm.monto },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.monto = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("small", { staticClass: "text-danger" }, [
+                    _vm._v(_vm._s(_vm.errors.monto ? _vm.errors.monto[0] : ""))
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "hidden", name: "work_id" },
+                  domProps: { value: _vm.id }
+                })
               ]
             ),
             _vm._v(" "),
