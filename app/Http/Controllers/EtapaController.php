@@ -104,15 +104,19 @@ class EtapaController extends Controller
 
                     $type = TypeEtapa::where("id", ">", $request->type_etapa_id)->first();
 
-                    $newEtapa = Etapa::create([
-                        "postulante_id" => $tmp_postulante,
-                        "type_etapa_id" => $type->id,
-                        "convocatoria_id" => $request->convocatoria_id,
-                        "personal_id" => $request->personal_id,
-                        "current" => 0,
-                        "next" => 0,
-                        "puntaje" => 0
-                    ]);
+                    if ($type) {
+                        
+                        $newEtapa = Etapa::create([
+                            "postulante_id" => $tmp_postulante,
+                            "type_etapa_id" => $type->id,
+                            "convocatoria_id" => $request->convocatoria_id,
+                            "personal_id" => $request->personal_id,
+                            "current" => 0,
+                            "next" => 0,
+                            "puntaje" => 0
+                        ]);
+
+                    }
 
                 }else {
 
@@ -131,9 +135,9 @@ class EtapaController extends Controller
                                 ->orderBy("type_etapa_id", 'DESC')
                                 ->first();
 
-                $current->update([
-                    "current" => 1
-                ]);
+                if ($current) {
+                    $current->update(["current" => 1]);
+                }
 
             }
 

@@ -25,6 +25,7 @@ class Remuneracion extends Model
         "work_id", "categoria_id", "dias", "cronograma_id",
         "observaciones", "sede_id", "mes", "año", "monto", "adicional",
         "horas", "type_remuneracion_id", 'cargo_id', 'base', 'planilla_id',
+        "meta_id"
     ];
     
 

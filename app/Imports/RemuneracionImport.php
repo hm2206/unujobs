@@ -47,15 +47,15 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
         foreach ($collection as $row) {
 
             // obtenemos a todos los trabajadores que pertenecen al cronograma
-            $workIn = Remuneracion::where("cronograma_id", $this->cronograma->id)
-                ->get()->pluck(["work_id"]);
-            $works = Work::whereIn("id", $workIn)->get();
+            $works = $this->cronograma->works;
             // buscar al trabajador por numero de documento
             $work = $works->where("numero_de_documento", $row['numero_de_documento'])->first();
             // verificar si el trabajador existe
             if ($work) {
                 // obtenemos la informacion detallada del trabajador
-                foreach ($work->infos as $info) {
+                $info = $work->infos->where("categoria_id", $row['categoria'])->first();
+
+                if ($info) {
                     // obtenemos el tipo de remuneracion
                     $type = TypeRemuneracion::where("key", $row['remuneracion'])->first();
                     // verificamos que el typeRemuneracion exista

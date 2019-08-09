@@ -170,9 +170,6 @@
                 <h6 class="text-right">
                     <b>BASE IMPONIBLE:</b>  <b class="text-primary">S./ {{ $base }}</b>
                 </h6>
-                <h6 class="text-right">
-                    <b>APORTE PATRONAL ESSALUD:</b>  <b class="text-primary">S./ {{ $aporte }}</b>
-                </h6>
                 <hr>
                 <h6 class="text-right">
                     <b>TOTAL:</b>  <b class="text-primary">S./ {{ $total_neto }}</b>

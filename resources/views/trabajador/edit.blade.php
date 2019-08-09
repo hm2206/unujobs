@@ -224,6 +224,14 @@
                     </div>
                 </div>
 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Descanso medico por maternidad</label>
+                        <br>
+                        <input type="checkbox" name="descanso" {!! $job->descanso ? 'checked' : '' !!}>
+                    </div>
+                </div>
+
                 <div class="col-md-12 mt-4">
                     <button class="btn btn-success">
                         Guardar y continuar <i class="fas fa-save"></i>

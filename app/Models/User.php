@@ -19,13 +19,14 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+
     /**
      * Los campos que solo serán alterados en la base de datos
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'nombres', 'email', 'password', "ape_paterno", "ape_materno", "nombre_completo"
     ];
 
     /**
@@ -45,4 +46,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function roles() 
+    {
+        return $this->belongsToMany(Role::class, "role_user");
+    }
+    
 }

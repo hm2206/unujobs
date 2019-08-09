@@ -23,7 +23,7 @@ class Cronograma extends Model
      */
     protected $fillable = [
         "mes", "año", "planilla_id", "adicional", "sede_id", "numero", "dias",
-        "pdf", "pendiente", "observacion", "token", "estado", "ruta"
+        "pdf", "pendiente", "observacion", "token", "estado", "ruta", "pdf_meta"
     ];
 
 

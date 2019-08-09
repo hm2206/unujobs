@@ -17,6 +17,7 @@ use App\Models\Remuneracion;
 use \PDF;
 use App\Models\Meta;
 use App\Jobs\GeneratePlanillaPDF;
+use App\Jobs\GeneratePlanillaMetaPDF;
 use App\Jobs\ReportCronograma;
 use App\Jobs\ReportBoleta;
 
@@ -38,6 +39,7 @@ class ExportCronogramaController extends Controller
         $cronograma = Cronograma::findOrFail($id);
         $cronograma->update(["pdf" => "", "pendiente" => 1]);
         GeneratePlanillaPDF::dispatch($cronograma);
+        GeneratePlanillaMetaPDF::dispatch($cronograma);
         return back()->with(["success" => "Este proceso durará unos minutos... Vuelva más tarde"]);
     }
 

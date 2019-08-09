@@ -48,50 +48,36 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
 
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Menu
-      </div>
+      @php
+         $current = auth()->user();
 
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-users"></i>
-          <span>Recursos Humanos</span>
-        </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Opciones:</h6>
-            <a class="collapse-item" href="{{ route('personal.index') }}">Requerimiento de Personal</a>
-            <a class="collapse-item" href="{{ route('convocatoria.index') }}">Convocatorias</a>
+          if ($current->roles->count() == 0) {
+            $modulos = \App\Models\Modulo::with("modulos")
+              ->where("modulo_id", null)->get();
+          }else {
+            $modulos = \App\Models\Modulo::whereHas("roles", function($q) use($current) {
+              $q->whereIn("roles.id", $current->roles->pluck(["id"]));
+            })->where("modulo_id", null)->get(); 
+          }
+
+      @endphp
+
+      @foreach ($modulos as $modulo)
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse{{ $modulo->id }}" aria-expanded="true" aria-controls="collapseTwo">
+            <i class="{{ $modulo->icono }}"></i>
+            <span>{{ $modulo->name }}</span>
+          </a>
+          <div id="collapse{{ $modulo->id }}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Modulos:</h6>
+              @foreach ($modulo->modulos as $mod)
+                <a class="collapse-item" href="{{ url($mod->ruta) }}">{{ $mod->name }}</a>
+              @endforeach
+            </div>
           </div>
-        </div>
-      </li>
-
-      <!-- Nav Item - Utilities Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-file"></i>
-          <span>Planillas</span>
-        </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Opciones:</h6>
-            <a class="collapse-item" href="{{ route('job.index') }}">Trabajadores</a>
-            <a class="collapse-item" href="{{ route('meta.index') }}">Metas</a>
-            <a class="collapse-item" href="{{ route('cronograma.index') }}">Crear Planilla x Mes</a>
-            <a class="collapse-item" href="{{ route('cargo.index') }}">Cargos</a>
-            <a class="collapse-item" href="{{ route('categoria.index') }}">Categorias</a>
-            <a class="collapse-item" href="{{ route('concepto.index') }}">Conceptos</a>
-            <a class="collapse-item" href="{{ route('descuento.index') }}">Descuentos</a>
-            <a class="collapse-item" href="{{ route('remuneracion.index') }}">Remuneraciones</a>
-            <a class="collapse-item" href="{{ route('afp.index') }}">AFP</a>
-          </div>
-        </div>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
+        </li>
+      @endforeach
 
     </ul>
     <!-- End of Sidebar -->
@@ -104,7 +90,6 @@
       <div id="content">
 
         <div id="app">
-
             
             <authentication></authentication>
             <!-- Topbar -->
@@ -161,6 +146,12 @@
 
               <!-- Begin Page Content -->
               <div class="container-fluid">
+
+                @if (session('warning'))
+                  <div class="alert alert-warning">
+                    {{ session('warning') }}
+                  </div>
+                @endif
 
                 @yield('content')
 

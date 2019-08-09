@@ -55,12 +55,11 @@ export default {
     },
     mounted() {
         let that = this;
-        this.getNotify();
         this.countUnread();
         this.intervalo = setInterval(function() {
             that.getNotify();
             that.countUnread();
-        }, 3000);
+        }, 5000);
     },
     methods: {
         getNotify(){

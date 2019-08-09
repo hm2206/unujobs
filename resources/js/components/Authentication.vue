@@ -114,7 +114,7 @@ export default {
             let that = this;
             this.interval = setInterval(function () {
                 that.current();
-            }, 3000);
+            }, 5000);
         }
     }
 }

@@ -33,7 +33,7 @@ Route::group(["prefix" => "RRHH"], function() {
 
     //Etapas
     Route::resource('etapa', 'EtapaController');
-    Route::get('etapa/{id}/convocatoria/{convocatoria}/pdf', 'EtapaController@pdf')->name('etapa.pdf');
+    Route::get('/etapa/{id}/convocatoria/{convocatoria}/pdf', 'EtapaController@pdf')->name('etapa.pdf');
 
 });
 
@@ -122,6 +122,7 @@ Route::group(["prefix" => "import"], function() {
     Route::post("/work", "ImportController@work")->name("import.work");
     Route::post("/remuneracion/{id}", "ImportController@remuneracion")->name("import.remuneracion");
     Route::post("/descuento/{id}", "ImportController@descuento")->name("import.descuento");
+    Route::post('/etapa/{id}', "ImportController@etapa")->name("import.etapa");
 
 });
 
@@ -135,6 +136,16 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
     Route::get("/{numero}/cargo/{titulo}/postular", "BolsaController@postular")->name('bolsa.postular');
     Route::post("/auth", "BolsaController@authenticar")->name('bolsa.auth');
     Route::get("/{id}/personal/{personalID}/pdf", "BolsaController@resultados")->name('bolsa.resultados');
+
+});
+
+
+ // Accesos
+ Route::group(["prefix" => "accesos", "middleware" => ["auth"]], function() {
+   
+    Route::get("/user", "AccesoController@user")->name("acceso.user");
+    Route::get("/role", "AccesoController@role")->name("acceso.role");
+    Route::get("/modulo", "AccesoController@modulo")->name("acceso.modulo");
 
 });
 

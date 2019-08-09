@@ -178,8 +178,14 @@
 
                                             
                                             @if ($cronograma->pdf)
-                                                <a target="__blank" title="PDF" href="{{ url($cronograma->pdf) }}" class="btn btn-sm btn-outline-danger">
-                                                    <i class="far fa-file-pdf" aria-hidden="true"></i> Ver PDF
+                                                <a target="__blank" title="PDF, resumen de todas las metas" href="{{ url($cronograma->pdf) }}" class="btn btn-sm btn-outline-danger">
+                                                    <i class="far fa-file-pdf" aria-hidden="true"></i>
+                                                </a>
+                                            @endif
+
+                                            @if ($cronograma->pdf_meta)
+                                                <a target="__blank" title="PDF, resumen metas x metas" href="{{ url($cronograma->pdf_meta) }}" class="btn btn-sm btn-outline-danger">
+                                                    <i class="far fa-file-pdf" aria-hidden="true"></i>
                                                 </a>
                                             @endif
 

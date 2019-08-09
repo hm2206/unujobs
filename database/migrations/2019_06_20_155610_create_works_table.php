@@ -42,6 +42,8 @@ class CreateWorksTable extends Migration
             $table->integer("planilla_id")->nullable();
             $table->string('ley')->nullable();
             $table->double('total')->nullable();
+            $table->date("fecha_de_cese")->nullable();
+            $table->integer("descanso")->default(0);
             $table->timestamps();
         });
     }

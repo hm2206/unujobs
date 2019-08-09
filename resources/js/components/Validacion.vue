@@ -1,6 +1,6 @@
 <template>
     <span>
-        <button class="btn btn-sm btn-success" v-on:click="showVentana">
+        <button :class="`btn ${theme ? theme : 'btn-sm btn-success'}`" v-on:click="showVentana">
             <i class="fas fa-file-excel"></i>
             <span v-text="btn_text"></span>
         </button>
@@ -57,7 +57,7 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['btn_text', 'method', 'url', 'sync', 'id', 'token'],
+    props: ['btn_text', 'method', 'url', 'sync', 'id', 'token', 'theme'],
     data() {
         return {
             ventana: false

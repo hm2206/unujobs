@@ -115,7 +115,25 @@ class DescuentoController extends Controller
         try {
             
             $type = TypeDescuento::findOrFail($id);
-            $type->update($request->except('key'));
+            
+            $monto = $request->input("monto", 0);
+            $obligatorio = $request->input("obligatorio", 0);
+            $snp_porcentaje = $request->input("snp_porcentaje", 0);
+            $essalud = $request->input("essalud", 0);
+            $essalud_porcentaje = $request->input("essalud_porcentaje", 0);
+            $monto = $request->input("monto", 0);
+            $minimo = $request->input("minimo", 0);
+
+            $type->update([
+                "descripcion" => $request->descripcion,
+                "obligatorio" => $obligatorio,
+                "snp_porcentaje" => $snp_porcentaje,
+                "essalud" => $essalud,
+                "essalud_porcentaje" => $essalud_porcentaje,
+                "monto" => $monto,
+                "minimo" => $minimo,
+                "base" => $essalud ? 1 : 0
+            ]);
             
             return [
                 "status" => true,
@@ -123,7 +141,7 @@ class DescuentoController extends Controller
             ];
 
         } catch (\Throwable $th) {
-            
+
             return [
                 "status" => false,
                 "message" => "Ocurrió un error al procesar la operación"

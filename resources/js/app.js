@@ -19,6 +19,7 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
+
 Vue.component('ventana', require('./components/Ventana.vue').default);
 Vue.component('modal', require('./components/Modal.vue').default);
 Vue.component('btn-more', require('./components/BtnMore.vue').default);
@@ -39,8 +40,12 @@ Vue.component('btn-categoria', require('./components/BtnCategoria.vue').default)
 Vue.component('btn-concepto', require('./components/BtnConcepto.vue').default);
 Vue.component('btn-descuento', require('./components/BtnDescuento.vue').default);
 Vue.component('btn-remuneracion', require('./components/BtnRemuneracion.vue').default);
+Vue.component('btn-liquidar', require('./components/BtnLiquidar.vue').default);
 Vue.component('btn-validate', require('./components/BtnValidate.vue').default);
 Vue.component('add-work', require('./components/AddWork.vue').default);
+Vue.component('btn-user', require('./components/BtnUser.vue').default);
+Vue.component('btn-modulo', require('./components/BtnModulo.vue').default);
+Vue.component('btn-role', require('./components/BtnRole.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

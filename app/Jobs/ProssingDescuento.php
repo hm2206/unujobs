@@ -81,6 +81,9 @@ class ProssingDescuento implements ShouldQueue
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         
         foreach ($job->infos as $info) {
+            
+            $base = 0;
+
             $hasDescuentos = Descuento::where("work_id", $job->id)
                 ->where("cronograma_id", $cronograma->id)
                 ->where("cargo_id", $info->cargo_id)
@@ -99,9 +102,11 @@ class ProssingDescuento implements ShouldQueue
                         "type_descuento_id" => $descuento->id,
                         "mes" => $cronograma->mes,
                         "año" => $cronograma->año,
-                        "monto" => $descuento->monto,
+                        "monto" => $job->descanso ? 0 : round($descuento->monto, 2),
                         "adicional" => $cronograma->adicional,
-                        "dias" => $cronograma->dias
+                        "dias" => $cronograma->dias,
+                        "base" => $descuento->base,
+                        "meta_id" => $descuento->meta_id
                     ]);
                 }
             }else {
@@ -156,11 +161,12 @@ class ProssingDescuento implements ShouldQueue
                     }else {
 
                         if($type->obligatorio) {
-                            $suma =($total * 13) / 100;   
+
+                            $suma =($total * $type->snp_porcentaje) / 100;  
+
                         }
 
                     }
-
 
                     // configurar descuentos automaticos de los sindicatos
                     if ($job->sindicatos->count() > 0) {
@@ -184,6 +190,14 @@ class ProssingDescuento implements ShouldQueue
 
                     }
 
+                    // calcular la configuración de la aportacion de essalud
+                    if ($type->essalud) {
+
+                        $suma = $total < $type->minimo ? $type->monto : ($total * $type->essalud_porcentaje) / 100;
+                        $base = 1;
+
+                    }
+
                     
                     Descuento::create([
                         "work_id" => $job->id,
@@ -194,9 +208,11 @@ class ProssingDescuento implements ShouldQueue
                         "type_descuento_id" => $type->id,
                         "mes" => $cronograma->mes,
                         "año" => $cronograma->año,
-                        "monto" => round($suma, 2),
+                        "monto" => $job->descanso ? 0 : round($suma, 2),
                         "adicional" => $cronograma->adicional,
-                        "dias" => $cronograma->dias
+                        "dias" => $cronograma->dias,
+                        "base" => $base,
+                        "meta_id" => $info->meta_id
                     ]);
 
 

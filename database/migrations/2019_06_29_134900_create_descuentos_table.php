@@ -19,6 +19,7 @@ class CreateDescuentosTable extends Migration
             $table->integer("cargo_id");
             $table->integer("categoria_id");
             $table->integer("planilla_id");
+            $table->integer("meta_id");
             $table->integer("dias")->default(30);
             $table->integer("cronograma_id");
             $table->text("observaciones")->nullable();
@@ -29,6 +30,7 @@ class CreateDescuentosTable extends Migration
             $table->double("monto")->default(0);
             $table->integer("adicional")->default(0);
             $table->string("horas")->default(8);
+            $table->integer("base")->default(0);
             $table->timestamps();
         });
     }

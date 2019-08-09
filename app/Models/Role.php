@@ -23,4 +23,10 @@ class Role extends Model
      */
     protected $fillable = ["key", "name"];
 
+
+    public function modulos()
+    {
+        return $this->belongsToMany(Modulo::class, "role_modulo");
+    }
+
 }

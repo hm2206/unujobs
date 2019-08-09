@@ -5,12 +5,12 @@
             <slot></slot>
         </button>
 
-        <modal :show="show" @close="show = false" heigth="300px">
+        <modal :show="show" @close="show = false">
             <template slot="header">
                 Registro de descuento
             </template>
             <template slot="content">
-                <form class="card-body" id="register-descuento" v-on:submit="submit">
+                <form class="card-body scroll-y" id="register-descuento" v-on:submit="submit">
 
                     <div class="form-group">
                         <label for="">Clave <small class="text-danger">*</small></label>
@@ -22,6 +22,43 @@
                         <label for="">Descripción <small class="text-danger">*</small></label>
                         <textarea name="descripcion" class="form-control" v-model="form.descripcion"></textarea>
                         <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group" v-if="edit">
+                        <label for="">Descuento SNP</label>
+                        <input type="checkbox" name="obligatorio" v-model="form.obligatorio" value="1">
+                    </div>
+
+                    <div class="form-group" v-if="form.obligatorio">
+                        <div class="row align-items-center">
+                            <label for="" class="col-md-3">Porcentaje%</label>
+                            <input type="number" class="form-control col-md-3" name="snp_porcentaje" v-model="form.snp_porcentaje">
+                        </div>
+                        <hr>
+                    </div>
+
+                    <div class="form-group" v-if="edit">
+                        <label for="">Descuento de Essalud</label>
+                         <input type="checkbox" name="essalud" v-model="form.essalud" value="1">
+                    </div>
+
+                    <div class="form-group" v-if="form.essalud">
+                        <div class="row align-items-center">
+                            <label for="" class="col-md-3">Porcentaje%</label>
+                            <input type="number" class="form-control col-md-3" name="essalud_porcentaje" v-model="form.essalud_porcentaje">
+                        </div>
+
+                        <div class="row align-items-center mt-1">
+                            <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">RMV</label>
+                            <input type="number" class="form-control col-md-3" name="minimo" v-model="form.minimo">
+                        </div>
+
+                        <div class="row align-items-center mt-1">
+                            <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">Defecto</label>
+                            <input type="number" class="form-control col-md-3" name="monto" v-model="form.monto">
+                        </div>
                     </div>
 
                 </form>
@@ -47,7 +84,13 @@ export default {
             show: false,
             form: {
                 key: '',
-                descripcion: ''
+                descripcion: '',
+                obligatorio: 0,
+                snp_porcentaje: 0,
+                essalud: 0,
+                essalud_porcentaje: 0,
+                monto: 83.70,
+                minimo: 0
             },  
             errors: {},
             loader: false,
@@ -82,6 +125,7 @@ export default {
             await api.then(async res => {
 
                 let { status, message } = res.data; 
+                console.log(res);
 
                 if (status) {
                     await notify({icon: 'success', text: message});

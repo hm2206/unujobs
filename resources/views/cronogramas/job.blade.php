@@ -50,73 +50,23 @@
     </div>
 @endif
 
-
-<div class="col-md-12 mb-2">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    Importar Remuneraciones 
-                    <a href="{{ url('/formatos/remuneracion_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                        <i class="fas fa-file-excel"></i> Formato
-                    </a>
-                </div>
-                <form class="card-body" method="POST" 
-                    action="{{ route('import.remuneracion', $cronograma->slug()) }}"
-                    enctype="multipart/form-data"
-                >
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="import_remuneracion" class="btn btn-sm btn-block btn-outline-primary">
-                                <input type="file" name="import_remuneracion" id="import_remuneracion" hidden>
-                                <i class="fas fa-upload"></i> Subir Archivo de Excel
-                            </label>
-                            <small class="text-danger">
-                                {{ $errors->first('import_remuneracion') }}
-                            </small>
-                        </div>
-                        <div class="col-md-6">
-                            <validacion btn_text="Importar"></validacion>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    Importar Descuentos
-                    <a href="{{ url('/formatos/descuento_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                        <i class="fas fa-file-excel"></i> Formato
-                    </a>
-                </div>
-                <form class="card-body" method="POST" 
-                    action="{{ route('import.descuento', $cronograma->slug()) }}"
-                    enctype="multipart/form-data"
-                >
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="import_descuento" class="btn btn-block btn-sm btn-outline-primary">
-                                <input type="file" name="import_descuento" id="import_descuento" hidden>
-                                <i class="fas fa-upload"></i> Subir Archivo de Excel
-                            </label>
-                            <small class="text-danger">
-                                {{ $errors->first('import_descuento') }}
-                            </small>
-                        </div>
-                        <div class="col-md-6">
-                            <validacion btn_text="Importar"></validacion>
-                        </div>
-                    </div>
-                </form>
-            </div>
+@if ($errors->first('import_remuneracion'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ $errors->first('import_remuneracion') }}       
         </div>
     </div>
-</div>
+@endif
+
+@if ($errors->first('import_descuento'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ $errors->first('import_descuento') }}       
+        </div>
+    </div>
+@endif
+
+
 
 
 <div class="col-md-12">
@@ -135,15 +85,88 @@
 
                 <form class="col-md-12 mb-3" method="GET">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <input type="text" class="form-control" name="query_search" value="{{ $like }}">
                         </div>
         
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <button class="btn btn-info">
                                 <i class="fas fa-search"></i> Buscar
                             </button>
                         </div>    
+
+                        <div class="col-md-6">
+
+                            <div class="row">
+                                
+                                <validacion 
+                                    btn_text="Imp. Remuneraciones"
+                                    method="post"
+                                    token="{{ csrf_token() }}"
+                                    url="{{ route('import.remuneracion', $cronograma->slug()) }}"
+                                >
+    
+                                    <div class="form-group">
+                                        <a href="{{ url('/formatos/remuneracion_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-file-excel"></i> Formato de importación
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="import_remuneracion" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                                            <input type="file" name="import_remuneracion" id="import_remuneracion" hidden>
+                                        </label>
+                                        <small class="text-danger">{{ $errors->first('import_remuneracion') }}</small>
+                                    </div>
+    
+                                </validacion>
+
+                                <validacion 
+                                    class="ml-1"
+                                    btn_text="Imp. Descuentos"
+                                    method="post"
+                                    token="{{ csrf_token() }}"
+                                    url="{{ route('import.descuento', $cronograma->slug()) }}"
+                                >
+    
+                                    <div class="form-group">
+                                        <a href="{{ url('/formatos/descuento_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-file-excel"></i> Formato de importación
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="import_descuento" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                                            <input type="file" name="import_descuento" id="import_descuento" hidden>
+                                        </label>
+                                        <small class="text-danger">{{ $errors->first('import_descuento') }}</small>
+                                    </div>
+    
+                                </validacion>
+
+                                @if ($cronograma->pdf)
+                                    <a target="__blank" title="PDF, resumen de todas las metas" 
+                                        href="{{ url($cronograma->pdf) }}" 
+                                        class="btn btn-sm btn-outline-danger ml-1"
+                                    >
+                                        <i class="far fa-file-pdf" aria-hidden="true"></i>
+                                    </a>
+                                @endif
+    
+                                @if ($cronograma->pdf_meta)
+                                    <a target="__blank" title="PDF, resumen metas x metas" 
+                                        href="{{ url($cronograma->pdf_meta) }}" 
+                                        class="btn btn-sm btn-outline-danger ml-1"
+                                    >
+                                        <i class="far fa-file-pdf" aria-hidden="true"></i>
+                                    </a>
+                                @endif
+
+                            </div>
+
+                        </div>
                     </div>
                 </form>
 
@@ -153,6 +176,7 @@
                         <tr>
                             <th>#ID</th>
                             <th>Nombre Completo</th>
+                            <th>N° Documento</th>
                             <th>Categorias</th>
                             <th>Acciones</th>
                         </tr>
@@ -161,10 +185,12 @@
                         @forelse ($jobs as $job)
                             <tr>
                                 <th>{{ $job->id }}</th>
-                                <th class="uppercase">{{ $job->nombre_completo }}</th>
+                                <th class="capitalize">{{ $job->nombre_completo }}</th>
+                                <th>{{ $job->numero_de_documento }}</th>
                                 <th class="uppercase">
                                     @foreach ($job->infos as $info)
                                         <div class="btn btn-sm btn-danger">
+                                            {{ $info->categoria_id }} <small class="fas fa-arrow-right"></small>
                                             {{ $info->categoria ? $info->categoria->nombre : '' }}
                                         </div>
                                     @endforeach

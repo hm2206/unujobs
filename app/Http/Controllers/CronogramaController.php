@@ -260,8 +260,6 @@ class CronogramaController extends Controller
             $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
             
             $tmp_jobs = $request->input('jobs', []);
-            
-            $cronograma->works()->syncWithoutDetaching($tmp_jobs);
 
             $jobs = Work::whereIn("id", $tmp_jobs)->get();
 

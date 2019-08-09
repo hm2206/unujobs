@@ -13,7 +13,10 @@ use App\Jobs\ImportQueue;
 use App\Imports\WorkImport;
 use App\Imports\RemuneracionImport;
 use App\Imports\DescuentoImport;
+use App\Imports\EtapaImport;
 use App\Models\Cronograma;
+use App\Models\TypeEtapa;
+use App\Models\Personal;
 
 /**
  * Class ImportController
@@ -111,6 +114,40 @@ class ImportController extends Controller
             // Procesar importacion
             (new DescuentoImport($cronograma, $name))->import("/imports/{$name}", "public");
     
+            return back()->with(["success" => "La importación ha sido exitosa"]);
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return back()->with(["danger" => "La importación falló"]); 
+        }
+
+    }
+
+
+    /**
+     * Realizar la importación de evaluacion y selección de cada etapa, desde un archivo de excel
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function etapa(Request $request, $id) {
+        $this->validate(request(), [
+            "import" => "required|file|max:1024",
+            "personal_id" => "required"
+        ]);
+
+        try {
+
+            // obtener la etapa
+            $type = TypeEtapa::findOrFail($id);
+            // obtener la etapa
+            $personal = Personal::findOrFail($request->personal_id);
+            // configurar archivo de excel
+            $name = "etapa_import_" . date('Y-m-d') . ".xlsx";
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
+            // Procesar importacion
+            (new EtapaImport($type, $personal, $name))->import("/imports/{$name}", "public");
+
             return back()->with(["success" => "La importación ha sido exitosa"]);
         } catch (\Throwable $th) {
             \Log::info($th);

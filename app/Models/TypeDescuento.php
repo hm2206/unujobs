@@ -21,7 +21,10 @@ class TypeDescuento extends Model
      *
      * @var array
      */
-    protected $fillable = ["descripcion", "key", "config_afp"];
+    protected $fillable = [
+        "descripcion", "key", "config_afp", "essalud", "ley", "obligatorio",
+        "essalud_porcentaje", "snp_porcentaje", "monto", "minimo", "base"
+    ];
 
 
     /**

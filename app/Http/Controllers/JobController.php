@@ -138,8 +138,9 @@ class JobController extends Controller
      */
     public function update(JobRequest $request, Work $job)
     {
-        $job->update($request->all());
+        $job->update($request->except('descanso'));
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
+        $job->descanso = $request->input("descanso") ? 1 : 0;
         $job->save();
         return back()->with(["success" => "El registro se actualizo correctamente"]);
     }
@@ -353,20 +354,19 @@ class JobController extends Controller
                 ->where("cronograma_id", $cronograma->id)
                 ->where("categoria_id", $current->categoria_id)
                 ->where("cargo_id", $current->cargo_id)
-                ->where("base", 0)->get();
+                ->where("base", 0)
+                ->get();
 
             $base = $types->sum('monto');
-            $total = $descuentos->sum('monto');
+            $total = $descuentos->where("base", 0)->sum('monto');
             $dias = $cronograma->dias;
         }
 
-        $aporte = $base * 0.09;
-        $aporte = $base < 930 ? 83.70 : $aporte;
         $total_neto = $current->total - $total;
 
         return view("trabajador.descuento", 
             compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria_id',
-                'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 
+                'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 
                 'total_neto', 'current', 'categorias'
             ));
     }

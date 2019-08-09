@@ -73,6 +73,14 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="" class="form-control-label">Email</label>
+                        <span class="form-control uppercase">{{ $job->email}}</span>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="" class="form-control-label">Dirección</label>
                         <span class="form-control uppercase">{{ $job->direccion }}</span>
                     </div>
@@ -162,6 +170,14 @@
                     <div class="form-group">
                         <label for="" class="form-control-label">Accidentes de Trabajo</label>
                         <span class="form-control uppercase">{{ $job->accidentes ? 'Afecto': 'No afecto' }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Descanso medico por maternidad</label>
+                        <br>
+                        <input type="checkbox" name="descanso" {!! $job->descanso ? 'checked' : '' !!}>
                     </div>
                 </div>
 

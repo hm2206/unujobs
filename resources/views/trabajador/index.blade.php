@@ -131,22 +131,22 @@
                         </thead>
                         <tbody>
                             @forelse ($jobs as $job)
-                                <tr class="uppercase capitalize">
-                                    <th>{{ $job->nombre_completo }}</th>
+                                <tr>
+                                    <th class="capitalize">{{ $job->nombre_completo }}</th>
                                     <th>{{ $job->numero_de_documento }}</th>
-                                    <th>{{ $job->profesion }}</th>
+                                    <th class="uppercase">{{ $job->profesion }}</th>
                                     <th>{{ $job->phone }}</th>
                                     <th>{{ $job->numero_de_cuenta }}</th>
                                     <th>
-                                        <div class="btn-group">
-                                            <a href="{{ route('job.edit', $job->slug()) }}" class="btn btn-circle btn-xs btn-warning">
+                                        <div class="row justify-content-around">
+                                            <a href="{{ route('job.edit', $job->slug()) }}" class="btn btn-circle btn-sm btn-warning">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </a>
-                                            <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-xs btn-primary">
+                                            <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-circle btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <btn-boleta theme="btn-dark btn-circle"
+                                            <btn-boleta theme="btn-dark btn-sm btn-circle"
                                                 param="{{ $job->id }}"
                                                 url="{{ route('job.boleta.store', $job->id) }}"
                                                 nombre_completo="{{ $job->nombre_completo }}"
@@ -154,6 +154,17 @@
                                             >
                                                 <i class="fas fa-file-alt"></i>
                                             </btn-boleta>
+
+                                            <btn-liquidar theme="btn-danger btn-sm btn-circle"
+                                                param="{{ $job->id }}"
+                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                fecha_de_inicio="{{ $job->fecha_de_ingreso }}"
+                                                url="{{ route('job.boleta.store', $job->id) }}"
+                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                token="{{ csrf_token() }}"
+                                            >
+                                                <i class="fas fa-trash"></i>
+                                            </btn-liquidar>
 
                                         </div>
                                     </th>

@@ -49,5 +49,15 @@ Route::group(["prefix" => 'v1'], function() {
     // actualizar una remuneración determinada
     Route::put("/remuneracion/{id}", "TypeRemuneracionController@update");
 
+    // Recursos de modulos
+    Route::resource("modulo", "ModuloController");
+
+    // Recursos de los roles
+    Route::resource("role", "RoleController");
+
+    // Guaradar nuevo usuario
+    Route::post("/user", "UserController@store");
+    Route::put("/user/{id}", "UserController@update");
+
 
 });

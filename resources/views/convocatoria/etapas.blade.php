@@ -9,6 +9,24 @@
     </div>
 
     <div class="col-md-12">
+
+        @if (session('danger'))
+            <div class="alert alert-danger">
+                {{ session('danger') }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->first('personal_id'))
+            <div class="alert alert-danger">
+               {{ $errors->first('personal_id') }}
+            </div>
+        @endif
         
         <div class="card">
             <div class="card-header">
@@ -19,7 +37,7 @@
                     @foreach ($convocatoria->personals as $personal)
                         <div class="col-md-3">
                             <div class="btn btn-{{ isset($current->id) && $personal->id ==  $current->id ? 'primary' : 'outline-primary' }}">
-                                <a href="{{ route('convocatoria.etapas', [$convocatoria->slug(), "personal={$personal->slug}"]) }}"
+                                <a href="{{ route('convocatoria.etapas', [$convocatoria->slug(), 'personal=' . $personal->slug]) }}"
                                     class="{{ isset($current->id) && $personal->id ==  $current->id ? 'text-white' : 'text-primary' }}"    
                                 >
                                     {{ $personal->cargo_txt }}
@@ -102,7 +120,7 @@
                                                     </button>
                                                 @else
                                                     <label for="" class="btn btn-sm btn-{{ $postulante->next ? 'primary' : 'outline-primary'}}">
-                                                        <input type="checkbox"etapa; name="postulantes[{{ $iter }}][2]" {!! $postulante->next ? 'checked' : null !!}>
+                                                        <input type="checkbox" name="postulantes[{{ $iter }}][2]" {!! $postulante->next ? 'checked' : null !!}>
                                                         {{ $etapa->fin ? 'Ganador' : 'Continuar' }}
                                                     </label>
                                                 @endif
@@ -111,7 +129,7 @@
                                     </tr>
                                 @empty
                                     <tr class="text-center">
-                                        <td colspan="4">
+                                        <td colspan="5">
                                             No hay registros
                                         </td>
                                     </tr>
@@ -127,6 +145,33 @@
                             <button class="btn btn-success">
                                 <i class="fas fa-save"></i> Guardar
                             </button>
+
+                            <validacion 
+                                btn_text="Importar"
+                                theme="btn-outline-success btn-md"
+                                method="post"
+                                token="{{ csrf_token() }}"
+                                url="{{ route('import.etapa', $etapa->id) }}"
+                                id="etapa-import-{{ $etapa->id }}"
+                            >
+        
+                                <input type="hidden" name="personal_id" value="{{ $current->id }}">
+
+                                <div class="form-group">
+                                    <a href="{{ url('/formatos/etapa_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-file-excel"></i> Formato de importación
+                                    </a>
+                                </div>
+                                        
+                                <div class="form-group">
+                                    <label for="etapa-{{ $etapa->id }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-upload"></i> Subir Archivo de Excel
+                                        <input type="file" name="import" hidden id="etapa-{{ $etapa->id }}">
+                                    </label>
+                                    <small class="text-danger">{{ $errors->first('import') }}</small>
+                                </div>
+        
+                            </validacion>
                         </div>
                     @endif
                 @endif

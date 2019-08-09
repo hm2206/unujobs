@@ -1,6 +1,6 @@
 <template>
     <div class="btn-group">
-        <button :class="`btn ${theme}`" v-on:click="show = true">
+        <button v-if="!show" :class="`btn ${theme}`" v-on:click="show = true">
             <slot></slot>
         </button>
 

@@ -24,7 +24,7 @@ class Work extends Model
     protected $fillable = [
         "ape_paterno", "ape_materno", "nombres","numero_de_documento",
         "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso",
-        "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta",
+        "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta", "descanso",
         "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
         "sindicato_id", "nombre_completo", "direccion", "total", "profesion", "email"
     ];
