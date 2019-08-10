@@ -13,6 +13,9 @@ use App\Exports\CargoExport;
 use App\Exports\CategoriaExport;
 use App\Exports\CronogramaExport;
 use App\Jobs\ExportQueue;
+use App\Exports\AfpNet;
+use App\Exports\TransparenciaExport;
+use App\Models\Cronograma;
 
 /**
  * Class ExportController
@@ -136,6 +139,80 @@ class ExportController extends Controller
         ]);
 
         return back()->with(["success" => "Le notificaremos cuando la exportación esté lista."]);
+    }
+
+
+    /**
+     * Crea un archivo de excel para AFPNET y PDT-PLAME
+     *
+     * @param  string  $id   
+     * @return  \Illuminate\Http\RedirectResponse
+     */
+    public function afp($id)
+    {
+        try {
+         
+            $cronograma = Cronograma::findOrFail($id);
+
+            //ruta de apt-net
+            $name_afp_net = "afp_net_{$cronograma->mes}_{$cronograma->año}.xlsx";
+            $ruta_apt_net = "public/excels/{$name_afp_net}";
+            // exportar afp-net
+            (new AfpNet($cronograma))->queue($ruta_apt_net)->chain([
+                new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net)
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
+                "body" => $cronograma
+            ];
+            
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
+            ]; 
+
+        }
+       
+    }
+
+
+    public function mef($year, $mes)
+    {
+
+        try {
+            
+            $name = "transparencia_{$year}_{$mes}.xlsx";
+            $ruta = "public/excels/{$name}";
+
+            (new TransparenciaExport($year, $mes))->queue($ruta)->chain([
+                new ExportQueue("/storage/excels/{$name}", $name)
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
+                "body" => ""
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
+            ]; 
+
+        }
+
     }
 
 }

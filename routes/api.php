@@ -14,6 +14,8 @@ Route::group(["prefix" => 'v1'], function() {
     // Generar boletas de un trabajador en pdf
     Route::post('/boleta/{id}', 'JobController@boletaStore');
 
+    // Mostrar un recurso de un cronograma determinado
+    Route::get("/cronograma/{id}", "CronogramaController@show");
     // Crear planillas x mes
     Route::post("/cronograma", "CronogramaController@store");
     // actualizar planilla x mes
@@ -61,6 +63,10 @@ Route::group(["prefix" => 'v1'], function() {
 
     // Liquidar trabajador
     Route::post("/liquidar", "LiquidarController@store");
+
+
+    Route::post("/export/cronograma/{id}/afp", "ExportController@afp");
+    Route::post("/export/mef/{year}/{mes}", "ExportController@mef");
 
 
 });

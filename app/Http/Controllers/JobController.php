@@ -263,7 +263,8 @@ class JobController extends Controller
         ]);
         
         $job = Work::findOrFail($id);
-        $cronograma = Cronograma::find($request->cronograma_id);
+        $cronograma = Cronograma::findOrFail($request->cronograma_id);
+
         $remuneraciones = $job->remuneraciones
             ->where("cronograma_id", $cronograma->id)
             ->where("cargo_id", $request->cargo_id)

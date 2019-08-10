@@ -101,4 +101,10 @@ class Work extends Model
         return base64_encode($this->id);
     }
 
+
+    public function remuneraciones()
+    {
+        return $this->hasMany(Remuneracion::class);
+    }
+
 }

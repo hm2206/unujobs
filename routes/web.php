@@ -152,6 +152,15 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 
 
 
+// Reportes
+Route::group(["prefix" => "reportes", "middleware" => ["auth"]], function() {
+   
+    Route::get("/", "ReportController@index")->name("report.index");
+
+});
+
+
+
 //notificaciones
 Route::get("user/unread/count", "UserController@countUnread")->middleware('auth');
 Route::get("user/unread", "UserController@unread")->middleware('auth');

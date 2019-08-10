@@ -17,6 +17,8 @@ class CreateLiquidarsTable extends Migration
             $table->bigIncrements('id');
             $table->integer("work_id");
             $table->date("fecha_de_cese");
+            $table->string("mes");
+            $table->string("año");
             $table->double("monto")->default(0);
             $table->timestamps();
         });

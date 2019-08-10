@@ -22,6 +22,7 @@
             Agregar Tragajadores
         </add-work>
     @endif
+
 </div>
 
 <h3 class="text-center uppercase">
@@ -67,6 +68,22 @@
 @endif
 
 
+
+<div class="col-md-12 mb-2">
+    <btn-report-cuenta 
+        :cronograma="{{ $cronograma }}"
+        theme="btn-primary btn-sm"
+    >
+        Reporte de cuenta o cheques
+    </btn-report-cuenta>
+
+    <btn-afp 
+        :id="{{ $cronograma->id  }}"
+        theme="btn-primary btn-sm"
+    >
+        Reporte para AFPNET | DPT-PLAME
+    </btn-afp>
+</div>
 
 
 <div class="col-md-12">

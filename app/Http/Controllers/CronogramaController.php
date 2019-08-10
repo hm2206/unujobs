@@ -138,8 +138,9 @@ class CronogramaController extends Controller
      * @param Cronograma $cronograma
      * @return void
      */
-    public function show(Cronograma $cronograma)
+    public function show($id)
     {
+        $cronograma = Cronograma::with(["works", "planilla"])->findOrFail($id);
         return $cronograma;
     }
 

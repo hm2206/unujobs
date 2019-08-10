@@ -17,6 +17,14 @@
             <a href="{{ route('export.reporte', [$mes, $year, $adicional]) }}" class="btn btn-sm btn-primary shadow-sm">
                 <i class="fas fa-download fa-sm text-white-50"></i> Generar Reporte
             </a>
+            <btn-mef
+                theme="btn-primary btn-sm"
+                mes="{{ $mes }}"
+                year="{{ $year }}"
+            >
+                <i class="fas fa-download fa-sm text-white-50"></i> Reporte MEF
+            </btn-mef>
+        
         </div>
     @endif
 </div>

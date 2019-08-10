@@ -46,6 +46,10 @@ Vue.component('add-work', require('./components/AddWork.vue').default);
 Vue.component('btn-user', require('./components/BtnUser.vue').default);
 Vue.component('btn-modulo', require('./components/BtnModulo.vue').default);
 Vue.component('btn-role', require('./components/BtnRole.vue').default);
+Vue.component('btn-report-cuenta', require('./components/BtnReportCuenta.vue').default);
+Vue.component('btn-afp', require('./components/BtnAfp.vue').default);
+Vue.component('btn-mef', require('./components/BtnMef.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
