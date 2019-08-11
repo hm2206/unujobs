@@ -22,8 +22,26 @@
                 mes="{{ $mes }}"
                 year="{{ $year }}"
             >
-                <i class="fas fa-download fa-sm text-white-50"></i> Reporte MEF
+                <i class="fas fa-download fa-sm text-white-50"></i> Rpte. MEF
             </btn-mef>
+
+            <btn-alta-baja
+                theme="btn-primary btn-sm"
+                mes="{{ $mes }}"
+                year="{{ $year }}"
+            >
+                <i class="fas fa-file fa-sm text-white-50"></i>
+                Rpte. de altas y bajas
+            </btn-alta-baja>
+
+            <btn-resumen-categoria
+                theme="btn-primary btn-sm"
+                mes="{{ $mes }}"
+                year="{{ $year }}"
+            >
+                <i class="fas fa-file fa-sm text-white-50"></i>
+                Resumen de rentas
+            </btn-resumen-categoria>
         
         </div>
     @endif

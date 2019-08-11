@@ -49,6 +49,8 @@ Vue.component('btn-role', require('./components/BtnRole.vue').default);
 Vue.component('btn-report-cuenta', require('./components/BtnReportCuenta.vue').default);
 Vue.component('btn-afp', require('./components/BtnAfp.vue').default);
 Vue.component('btn-mef', require('./components/BtnMef.vue').default);
+Vue.component('btn-alta-baja', require('./components/BtnAltaBaja.vue').default);
+Vue.component('btn-resumen-categoria', require('./components/BtnResumenCategoria.vue').default);
 
 
 /**

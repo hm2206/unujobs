@@ -68,5 +68,9 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/export/cronograma/{id}/afp", "ExportController@afp");
     Route::post("/export/mef/{year}/{mes}", "ExportController@mef");
 
+    Route::post("/export/alta-baja/{year}/{mes}", "ExportController@altaBaja");
+
+    Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
+
 
 });

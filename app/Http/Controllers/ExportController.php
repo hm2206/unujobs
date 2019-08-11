@@ -15,6 +15,8 @@ use App\Exports\CronogramaExport;
 use App\Jobs\ExportQueue;
 use App\Exports\AfpNet;
 use App\Exports\TransparenciaExport;
+use App\Exports\AltaBajaExport;
+use App\Exports\ResumenExport;
 use App\Models\Cronograma;
 
 /**
@@ -185,7 +187,6 @@ class ExportController extends Controller
 
     public function mef($year, $mes)
     {
-
         try {
             
             $name = "transparencia_{$year}_{$mes}.xlsx";
@@ -199,6 +200,72 @@ class ExportController extends Controller
                 "status" => true,
                 "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
                 "body" => ""
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
+            ]; 
+
+        }
+
+    }
+
+
+    public function altaBaja($year, $mes)
+    {
+
+        try {
+            
+            $name = "alta_baja_{$year}_{$mes}.xlsx";
+            $ruta = "public/excels/{$name}";
+
+            (new AltaBajaExport($year, $mes))->queue($ruta)->chain([
+                new ExportQueue("/storage/excels/{$name}", $name)
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
+                "body" => $name
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
+            ]; 
+
+        }
+
+    }
+
+
+    public function resumen($year, $mes)
+    {
+
+        try {
+            
+            $name = "resumen_{$year}_{$mes}.xlsx";
+            $ruta = "public/excels/{$name}";
+
+            (new ResumenExport($year, $mes))->queue($ruta)->chain([
+                new ExportQueue("/storage/excels/{$name}", $name)
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
+                "body" => $name
             ];
 
         } catch (\Throwable $th) {
