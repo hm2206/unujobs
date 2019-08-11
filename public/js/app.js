@@ -5178,8 +5178,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }
 
                 this.loader = true;
-                form = new FormData(document.getElementById('add-works'));
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/cronograma/".concat(this.id, "?query_search=").concat(this.like), form);
+                form = new FormData(document.getElementById('register-reporter'));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/export/cuenta-cheque/".concat(this.cronograma.id), form);
                 _context2.next = 6;
                 return api.then(
                 /*#__PURE__*/
@@ -47803,12 +47803,12 @@ var render = function() {
                   "form",
                   {
                     staticClass: "row justify-content-center",
-                    attrs: { action: "" }
+                    attrs: { action: "", id: "register-reporter" }
                   },
                   [
                     _c("div", { staticClass: "col-md-4 text-center" }, [
                       _c("input", {
-                        attrs: { type: "checkbox" },
+                        attrs: { type: "checkbox", name: "cheque" },
                         on: { change: _vm.validate }
                       }),
                       _vm._v(" Cheque\n                    ")
@@ -47816,7 +47816,7 @@ var render = function() {
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-4 text-center" }, [
                       _c("input", {
-                        attrs: { type: "checkbox" },
+                        attrs: { type: "checkbox", name: "cuenta" },
                         on: { change: _vm.validate }
                       }),
                       _vm._v(" Cuenta\n                    ")

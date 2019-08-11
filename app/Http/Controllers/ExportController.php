@@ -18,6 +18,8 @@ use App\Exports\TransparenciaExport;
 use App\Exports\AltaBajaExport;
 use App\Exports\ResumenExport;
 use App\Models\Cronograma;
+use App\Jobs\ReportCuenta;
+use App\Jobs\ReportCheque;
 
 /**
  * Class ExportController
@@ -266,6 +268,45 @@ class ExportController extends Controller
                 "status" => true,
                 "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
                 "body" => $name
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
+            ]; 
+
+        }
+    }
+
+
+    public function cuentaCheque(Request $request, $id)
+    {
+
+        try {
+
+            $cronograma = Cronograma::findOrFail($id);
+
+            if ($request->cheque) {
+
+                ReportCheque::dispatch($cronograma);
+
+            }
+
+            if ($request->cuenta) {
+
+                ReportCuenta::dispatch($cronograma);
+
+            }
+
+            return [
+                "status" => true,
+                "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
+                "body" => ""
             ];
 
         } catch (\Throwable $th) {

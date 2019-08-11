@@ -18,12 +18,12 @@
             <template slot="content">
                 <div class="card-body p-relative scroll-y">
 
-                    <form action="" class="row justify-content-center">
+                    <form action="" class="row justify-content-center" id="register-reporter">
                         <div class="col-md-4 text-center">
-                            <input type="checkbox" v-on:change="validate"> Cheque
+                            <input type="checkbox" name="cheque" v-on:change="validate"> Cheque
                         </div>
                         <div class="col-md-4 text-center">
-                            <input type="checkbox" v-on:change="validate"> Cuenta
+                            <input type="checkbox" name="cuenta" v-on:change="validate"> Cuenta
                         </div>
                     </form>
 
@@ -71,9 +71,9 @@ export default {
 
             this.loader = true;
 
-            const form = new FormData(document.getElementById('add-works'));
+            const form = new FormData(document.getElementById('register-reporter'));
 
-            let api = unujobs("post", `/cronograma/${this.id}?query_search=${this.like}`, form);
+            let api = unujobs("post", `/export/cuenta-cheque/${this.cronograma.id}`, form);
 
             await api.then(async res => {
 

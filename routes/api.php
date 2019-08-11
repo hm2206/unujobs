@@ -71,6 +71,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/export/alta-baja/{year}/{mes}", "ExportController@altaBaja");
 
     Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
+    Route::post("/export/cuenta-cheque/{id}", "ExportController@cuentaCheque");
 
 
 });

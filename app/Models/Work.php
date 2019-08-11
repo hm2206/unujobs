@@ -107,4 +107,9 @@ class Work extends Model
         return $this->hasMany(Remuneracion::class);
     }
 
+    public function cronogramas()
+    {
+        return $this->belongsToMany(Work::class, "work_cronograma");
+    }
+
 }
