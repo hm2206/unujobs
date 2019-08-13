@@ -60,7 +60,7 @@ Route::group(["prefix" => 'v1'], function() {
     // Guaradar nuevo usuario
     Route::post("/user", "UserController@store");
     Route::put("/user/{id}", "UserController@update");
-
+    Route::get("/menu/{id}", "UserController@menu");
     // Liquidar trabajador
     Route::post("/liquidar", "LiquidarController@store");
 

@@ -21,25 +21,15 @@ class VerifyOrigen
 
             $current = auth()->user();
 
-            if ($current->roles->count() > 0) {
+            if ($current->modulos->count() > 0) {
 
                 $url = url()->current();
 
                 $posible = Modulo::where("ruta", "like", "%{$url}%")->first();
 
-                if ($posible) {
+                
+                return $next($request);
 
-                    $padre = $posible->parent;
-                    $tmp_roles = $padre->roles->pluck("id");
-                    $validate = $current->roles->whereIn("id", $tmp_roles)->count();
-
-                    if ($validate > 0) {
-        
-                        return $next($request);
-        
-                    }
-
-                }
                 
                 return redirect("/")->with(["warning" => "Usted no está autorizado para ingresar a está pagina"]);
             }

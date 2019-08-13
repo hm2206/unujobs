@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Modulo;
 
 /**
  * Class UserController
@@ -17,6 +18,43 @@ use App\Models\User;
 class UserController extends Controller
 {
     
+
+    public function menu($id)
+    {
+
+        $user = User::findOrFail($id);
+
+        if ($user->modulos->count() > 0) {
+
+            $modulos = $user->modulos->where("modulo_id", null);
+
+            foreach ($modulos as $mod) {
+                    
+                $mod->modulos = Modulo::whereHas("users", function($u) use($user) {
+                    $u->where("users.id", $user->id);
+                })->where("modulo_id", $mod->id)
+                ->get();
+    
+            }
+
+        }else {
+
+            $modulos = Modulo::where("modulo_id", null)->get();
+
+            foreach ($modulos as $mod) {
+                
+                $mod->modulos;
+
+            }
+
+        }   
+
+
+
+        return $modulos;
+    }
+
+
     /**
      * Muestra un contador de las notificaciones no leídas
      * @return  int
@@ -68,7 +106,7 @@ class UserController extends Controller
 
         try {
     
-            $roles = $request->input("roles", []);
+            $modulos = $request->input("modulos", []);
             $nombre_completo = "{$request->ape_paterno} {$request->ape_materno} {$request->nombres}";
     
             $user = User::create([
@@ -80,7 +118,7 @@ class UserController extends Controller
                 "nombre_completo" => $nombre_completo
             ]);
 
-            $user->roles()->syncWithoutDetaching($roles);
+            $user->modulos()->syncWithoutDetaching($modulos);
     
             return [
                 "status" => true,
@@ -113,7 +151,7 @@ class UserController extends Controller
 
         try {
     
-            $roles = $request->input("roles", []);
+            $modulos = $request->input("modulos", []);
             $nombre_completo = "{$request->ape_paterno} {$request->ape_materno} {$request->nombres}";
     
             $user = User::findOrFail($id);
@@ -124,7 +162,7 @@ class UserController extends Controller
                 "nombre_completo" => $nombre_completo
             ]);
 
-            $user->roles()->sync($roles);
+            $user->modulos()->sync($modulos);
     
             return [
                 "status" => true,
@@ -196,5 +234,6 @@ class UserController extends Controller
         }
 
     }
+
 
 }

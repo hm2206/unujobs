@@ -51,7 +51,7 @@ Vue.component('btn-afp', require('./components/BtnAfp.vue').default);
 Vue.component('btn-mef', require('./components/BtnMef.vue').default);
 Vue.component('btn-alta-baja', require('./components/BtnAltaBaja.vue').default);
 Vue.component('btn-resumen-categoria', require('./components/BtnResumenCategoria.vue').default);
-
+Vue.component('menu-bar', require('./components/Menu.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

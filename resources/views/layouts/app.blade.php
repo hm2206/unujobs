@@ -22,8 +22,9 @@
 
 </head>
 
-<body id="page-top">
+<body>
 
+  <div id="app">
   <!-- Page Wrapper -->
   <div id="wrapper">
 
@@ -48,36 +49,7 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
 
-      @php
-         $current = auth()->user();
-
-          if ($current->roles->count() == 0) {
-            $modulos = \App\Models\Modulo::with("modulos")
-              ->where("modulo_id", null)->get();
-          }else {
-            $modulos = \App\Models\Modulo::whereHas("roles", function($q) use($current) {
-              $q->whereIn("roles.id", $current->roles->pluck(["id"]));
-            })->where("modulo_id", null)->get(); 
-          }
-
-      @endphp
-
-      @foreach ($modulos as $modulo)
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse{{ $modulo->id }}" aria-expanded="true" aria-controls="collapseTwo">
-            <i class="{{ $modulo->icono }}"></i>
-            <span>{{ $modulo->name }}</span>
-          </a>
-          <div id="collapse{{ $modulo->id }}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <h6 class="collapse-header">Modulos:</h6>
-              @foreach ($modulo->modulos as $mod)
-                <a class="collapse-item" href="{{ url($mod->ruta) }}">{{ $mod->name }}</a>
-              @endforeach
-            </div>
-          </div>
-        </li>
-      @endforeach
+      <menu-bar param="{{ auth()->user()->id }}"></menu-bar>
 
     </ul>
     <!-- End of Sidebar -->
@@ -89,7 +61,7 @@
       <!-- Main Content -->
       <div id="content">
 
-        <div id="app">
+        <div>
             
             <authentication></authentication>
             <!-- Topbar -->
@@ -177,6 +149,7 @@
 
   </div>
   <!-- End of Page Wrapper -->
+  </div>
 
   <!-- Scroll to Top Button-->
   <a class="scroll-to-top rounded" href="#page-top">
@@ -188,6 +161,7 @@
 
   <!-- Custom scripts for all pages-->
   <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+
 
 </body>
 

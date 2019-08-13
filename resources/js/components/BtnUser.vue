@@ -43,17 +43,35 @@
                     </div>
 
                     <hr>
-                    Roles
+                    Modulos
 
-                    <div class="form-group">
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-4" v-for="(rol, r) in roles" :key="`role-${r}`">
-                                <input type="checkbox" name="roles[]" :value="rol.id" v-model="tmp_roles">
-                                <span v-text="rol.name"></span>
+                     <div id="accordianId" role="tablist" aria-multiselectable="true">
+
+                        <div class="card mb-3" v-for="(modulo, mo) in modulos" :key="`modulos-${mo}`">
+                            <div class="card-header" role="tab" :id="`section${mo}HeaderId`">
+                                <h6 class="mb-0">
+                                    <a  aria-expanded="true" :aria-controls="`section${mo}ContentId`"
+                                        data-toggle="collapse" data-parent="#accordianId" :href="`#section${mo}ContentId`" 
+                                    >
+                                        {{ modulo.name }}
+                                        <input type="hidden" :value="modulo.id" name="modulos[]" v-if="counts[mo] > 0" checked/>
+                                    </a>
+                                </h6>
+                            </div>
+                            <div :id="`section${mo}ContentId`" class="collapse in " role="tabpanel" :aria-labelledby="`section${mo}HeaderId`">
+                                <div class="card-body">
+                                    <ol>    
+                                        <li v-for="(sub, s) in modulo.modulos" :key="`sub-${s}`">
+                                            <input type="checkbox" name="modulos[]" :value="sub.id" v-model="tmp_modulos"
+                                                v-on:change="cheking($event, mo)"
+                                            > {{ sub.name }}
+                                        </li>
+                                    </ol>
+                                </div>
                             </div>
                         </div>
-                    </div>
+
+                </div>
 
                 </form>
                 <div class="card-footer text-right">
@@ -76,7 +94,7 @@ export default {
     data() {
         return {
             show: false,
-            roles: [],
+            modulos: [],
             form: {
                 ape_paterno: "",
                 ape_materno: "",
@@ -84,16 +102,17 @@ export default {
                 email: "",
                 password: "",
             },  
-            tmp_roles: [],
+            tmp_modulos: [],
             errors: {},
             loader: false,
             edit: false,
+            counts: []
         }
     },
     watch: {
         show(nuevo) {
             if (nuevo) {
-                this.getRoles();
+                this.getModulos();
             }
         }
     },
@@ -104,19 +123,46 @@ export default {
         }
     },
     methods: {
-        async getRoles() {
+        cheking(e, index) {
+            let { checked } = e.target;
+
+            this.counts[index] = checked ? this.counts[index] + 1 : this.counts[index] - 1;
+
+        },
+        async getModulos() {
             this.loader = true;
 
-            await unujobs("get", "/role").then(res => {
-                this.roles = res.data;
+            await unujobs("get", "/modulo").then(res => {
+                this.modulos = res.data;
 
-                let current = this.form;
+                this.modulos.filter(e => this.counts.push(0))
 
-                if (current.roles && current.roles.length > 0) {
-                    current.roles.filter((e) => {
-                        this.tmp_roles.push(e.id);
-                        return e;
-                    });
+                let m_parent = this.form.modulos;
+
+                if (m_parent.length > 0) {
+
+                    let iter = 0;
+                    
+                    for (let parent of m_parent) {
+
+                        this.tmp_modulos.push(parent.id);
+                        this.counts[iter] = 1;
+
+                        if (typeof m_parent.modulos == 'array') {
+                            
+                            
+                            for (let son of m_parent.modulos) {
+                            
+                                this.tmp_modulos.push(son.id);
+
+                            }
+
+                        }
+
+                        iter++;
+
+                    }
+
                 }
 
             }).catch(err => console.log(err));

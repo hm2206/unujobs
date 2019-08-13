@@ -145,7 +145,6 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
  Route::group(["prefix" => "accesos", "middleware" => ["auth"]], function() {
    
     Route::get("/user", "AccesoController@user")->name("acceso.user");
-    Route::get("/role", "AccesoController@role")->name("acceso.role");
     Route::get("/modulo", "AccesoController@modulo")->name("acceso.modulo");
 
 });

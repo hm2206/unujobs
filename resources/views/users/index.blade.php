@@ -35,7 +35,7 @@
                                     <th>#ID</th>
                                     <th>Nombre Completo</th>
                                     <th>Email</th>
-                                    <th>Roles</th>
+                                    <th>Modulos</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -47,10 +47,10 @@
                                         <td>{{ $user->email }}</td>
                                         <td>
                                             <div class="row">
-                                                @foreach ($user->roles as $role)
+                                                @foreach ($user->modulos as $modulo)
                                                     <div class="col-md-6">
-                                                        <button class="btn btn-sm btn-dark">
-                                                            {{ $role->name }}
+                                                        <button class="btn btn-sm btn-dark mb-1">
+                                                            {{ $modulo->name }}
                                                         </button>
                                                     </div>
                                                 @endforeach

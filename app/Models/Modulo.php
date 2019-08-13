@@ -17,9 +17,9 @@ class Modulo extends Model
         return $this->hasMany(Modulo::class);
     }
 
-    public function roles()
+    public function users()
     {
-        return $this->belongsToMany(Role::class, "role_modulo");
+        return $this->belongsToMany(User::class, "modulo_user");
     }
 
     public function parent()

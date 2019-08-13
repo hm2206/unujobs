@@ -52,5 +52,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, "role_user");
     }
+
+    public function modulos()
+    {
+        return $this->belongsToMany(Modulo::class, 'modulo_user');
+    }
     
 }
