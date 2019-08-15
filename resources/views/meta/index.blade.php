@@ -53,13 +53,39 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <button class="btn btn-info">Buscar <i class="fas fa-search"></i></button>
+                    </div>
+
+                    <div class="col-md-4">
+                        <validacion 
+                            btn_text="Importar"
+                            method="post"
+                            theme="btn-success ml-1"
+                            token="{{ csrf_token() }}"
+                            url="{{ route('import.meta') }}"
+                        >
+                
+                            <div class="form-group">
+                                <a href="{{ url('/formatos/meta_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-file-excel"></i> Formato de importación
+                                </a>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="import" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-upload"></i> Subir Archivo de Excel
+                                    <input type="file" name="import" id="import" hidden>
+                                </label>
+                                <small class="text-danger">{{ $errors->first('import') }}</small>
+                            </div>
+                
+                        </validacion>
                     </div>
                 </div>
             </div>
@@ -78,30 +104,6 @@
         <div class="card-header">
             <div class="row">
                 <a href="{{ route('meta.edit', $meta->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Editar</a>
-
-                <validacion 
-                    btn_text="Importar"
-                    method="post"
-                    theme="btn-success ml-1"
-                    token="{{ csrf_token() }}"
-                    url="{{ route('import.meta') }}"
-                >
-
-                    <div class="form-group">
-                        <a href="{{ url('/formatos/meta_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                            <i class="fas fa-file-excel"></i> Formato de importación
-                        </a>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="import" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-upload"></i> Subir Archivo de Excel
-                            <input type="file" name="import" id="import" hidden>
-                        </label>
-                        <small class="text-danger">{{ $errors->first('import') }}</small>
-                    </div>
-
-                </validacion>
 
                 <validacion 
                     btn_text="Exportar"
@@ -245,7 +247,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="" class="form-control-label">Actividad <span class="text-danger">*</span></label>
-                            <span class="form-control uppercase">{{ $meta->actividad }}</span>
+                            <textarea class="form-control uppercase" id="" disabled>{{ $meta->actividad }}</textarea>
                         </div>
                     </div>
         

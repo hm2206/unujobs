@@ -14,7 +14,7 @@
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     <btn-concepto
         theme="btn-primary"
-       redirect="{{ route('concepto.index')}}"
+        redirect="{{ route('concepto.index')}}"
     >
         <i class="fas fa-plus"></i> Nuevo
     </btn-concepto>
@@ -48,7 +48,7 @@
                     <tbody>
                         @forelse ($conceptos as $concepto)
                             <tr>
-                                <th>{{ $concepto->id }}</th>
+                                <th>{{ $concepto->key }}</th>
                                 <th class="uppercase">{{ $concepto->descripcion }}</th>
                                 <th>
                                     <div class="btn-group">

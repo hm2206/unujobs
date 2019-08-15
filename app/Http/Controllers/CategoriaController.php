@@ -26,7 +26,7 @@ class CategoriaController extends Controller
      */
     public function index()
     {
-        $categorias = Categoria::paginate(20);
+        $categorias = Categoria::orderBy('nombre', 'ASC')->paginate(20);
         return view("categorias.index", \compact('categorias'));
     }
 
@@ -51,6 +51,7 @@ class CategoriaController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
+            "key" => "required",
             "nombre" => "required"
         ]);
 
@@ -109,7 +110,8 @@ class CategoriaController extends Controller
     public function update(Request $request, $id)
     {
         $payload = $this->validate(request(), [
-            "nombre" => "required"
+            "nombre" => "required",
+            "key" => "required"
         ]); 
 
         try {

@@ -5,7 +5,7 @@
             <slot></slot>
         </button>
 
-        <modal :show="show" @close="show = false" heigth="300px">
+        <modal :show="show" @close="show = false" heigth="20vh">
             <template slot="header">
                 Registro de concepto
             </template>
@@ -59,6 +59,8 @@ export default {
         if (this.datos) {
             this.edit = true;
             this.form = this.datos;
+        }else {
+            this.edit = false;
         }
     },
     methods: {

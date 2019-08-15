@@ -20,7 +20,7 @@ class Categoria extends Model
      *
      * @var array
      */
-    protected $fillable = ["nombre", "monto"];
+    protected $fillable = ["nombre", "key"];
 
 
     /**

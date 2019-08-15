@@ -54,7 +54,7 @@
 
                 <form method="GET card-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
                             </div>
@@ -63,10 +63,10 @@
                             <button class="btn btn-info">Buscar <i class="fas fa-search"></i></button>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="row justify-content-around">
                                 <validacion 
-                                    btn_text="Importar"
+                                    btn_text="Importar Trabajadores"
                                     method="post"
                                     token="{{ csrf_token() }}"
                                     url="{{ route('import.work') }}"
@@ -82,6 +82,29 @@
                                         <label for="import" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-upload"></i> Subir Archivo de Excel
                                             <input type="file" name="import" id="import" hidden>
+                                        </label>
+                                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                                    </div>
+    
+                                </validacion>
+
+                                <validacion 
+                                    btn_text="Importar Configuración"
+                                    method="post"
+                                    token="{{ csrf_token() }}"
+                                    url="{{ route('import.work.config') }}"
+                                >
+    
+                                    <div class="form-group">
+                                        <a href="{{ url('/formatos/work_config_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-file-excel"></i> Formato de importación
+                                        </a>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="import_config" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                                            <input type="file" name="import" id="import_config" hidden>
                                         </label>
                                         <small class="text-danger">{{ $errors->first('import') }}</small>
                                     </div>

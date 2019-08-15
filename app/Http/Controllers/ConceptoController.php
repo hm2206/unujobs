@@ -23,7 +23,7 @@ class ConceptoController extends Controller
      */
     public function index()
     {
-        $conceptos = Concepto::all();
+        $conceptos = Concepto::orderBy('key', 'ASC')->get();
         return view('conceptos.index', compact('conceptos'));
     }
 
@@ -107,9 +107,27 @@ class ConceptoController extends Controller
             "descripcion" => "required"
         ]);
 
-        $concepto = Concepto::findOrFail($id);
-        $concepto->update($request->all());
-        return back()->with(["success" => "Los registros fuerón actualizados correctamente"]);
+        try {
+
+            $concepto = Concepto::findOrFail($id);
+            $concepto->update($request->all());
+            
+            return [
+                "status" => true,
+                "message" => "Los registros fuerón actualizados correctamente"
+            ];
+            
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
+
     }
 
     /**

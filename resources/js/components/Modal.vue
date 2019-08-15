@@ -24,7 +24,7 @@ export default {
     props: {
         height: {
             type: String,
-            default: "90vh"
+            default: "70vh"
         },
         col: {
             type: String,

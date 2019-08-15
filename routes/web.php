@@ -123,7 +123,10 @@ Route::group(["prefix" => "import"], function() {
     Route::post("/remuneracion/{id}", "ImportController@remuneracion")->name("import.remuneracion");
     Route::post("/descuento/{id}", "ImportController@descuento")->name("import.descuento");
     Route::post('/etapa/{id}', "ImportController@etapa")->name("import.etapa");
-    Route::post("/work", "ImportController@meta")->name("import.work");
+    Route::post("/meta", "ImportController@meta")->name("import.meta");
+    Route::post("/categoria", "ImportController@categoria")->name("import.categoria");
+    Route::post("/categoria/conceptos", "ImportController@workConfig")->name("import.categoria.conceptos");
+    Route::post("/work/config", "ImportController@workConfig")->name("import.work.config");
 
 });
 

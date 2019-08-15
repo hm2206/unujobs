@@ -37,12 +37,12 @@ class MetaImport implements ToCollection, WithHeadingRow
                     "pliego" => $row['pliego'],
                     "unidadID" => $row['unidadid'],
                     "unidad_ejecutora" => $row['unidad'],
-                    "programaID" => $roe['programaid'],
+                    "programaID" => $row['programaid'],
                     "programa" => $row['programa'],
                     "funcionID" => $row['funcionid'],
                     "funcion" => $row['funcion'],
-                    "subProgramaID" => $row['subProgramaid'],
-                    "sub_programa" => $row['subPrograma'],
+                    "subProgramaID" => $row['subprogramaid'],
+                    "sub_programa" => $row['subprograma'],
                     "actividadID" => $row['actividadid'],
                     "actividad" => $row['actividad']
                 ]);

@@ -5,12 +5,18 @@
             <slot></slot>
         </button>
 
-        <modal :show="show" @close="show = false" heigth="300px">
+        <modal :show="show" @close="show = false" heigth="40vh">
             <template slot="header">
                 Registro de categoría
             </template>
             <template slot="content">
-                <form class="card-body" id="register-categoria" v-on:submit="submit">
+                <form class="card-body scroll-y" id="register-categoria" v-on:submit="submit">
+
+                    <div class="form-group">
+                        <label for="">Clave <small class="text-danger">*</small></label>
+                        <input type="text" class="form-control" name="key" v-model="form.key">
+                        <small class="text-danger">{{ errors.key ? errors.key[0] : '' }}</small>
+                    </div>
 
                     <div class="form-group">
                         <label for="">Nombre <small class="text-danger">*</small></label>
@@ -40,7 +46,8 @@ export default {
         return {
             show: false,
             form: {
-                nombre: ''
+                nombre: '',
+                key: ''
             },  
             errors: {},
             loader: false,

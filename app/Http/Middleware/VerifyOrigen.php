@@ -25,13 +25,19 @@ class VerifyOrigen
 
                 $url = url()->current();
 
-                $posible = Modulo::where("ruta", "like", "%{$url}%")->first();
+                $posibles = Modulo::whereHas('users', function($u) use($current) {
+                    $u->where("users.id", $current->id);
+                })->where("ruta", "like", "%{$url}%")
+                    ->get();
 
-                
-                return $next($request);
+                if ($posibles->count() > 0) {
 
+                    return $next($request);
+
+                }
                 
                 return redirect("/")->with(["warning" => "Usted no está autorizado para ingresar a está pagina"]);
+                
             }
 
             return $next($request);

@@ -25,6 +25,15 @@ use \PDF;
  */
 class ConvocatoriaController extends Controller
 {
+
+
+    public function __construct()
+    {
+
+        $this->middleware('origen')->only('index');
+
+    }
+
     /**
      * Muestra una lista de convocatorias
      *

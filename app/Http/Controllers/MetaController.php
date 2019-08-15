@@ -82,7 +82,7 @@ class MetaController extends Controller
     public function edit($slug)
     {
         $id = \base64_decode($slug);
-        $meta = Meta::where("metaID", $id)->firstOrFail();
+        $meta = Meta::where("id", $id)->firstOrFail();
         return view('meta.edit', \compact('meta'));
     }
 
@@ -93,7 +93,7 @@ class MetaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(MetaRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $meta = Meta::find($id);
         $meta->update($request->all());

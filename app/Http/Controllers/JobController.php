@@ -50,7 +50,7 @@ class JobController extends Controller
             $jobs = self::query($like, $jobs);
         }
 
-        $jobs = $jobs->paginate(10);
+        $jobs = $jobs->paginate(20);
         return view('trabajador.index', \compact('jobs'));
     }
 

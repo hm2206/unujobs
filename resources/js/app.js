@@ -52,6 +52,7 @@ Vue.component('btn-mef', require('./components/BtnMef.vue').default);
 Vue.component('btn-alta-baja', require('./components/BtnAltaBaja.vue').default);
 Vue.component('btn-resumen-categoria', require('./components/BtnResumenCategoria.vue').default);
 Vue.component('menu-bar', require('./components/Menu.vue').default);
+Vue.component('get-personal', require('./components/GetPersonal.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -59,6 +60,20 @@ Vue.component('menu-bar', require('./components/Menu.vue').default);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+import ApolloClient from 'apollo-boost';
+import VueApollo from 'vue-apollo';
+
+const connect = new ApolloClient({
+    uri: 'http://localhost:3000/graphql',
+})
+
+Vue.use(VueApollo);
+
+const apolloProvider = new VueApollo({
+    defaultClient: connect,
+});
+
 const app = new Vue({
     el: '#app',
+    apolloProvider
 });

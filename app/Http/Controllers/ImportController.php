@@ -17,6 +17,9 @@ use App\Imports\EtapaImport;
 use App\Models\Cronograma;
 use App\Models\TypeEtapa;
 use App\Imports\MetaImport;
+use App\Imports\CategoriaImport;
+use App\Imports\CategoriaConceptoImport;
+use App\Imports\WorkConfigImport;
 use App\Models\Personal;
 
 /**
@@ -175,5 +178,67 @@ class ImportController extends Controller
             return back()->with(["danger" => "La importación falló"]); 
         }
     }
+
+
+    public function categoria(Request $request) {
+        $this->validate(request(), [
+            "import" => "required|file|max:1024"
+        ]);
+
+        try {
+            // configurar archivo de excel
+            $name = "categoria_import_" . date('Y-m-d') . ".xlsx";
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
+            // Procesar importacion
+            (new CategoriaImport)->import("/imports/{$name}", "public");
+
+            return back()->with(["success" => "La importación ha sido exitosa"]);
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return back()->with(["danger" => "La importación falló"]); 
+        }
+    }
+
+
+
+    public function categoriaConcepto(Request $request) {
+        $this->validate(request(), [
+            "import" => "required|file|max:1024"
+        ]);
+
+        try {
+            // configurar archivo de excel
+            $name = "categoria_concepto_import_" . date('Y-m-d') . ".xlsx";
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
+            // Procesar importacion
+            (new CategoriaConceptoImport)->import("/imports/{$name}", "public");
+
+            return back()->with(["success" => "La importación ha sido exitosa"]);
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return back()->with(["danger" => "La importación falló"]); 
+        }
+    }
+
+
+    public function workConfig(Request $request) {
+        $this->validate(request(), [
+            "import" => "required|file|max:1024"
+        ]);
+
+        try {
+            // configurar archivo de excel
+            $name = "work_config_import_" . date('Y-m-d') . ".xlsx";
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
+            // Procesar importacion
+            (new WorkConfigImport)->import("/imports/{$name}", "public");
+
+            return back()->with(["success" => "La importación ha sido exitosa"]);
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return back()->with(["danger" => "La importación falló"]); 
+        }
+    }
+
 
 }
