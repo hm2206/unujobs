@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use App\Models\Work;
 use App\Models\User;
 use App\Notifications\BasicNotification;
+use \Carbon\Carbon;
 
 /**
  * Modelo de importación de los Trabajadores
@@ -31,14 +32,12 @@ class WorkImport implements ToCollection, WithHeadingRow
     public function collection(Collection $collection)
     {
 
-        \Log::info(count($collection));
-
         foreach ($collection as $row) {
 
             $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
+            $fecha_de_ingreso = isset($row['fecha_de_ingreso']) ? date('Y-m-d', \strtotime($row['fecha_de_ingreso'])) : date('y-m-d');
 
             if (!$work) {
-
 
                 $nombre_completo = $row['ape_paterno'] . " " . $row['ape_materno'] . " " . $row['nombres'];
 
@@ -52,10 +51,10 @@ class WorkImport implements ToCollection, WithHeadingRow
                         "direccion" => isset($row['direccion']) ? $row['direccion'] : '',
                         "tipo_documento_id" => isset($row['tipo_documento_id']) ? $row['tipo_documento_id'] : 1,
                         "numero_de_documento" => isset($row['numero_de_documento']) ? $row['numero_de_documento'] : rand(11111111, 99999999),
-                        "fecha_de_nacimiento" => isset($row['fecha_de_nacimiento']) ? date('Y-m-d', \strtotime($row['fecha_de_nacimiento'])) : null,
+                        "fecha_de_nacimiento" => isset($row['fecha_de_nacimiento']) ? date(strtotime($row['fecha_de_nacimiento'])) : null,
                         "profesion" => isset($row['profesion']) ? $row['profesion'] : 'indefinido',
-                        "phone" => isset($row['phone']) ? $row['phone'] : '',
-                        "fecha_de_ingreso" => isset($row['fecha_de_ingreso']) ? date('Y-m-d', strtotime($row['fecha_de_ingreso'])) : date('Y.m-d'),
+                        "phone" => isset($row['phone']) ? $row['phone'] : '', 
+                        "fecha_de_ingreso" => $fecha_de_ingreso,
                         "sexo" => isset($row['sexo']) ? (int)$row['sexo'] : 1,
                         "numero_de_essalud" => isset($row['numero_de_essalud']) ? $row['numero_de_essalud'] : null,
                         "banco_id" => isset($row['banco_id']) ? (int)$row['banco_id'] : null,
@@ -72,6 +71,7 @@ class WorkImport implements ToCollection, WithHeadingRow
 
                 } catch (\Throwable $th) {
                     
+                    \Log::info($fecha_de_ingreso);
                     \Log::info($th);
 
                 }

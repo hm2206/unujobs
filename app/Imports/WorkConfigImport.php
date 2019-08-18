@@ -51,7 +51,7 @@ class WorkConfigImport implements ToCollection, WithHeadingRow
                     "plaza" => $row['plaza'],
                     "escuela" => $row['escuela'],
                     "observacion" => $row['observacion'],
-                    "fuente_id" => $row['fuente'],
+                    "fuente_id" => isset($row['fuente']) ? (int)$row['fuente'] : null,
                     "ruc" => $row['ruc']
                 ]);
 

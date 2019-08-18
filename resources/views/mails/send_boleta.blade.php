@@ -9,8 +9,14 @@
 <body>
     
     
-    Hola {{ strtoupper($work->nombre_completo) }}, La boleta {{ $mes }} del {{ $year }} ya está lista. <br> <br>
-    Atte. Oficina de Recursos Humanos.
+    Hola {{ strtoupper($work->nombre_completo) }}, La boleta electrónica {{ $mes }} del {{ $year }} ya está lista. <br> <br>
+    Esta boleta es solo informátiva. <br><br>
+
+    @if ($jefe)
+    
+        Atte. {{ $jefe->profesion }} {{ $jefe->nombre_completo }} 
+        
+    @endif
   
 
 </body>

@@ -10,6 +10,7 @@ use App\Models\TypeDescuento;
 use Illuminate\Http\Request;
 use App\Models\Sindicato;
 use App\Models\Afp;
+use App\Models\ConfigDescuento;
 
 /**
  * Class DescuentoController
@@ -26,7 +27,7 @@ class DescuentoController extends Controller
      */
     public function index()
     {
-        $descuentos = TypeDescuento::all();
+        $descuentos = TypeDescuento::with('config')->orderBy("key", "ASC")->get();
         return view('descuentos.index', compact(['descuentos']));
     }
 
@@ -118,22 +119,32 @@ class DescuentoController extends Controller
             
             $monto = $request->input("monto", 0);
             $obligatorio = $request->input("obligatorio", 0);
-            $snp_porcentaje = $request->input("snp_porcentaje", 0);
-            $essalud = $request->input("essalud", 0);
-            $essalud_porcentaje = $request->input("essalud_porcentaje", 0);
-            $monto = $request->input("monto", 0);
-            $minimo = $request->input("minimo", 0);
+            $configs = $request->input("configs", []);
+
+            ConfigDescuento::where("type_descuento_id", $type->id)->delete();
+
+            foreach ($configs as $config) {
+                $porcentaje = isset($config[0]) ? $config[0] : 0;
+                $minimo = isset($config[1]) ? $config[1] : 0;
+                $monto = isset($config[2]) ? $config[2] : 0;
+                
+                $current = ConfigDescuento::updateOrCreate([
+                    "type_descuento_id" => $type->id
+                ]);
+                
+                $current->update([
+                    "porcentaje" => $porcentaje,
+                    "minimo" => $minimo,
+                    "monto" => $monto
+                ]);
+
+            }
 
             $type->update([
                 "descripcion" => $request->descripcion,
-                "obligatorio" => $obligatorio,
-                "snp_porcentaje" => $snp_porcentaje,
-                "essalud" => $essalud,
-                "essalud_porcentaje" => $essalud_porcentaje,
-                "monto" => $monto,
-                "minimo" => $minimo,
-                "base" => $essalud ? 1 : 0
+                "obligatorio" => $obligatorio
             ]);
+
             
             return [
                 "status" => true,
@@ -141,6 +152,8 @@ class DescuentoController extends Controller
             ];
 
         } catch (\Throwable $th) {
+
+            \Log::info($th);
 
             return [
                 "status" => false,

@@ -16,7 +16,7 @@ export default {
         index: {
             type: String,
             default: "100"
-        }
+        },
     }
 }
 </script>

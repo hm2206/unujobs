@@ -22,8 +22,7 @@ class TypeDescuento extends Model
      * @var array
      */
     protected $fillable = [
-        "descripcion", "key", "config_afp", "essalud", "ley", "obligatorio",
-        "essalud_porcentaje", "snp_porcentaje", "monto", "minimo", "base"
+        "descripcion", "key", "config_afp", "obligatorio", "base", "activo", "edit"
     ];
 
 
@@ -46,6 +45,12 @@ class TypeDescuento extends Model
     public function seguros()
     {
         return $this->belongsToMany(Afp::class, 'descuento_afp');
+    }
+
+
+    public function config()
+    {
+        return $this->hasOne(ConfigDescuento::class);
     }
 
     /**

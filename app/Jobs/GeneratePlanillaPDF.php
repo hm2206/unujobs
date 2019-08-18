@@ -31,6 +31,7 @@ class GeneratePlanillaPDF implements ShouldQueue
 
 
     private $cronograma;
+    public $timeout = 0;
 
     /**
      * configuramos un poco
@@ -155,11 +156,14 @@ class GeneratePlanillaPDF implements ShouldQueue
                 ->where("work_id", $work->id)
                 ->where('base', 0)
                 ->get();
-
-            $base = $tmp_remuneraciones->sum('monto');
+                
 
             //aportaciones current
-            $tmp_essalud = $base < 930 ? 83.7 : $base * 0.09;
+            $tmp_essalud = Descuento::where("cronograma_id", $cronograma->id)
+                ->where("work_id", $work->id)
+                ->where("base", 1)
+                ->get()->sum("monto");
+                
             $tmp_accidente = $work->accidentes ? ($base * 1.55) / 100 : 0;
 
             //totales

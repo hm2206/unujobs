@@ -44,7 +44,7 @@
                 <table class="table">
                     <thead class="text-primary">
                         <tr>
-                            <th>N°</th>
+                            <th>#ID</th>
                             <th>Descripción</th>
                             <th>Categorias</th>
                             <th>Acciones</th>
@@ -53,7 +53,7 @@
                     <tbody>
                         @forelse ($cargos as $iter => $cargo)
                             <tr>
-                                <th>{{ $iter + 1 }}</th>
+                                <th>{{ $cargo->id}}</th>
                                 <th class="uppercase">{{ $cargo->descripcion }}</th>
                                 <th>
                                     <a href="{{ route('cargo.categoria', $cargo->slug()) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>

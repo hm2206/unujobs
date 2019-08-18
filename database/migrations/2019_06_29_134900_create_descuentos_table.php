@@ -31,6 +31,7 @@ class CreateDescuentosTable extends Migration
             $table->integer("adicional")->default(0);
             $table->string("horas")->default(8);
             $table->integer("base")->default(0);
+            $table->integer("edit")->default(1);
             $table->timestamps();
         });
     }

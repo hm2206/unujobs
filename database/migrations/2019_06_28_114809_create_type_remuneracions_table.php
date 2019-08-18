@@ -20,6 +20,7 @@ class CreateTypeRemuneracionsTable extends Migration
             $table->double("monto")->nullable();
             $table->integer('base')->default(0);
             $table->integer('bonificacion')->default(0);
+            $table->integer('activo')->default(1);
             $table->timestamps();
         });
     }

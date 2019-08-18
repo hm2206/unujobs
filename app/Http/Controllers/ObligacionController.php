@@ -52,9 +52,25 @@ class ObligacionController extends Controller
             "work_id" => "required"
         ]);
 
-        Obligacion::create($request->all());
+        try {
+            
+            $obligacion = Obligacion::create($request->all());
 
-        return back()->with(["success" => "Los datos se guardarón correctamente"]);
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente!",
+                "body" => $obligacion
+            ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación",
+                "body" => ""
+            ];
+
+        }
     }
 
     /**
@@ -96,14 +112,33 @@ class ObligacionController extends Controller
             "up_work_id" => "required"
         ]);
 
-        $obligacion = Obligacion::findOrfail($id);
-        $obligacion->update([
-            "beneficiario" => $request->input("up_beneficiario"),
-            "numero_de_documento" => $request->input("up_numero_de_documento"),
-            "numero_de_cuenta" => $request->input("up_numero_de_cuenta"),
-            "monto" => $request->input("up_monto"),
-            "work_id" => $request->input("up_work_id")
-        ]);
+        try {
+            
+            $obligacion = Obligacion::findOrFail($id);
+            $obligacion->update([
+                "beneficiario" => $request->input("up_beneficiario"),
+                "numero_de_documento" => $request->input("up_numero_de_documento"),
+                "numero_de_cuenta" => $request->input("up_numero_de_cuenta"),
+                "monto" => $request->input("up_monto"),
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente!",
+                "body" => $obligacion
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación",
+                "body" => ""
+            ];
+
+        }
 
         return back()->with(["update" => "Los datos se actualizarón correctamente!"]);
     }
@@ -116,15 +151,24 @@ class ObligacionController extends Controller
      */
     public function destroy($id)
     {
-        $obligacion = Obligacion::findOrFail($id);
-        $obligacion->delete();
+        try {
 
-        if (request()->ajax()) {
+            $obligacion = Obligacion::findOrFail($id);
+            $obligacion->delete();
+    
             return [
-                "success" => "Los datos se eliminarón correctamente"
+                "status" => true,
+                "message" => "Los datos se eliminarón correctamente"
             ];
+
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => falso,
+                "message" => "Ocurrio un error al procesar la operación"
+            ];
+
         }
 
-        return back()->with(["success" => "Los datos se eliminarón correctamente"]);
     }
 }

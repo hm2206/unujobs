@@ -117,8 +117,12 @@ class CronogramaController extends Controller
                     $i->where("planilla_id", $cronograma->planilla_id);
                 })->get();
 
-            ProssingRemuneracion::dispatch($cronograma, $jobs);
-            ProssingDescuento::dispatch($cronograma, $jobs);
+            $cronograma->works()->syncWithoutDetaching($jobs->pluck(["id"]));
+
+            ProssingRemuneracion::withChain([
+                new ProssingDescuento($cronograma, $jobs)
+            ])->dispatch($cronograma, $jobs);
+
         }elseif($cronograma->adicional == 1) {
             $cronograma->update([
                 "numero" => $cronogramas->count()
@@ -201,15 +205,19 @@ class CronogramaController extends Controller
     {
         $id = \base64_decode($slug);
         $cronograma = Cronograma::with("planilla")->findOrFail($id);
-        $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $jobs = [];
         $like = request()->query_search;
 
-        if($remuneraciones->count() > 0) {
-            $jobs = Work::whereIn("id", $remuneraciones->pluck(["work_id"]));
+        if($cronograma->works->count() > 0) {
+            $jobs = Work::with(['infos' => function($i) {
+                $i->where("active", 1);
+            }])->whereIn("id", $cronograma->works->pluck(['id']));
+            
             if ($like) {
-                $jobs = $jobs->where("nombre_completo", "like", "%{$like}%");
+                $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
+                $jobs = $jobs->where($indice, "like", "%{$like}%");
             }
+            
             $jobs = $jobs->paginate(20);
         }
 

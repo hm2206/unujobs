@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Work;
 
 /**
  * Modelo de mail para notificar al trabajador sobre su boleta
@@ -19,6 +20,7 @@ class SendBoleta extends Mailable
     public $mes;
     public $adicional;
     public $pdf;
+    public $jefe;
 
     /**
      * @param \App\Models\Work $work
@@ -34,12 +36,13 @@ class SendBoleta extends Mailable
         $this->mes = $mes;
         $this->adicional = $adicional;
         $this->pdf = $pdf;
+        $this->jefe = Work::where("jefe")->first();
     }
 
 
     public function build()
     {
-        return $this->from('twd2206@gmail.com')
+        return $this->from()
             ->subject("Hola " . strtoupper($this->work->nombres) . ", tu boleta {$this->mes} de {$this->year} ya está lista.")
             ->view('mails.send_boleta')
             ->attachData($this->pdf->output(), 'boleta', [

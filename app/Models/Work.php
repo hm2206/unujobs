@@ -32,7 +32,7 @@ class Work extends Model
         "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso",
         "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta", "descanso",
         "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
-        "sindicato_id", "nombre_completo", "direccion", "total", "profesion", "email"
+        "nombre_completo", "direccion", "total", "profesion", "email", "jefe", "afecto"
     ];
 
 
@@ -110,6 +110,12 @@ class Work extends Model
     public function cronogramas()
     {
         return $this->belongsToMany(Work::class, "work_cronograma");
+    }
+
+
+    public function typeDescuentos()
+    {
+        return $this->belongsToMany(TypeDescuento::class, 'work_type_descuento');
     }
 
 }

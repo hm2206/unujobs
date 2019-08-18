@@ -31,6 +31,7 @@ class CreateRemuneracionsTable extends Migration
             $table->integer("adicional")->default(0);
             $table->string("horas")->default(8);
             $table->integer('base')->default(0);
+            $table->integer('activo')->default(1);
             $table->timestamps();
         });
     }

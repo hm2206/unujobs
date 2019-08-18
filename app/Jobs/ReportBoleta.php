@@ -29,6 +29,7 @@ class ReportBoleta implements ShouldQueue
     private $mes;
     private $year;
     private $adicional;
+    public $timeout = 0;
 
     /**
      * @param string $mes
@@ -83,7 +84,7 @@ class ReportBoleta implements ShouldQueue
                 $total = $remuneraciones->sum("monto");
                 
                 $info->remuneraciones = $remuneraciones;
-                $info->descuentos = $descuentos->chunk(2)->toArray();
+                $info->descuentos = $descuentos->where("essalud", 0)->chunk(2)->toArray();
                 $info->total_descuento = $descuentos->sum('monto');
 
 
@@ -91,7 +92,7 @@ class ReportBoleta implements ShouldQueue
                 $info->base = $remuneraciones->where('base', 0)->sum('monto');
 
                 //aportes
-                $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
+                $info->essalud = $descuentos->where("essalud", 1)->sum("monto");
                 $info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
 
                 //total neto

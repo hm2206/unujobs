@@ -31,7 +31,9 @@
         <span class="btn btn-sm btn-primary">{{ $cronograma->numero }}</span>
         <span class="text-danger"> >> </span>
     @endif
-    {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}
+    {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }} 
+    <i class="fas fa-users fa-sm text-primary"></i>
+    {{ $cronograma->works->count() }}
 </h3>
 
 @if (session('success'))
@@ -205,9 +207,18 @@
                                 <th class="capitalize">{{ $job->nombre_completo }}</th>
                                 <th>{{ $job->numero_de_documento }}</th>
                                 <th class="uppercase">
+                                    @php
+                                        $categoria_id = null;
+                                    @endphp
                                     @foreach ($job->infos as $info)
+
+                                    @if ($info->planilla_id == $cronograma->planilla_id)
+                                        @php
+                                            $categoria_id = $info->categoria_id;
+                                        @endphp
+                                    @endif
+
                                         <div class="btn btn-sm btn-danger">
-                                            {{ $info->categoria_id }} <small class="fas fa-arrow-right"></small>
                                             {{ $info->categoria ? $info->categoria->nombre : '' }}
                                         </div>
                                     @endforeach
@@ -217,19 +228,8 @@
                                         <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a title="remuneracion"
-                                            href="{{ route('job.remuneracion', [$job->slug(), "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
-                                            class="btn btn-sm btn-warning"
-                                        >
-                                            <i class="fas fa-coins"></i>
-                                        </a>
-                                        <a title="descuento"
-                                            href="{{ route('job.descuento', [$job->slug(), "mes={$cronograma->mes}&year={$cronograma->año}&adicional={$cronograma->adicional}"]) }}" 
-                                            class="btn btn-sm btn-danger"
-                                        >
-                                            <i class="fab fa-creative-commons-nc"></i>
-                                        </a>
-                                        <btn-boleta theme="btn-dark btn-sm"
+
+                                        <btn-boleta theme="btn-danger btn-sm"
                                             param="{{ $job->id }}"
                                             url="{{ route('job.boleta.store', $job->id) }}"
                                             nombre_completo="{{ $job->nombre_completo }}"
@@ -237,6 +237,25 @@
                                         >
                                             <i class="fas fa-file-alt"></i>
                                         </btn-boleta>
+
+                                        <btn-detalle theme="btn-warning btn-sm"
+                                            param="{{ $job->id }}"
+                                            nombre_completo="{{ $job->nombre_completo }}"
+                                            mes="{{ $cronograma->mes }}"
+                                            year="{{ $cronograma->año }}"
+                                            categoria="{{ $categoria_id }}"
+                                        >
+                                            <i class="fas fa-wallet"></i>
+                                        </btn-detalle>
+
+                                        <btn-work-config theme="btn-dark btn-sm"
+                                                param="{{ $job->id }}"
+                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                :sindicatos="{{ $job->sindicatos }}"
+                                            >
+                                                <i class="fas fa-cog"></i>
+                                        </btn-work-config>
+                                        
                                     </div>
                                 </th>
                             </tr>

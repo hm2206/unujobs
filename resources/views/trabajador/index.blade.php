@@ -120,11 +120,11 @@
     
                                 
                                     <div class="form-group">
-                                        <small>Limite de trabajadores: <span class="text-danger">{{ $jobs->count() }}</span></small>
+                                        <small>Limite de trabajadores: <span class="text-danger">{{ $jobs->total() }}</span></small>
                                     </div>
     
                                     <div class="form-group">
-                                        <input type="number" name="limite" class="form-control" value="{{ $jobs->count() }}" max="{{ $jobs->count() }}">
+                                        <input type="number" name="limite" class="form-control" value="{{ $jobs->total() }}" max="{{ $jobs->total() }}">
                                     </div>
                                     
                                     <div class="form-group">
@@ -162,9 +162,13 @@
                                     <th>{{ $job->numero_de_cuenta }}</th>
                                     <th>
                                         <div class="row justify-content-around">
-                                            <a href="{{ route('job.edit', $job->slug()) }}" class="btn btn-circle btn-sm btn-warning">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </a>
+                                            <btn-work-config theme="btn-warning btn-sm btn-circle"
+                                                param="{{ $job->id }}"
+                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                :sindicatos="{{ $job->sindicatos }}"
+                                            >
+                                                <i class="fas fa-cog"></i>
+                                            </btn-work-config>
                                             <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-circle btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>

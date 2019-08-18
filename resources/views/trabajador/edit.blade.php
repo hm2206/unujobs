@@ -13,9 +13,13 @@
 <div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-ban"></i> cancelar</a>
     <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-primary"><i class="fas fa-user"></i> perfil</a>
-    <a href="{{ route('job.config', $job->slug()) }}" class="btn btn-dark">
-        <i class="fas fa-cog"></i> Configuración
-    </a>
+    <btn-work-config theme="btn-dark"
+        param="{{ $job->id }}"
+        nombre_completo="{{ $job->nombre_completo }}"
+        :sindicatos="{{ $job->sindicatos }}"
+    >
+        <i class="fas fa-cogs"></i> Configuración
+    </btn-work-config>
 </div>
     
 <div class="col-md-12">
@@ -226,7 +230,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Descanso medico por maternidad</label>
+                        <label for="" class="form-control-label">Descanso medico por Maternidad</label>
                         <br>
                         <input type="checkbox" name="descanso" {!! $job->descanso ? 'checked' : '' !!}>
                     </div>

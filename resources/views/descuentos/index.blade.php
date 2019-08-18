@@ -43,6 +43,7 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
+                            <th>Tipo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -51,6 +52,11 @@
                             <tr id="categoria-{{ $descuento->id }}">
                                 <th>{{ $descuento->key }}</th>
                                 <th class="uppercase">{{ $descuento->descripcion }}</th>
+                                <th class="uppercase">
+                                    <button class="btn btn-sm btn-{{ $descuento->base >= 1 ? 'primary' : 'danger' }}">
+                                        {{ $descuento->base >= 1 ? 'Aportación' : 'Retención' }}
+                                    </button>
+                                </th>
                                 <th>
                                     <div class="btn-group">
                                         <btn-descuento

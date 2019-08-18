@@ -25,6 +25,7 @@ class ReportBoletaWork implements ShouldQueue
 
     private $work;
     private $whereIn;
+    public $timeout = 0;
 
     /**
      * Create a new job instance.
@@ -59,14 +60,19 @@ class ReportBoletaWork implements ShouldQueue
                     ->where("cronograma_id", $cro->id)
                     ->get();
     
-                $cro->tmp_descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
+                $tmp_descuentos = Descuento::with('typeDescuento')
+                    ->where('work_id', $work->id)
                     ->where("planilla_id", $info->planilla_id)
                     ->where("cargo_id", $info->cargo_id)
                     ->where("categoria_id", $info->categoria_id)
                     ->where("cronograma_id", $cro->id)
                     ->get();
+
+                $cro->tmp_descuentos = $tmp_descuentos;
+
+                \Log::info($tmp_descuentos);
                 
-                $cro->total_descuento = $cro->tmp_descuentos->sum("monto");
+                $cro->total_descuento = $cro->tmp_descuentos->where("base", 0)->sum("monto");
                 $cro->total_remuneracion = $cro->tmp_remuneraciones->sum("monto");
     
     
@@ -74,7 +80,7 @@ class ReportBoletaWork implements ShouldQueue
                 $cro->base = $cro->tmp_remuneraciones->where('base', 0)->sum('monto');
                 
                 //aportes
-                $cro->essalud = $cro->base < 930 ? 83.7 : $cro->base * 0.09;
+                $cro->essalud = $cro->tmp_descuentos->where("base", 1)->sum("monto");
                 $cro->accidentes = $work->accidentes ? ($base * 1.55) / 100 : 0;
                 
                 //total neto

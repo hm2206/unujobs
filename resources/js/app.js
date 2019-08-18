@@ -53,6 +53,9 @@ Vue.component('btn-alta-baja', require('./components/BtnAltaBaja.vue').default);
 Vue.component('btn-resumen-categoria', require('./components/BtnResumenCategoria.vue').default);
 Vue.component('menu-bar', require('./components/Menu.vue').default);
 Vue.component('get-personal', require('./components/GetPersonal.vue').default);
+Vue.component('btn-detalle', require('./components/BtnDetalle.vue').default);
+Vue.component('btn-work-config', require('./components/BtnWorkConfig.vue').default);
+Vue.component('config-work-mas', require('./components/ConfigWorkMas.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

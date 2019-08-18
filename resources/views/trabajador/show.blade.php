@@ -13,9 +13,13 @@
 <div class="col-md-12 mb-2">
     <a href="{{ route('job.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
     <a href="{{ route('job.edit', $job->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> editar</a>
-    <a href="{{ route('job.remuneracion', $job->slug()) }}" class="btn btn-dark">Remuneraciones</a>
-    <a href="{{ route('job.descuento', $job->slug()) }}" class="btn btn-dark">Descuentos</a>
-    <a href="{{ route('job.obligacion', $job->slug()) }}" class="btn btn-dark">Obligaciones Judiciales</a>
+    <btn-work-config theme="btn-dark"
+        param="{{ $job->id }}"
+        nombre_completo="{{ $job->nombre_completo }}"
+        :sindicatos="{{ $job->sindicatos }}"
+    >
+        <i class="fas fa-cog"></i> Configuración
+    </btn-work-config>
 </div>
 
 @if (session('success'))
@@ -37,7 +41,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Apellido Paterno</label>
-                        <span class="form-control uppercase">{{ $job->ape_paterno }}</span>
+                        <small class="form-control uppercase">{{ $job->ape_paterno }}</small>
                     </div>
                 </div>
 
@@ -175,87 +179,21 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Descanso medico por maternidad</label>
+                        <label for="" class="form-control-label">Descanso medico por Maternidad</label>
                         <br>
                         <input type="checkbox" name="descanso" {!! $job->descanso ? 'checked' : '' !!}>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Afecto</label>
+                        <span class="form-control">{{ $job->afecto ? 'Si' : 'No' }}</span>
                     </div>
                 </div>
 
             </div>
         </div>
     </div> 
-    
-    <div class="card mt-3">
-        <div class="card-header">
-            Cargos Asociados
-        </div>
-        <div class="card-body">
-            <div class="row">
-                @foreach ($job->infos as $info)
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header bg-primary text-white">
-                                {{ $info->cargo ? $info->cargo->descripcion : '' }}
-                            </div>
-                            <div class="card-body">
-                                <ul>
-                                    <li>
-                                        <b>Categoria: <button class="btn btn-sm btn-danger">{{ $info->categoria ? $info->categoria->nombre : '' }}</button></b>
-                                    </li>
-                                    <li class="mt-1">
-                                        <b>Meta: <button class="btn btn-sm btn-danger">{{ $info->meta ? $info->meta->meta : '' }}</button></b>
-                                    </li>
-                                    <li class="mt-1">
-                                        <b>Perfil: <button class="btn btn-sm btn-danger">{{ $info->perfil }}</button></b>
-                                    </li>
-                                    @if ($info->plaza)
-                                        <li class="mt-1">
-                                            <b>Plaza: <button class="btn btn-sm btn-danger">{{ $info->plaza }}</button></b>
-                                        </li>
-                                    @endif
-
-                                    @if ($info->escuela)
-                                        <li class="mt-1">
-                                            <b>Escuela: <button class="btn btn-sm btn-danger">{{ $info->escuela }}</button></b>
-                                        </li>
-                                    @endif
-
-                                    @if ($info->fuente_id)
-                                        <li class="mt-1">
-                                            <b>Fuente de Ingreso: <button class="btn btn-sm btn-danger">{{ $info->functe_id }}</button></b>
-                                        </li>
-                                    @endif
-
-                                    @if ($info->ruc)
-                                        <li class="mt-1">
-                                            <b>RUC: <button class="btn btn-sm btn-danger">{{ $info->ruc }}</button></b>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <div class="card mt-3">
-        <div class="card-header">
-            Sindicatos Asociados
-        </div>
-        <div class="card-body">
-            <div class="row">
-                @foreach ($job->sindicatos as $sindicato)
-                    <div class="col-md-3">
-                        <div class="btn btn-outline-dark">
-                            {{ $sindicato->nombre }}
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
 </div>
 @endsection

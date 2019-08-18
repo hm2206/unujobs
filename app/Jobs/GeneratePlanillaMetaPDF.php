@@ -32,6 +32,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
      * @var array
      */
     private $cronograma = [];
+    public $timeout = 0;
 
 
     public function __construct($cronograma)
@@ -150,7 +151,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             
             // afps
             foreach($meta->afps as $afp) {
-                $whereIn = TypeDescuento::where("config_afp", "<>", null)->get();
+                $whereIn = TypeDescuento::where("essalud", 0)->where("config_afp", "<>", null)->get();
                 $desct = Descuento::where("cronograma_id", $cronograma->id)
                     ->where("meta_id", $meta->id)
                     ->whereIn("type_descuento_id", $whereIn->pluck(['id']))
@@ -175,13 +176,12 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
                 $tmp_remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
                     ->where("work_id", $work->id)
                     ->where("meta_id", $meta->id)
-                    ->where('base', 0)
                     ->get();
     
-                $base = $tmp_remuneraciones->sum('monto');
+                $base = $tmp_remuneraciones->where("base")->sum('monto');
     
                 //aportaciones current
-                $tmp_essalud = $base < 930 ? 83.7 : $base * 0.09;
+                $tmp_essalud = $meta->descuentos->where("base", 1)->sum("monto");
                 $tmp_accidente = $work->accidentes ? ($base * 1.55) / 100 : 0;
     
                 //totales

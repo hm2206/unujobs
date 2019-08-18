@@ -13,6 +13,7 @@ use App\Models\Work;
 use App\Models\Descuento;
 use App\Models\TypeDescuento;
 use App\Models\User;
+use App\Models\Categoria;
 use App\Notifications\BasicNotification;
 
 /**
@@ -44,6 +45,9 @@ class DescuentoImport implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $collection)
     {
+        // obtenemos los tipo de descuentos
+        $types = TypeDescuento::all();
+
         foreach ($collection as $iter => $row) {
 
             // obtenemos a todos los trabajadores que pertenecen al cronograma
@@ -52,31 +56,51 @@ class DescuentoImport implements ToCollection, WithHeadingRow
             $work = $works->where("numero_de_documento", $row['numero_de_documento'])->first();
             // verificar si el trabajador existe
             if ($work) {
+                // obtenemos la categoria
+                $categoria = Categoria::where("key", $row['categoria'])->first();
                 // obtenemos la informacion detallada del trabajador
+                $info = $work->infos->where("categoria_id", $categoria->id)->first();
 
-                $info = $work->infos->where("categoria_id", $row['categoria'])->first();
-
+                
                 if ($info) {
-                    // obtenemos el tipo de remuneracion
-                    $type = TypeDescuento::where("key", $row['descuento'])->first();
-                    // verificamos que el typeRemuneracion exista
-                    if ($type) {
-                        // obtenemos las remuneraciones del trabajador
-                        $descuento = Descuento::updateOrCreate([
-                            "work_id" => $work->id,
-                            "categoria_id" => $info->categoria_id,
-                            "cargo_id" => $info->cargo_id,
-                            "planilla_id" => $info->planilla_id,
-                            "cronograma_id" => $this->cronograma->id,
-                            "type_descuento_id" => $type->id,
-                            "adicional" => $this->cronograma->adicional,
-                        ]);
+
+                    foreach ($types as $type) {
+                        
+                        // verificamos que el typeDescuento exísta
+                        $isType = isset($row[$type->key]);
+                        
+                        
+                        if ($isType) {
+
+                            // obtenemos el monto del dsecuento
+                            $monto = $row[$type->key];
+
+                            // actualizamos o creamos el descuento del trabajador
+                            $descuento = Descuento::updateOrCreate([
+                                "work_id" => $work->id,
+                                "categoria_id" => $info->categoria_id,
+                                "cargo_id" => $info->cargo_id,
+                                "planilla_id" => $info->planilla_id,
+                                "cronograma_id" => $this->cronograma->id,
+                                "type_descuento_id" => $type->id,
+                                "adicional" => $this->cronograma->adicional,
+                            ]);
+
+                            \Log::info($descuento);
     
-                        $descuento->update([
-                            "monto" => isset($row['monto']) ? $row['monto'] : 0
-                        ]);
+                            // verificamos que el valor a guardar sea un numero
+                            if (\is_numeric($monto)) {
+
+                                $descuento->update([
+                                    "monto" => \round($monto, 2)
+                                ]);
+
+                            }
+                        }
+                        
                     }
                 }
+
             }
         } 
     }

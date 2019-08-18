@@ -26,6 +26,7 @@ class CreateTypeDescuentosTable extends Migration
             $table->integer('obligatorio')->default(0);
             $table->double('snp_porcentaje')->nullable();
             $table->integer("base")->default(0);
+            $table->integer("edit")->default(1);
             $table->timestamps();
         });
     }

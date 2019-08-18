@@ -3,7 +3,7 @@
         <button :class="`btn ${theme}`" v-on:click="show = true">
             <i class="fas fa-plus"></i> <slot></slot>
         </button>
-        <modal :show="show" @close="show = false" col="col-md-10">
+        <modal :show="show" @close="show = false" col="col-md-10" height="90vh">
             <template slot="header">
                 Agregar trabajadores 
                 <i class="fas fa-arrow-right text-danger"></i>
@@ -81,14 +81,14 @@
                             </tr>
                         </table>
                     </form>
-
-                    <btn-validate 
-                        :show="hasSelect"
-                        @click="add"
-                    >
-                        <i class="fas fa-save"></i>
-                    </btn-validate>
                 </div>
+                <btn-validate 
+                    :show="hasSelect"
+                    @click="add"
+                >
+                    <i class="fas fa-save"></i>
+                </btn-validate>
+
                 <div class="card-footer text-center" v-if="!loader">
                     <btn-more :config="['btn-block']" 
                         :url="work.next_page_url"   
@@ -200,8 +200,8 @@ export default {
 
     .btn-fixed {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
+        bottom: 70px;
+        right: 40px;
     }
 
     .min-height {

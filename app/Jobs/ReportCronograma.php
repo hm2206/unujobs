@@ -25,6 +25,7 @@ class ReportCronograma implements ShouldQueue
     private $mes;
     private $year;
     private $adicional;
+    public $timeout = 0;
 
     /**
      * @param string $mes
@@ -96,7 +97,7 @@ class ReportCronograma implements ShouldQueue
                             ->where('planilla_id', $info->planilla_id)
                             ->get();
 
-                    $total_descto = $info->descuentos->sum('monto');
+                    $total_descto = $info->descuentos->where("base", 0)->sum('monto');
 
                     //calcular base imponible
                     $info->base = $tmp_base;
@@ -104,11 +105,11 @@ class ReportCronograma implements ShouldQueue
                     //calcular total de descuentos
                     $info->descuentos->push([
                         "nombre" => "TOTAL",
-                        "monto" => $info->descuentos->sum('monto')
+                        "monto" => $total_descto
                     ]);
 
                     //calcular essalud
-                    $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
+                    $info->essalud = $info->descuentos->where("base", 1)->sum('monto');
 
                     //calcular total neto
                     $info->neto = $total - $total_descto;

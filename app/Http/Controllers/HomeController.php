@@ -8,7 +8,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Work;
+use App\Models\Info;
 use App\Models\Postulante;
 
 /**
@@ -35,9 +35,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $works = Work::get()->count();
+        $infos = Info::where('active', 1)->get()->count();
         $postulantes = Postulante::get()->count();
-        return view('home', \compact('works', 'postulantes'));
+        return view('home', \compact('infos', 'postulantes'));
     }
 
     /**

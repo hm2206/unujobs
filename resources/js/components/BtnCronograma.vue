@@ -49,9 +49,12 @@
                     </div>
                 </form>
                 <div class="card-footer text-right">
-                    <button class="btn btn-success" :disabled="loader" v-on:click="submit">
+                    <button class="btn btn-success" v-if="!loader" v-on:click="submit">
                         <i class="fas fa-save"></i> Guardar
                     </button>
+                    <div class="w-100 text-center" v-if="loader">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
                 </div>
             </template>
         </modal>

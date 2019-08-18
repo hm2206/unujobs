@@ -73,5 +73,25 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
     Route::post("/export/cuenta-cheque/{id}", "ExportController@cuentaCheque");
 
+    // Remuneracion de los trabajadores
+    Route::get('work/{id}/remuneracion', 'JobController@remuneracion');
+    Route::put('work/{id}/remuneracion', 'JobController@remuneracionUpdate');
+    Route::get('work/{id}/descuento', 'JobController@descuento');
+    Route::put('work/{id}/descuento', 'JobController@descuentoUpdate');
+    Route::get('work/{id}/obligacion', 'JobController@obligacion');
+    Route::get('work/{id}/info', 'JobController@informacion');
+    Route::post('work/{id}/config', 'JobController@configStore');
+    Route::delete('work/{id}/config', 'JobController@configDelete');
+    Route::post('work/{id}/sindicato', 'JobController@sindicatoStore');
+
+    //Obligaciones
+    Route::resource('obligacion', 'ObligacionController');
+
+    // Configuración de los descuentos
+    Route::resource('config_descuento', 'ConfigDescuentoController');
+
+
+    // obtener los sindicatos
+    Route::resource('sindicato', 'SindicatoController');
 
 });

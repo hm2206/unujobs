@@ -36,14 +36,14 @@ class CreateWorksTable extends Migration
             $table->date("fecha_de_afiliacion")->nullable();
             $table->string("plaza")->nullable();
             $table->string("numero_de_cussp")->nullable();
-            $table->integer("accidentes")->default(0);
-            $table->integer("sindicato_id")->nullable();
             $table->integer("sede_id")->default(1);
             $table->integer("planilla_id")->nullable();
-            $table->string('ley')->nullable();
             $table->double('total')->nullable();
             $table->date("fecha_de_cese")->nullable();
             $table->integer("descanso")->default(0);
+            $table->integer("accidentes")->default(0);
+            $table->integer("jefe")->default(0);
+            $table->integer("afecto")->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

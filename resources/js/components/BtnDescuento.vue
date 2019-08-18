@@ -27,37 +27,24 @@
                     <hr>
 
                     <div class="form-group" v-if="edit">
-                        <label for="">Descuento SNP</label>
-                        <input type="checkbox" name="obligatorio" v-model="form.obligatorio" value="1">
+                        <label for="">Configuración</label>
+                         <input type="checkbox" v-model="checked">
                     </div>
 
-                    <div class="form-group" v-if="form.obligatorio">
+                    <div class="form-group" v-if="checked">
                         <div class="row align-items-center">
                             <label for="" class="col-md-3">Porcentaje%</label>
-                            <input type="number" class="form-control col-md-3" name="snp_porcentaje" v-model="form.snp_porcentaje">
-                        </div>
-                        <hr>
-                    </div>
-
-                    <div class="form-group" v-if="edit">
-                        <label for="">Descuento de Essalud</label>
-                         <input type="checkbox" name="essalud" v-model="form.essalud" value="1">
-                    </div>
-
-                    <div class="form-group" v-if="form.essalud">
-                        <div class="row align-items-center">
-                            <label for="" class="col-md-3">Porcentaje%</label>
-                            <input type="number" class="form-control col-md-3" name="essalud_porcentaje" v-model="form.essalud_porcentaje">
+                            <input type="number" class="form-control col-md-3" name="configs[0][0]" v-model="config.porcentaje">
                         </div>
 
                         <div class="row align-items-center mt-1">
-                            <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">RMV</label>
-                            <input type="number" class="form-control col-md-3" name="minimo" v-model="form.minimo">
+                            <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">Mínimo</label>
+                            <input type="number" class="form-control col-md-3" name="configs[0][1]" v-model="config.minimo">
                         </div>
 
                         <div class="row align-items-center mt-1">
                             <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">Defecto</label>
-                            <input type="number" class="form-control col-md-3" name="monto" v-model="form.monto">
+                            <input type="number" class="form-control col-md-3" name="configs[0][2]" v-model="config.monto">
                         </div>
                     </div>
 
@@ -86,15 +73,16 @@ export default {
                 key: '',
                 descripcion: '',
                 obligatorio: 0,
-                snp_porcentaje: 0,
-                essalud: 0,
-                essalud_porcentaje: 0,
-                monto: 83.70,
-                minimo: 0
             },  
+            config: {
+                porcentaje: 0,
+                monto: 0,
+                minimo: 0
+            },
             errors: {},
             loader: false,
             edit: false,
+            checked: false
         }
     },
     mounted() {
@@ -102,6 +90,12 @@ export default {
         if (this.datos) {
             this.edit = true;
             this.form = this.datos;
+
+            if (this.form.config) {
+                this.config = this.form.config;
+                this.checked = true;
+            }
+            
         }
     },
     methods: {

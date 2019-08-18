@@ -61,6 +61,17 @@ class Info extends Model
         return $this->belongsTo(Meta::class);
     }
 
+
+    /**
+     * Relacion de uno a mucho con la tabla planillas
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function planilla()
+    {
+        return $this->belongsTo(Planilla::class);
+    }
+
     
     /**
      * Slug para proteger los id en las urls

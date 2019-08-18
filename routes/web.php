@@ -42,19 +42,8 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
 
     //Trabajadores
     Route::resource('job', 'JobController');
-    Route::get('job/{id}/remuneracion', 'JobController@remuneracion')->name('job.remuneracion');
-    Route::put('job/{id}/remuneracion', 'JobController@remuneracionUpdate')->name('job.remuneracion.update');
-    Route::get('job/{id}/descuento', 'JobController@descuento')->name('job.descuento');
-    Route::put('job/{id}/descuento', 'JobController@descuentoUpdate')->name('job.descuento.update');
-    Route::get('job/{id}/obligacion', 'JobController@obligacion')->name('job.obligacion');
     Route::get('job/{id}/boleta', 'JobController@boleta')->name('job.boleta');
     Route::post('job/{id}/boleta', 'JobController@boletaStore')->name('job.boleta.store');
-    Route::get('job/{id}/config', 'JobController@config')->name('job.config');
-    Route::post('job/{id}/config', 'JobController@configStore')->name('job.config.store');
-    Route::post('job/{id}/sindicato', 'JobController@sindicatoStore')->name('job.sindicato.store');
-
-    //Obligaciones
-    Route::resource('obligacion', 'ObligacionController');
 
     //Metas
     Route::resource('meta', 'MetaController');
