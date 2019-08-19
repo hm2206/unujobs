@@ -19,6 +19,7 @@ use App\Models\Meta;
 use App\Jobs\GeneratePlanillaPDF;
 use App\Jobs\GeneratePlanillaMetaPDF;
 use App\Jobs\ReportCronograma;
+use App\Jobs\ReportDescuento;
 use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCuenta;
 use App\Jobs\ReportCheque;
@@ -218,6 +219,65 @@ class ExportCronogramaController extends Controller
        
     }
 
+
+         /**
+     * Crea un archivo de pdf del cronograma
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function planilla(Request $request, $id)
+    {
+        $cronograma = Cronograma::findOrFail($id);
+
+        try {
+            
+            $type = $request->type_report_id;
+            ReportCronograma::dispatch($cronograma, $type);
+
+            return [
+                "status" => true,
+                "message" => "Este proceso durará unos minutos... Vuelva más tarde"
+            ];
+
+        } catch (\Throwable $th) {
+           
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
+    }
+    
+
+    /**
+     * Crea un archivo de pdf del cronograma
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function descuento(Request $request, $id)
+    {
+        $cronograma = Cronograma::findOrFail($id);
+
+        try {
+            
+            $type = $request->type_report_id;
+            ReportDescuento::dispatch($cronograma, $type);
+
+            return [
+                "status" => true,
+                "message" => "Este proceso durará unos minutos... Vuelva más tarde"
+            ];
+
+        } catch (\Throwable $th) {
+           
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
+    }
     /**
      * Crea un archivos pdf del cronograma
      *
@@ -225,8 +285,6 @@ class ExportCronogramaController extends Controller
      */
     public function reporte($mes, $year, $condicion)
     {
-        ReportCronograma::dispatch($mes, $year, $condicion);
-        ReportBoleta::dispatch($mes, $year, $condicion);
         return back()->with(["success" => "Este proceso durará unos minutos... Vuelva más tarde"]);
     }
 

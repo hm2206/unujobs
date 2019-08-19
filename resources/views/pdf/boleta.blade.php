@@ -9,10 +9,11 @@
         <title>Boleta - {{ strtolower($work->nombre_completo) }} </title>
     </head>
 
-    <body class="bg-white">
+    <body class="bg-white text-dark">
 
         @foreach ($infos as $info)
             @foreach ($info->cronogramas as $cronograma)
+                @if($cronograma->total_remuneracion > 0)
                 <div class="mb-7">
                     <div class="text-center"></div>
                         
@@ -39,7 +40,7 @@
                         </b>
                     </div>
                     
-                    <div class="boleta-header" style="width:70%;">
+                    <div class="boleta-header" style="width:80%;">
                         <table class="table-boleta table-sm" style="width:100%;">
                             <thead> 
                                 <tr>
@@ -78,7 +79,7 @@
                         </table>
                     </div>
 
-                    <table class="table-sm mt-2" style="width:70%;">
+                    <table class="table-sm mt-2" style="width:80%;">
                         <thead class="py-0 bbt-1 bbl-1 bbb-1">
                             <tr class="text-center py-0">
                                 <th class="py-0">
@@ -160,22 +161,16 @@
                                 </td>
                                 <td class="bbl-1 p-relative">
                                     <table class="p-absolute top-0 w-100">
-                                        <tr>
-                                            <td class="py-0">80.-ESSALUD (APORTES)</td>
-                                            <td class="py-0">{{ round($cronograma->essalud, 2) }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">81.-I.E.S.(APORT)</td>
-                                            <td class="py-0">00.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">82.-D.L.F.P.(APORT)</td>
-                                            <td class="py-0">00.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">83.-A.C.C DE TRABAJO</td>
-                                            <td class="py-0">{{ round($cronograma->accidentes, 2) }}</td>
-                                        </tr>
+
+                                        @foreach ($cronograma->aportaciones as $aport)
+                                            <tr>
+                                                <td class="py-0">
+                                                    {{ $aport->typeDescuento ? $aport->typeDescuento->key : '' }}
+                                                    .-
+                                                    {{ $aport->typeDescuento ? $aport->typeDescuento->descripcion : '' }}</td>
+                                                <td class="py-0">{{ round($aport->monto, 2) }}</td>
+                                            </tr>
+                                        @endforeach
                                         <tr>
                                             <td class="py-0">84.-TOTAL APORTE</td>
                                             <td class="py-0 bbt-1">{{ round($cronograma->total_aportes, 2) }}</td>
@@ -208,6 +203,7 @@
                         </tbody>
                     </table>
                 </div>
+                @endif
             @endforeach
         @endforeach
             

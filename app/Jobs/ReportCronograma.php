@@ -14,6 +14,9 @@ use App\Models\Remuneracion;
 use \PDF;
 use App\Models\User;
 use App\Notifications\ReportNotification;
+use App\Models\Report;
+use \Carbon\Carbon;
+use App\Models\Info;
 
 /**
  * Genera Reportes
@@ -22,9 +25,8 @@ class ReportCronograma implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $mes;
-    private $year;
-    private $adicional;
+    private $cronograma;
+    private $type_report;
     public $timeout = 0;
 
     /**
@@ -32,11 +34,10 @@ class ReportCronograma implements ShouldQueue
      * @param string $year
      * @param string $adicional
      */
-    public function __construct($mes, $year, $adicional)
+    public function __construct($cronograma, $type_report)
     {
-        $this->mes = $mes;
-        $this->year = $year;
-        $this->adicional = $adicional;
+        $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
     }
 
     /**
@@ -46,14 +47,16 @@ class ReportCronograma implements ShouldQueue
      */
     public function handle()
     {
-        $metas = $metas = Meta::all();
+        $cronograma = $this->cronograma;
+        $infos = Info::where("planilla_id", $cronograma->planilla_id)->get();
+        $metas = $metas = Meta::whereIn("id", $infos->pluck(['meta_id']))->get();
         $pagina = 0;
 
         //traemos trabajadores que pertenescan a la meta actual
         foreach($metas as $meta) {
 
-            $meta->mes = $this->mes;
-            $meta->year = $this->year;
+            $meta->mes = $cronograma->mes;
+            $meta->year = $cronograma->año;
 
             //obtener a los trabajadores que esten en esta meta
             $works = Work::whereHas('infos', function($i) use($meta) {
@@ -64,22 +67,24 @@ class ReportCronograma implements ShouldQueue
 
             foreach($works as $work) {
 
-                foreach ($work->infos as $info) {
+                $infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
+
+                foreach ($infos as $info) {
 
                     //obtenemos las remuneraciones actuales del trabajador
-                    $info->remuneraciones = Remuneracion::where("work_id", $work->id)
+                    $tmp_remuneraciones = Remuneracion::where("work_id", $work->id)
                             ->where("categoria_id", $info->categoria_id)
                             ->where("cargo_id", $info->cargo_id)
                             ->where("planilla_id", $info->planilla_id)
-                            ->where("adicional", $this->adicional)
-                            ->where("mes", $this->mes)
-                            ->where("año", $this->year)
+                            ->where("cronograma_id", $cronograma->id)
                             ->get();
-                    
-                    $total = $info->remuneraciones->sum('monto');
+
+                    $info->remuneraciones = $tmp_remuneraciones;
+                    $total = $tmp_remuneraciones->sum('monto');
 
                     $tmp_base = $info->remuneraciones->where("base", 0)->sum('monto');
-                    $tmp_base = $tmp_base == 0 ? $info->total : $tmp_base;
+                    $tmp_base = $tmp_base == 0 ? $total : $tmp_base;
+
 
                     // agregamos datos a las remuneraciones
                     $info->remuneraciones->push([
@@ -88,15 +93,14 @@ class ReportCronograma implements ShouldQueue
                     ]);
 
                     //obtenemos los descuentos actuales del trabajador
-                    $info->descuentos = Descuento::where("work_id", $work->id)
-                            ->where('año', $meta->year)
-                            ->where('mes', $meta->mes)
-                            ->where('adicional', $this->adicional)
+                    $tmp_descuentos= Descuento::where("work_id", $work->id)
+                            ->where('cronograma_id', $cronograma->id)
                             ->where('cargo_id', $info->cargo_id)
                             ->where('categoria_id', $info->categoria_id)
                             ->where('planilla_id', $info->planilla_id)
                             ->get();
 
+                    $info->descuentos = $tmp_descuentos->where("base", 0);
                     $total_descto = $info->descuentos->where("base", 0)->sum('monto');
 
                     //calcular base imponible
@@ -108,8 +112,8 @@ class ReportCronograma implements ShouldQueue
                         "monto" => $total_descto
                     ]);
 
-                    //calcular essalud
-                    $info->essalud = $info->descuentos->where("base", 1)->sum('monto');
+                    //calcular aportes
+                    $info->aportaciones = $info->descuentos->where("base", 1);
 
                     //calcular total neto
                     $info->neto = $total - $total_descto;
@@ -127,13 +131,23 @@ class ReportCronograma implements ShouldQueue
         $pdf = PDF::loadView('pdf.planilla', compact('meses', 'metas', 'pagina'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
-        $ruta = "/pdf/planilla_metas_{$this->mes}_{$this->year}_{$this->adicional}.pdf";
-        $pdf->save(storage_path("app/public") . $ruta);
+        $fecha = strtotime(Carbon::now());
+        $name = "planilla_metas_{$fecha}.pdf";
+        $pdf->save(storage_path("app/public") . "/pdf/{$name}");
+
+        $archivo = Report::create([
+            "type" => "pdf",
+            "name" => "Planilla del {$cronograma->mes} del {$cronograma->año}",
+            "icono" => "fas fa-file-pdf",
+            "path" => "/storage/pdf/{$name}",
+            "cronograma_id" => $this->cronograma->id,
+            "type_report_id" => $this->type_report
+        ]);
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage{$ruta}", "La planilla {$this->mes} del {$this->year} fué generada"));
+            $user->notify(new ReportNotification("/storage/pdf/{$name}", "La planilla del {$cronograma->mes} del {$cronograma->year} fué generada"));
         }
 
     }

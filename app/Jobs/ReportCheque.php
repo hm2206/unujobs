@@ -13,6 +13,8 @@ use App\Models\User;
 use App\Notifications\ReportNotification;
 use App\Models\Report;
 use \Carbon\Carbon;
+use App\Models\Banco;
+use App\Models\TypeRemuneracion;
 
 class ReportCheque implements ShouldQueue
 {
@@ -47,9 +49,37 @@ class ReportCheque implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $works = $cronograma->works->where("banco_id", null);
+        $bancos = Banco::all(); 
+        $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         
-        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'works', 'meses'));
+        foreach ($bancos as $banco) {
+
+            $works = $cronograma->works->whereIn("banco_id", $banco->id)
+                ->where("cheque", 1);
+
+            $banco->count = $works->count();
+            $banco->works = $works;
+
+            foreach ($banco->works as $work) {
+                
+                $descuentos = Descuento::where("work_id", $work->id)
+                    ->where("cronograma_id", $cronograma->id)
+                    ->where("base", 0)
+                    ->get();
+
+                $remuneraciones = Remuneracion::where("work_id", $work->id)
+                    ->where("cronograma_id", $cronograma->id)
+                    ->get();
+
+                
+                $work->bonificaciones = $remuneraciones->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
+                $work->total_neto =  $remuneraciones->sum("monto") - $descuentos->sum('monto');
+
+            }
+
+        }
+        
+        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'works', 'bancos', 'meses'));
 
         $fecha = strtotime(Carbon::now());
         $name = "reporte_cheque_{$fecha}.pdf";

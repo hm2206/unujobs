@@ -103,5 +103,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("cronograma/{id}/boleta", "ExportCronogramaController@boleta");
     Route::post("cronograma/{id}/pago", "ExportCronogramaController@pago");
     Route::post("cronograma/{id}/afp-net", "ExportCronogramaController@afp");
+    Route::post("cronograma/{id}/planilla", "ExportCronogramaController@planilla");
+    Route::post("cronograma/{id}/descuento", "ExportCronogramaController@descuento");
 
 });

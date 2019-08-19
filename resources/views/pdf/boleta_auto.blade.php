@@ -9,7 +9,7 @@
         <title>Reporte Mensual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
-    <body class="bg-white">
+    <body class="bg-white text-dark">
 
         @foreach ($works as $work)
             @foreach ($work->infos as $info)
@@ -39,7 +39,7 @@
                         </b>
                     </div>
                     
-                    <div class="boleta-header" style="width:70%;">
+                    <div class="boleta-header" style="width:80%;">
                         <table class="table-boleta table-sm" style="width:100%;">
                             <thead> 
                                 <tr>
@@ -78,7 +78,7 @@
                         </table>
                     </div>
     
-                    <table class="table-sm mt-2" style="width:70%;">
+                    <table class="table-sm mt-2" style="width:80%;">
                         <thead class="py-0 bbt-1 bbl-1 bbb-1">
                             <tr class="text-center py-0">
                                 <th class="py-0">

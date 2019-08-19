@@ -5,7 +5,7 @@
         </button>
 
         
-        <modal @close="show = false" col="col-md-10" :show="show" height="80vh">
+        <modal @close="show = false" col="col-md-10" :show="show" height="90vh">
             <template slot="header">
                 Lista de boletas de 
                 <i class="fas fa-arrow-right text-danger"></i> 

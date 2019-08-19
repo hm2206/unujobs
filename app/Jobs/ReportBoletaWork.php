@@ -17,6 +17,8 @@ use App\Models\TypeDescuento;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\User;
+use App\Models\Report;
+use \Carbon\Carbon;
 
 class ReportBoletaWork implements ShouldQueue
 {
@@ -68,9 +70,8 @@ class ReportBoletaWork implements ShouldQueue
                     ->where("cronograma_id", $cro->id)
                     ->get();
 
-                $cro->tmp_descuentos = $tmp_descuentos;
+                $cro->tmp_descuentos = $tmp_descuentos->where('base', 0);
 
-                \Log::info($tmp_descuentos);
                 
                 $cro->total_descuento = $cro->tmp_descuentos->where("base", 0)->sum("monto");
                 $cro->total_remuneracion = $cro->tmp_remuneraciones->sum("monto");
@@ -80,27 +81,25 @@ class ReportBoletaWork implements ShouldQueue
                 $cro->base = $cro->tmp_remuneraciones->where('base', 0)->sum('monto');
                 
                 //aportes
-                $cro->essalud = $cro->tmp_descuentos->where("base", 1)->sum("monto");
-                $cro->accidentes = $work->accidentes ? ($base * 1.55) / 100 : 0;
+                $cro->aportaciones = $tmp_descuentos->where("base", 1);
                 
                 //total neto
                 $cro->neto = $cro->total_remuneracion - $cro->total_descuento;
-                $cro->total_aportes = $cro->essalud + $cro->accidentes;
                 
             }
         }
 
         $pdf = PDF::loadView("pdf.boleta", compact('work', 'infos'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
+        $work_name = strtoupper($work->numero_de_documento);
+        $nombre = "boletas_" . date('Y-m-d') . "_{$work_name}.pdf";
 
-        $nombre = "pdf/boletas_" . date('Y-m-d') . "_{$work->numero_de_documento}.pdf";
-
-        $pdf->save(storage_path("app/public/{$nombre}"));
+        $pdf->save(storage_path("app/public/pdf/{$nombre}"));
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/{$nombre}", 
+            $user->notify(new ReportNotification("/storage/pdf/{$nombre}", 
                 "La boletas de {$work->nombre_completo} fué generada"
             ));
         }

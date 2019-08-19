@@ -9,7 +9,7 @@
         <title>Reporte Mesual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
-    <body class="bg-white">
+    <body class="bg-white text-dark">
 
             @foreach ($work->infos as $info)
             <div class="mb-7">

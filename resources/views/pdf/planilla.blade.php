@@ -199,10 +199,14 @@
                                             <td class="py-0">BASE IMPONIBLE</td>
                                             <td class="py-0">{{ $info->base }}</td>
                                         </tr>
-                                        <tr>
-                                            <td class="py-0">APORTE ESSALUD</td>
-                                            <td class="py-0">{{ $info->essalud }}</td>
-                                        </tr>
+                                        @foreach ($info->aportaciones as $aport)
+                                            <tr>
+                                                <td class="py-0">{{ 
+                                                    $aport->typeDescuento ? $aport->typeDescuento->descripcion : '' }}
+                                                </td>
+                                                <td class="py-0">{{ $aport->monto }}</td>
+                                            </tr>
+                                        @endforeach
                                         <tr>
                                             <td class="py-0">NETO A PAGAR</td>
                                             <td class="py-0">{{ $info->neto }}</td>
@@ -210,23 +214,7 @@
                                         <tr>
                                             <td class="py-0"></td>
                                             <td class="py-0"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0"></td>
-                                            <td class="py-0"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0"></td>
-                                            <td class="py-0"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0"></td>
-                                            <td class="py-0"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0"></td>
-                                            <td class="py-0"></td>
-                                        </tr>
+                                        </tr>¿
                                         <tr>
                                             <td colspan="2" class="py-0">
                                                 <div class="ml-3 pt-5">--------------------------------------</div>
