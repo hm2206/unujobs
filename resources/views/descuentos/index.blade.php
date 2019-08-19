@@ -44,6 +44,7 @@
                             <th>#ID</th>
                             <th>Descripción</th>
                             <th>Tipo</th>
+                            <th>Activo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -53,9 +54,20 @@
                                 <th>{{ $descuento->key }}</th>
                                 <th class="uppercase">{{ $descuento->descripcion }}</th>
                                 <th class="uppercase">
-                                    <button class="btn btn-sm btn-{{ $descuento->base >= 1 ? 'primary' : 'danger' }}">
-                                        {{ $descuento->base >= 1 ? 'Aportación' : 'Retención' }}
-                                    </button>
+                                    @if ($descuento->base)
+                                        <button class="btn btn-sm btn-primary">
+                                            Aportación
+                                        </button>
+                                    @endif
+
+                                    @if ($descuento->retencion)
+                                        <button class="btn btn-sm btn-danger">
+                                            Retención
+                                        </button>
+                                    @endif
+                                </th>
+                                <th>
+                                    {{ $descuento->activo ? 'Si' : 'No' }}
                                 </th>
                                 <th>
                                     <div class="btn-group">

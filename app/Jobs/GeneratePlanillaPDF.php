@@ -20,7 +20,9 @@ use App\Models\Work;
 use App\Notifications\ReportNotification;
 use \PDF;
 use App\Models\User;
+use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
+use \Carbon\Carbon;
 
 /**
  * Genera pdf de la planilla
@@ -32,15 +34,17 @@ class GeneratePlanillaPDF implements ShouldQueue
 
     private $cronograma;
     public $timeout = 0;
+    public $type_report;
 
     /**
      * configuramos un poco
      *
      * @param \App\Models\Cronograma $cronograma
      */
-    public function __construct($cronograma)
+    public function __construct($cronograma, $type_report)
     {
         $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
     }
 
     /**
@@ -60,7 +64,7 @@ class GeneratePlanillaPDF implements ShouldQueue
 
         $type_remuneraciones = TypeRemuneracion::all();
         $type_categorias = TypeCategoria::with('cargos')->get();
-        $type_descuentos = TypeDescuento::where("config_afp", null)->get();
+        $type_descuentos = TypeDescuento::where("config_afp", null)->where("base", 0)->get();
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $descuentos = Descuento::where('cronograma_id', $cronograma->id)->get();
 
@@ -82,7 +86,9 @@ class GeneratePlanillaPDF implements ShouldQueue
                 $tags = collect();
 
                 foreach ($categoria->cargos as $cargo) {
-                    $tmp = $remuneraciones->where('cargo_id', $cargo->id)->where('type_remuneracion_id', $type->id)->sum('monto');
+                    $tmp = $remuneraciones->where('cargo_id', $cargo->id)
+                        ->where('type_remuneracion_id', $type->id)
+                        ->sum('monto');
 
                     $tags->push([
                         "id" => $cargo->id,
@@ -139,41 +145,39 @@ class GeneratePlanillaPDF implements ShouldQueue
                 ->whereIn("type_descuento_id", $whereIn->pluck(['id']))
                 ->whereIn("work_id", $works->where("afp_id", $afp->id)->pluck(['id']))
                 ->get();
+
             $afp->monto = $desct->sum('monto');
         }
 
-        $total_descuentos = $afps->sum('monto') + $type_descuentos->sum('monto');
-        $total_essalud = 0;
-        $total_ies = 0;
-        $total_dlfp = 0;
-        $total_accidentes = 0;
 
-        foreach ($works as $work) {
-            $tmp_essalud = 0;
-            $tmp_accidente = 0;
-            $base = 0;
-            $tmp_remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
-                ->where("work_id", $work->id)
-                ->where('base', 0)
+        $total_descuentos = $descuentos->where("base", 0)->sum("monto");
+
+        $type_aportaciones = TypeDescuento::where("base", 1)->get();
+        $aportaciones = collect();
+        $total_aportaciones = 0;
+
+        foreach ($type_aportaciones as $aport) {
+
+            $tmp_aportes = Descuento::where("cronograma_id", $cronograma->id)
+                ->where("type_descuento_id", $aport->id)
                 ->get();
-                
 
-            //aportaciones current
-            $tmp_essalud = Descuento::where("cronograma_id", $cronograma->id)
-                ->where("work_id", $work->id)
-                ->where("base", 1)
-                ->get()->sum("monto");
-                
-            $tmp_accidente = $work->accidentes ? ($base * 1.55) / 100 : 0;
+            if ($tmp_aportes->count() > 0) {
 
-            //totales
-            $total_essalud += $tmp_essalud;        
-            $total_accidentes += $tmp_accidente;
+                $monto = $tmp_aportes->sum('monto');
+
+                $aportaciones->push([
+                    "key" => $aport->key,
+                    "descripcion" => $aport->descripcion,
+                    "monto" => $monto
+                ]);
+
+                $total_aportaciones += $monto;
+
+            }
+
         }
-
-        //calcular total de aportaciones
-        $total_aportaciones = $total_accidentes + $total_essalud + $total_dlfp + $total_ies;
-
+        
 
         $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
         $titulo = "";
@@ -184,16 +188,23 @@ class GeneratePlanillaPDF implements ShouldQueue
             'meses', 'cronograma', 'type_categorias',
             'totales', 'type_descuentos', 'rows', 
             'sub_titulo','titulo', 'afps', 'total_descuentos',
-            'total_essalud', 'total_ies', 'total_dlfp', 
-            'total_accidentes', 'total_aportaciones'
+            'aportaciones', 'total_aportaciones'
         ));
 
-
+        $fecha = \strtotime(Carbon::now());
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $nombre = "pdf/planilla_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
+        $nombre = "pdf/planilla_general_{$fecha}.pdf";
 
         $pdf->save(storage_path("app/public") . "/{$nombre}");
-        $cronograma->update(["pdf" => "/storage/{$nombre}", "pendiente" => 0]);
+
+        $archivo = Report::create([
+            "type" => "pdf",
+            "name" => "Resumen general del {$cronograma->mes} del {$cronograma->año}",
+            "icono" => "fas fa-file-pdf",
+            "path" => "/storage/{$nombre}",
+            "cronograma_id" => $cronograma->id,
+            "type_report_id" => $this->type_report
+        ]);
 
         $users = User::all();
 

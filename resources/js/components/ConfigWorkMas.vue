@@ -2,21 +2,62 @@
     <div class="card-body">
         <form class="card" id="data-sindicatos" v-on:submit="storeSindicato">
             <div class="card-header">
+                <small class="btn btn-sm btn-dark btn-circle">
+                    <i class="fas fa-cog"></i>    
+                </small>
                 Configurar Sindicatos
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4" v-for="(sindicato, sin) in tmp_sindicatos" :key="`sindicato-${sin}`">
-                        <input type="checkbox" name="sindicatos[]" :value="sindicato.id" :checked="sindicato.checked">
+                        <input type="checkbox" name="sindicatos[]" :value="sindicato.id" 
+                            :checked="sindicato.checked"
+                            :disabled="loader"
+                        >
                         {{ sindicato.nombre }}
                     </div>
-                    <div class="col-md-12 mt-5">
+                    <div class="col-md-12 mt-5 text-right">
                         <hr>
-                        <button class="btn btn-success">
+                        <button class="btn btn-success"
+                            :disabled="loader"
+                        >
                             <i class="fas fa-save"></i> Guardar
                         </button>
                     </div>
                 </div>
+            </div>
+        </form>
+
+        <form class="card mt-4" id="store-retencion" v-on:submit="storeRetencion">
+            <div class="card-header">
+                <small class="btn btn-sm btn-dark btn-circle">
+                    <i class="fas fa-cog"></i>    
+                </small> Configurar Retenciones y Aportes automáticos
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2" v-for="(retencion, ret) in retenciones" :key="`retencion-${ret}`">
+                        <label :class="`btn btn-sm btn-${retencion.checked ? 'primary' : 'danger'}`" 
+                            :for="`ret-${ret}`"
+                        >
+                           {{ retencion.base ? 'APORT' : 'RET' }}
+                            <input type="checkbox" :id="`ret-${ret}`" name="retenciones[]" 
+                                :value="retencion.id"
+                                :checked="retencion.checked"
+                                :disabled="loader"
+                            >
+                       </label>
+                       {{ retencion.descripcion }}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-primary"
+                    :disabled="loader"
+                    v-on:click="storeRetencion"
+                >
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
             </div>
         </form>
     </div>
@@ -31,7 +72,9 @@ export default {
     props: ['sindicatos', 'param'],
     data() {
         return {
-            tmp_sindicatos: []
+            tmp_sindicatos: [],
+            retenciones: [],
+            loader: false
         };
     },
     watch: {
@@ -50,6 +93,7 @@ export default {
     },
     mounted() {
         this.getSindicatos();
+        this.getRentenciones();
     },
     methods: {
         getSindicatos() {
@@ -76,6 +120,38 @@ export default {
             }).catch(err => {
                 notify({icon: 'error', text: 'Algo salió mal'});
             });
+
+        },
+        getRentenciones(e) {
+
+            let api = unujobs("get", `/work/${this.param}/retencion`);
+            api.then(res => {
+                this.retenciones = res.data;
+            }).catch(err => {
+                console.log("algo salió mal en al traer las retenciones");
+            });
+
+        },
+        async storeRetencion(e) {
+
+            if (e) {
+                e.preventDefault();
+            }
+            
+            this.loader = true;
+            const form = new FormData(document.getElementById('store-retencion'));
+            let api = unujobs("post", `/work/${this.param}/retencion`, form);
+            await api.then(res => {
+                let { status, message } = res.data;
+                let icon = status ? 'success' : 'error';
+                notify({icon, text: message});
+                console.log(res.data);
+                this.getRentenciones();
+            }).catch(err => {
+                notify({icon: 'error', text: 'Algo salió mal'});
+            });
+
+            this.loader = false;
 
         }
     }

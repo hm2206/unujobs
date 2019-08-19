@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\Report;
+
 class ReportController extends Controller
 {
     
-    public function index()
+    public function files($id, $type) 
     {
-        return view("reportes.index");
+        return Report::orderBy("id", "DESC")
+            ->where("cronograma_id", $id)
+            ->where("type_report_id", $type)
+            ->get();
     }
 
 }

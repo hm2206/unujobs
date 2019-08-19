@@ -120,6 +120,7 @@ class DescuentoController extends Controller
             $monto = $request->input("monto", 0);
             $obligatorio = $request->input("obligatorio", 0);
             $configs = $request->input("configs", []);
+            $activo = $request->activo ? 1 : 0;
 
             ConfigDescuento::where("type_descuento_id", $type->id)->delete();
 
@@ -142,7 +143,8 @@ class DescuentoController extends Controller
 
             $type->update([
                 "descripcion" => $request->descripcion,
-                "obligatorio" => $obligatorio
+                "obligatorio" => $obligatorio,
+                "activo" => $activo
             ]);
 
             

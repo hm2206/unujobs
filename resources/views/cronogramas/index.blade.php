@@ -14,9 +14,6 @@
     <h1 class="h3 mb-0 text-gray-800">Crear Planilla x Mes</h1>
     @if ($cronogramas->count() > 0)
         <div class="d-none d-sm-inline-block">
-            <a href="{{ route('export.reporte', [$mes, $year, $adicional]) }}" class="btn btn-sm btn-primary shadow-sm">
-                <i class="fas fa-download fa-sm text-white-50"></i> Generar Reporte
-            </a>
             <btn-mef
                 theme="btn-primary btn-sm"
                 mes="{{ $mes }}"
@@ -189,17 +186,6 @@
                                                     :cronograma="{{ $cronograma }}"
                                                 >
                                                 </add-work>
-                                            @endif
-
-
-                                            @if ($cronograma->pendiente)
-                                                <button class="btn btn-sm btn-danger" disabled>
-                                                    Generar PDF
-                                                </button>
-                                            @else
-                                                <a title="PDF" href="{{ route('export.cronograma.pdf', $cronograma->slug()) }}" class="btn btn-sm btn-danger">
-                                                    Generar PDF
-                                                </a>
                                             @endif
 
                                             

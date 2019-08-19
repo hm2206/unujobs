@@ -25,6 +25,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="">Activo</label>
+                        <input type="checkbox" name="activo" v-model="form.activo">
+                        <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="">No considerar a la base imponible  <small class="text-dark">(Opcional)</small></label>
                         <br>
                         <input type="checkbox" name="base" v-model="form.base">
@@ -55,7 +61,8 @@ export default {
             form: {
                 key: '',
                 descripcion: '',
-                base: ''
+                base: '',
+                activo: 0
             },  
             errors: {},
             loader: false,

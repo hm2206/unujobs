@@ -65,13 +65,11 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/liquidar", "LiquidarController@store");
 
 
-    Route::post("/export/cronograma/{id}/afp", "ExportController@afp");
     Route::post("/export/mef/{year}/{mes}", "ExportController@mef");
 
     Route::post("/export/alta-baja/{year}/{mes}", "ExportController@altaBaja");
 
     Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
-    Route::post("/export/cuenta-cheque/{id}", "ExportController@cuentaCheque");
 
     // Remuneracion de los trabajadores
     Route::get('work/{id}/remuneracion', 'JobController@remuneracion');
@@ -83,6 +81,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post('work/{id}/config', 'JobController@configStore');
     Route::delete('work/{id}/config', 'JobController@configDelete');
     Route::post('work/{id}/sindicato', 'JobController@sindicatoStore');
+    Route::get('work/{id}/retencion', 'JobController@retencion');
+    Route::post('work/{id}/retencion', 'JobController@retencionStore');
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');
@@ -93,5 +93,15 @@ Route::group(["prefix" => 'v1'], function() {
 
     // obtener los sindicatos
     Route::resource('sindicato', 'SindicatoController');
+
+    // obtener los archivos de los reportes
+    Route::get('file/{id}/type/{type}', 'ReportController@files');
+
+    // Generar Reportes
+    Route::post("cronograma/{id}/pdf", "ExportCronogramaController@pdf");
+    Route::post("cronograma/{id}/meta", "ExportCronogramaController@meta");
+    Route::post("cronograma/{id}/boleta", "ExportCronogramaController@boleta");
+    Route::post("cronograma/{id}/pago", "ExportCronogramaController@pago");
+    Route::post("cronograma/{id}/afp-net", "ExportCronogramaController@afp");
 
 });

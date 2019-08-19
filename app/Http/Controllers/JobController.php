@@ -140,9 +140,10 @@ class JobController extends Controller
      */
     public function update(JobRequest $request, Work $job)
     {
-        $job->update($request->except('descanso'));
+        $job->update($request->except('descanso', 'afecto'));
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
         $job->descanso = $request->input("descanso") ? 1 : 0;
+        $job->afecto = $request->afecto ? 1 : 0;
         $job->save();
         return back()->with(["success" => "El registro se actualizo correctamente"]);
     }
@@ -187,7 +188,7 @@ class JobController extends Controller
         $mes = request()->input('mes', date('m'));
         $adicional = request()->adicional ? 1 : 0;
         $categoria_id = request()->categoria_id;
-        $numero = request()->numero;
+        $numero = request()->numero ? request()->numero : 1;
 
         // almacenar
         $total = 0;
@@ -297,7 +298,7 @@ class JobController extends Controller
         return [
             "status" => true,
             "message" => "Los datos se actualizarón correctamente!",
-            "body" => $total
+            "body" => round($total, 2)
         ];
         
     }
@@ -327,7 +328,7 @@ class JobController extends Controller
         $mes = request()->input('mes', date('m'));
         $adicional = request()->adicional ? 1 : 0;
         $categoria_id = request()->categoria_id;
-        $numero = request()->numero;
+        $numero = request()->numero ? request()->numero : 1;
 
 
         // almacenar
@@ -382,7 +383,6 @@ class JobController extends Controller
             "cronograma" => $cronograma,
             "numeros" => $seleccionar,
             "descuentos" => $descuentos,
-            "seleccionar" => $seleccionar,
             "aportaciones" => $aportaciones,
             "dias" => $dias,
             "total" => $total,
@@ -390,7 +390,7 @@ class JobController extends Controller
             "year" => $year,
             "mes" => $mes,
             "base" => $base,
-            "total_neto" => $total_neto,
+            "total_neto" => $total_neto
         ];
     }
 
@@ -443,9 +443,9 @@ class JobController extends Controller
             }
         }
 
-        $total = $descuentos->where('base', 0)->sum('monto');
-        $base = $remuneraciones->where('base', 0)->sum('monto');
-        $total_neto = $remuneraciones->sum('monto') - $total;
+        $total = round($descuentos->where('base', 0)->sum('monto'), 2);
+        $base = round($remuneraciones->where('base', 0)->sum('monto'), 2);
+        $total_neto = round($remuneraciones->sum('monto') - $total, 2);
 
         return [
             "status" => true,
@@ -662,6 +662,61 @@ class JobController extends Controller
             ];
 
         }
+    }
+
+
+
+    public function retencion($id)
+    {
+        $work = Work::findOrFail($id);
+        $types = TypeDescuento::where("activo", 1)
+            ->where("retencion", 1)
+            ->orWhere("base", 1)
+            ->get();
+        
+        foreach ($types as $type) {
+
+            $tmp_type = $work->typeDescuentos->where("id", $type->id)->count();
+            if ($tmp_type > 0) {
+                $type->checked = true;
+            }else {
+                $type->checked = false;
+            }
+
+        }
+
+        return $types;
+
+    }
+
+
+
+    public function retencionStore(Request $request, $id)
+    {
+
+        $work = Work::findOrFail($id);
+        
+        try {
+
+            $retenciones = $request->input('retenciones', []);
+            $work->typeDescuentos()->sync($retenciones);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "El registro fué eliminado correctamente!"
+            ];
+
+        }
+
     }
 
 

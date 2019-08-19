@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
         <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-        <title>Reporte Mesual de boleta - {{ $mes }}-{{ $year }}</title>
+        <title>Reporte Mesual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
     <body class="bg-white">
@@ -110,14 +110,14 @@
                                                         {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : null }}
                                                     </td>
                                                     <td class="py-0 text-right" width="5%">
-                                                        {{ $remuneracion->monto }}
+                                                        {{ round($remuneracion->monto, 2) }}
                                                     </td>
                                                 </tr>
                                             @endforeach
                                             <tr>
                                                 <td></td>
                                                 <th class="text-right bbt-1">
-                                                    {{ $info->total}}
+                                                    {{ round($info->total, 2) }}
                                                 </th>
                                             </tr>
                                         </tbody>
@@ -134,7 +134,7 @@
                                                             <span>.-</span>
                                                             {{ $descuento['type_descuento'] ? $descuento['type_descuento']['descripcion'] : null }}
                                                         </td>
-                                                        <td class="py-0 text-right">{{ $descuento['monto'] }}</td>
+                                                        <td class="py-0 text-right">{{ round($descuento['monto'], 0) }}</td>
                                                     @endforeach
                                                 </tr>
                                             @endforeach
@@ -145,13 +145,13 @@
                                             <tr>
                                                 <th class="py-0">TOTAL DESCUENTOS</th>
                                                 <th class="py-0 bbt-1 text-center" colspan="3">
-                                                    {{ $info->total_descuento }}
+                                                    {{ round($info->total_descuento, 2) }}
                                                 </th>
                                             </tr>
                                             <tr>
                                                 <th class="py-0">NETO A PAGAR</th>
                                                 <th class="py-0 bbt-1 text-center" colspan="3">
-                                                    {{ $info->neto }}
+                                                    {{ round($info->neto, 2) }}
                                                 </th>
                                             </tr>
                                         </tbody>
@@ -159,26 +159,13 @@
                                 </td>
                                 <td class="bbl-1 p-relative">
                                     <table class="p-absolute top-0 w-100">
-                                        <tr>
-                                            <td class="py-0">80.-ESSALUD (APORTES)</td>
-                                            <td class="py-0">{{ $info->essalud }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">81.-I.E.S.(APORT)</td>
-                                            <td class="py-0">00.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">82.-D.L.F.P.(APORT)</td>
-                                            <td class="py-0">00.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">83.-A.C.C DE TRABAJO</td>
-                                            <td class="py-0">{{ $info->accidentes }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-0">84.-TOTAL APORTE</td>
-                                            <td class="py-0 bbt-1">{{ $info->total_aportes }}</td>
-                                        </tr>
+                                        
+                                        @foreach ($info->aportaciones as $aporte)
+                                            <tr>
+                                                <td class="py-0">{{ $aporte->key }}.-{{ $aporte->descripcion }}</td>
+                                                <td class="py-0">{{ $aporte->monto }}</td>
+                                            </tr>
+                                        @endforeach
     
                                         <tr>
                                             <td></td>

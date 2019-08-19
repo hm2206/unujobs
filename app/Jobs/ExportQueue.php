@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use App\Notifications\BasicNotification;
 use App\Models\User;
 use \Excel;
+use App\Models\Report;
 
 /**
  * Notificar cuando la exportación a concluido
@@ -31,15 +32,18 @@ class ExportQueue implements ShouldQueue
      */
     private $titulo;
 
+    private $config = [];
+
     /**
      * @param string $url
      * @param string $titulo
      * @return void
      */
-    public function __construct($url, $titulo)
+    public function __construct($url, $titulo, $config = null)
     {
         $this->url = $url;
         $this->titulo = $titulo;
+        $this->config = $config;
     }
 
     /**
@@ -50,6 +54,29 @@ class ExportQueue implements ShouldQueue
      */
     public function handle()
     {
+
+        if ($this->config) {
+
+            try {
+                
+                $archivo = Report::create([
+                    "type" => $this->config["type"],
+                    "name" => $this->config["name"],
+                    "icono" => $this->config["icono"],
+                    "path" => $this->config["path"],
+                    "cronograma_id" => $this->config["cronograma_id"],
+                    "type_report_id" => $this->config["type_report"]
+                ]);
+
+                \Log::info("listo");
+
+            } catch (\Throwable $th) {
+
+                 \Log::info($th);
+
+            }
+
+        }
 
         $users = User::all();
     

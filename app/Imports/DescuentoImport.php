@@ -46,7 +46,7 @@ class DescuentoImport implements ToCollection, WithHeadingRow
     public function collection(Collection $collection)
     {
         // obtenemos los tipo de descuentos
-        $types = TypeDescuento::all();
+        $types = TypeDescuento::where("activo", 1)->get();
 
         foreach ($collection as $iter => $row) {
 
@@ -60,7 +60,6 @@ class DescuentoImport implements ToCollection, WithHeadingRow
                 $categoria = Categoria::where("key", $row['categoria'])->first();
                 // obtenemos la informacion detallada del trabajador
                 $info = $work->infos->where("categoria_id", $categoria->id)->first();
-
                 
                 if ($info) {
 
@@ -68,10 +67,8 @@ class DescuentoImport implements ToCollection, WithHeadingRow
                         
                         // verificamos que el typeDescuento exísta
                         $isType = isset($row[$type->key]);
-                        
-                        
-                        if ($isType) {
 
+                        if ($isType) {
                             // obtenemos el monto del dsecuento
                             $monto = $row[$type->key];
 
@@ -85,8 +82,6 @@ class DescuentoImport implements ToCollection, WithHeadingRow
                                 "type_descuento_id" => $type->id,
                                 "adicional" => $this->cronograma->adicional,
                             ]);
-
-                            \Log::info($descuento);
     
                             // verificamos que el valor a guardar sea un numero
                             if (\is_numeric($monto)) {

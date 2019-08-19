@@ -47,7 +47,7 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
     {
 
         // obtenemos los tipo de remuneracion
-        $types = TypeRemuneracion::all();
+        $types = TypeRemuneracion::where("activo", 1)->get();
 
         foreach ($collection as $row) {
 

@@ -56,9 +56,12 @@ class TypeRemuneracionController extends Controller
         try {
             
             $base = $request->base ? 1 : 0;
+            $activo = $request->activo ? 1 : 0;
 
             $type = TypeRemuneracion::create($payload);
-            $type->update(["base" => $base]);
+            $type->update([
+                "base" => $base
+            ]);
 
             return [
                 "status" => true,
@@ -119,10 +122,12 @@ class TypeRemuneracionController extends Controller
             $remuneracion = TypeRemuneracion::findOrFail($id);
 
             $base = $request->base ? 1 : 0;
+            $activo = $request->activo ? 1 : 0;
 
             $remuneracion->update([
                 "descripcion" => $request->descripcion,
-                "base" => $base
+                "base" => $base,
+                "activo" => $activo
             ]);
 
             return [

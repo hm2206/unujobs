@@ -43,6 +43,8 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
+                            <th class="text-center">Activo</th>
+                            <th class="text-center">Base Imponible</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -51,6 +53,12 @@
                             <tr id="categoria-{{ $remuneracion->id }}">
                                 <th>{{ $remuneracion->key }}</th>
                                 <th class="uppercase">{{ $remuneracion->descripcion }}</th>
+                                <th>
+                                    {{ $remuneracion->activo ? 'Si' : 'No' }}
+                                </th>
+                                <th class="text-center">
+                                    {{ $remuneracion->base ? 'No' : 'Si' }}
+                                </th>
                                 <th>
                                     <div class="btn-group">
                                         <btn-remuneracion

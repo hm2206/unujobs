@@ -18,6 +18,8 @@ use App\Models\TypeCategoria;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Afp;
+use App\Models\Report;
+use \Carbon\Carbon;
 
 /**
  * Genera un pdf de las planillas meta por meta 
@@ -33,11 +35,13 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
      */
     private $cronograma = [];
     public $timeout = 0;
+    private $type_report;
 
 
-    public function __construct($cronograma)
+    public function __construct($cronograma, $type_report)
     {
         $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
     }
 
 
@@ -64,7 +68,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             
             $meta->type_remuneraciones = TypeRemuneracion::all();
             $meta->type_categorias = TypeCategoria::with('cargos')->get();
-            $meta->type_descuentos = TypeDescuento::where("config_afp", null)->get();
+            $meta->type_descuentos = TypeDescuento::where("base", 0)->where("config_afp", null)->get();
             $meta->remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)
                 ->where("meta_id", $meta->id)
                 ->get();
@@ -151,7 +155,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             
             // afps
             foreach($meta->afps as $afp) {
-                $whereIn = TypeDescuento::where("essalud", 0)->where("config_afp", "<>", null)->get();
+                $whereIn = TypeDescuento::where("base", 0)->where("config_afp", "<>", null)->get();
                 $desct = Descuento::where("cronograma_id", $cronograma->id)
                     ->where("meta_id", $meta->id)
                     ->whereIn("type_descuento_id", $whereIn->pluck(['id']))
@@ -161,36 +165,38 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             }
 
             // config
-            $meta->total_descuentos = $meta->afps->sum('monto') + $meta->type_descuentos->sum('monto');
-            $meta->total_essalud = 0;
-            $meta->total_ies = 0;
-            $meta->total_dlfp = 0;
-            $meta->total_accidentes = 0;
+            $meta->total_descuentos = $meta->descuentos->where("base", 1)->sum('monto');
+            
 
+            $type_aportaciones = TypeDescuento::where("base", 1)->get();
+            $aportaciones = collect();
+            $total_aportaciones = 0;
 
-            // trabajadores
-            foreach ($works as $work) {
-                $tmp_essalud = 0;
-                $tmp_accidente = 0;
-                $base = 0;
-                $tmp_remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
-                    ->where("work_id", $work->id)
-                    ->where("meta_id", $meta->id)
+            foreach ($type_aportaciones as $aport) {
+
+                $tmp_aportes = Descuento::where("cronograma_id", $cronograma->id)
+                    ->where("type_descuento_id", $aport->id)
                     ->get();
-    
-                $base = $tmp_remuneraciones->where("base")->sum('monto');
-    
-                //aportaciones current
-                $tmp_essalud = $meta->descuentos->where("base", 1)->sum("monto");
-                $tmp_accidente = $work->accidentes ? ($base * 1.55) / 100 : 0;
-    
-                //totales
-                $meta->total_essalud += $tmp_essalud;        
-                $meta->total_accidentes += $tmp_accidente;
+
+                if ($tmp_aportes->count() > 0) {
+
+                    $monto = $tmp_aportes->sum('monto');
+
+                    $aportaciones->push([
+                        "key" => $aport->key,
+                        "descripcion" => $aport->descripcion,
+                        "monto" => $monto
+                    ]);
+
+                    $total_aportaciones += $monto;
+
+                }
+
             }
 
-            //calcular total de aportaciones
-            $meta->total_aportaciones = $meta->total_accidentes + $meta->total_essalud + $meta->total_dlfp + $meta->total_ies;
+
+            $meta->aportaciones = $aportaciones;
+            $meta->total_aportaciones = $total_aportaciones;
 
         }
 
@@ -199,12 +205,19 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             "meses", "metas", "cronograma"
         ]));
 
-
+        $fecha = \strtotime(Carbon::now());
+        $nombre = "pdf/planilla_meta_x_meta_{$fecha}.pdf";
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $nombre = "pdf/planilla_meta_x_meta_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
-
         $pdf->save(storage_path("app/public") . "/{$nombre}");
-        $cronograma->update(["pdf_meta" => "/storage/{$nombre}", "pendiente" => 0]);
+
+        $archivo = Report::create([
+            "type" => "pdf",
+            "name" => "Resumen general meta x meta del {$cronograma->mes} del {$cronograma->año}",
+            "icono" => "fas fa-file-pdf",
+            "path" => "/storage/{$nombre}",
+            "cronograma_id" => $cronograma->id,
+            "type_report_id" => $this->type_report
+        ]);
 
         $users = User::all();
 

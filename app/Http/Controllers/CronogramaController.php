@@ -21,6 +21,7 @@ use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCronograma;
 use Illuminate\Support\Facades\Storage;
 use \DB;
+use App\Models\TypeReport;
 
 /**
  * Class CronogramaController
@@ -205,6 +206,7 @@ class CronogramaController extends Controller
     {
         $id = \base64_decode($slug);
         $cronograma = Cronograma::with("planilla")->findOrFail($id);
+        $typeReports = TypeReport::all();
         $jobs = [];
         $like = request()->query_search;
 
@@ -221,7 +223,7 @@ class CronogramaController extends Controller
             $jobs = $jobs->paginate(20);
         }
 
-        return view('cronogramas.job', compact('jobs', 'cronograma', 'like'));
+        return view('cronogramas.job', compact('jobs', 'cronograma', 'like', 'typeReports'));
     }
 
 
@@ -272,9 +274,12 @@ class CronogramaController extends Controller
 
             $jobs = Work::whereIn("id", $tmp_jobs)->get();
 
-            ProssingRemuneracion::dispatch($cronograma, $jobs);
-            ProssingDescuento::dispatch($cronograma, $jobs);
-            
+            $cronograma->works()->syncWithoutDetaching($jobs->pluck(["id"]));
+            // procesamos las remuneraciones y los descuentos
+            ProssingRemuneracion::withChain([
+                new ProssingDescuento($cronograma, $jobs)
+            ])->dispatch($cronograma, $jobs);
+
             return [
                 "status" => true,
                 "message" => "Los trabajadores están siendo procesados. Nosotros le notificaremos"

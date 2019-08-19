@@ -83,9 +83,10 @@ export default {
 
             api.then(res => {
 
-                let { remuneraciones, cronograma, total } = res.data;
+                let { remuneraciones, cronograma, total, numeros } = res.data;
                 this.remuneraciones = remuneraciones;
                 this.cronograma = cronograma;
+                this.$emit('get-numeros', numeros);
                 this.total = total;
                 
                 this.remuneraciones.filter(re => {

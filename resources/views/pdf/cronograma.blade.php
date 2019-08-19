@@ -166,38 +166,16 @@
                                 {{ $totales }}
                             </td>
                         </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                80.-ESSALUD (APORTACIONES)
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_essalud }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                81.-I.E.S 17%
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_ies }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                82.-D.L.F.P (APORTACIONES)
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_dlfp }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                83.-ACCIDENTES DE TRABAJO
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_accidentes }}
-                            </td>
-                        </tr>
+                        @foreach ($aportaciones as $aport)
+                            <tr>
+                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $aport['key'] }}.- {{ $aport['descripcion'] }}
+                                </td>
+                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $aport['monto'] }}
+                                </td>
+                            </tr>
+                        @endforeach
                         <tr>
                             <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                 84.-TOTAL APORTACIONES

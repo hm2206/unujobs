@@ -16,7 +16,9 @@ use App\Models\Descuento;
 use \PDF;
 use \Mail;
 use App\Models\User;
+use \Carbon\Carbon;
 use App\Mail\SendBoleta;
+use App\Models\Report;
 use App\Notifications\ReportNotification;
 
 /**
@@ -26,21 +28,20 @@ class ReportBoleta implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $mes;
-    private $year;
-    private $adicional;
+  
     public $timeout = 0;
+    private $cronograma;
+    private $type_report;
 
     /**
      * @param string $mes
      * @param string $year
      * @param string $adicional
      */
-    public function __construct($mes, $year, $adicional)
+    public function __construct($cronograma, $type_report)
     {
-        $this->mes = $mes;
-        $this->year = $year;   
-        $this->adicional = $adicional;
+        $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
     }
 
     /**
@@ -51,40 +52,33 @@ class ReportBoleta implements ShouldQueue
     public function handle()
     {
 
-        $workIn = Remuneracion::where("mes", $this->mes)
-            ->where("año", $this->year)
-            ->where('adicional', $this->adicional)
-            ->get()
-            ->pluck(["work_id"]);
-
-        $works = Work::whereIn("id", $workIn)->get();
+        $works = $this->cronograma->works;
+        $cronograma = $this->cronograma;
 
         foreach ($works as $work) {
             
             foreach ($work->infos as $info) {
 
-                $remuneraciones = Remuneracion::where("work_id", $work->id)
+                $remuneraciones = Remuneracion::orderBy('type_remuneracion_id', 'ASC')
+                    ->where("work_id", $work->id)
                     ->where("categoria_id", $info->categoria_id)
                     ->where("cargo_id", $info->cargo_id)
                     ->where("planilla_id", $info->planilla_id)
-                    ->where("adicional", $this->adicional)
-                    ->where("mes", $this->mes)
-                    ->where("año", $this->year)
+                    ->where("cronograma_id", $this->cronograma->id)
                     ->get();
 
-                $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
+                $descuentos = Descuento::with('typeDescuento')
+                    ->where('work_id', $work->id)
                     ->where("categoria_id", $info->categoria_id)
                     ->where("cargo_id", $info->cargo_id)
                     ->where("planilla_id", $info->planilla_id)
-                    ->where("adicional", $this->adicional)
-                    ->where("mes", $this->mes)
-                    ->where("año", $this->year)
+                    ->where("cronograma_id", $this->cronograma->id)
                     ->get();
 
                 $total = $remuneraciones->sum("monto");
                 
                 $info->remuneraciones = $remuneraciones;
-                $info->descuentos = $descuentos->where("essalud", 0)->chunk(2)->toArray();
+                $info->descuentos = $descuentos->where("base", 0)->chunk(2)->toArray();
                 $info->total_descuento = $descuentos->sum('monto');
 
 
@@ -92,25 +86,24 @@ class ReportBoleta implements ShouldQueue
                 $info->base = $remuneraciones->where('base', 0)->sum('monto');
 
                 //aportes
-                $info->essalud = $descuentos->where("essalud", 1)->sum("monto");
-                $info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
+                //$info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
+                $info->aportaciones = $descuentos->where("base", 1); 
 
                 //total neto
                 $info->neto = $total - $info->total_descuento;
-                $info->total_aportes = $info->essalud + $info->accidentes;
+                $info->total_aportes = $info->aportaciones->sum('monto');
 
             }
 
             if ($work->email) {
 
                 try {
-                    $year = $this->year;
-                    $mes = $this->mes;
-                    $pdf_tmp = PDF::loadView('pdf.send_boleta', compact('work', 'year', 'mes'));
+                    $pdf_tmp = PDF::loadView('pdf.send_boleta', compact('work', 'cronograma'));
                     $pdf_tmp->setPaper('a4', 'landscape');
 
                     Mail::to($work->email)
-                    ->send(new SendBoleta($work, $this->year, $this->mes, $this->adicional, $pdf_tmp));
+                        ->send(new SendBoleta($work, $cronograma, $pdf_tmp));
+
                 } catch (\Throwable $th) {
                     \Log::info('No se pudó enviar boleta de: ' . $work->email . " error: " . $th);
                 }
@@ -119,17 +112,29 @@ class ReportBoleta implements ShouldQueue
 
         }
 
+
+        $fecha = strtotime(Carbon::now());
+        $name = "boletas_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->adicional}_{$fecha}.pdf";
         
         //genera el pdf;
-        $pdf = PDF::loadView("pdf.boleta_auto", compact('works'));
+        $pdf = PDF::loadView("pdf.boleta_auto", compact('works', 'cronograma'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $pdf->save(storage_path("app/public/pdf/boletas_{$this->mes}_{$this->year}_{$this->adicional}.pdf"));
+        $pdf->save(storage_path("app/public/pdf/{$name}"));
+
+        $archivo = Report::create([
+            "type" => "pdf",
+            "name" => "Boletas del {$cronograma->mes} del {$cronograma->año}",
+            "icono" => "fas fa-file-pdf",
+            "path" => "/storage/pdf/{$name}",
+            "cronograma_id" => $this->cronograma->id,
+            "type_report_id" => $this->type_report
+        ]);
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/pdf/boletas_{$this->mes}_{$this->year}_{$this->adicional}.pdf", 
-                "La boleta {$this->mes} del {$this->year} fué generada"
+            $user->notify(new ReportNotification("/storage/pdf/{$name}", 
+                "La boleta {$this->cronograma->mes} del {$this->cronograma->año} fué generada"
             ));
         }
 

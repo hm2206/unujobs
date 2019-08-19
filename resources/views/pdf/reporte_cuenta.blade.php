@@ -9,11 +9,17 @@
         <title>Reporte de cuentas {{ $cronograma->año }} - {{ $cronograma->mes }}</title>
     </head>
 
-    <br>
+    <style>
+        
+        .font-12 {
+            font-size: 12px;
+        }
+    
+    </style>
 
-    <body class="bg-white">
+    <body class="bg-white text-dark">
                 
-        <table>
+        <table class="text-dark">
             <thead>
                 <tr>
                     <th>
@@ -23,28 +29,37 @@
                         <div><b>UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
                         <div class="ml-1 text-sm">OFICINA GENERAL DE RECURSOS HUMANOS</div>
                         <div class="ml-1 text-sm">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</div>
+                        <div class="ml-1 font-12 mt-3">
+                            <h5><b>Planilla con Neto por Cuenta Banco de la Nación</b></h5>
+                        </div>
                     </th>
                 </tr>
             </thead>
         </table>
 
+        <br>
 
-        <table class="table">
+        <h5 class="font-12"><b>PLANILLA: {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</b></h5>
+        <h5 class="font-12">
+            <b>MES DE: {{ $meses[$cronograma->mes - 1] }} {{ $cronograma->año }}</b>
+        </h5>
+
+        <table class="table mt-2 table-bordered">
             <thead>
                 <tr>
-                    <td>N°</td>
-                    <td>N° de Documento</td>
-                    <td>Nombre Completo</td>
-                    <td>Numero de cuenta</td>
+                    <th class="py-1"><small>N°</small></th>
+                    <th class="py-1"><small>N° de Documento</small></th>
+                    <th class="py-1"><small>Nombre Completo</small></th>
+                    <th class="py-1"><small>Numero de cuenta</small></th>
                 </tr>
             </thead>
             @foreach ($works as $iter => $work)
                 <tbody>
-                    <tr>
-                        <td>{{ $iter + 1 }}</td>
-                        <td>{{ $work->numero_de_documento }}</td>
-                        <td>{{ $work->nombre_completo }}</td>
-                        <td>{{ $work->numero_de_cuenta }}</td>
+                   <tr>
+                        <td class="py-1"><small class="font-12">{{ $iter + 1 }}</small></td>
+                        <td class="py-1"><small class="font-12">{{ $work->numero_de_documento }}</small></td>
+                        <td class="py-1"><small class="font-12">{{ $work->nombre_completo }}</small></td>
+                        <td class="py-1"><small class="font-12">{{ $work->numero_de_cuenta }}</small></td>
                     </tr>
                 </tbody>
             @endforeach

@@ -24,6 +24,12 @@
                         <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
                     </div>
 
+                    <div class="form-group">
+                        <label for="">Activo</label>
+                        <input type="checkbox" name="activo" v-model="form.activo">
+                        <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
+                    </div>
+
                     <hr>
 
                     <div class="form-group" v-if="edit">
@@ -73,6 +79,7 @@ export default {
                 key: '',
                 descripcion: '',
                 obligatorio: 0,
+                activo: 0
             },  
             config: {
                 porcentaje: 0,

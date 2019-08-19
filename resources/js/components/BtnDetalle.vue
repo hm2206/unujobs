@@ -63,8 +63,14 @@
                             </div>
                             
                             <div class="col-md-2" v-if="numeros.length > 0">
-                                <select name="" class="form-control">
-                                    <option value="">Seleccionar...</option>
+                                <select name="numero" v-model="numero" class="form-control"
+                                    v-on:change="cambio"
+                                >
+                                    <option v-for="(numero, nu) in numeros" :key="`numero-nu${nu}`" 
+                                        :value="numero.numero"
+                                    >
+                                        {{ numero.numero }}
+                                    </option>
                                 </select>
                             </div>
 
@@ -94,6 +100,7 @@
                         :send="send"
                         :info="info"
                         @get-cronograma="getCronograma"
+                        @get-numeros="getNumeros"
                         @ready="setLoader"
                     >
                     </component>
@@ -153,7 +160,7 @@ export default {
             info: {},
             dias: 30,
             numeros: [],
-            numero:'',
+            numero: 1,
             categoria_id: '',
             adicional: 0,
             cronograma: {},
@@ -250,6 +257,11 @@ export default {
             this.cronograma = e;
             this.dias = e.dias;
             this.adicional = e.adicional;
+
+        },
+        getNumeros(e) {
+
+            this.numeros = e;
 
         }
     }

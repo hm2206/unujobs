@@ -22,7 +22,7 @@ class TypeDescuento extends Model
      * @var array
      */
     protected $fillable = [
-        "descripcion", "key", "config_afp", "obligatorio", "base", "activo", "edit"
+        "descripcion", "key", "config_afp", "obligatorio", "base", "activo", "edit", "retencion"
     ];
 
 

@@ -283,44 +283,4 @@ class ExportController extends Controller
         }
     }
 
-
-    public function cuentaCheque(Request $request, $id)
-    {
-
-        try {
-
-            $cronograma = Cronograma::findOrFail($id);
-
-            if ($request->cheque) {
-
-                ReportCheque::dispatch($cronograma);
-
-            }
-
-            if ($request->cuenta) {
-
-                ReportCuenta::dispatch($cronograma);
-
-            }
-
-            return [
-                "status" => true,
-                "message" => "Las solicitud está siendo procesada. Nosotros le notificaremos cuando este lista.",
-                "body" => ""
-            ];
-
-        } catch (\Throwable $th) {
-            
-            \Log::info($th);
-
-            return [
-                "status" => false,
-                "message" => "Ocurrió un error al procesar la operación",
-                "body" => ""
-            ]; 
-
-        }
-
-    }
-
 }

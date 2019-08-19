@@ -230,6 +230,13 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label for="" class="form-control-label">Afectación</label> <br>
+                        <input type="checkbox" name="afecto" {!! $job->afecto ? 'checked' : '' !!}>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label for="" class="form-control-label">Descanso medico por Maternidad</label>
                         <br>
                         <input type="checkbox" name="descanso" {!! $job->descanso ? 'checked' : '' !!}>

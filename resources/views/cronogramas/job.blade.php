@@ -22,6 +22,12 @@
             Agregar Tragajadores
         </add-work>
     @endif
+    <btn-reporte theme="btn-primary"
+        :cronograma="{{ $cronograma }}"
+        :type_reports="{{ $typeReports }}"
+    >
+        <i class="fas fa-file-pdf"></i> Reportes
+    </btn-reporte>
 
 </div>
 
@@ -69,23 +75,6 @@
     </div>
 @endif
 
-
-
-<div class="col-md-12 mb-2">
-    <btn-report-cuenta 
-        :cronograma="{{ $cronograma }}"
-        theme="btn-primary btn-sm"
-    >
-        Reporte de cuenta o cheques
-    </btn-report-cuenta>
-
-    <btn-afp 
-        :id="{{ $cronograma->id  }}"
-        theme="btn-primary btn-sm"
-    >
-        Reporte para AFPNET | DPT-PLAME
-    </btn-afp>
-</div>
 
 
 <div class="col-md-12">
@@ -164,25 +153,6 @@
                                     </div>
     
                                 </validacion>
-
-                                @if ($cronograma->pdf)
-                                    <a target="__blank" title="PDF, resumen de todas las metas" 
-                                        href="{{ url($cronograma->pdf) }}" 
-                                        class="btn btn-sm btn-outline-danger ml-1"
-                                    >
-                                        <i class="far fa-file-pdf" aria-hidden="true"></i>
-                                    </a>
-                                @endif
-    
-                                @if ($cronograma->pdf_meta)
-                                    <a target="__blank" title="PDF, resumen metas x metas" 
-                                        href="{{ url($cronograma->pdf_meta) }}" 
-                                        class="btn btn-sm btn-outline-danger ml-1"
-                                    >
-                                        <i class="far fa-file-pdf" aria-hidden="true"></i>
-                                    </a>
-                                @endif
-
                             </div>
 
                         </div>
@@ -209,19 +179,22 @@
                                 <th class="uppercase">
                                     @php
                                         $categoria_id = null;
+                                        $current = null;
                                     @endphp
                                     @foreach ($job->infos as $info)
 
-                                    @if ($info->planilla_id == $cronograma->planilla_id)
-                                        @php
-                                            $categoria_id = $info->categoria_id;
-                                        @endphp
-                                    @endif
+                                        @if ($info->planilla_id == $cronograma->planilla_id)
+                                            @php
+                                                $current = $info;
+                                                $categoria_id = $info->categoria_id;
+                                            @endphp
+                                        @endif
 
-                                        <div class="btn btn-sm btn-danger">
-                                            {{ $info->categoria ? $info->categoria->nombre : '' }}
-                                        </div>
                                     @endforeach
+
+                                    <div class="btn btn-sm btn-danger">
+                                        {{ $current && $current->categoria ? $current->categoria->nombre : '' }}
+                                    </div>
                                 </th>
                                 <th>
                                     <div class="btn-group">
