@@ -122,17 +122,6 @@
             </div>
             <div class="card-body">
 
-                @if ($cronogramas->count() > 0)
-                    <div class="mb-2 pl-3 pr-3 row">
-                        <a target="__blank" href="{{ url($report_planilla_metas) }}" class="btn btn-sm btn-danger mr-1">
-                            <i class="fas fa-file-pdf"></i> Reporte Planillas Metas 
-                        </a>
-                        <a target="__blank" href="{{ url($report_boletas) }}" class="btn btn-sm btn-danger mr-1">
-                            <i class="fas fa-file-pdf"></i> Reporte Boletas del Mes
-                        </a>
-                    </div>
-                @endif
-
                 <div class="table-responsive">
                     <table class="table">
                         <thead class="text-primary">

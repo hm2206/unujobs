@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWorkCronogramaTable extends Migration
+class CreateDetallesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateWorkCronogramaTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_cronograma', function (Blueprint $table) {
+        Schema::create('detalles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger("work_id");
-            $table->bigInteger("cronograma_id");
-            $table->text("observacion")->nullable();
+            $table->bigInteger('work_id');
+            $table->bigInteger('type_descuento_id');
+            $table->bigInteger('type_detalle_id');
+            $table->bigInteger('cronograma_id');
+            $table->double('monto')->default(0);
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateWorkCronogramaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_cronograma');
+        Schema::dropIfExists('detalles');
     }
 }

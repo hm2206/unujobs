@@ -180,8 +180,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Descanso medico por Maternidad</label>
-                        <br>
-                        <input type="checkbox" name="descanso" {!! $job->descanso ? 'checked' : '' !!}>
+                        <span class="form-control">{{ $job->descanso ? 'Si' : 'No' }}</span>
                     </div>
                 </div>
 
@@ -189,6 +188,13 @@
                     <div class="form-group">
                         <label for="" class="form-control-label">Afecto</label>
                         <span class="form-control">{{ $job->afecto ? 'Si' : 'No' }}</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Cheque</label>
+                        <span class="form-control">{{ $job->cheque ? 'Si' : 'No' }}</span>
                     </div>
                 </div>
 

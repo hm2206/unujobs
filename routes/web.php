@@ -159,3 +159,10 @@ Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware
 Route::post("user/recovery", "UserController@recovery");
 
 
+Route::get('test', function() {
+
+    $pdf = \PDF::loadView('pdf.resumen');
+    $pdf->setPaper('a4', 'landscape');
+    return $pdf->stream();
+
+});

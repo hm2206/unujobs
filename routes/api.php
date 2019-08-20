@@ -66,9 +66,7 @@ Route::group(["prefix" => 'v1'], function() {
 
 
     Route::post("/export/mef/{year}/{mes}", "ExportController@mef");
-
     Route::post("/export/alta-baja/{year}/{mes}", "ExportController@altaBaja");
-
     Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
 
     // Remuneracion de los trabajadores
@@ -83,6 +81,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post('work/{id}/sindicato', 'JobController@sindicatoStore');
     Route::get('work/{id}/retencion', 'JobController@retencion');
     Route::post('work/{id}/retencion', 'JobController@retencionStore');
+    Route::get('work/{cronograma}/detalle', 'JobController@detalle');
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');
@@ -105,5 +104,16 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("cronograma/{id}/afp-net", "ExportCronogramaController@afp");
     Route::post("cronograma/{id}/planilla", "ExportCronogramaController@planilla");
     Route::post("cronograma/{id}/descuento", "ExportCronogramaController@descuento");
+
+
+    // Tipos de descuentos
+    Route::resource('type_descuento', 'TypeDescuentoController');
+
+    // Detalles de los descuentos
+    Route::resource('type_detalle', 'TypeDetalleController');
+
+
+    // Recursos de los detalles
+    Route::resource('detalle', 'DetalleController');
 
 });

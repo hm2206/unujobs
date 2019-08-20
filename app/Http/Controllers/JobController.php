@@ -23,10 +23,12 @@ use App\Models\Cronograma;
 use App\Models\Descuento;
 use App\Models\TypeDescuento;
 use App\Models\Info;
+use App\Models\Detalle;
 use App\Jobs\ReportBoleta;
 use App\Jobs\ReportBoletaWork;
 use App\Jobs\ReportCronograma;
 use \PDF;
+use \DB;
 use App\Collections\WorkCollection;
 
 /**
@@ -92,8 +94,11 @@ class JobController extends Controller
      */
     public function store(JobRequest $request)
     {
-        $job = Work::create($request->all());
+        $job = Work::create($request->except('descanso', 'afecto', 'cheque'));
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
+        $job->descanso = $request->input("descanso") ? 1 : 0;
+        $job->afecto = $request->afecto ? 1 : 0;
+        $job->cheque = $request->cheque ? 1 : 0;
         $job->save();
         return redirect()->route('job.index')->with(["success" => "El registro se guardo correctamente"]);
     }
@@ -140,10 +145,11 @@ class JobController extends Controller
      */
     public function update(JobRequest $request, Work $job)
     {
-        $job->update($request->except('descanso', 'afecto'));
+        $job->update($request->except('descanso', 'afecto', 'cheque'));
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
         $job->descanso = $request->input("descanso") ? 1 : 0;
         $job->afecto = $request->afecto ? 1 : 0;
+        $job->cheque = $request->cheque ? 1 : 0;
         $job->save();
         return back()->with(["success" => "El registro se actualizo correctamente"]);
     }
@@ -719,5 +725,61 @@ class JobController extends Controller
 
     }
 
+
+    public function detalle($id) {
+
+        $work = Work::findOrFail($id);
+
+        // configuración
+        $year = request()->input('year', date('Y'));
+        $mes = request()->input('mes', date('m'));
+        $adicional = request()->adicional ? 1 : 0;
+        $categoria_id = request()->categoria_id;
+        $numero = request()->numero ? request()->numero : 1;
+
+
+        // almacenar
+        $total = 0;
+        $dias = 30;
+        $base = 0;
+        $observacion = "";
+        $seleccionar = [];
+        $types = [];
+        $cronograma = Cronograma::where('mes', $mes)
+                ->where('año', $year)
+                ->where("adicional", $adicional);
+
+
+        if($adicional) {
+
+            $seleccionar = $cronograma->get();
+            $cronograma = $cronograma->where("numero", $numero);
+        
+        }
+        
+        $cronograma = $cronograma->firstOrFail();
+        $detalles = Detalle::where("cronograma_id", $cronograma->id)
+            ->where("work_id", $work->id)
+            ->get();
+
+        $observacion = DB::table("work_cronograma")
+            ->where("cronograma_id", $cronograma->id)
+            ->where("work_id", $work->id)
+            ->select("observacion")
+            ->first();
+
+        $dias = $cronograma->dias;
+
+        return [
+            "cronograma" => $cronograma,
+            "numeros" => $seleccionar,
+            "dias" => $dias,
+            "adicional" => $adicional,
+            "year" => $year,
+            "mes" => $mes,
+            "detalles" => $detalles,
+            "observacion" => $observacion
+        ];
+    } 
 
 }

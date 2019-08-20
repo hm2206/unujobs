@@ -137,13 +137,15 @@ import notify from 'sweetalert';
 import WorkRemuneracion from './WorkRemuneracion';
 import WorkDescuento from './WorkDescuento';
 import WorkObligacion from './WorkObligacion';
+import WorkDetalle from './WorkDetalle';
 import { setTimeout } from 'timers';
 
 export default {
     components: {
         'work-remuneracion': WorkRemuneracion,
         'work-descuento': WorkDescuento,
-        'work-obligacion': WorkObligacion
+        'work-obligacion': WorkObligacion,
+        'work-detalle': WorkDetalle
     },
     props: ["theme", 'param', "nombre_completo", "mes", "year", "categoria"],
     data() {
@@ -154,7 +156,8 @@ export default {
             items: [
                 {id: 1, text: "Remuneraciones", active: true, component: 'work-remuneracion', btn: true},
                 {id: 2, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
-                {id: 3, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false}
+                {id: 3, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
+                {id: 4, text: "Más...", active: false,  component: 'work-detalle', btn: false}
             ],
             infos: [],
             info: {},

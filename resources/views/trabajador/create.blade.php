@@ -233,6 +233,20 @@
                     </div>
                 </div>
 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Afectación</label> <br>
+                        <input type="checkbox" name="afecto" {!! $job->afecto ? 'checked' : '' !!}>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="" class="form-control-label">Cheque</label> <br>
+                        <input type="checkbox" name="cheque" {!! $job->cheque ? 'checked' : '' !!}>
+                    </div>
+                </div>
+
                 <div class="col-md-12 mt-4">
                     <button class="btn btn-success">Guardar y continuar <i class="fas fa-save"></i></button>
                 </div>

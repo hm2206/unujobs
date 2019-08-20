@@ -109,7 +109,8 @@ class Work extends Model
 
     public function cronogramas()
     {
-        return $this->belongsToMany(Work::class, "work_cronograma");
+        return $this->belongsToMany(Work::class, "work_cronograma")
+            ->withPivot(['observacion']);
     }
 
 
