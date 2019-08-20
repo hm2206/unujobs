@@ -40,7 +40,8 @@ class DetalleController extends Controller
             "cronograma_id" => "required",
             "work_id" => "required",
             "type_detalle_id" => "required",
-            "type_descuento_id" => "required"
+            "type_descuento_id" => "required",
+            "categoria_id" => "required"
         ]);
 
         try {
@@ -53,12 +54,17 @@ class DetalleController extends Controller
             $tmp_monto = Detalle::where("work_id", $detalle->work_id)
                 ->where("cronograma_id", $detalle->cronograma_id)
                 ->where("type_descuento_id", $detalle->type_descuento_id)
+                ->where("categoria_id", $detalle->categoria_id)
                 ->sum("monto");
 
             $descuento = Descuento::where("work_id", $detalle->work_id)
                 ->where("cronograma_id", $detalle->cronograma_id)
                 ->where("type_descuento_id", $detalle->type_descuento_id)
-                ->update(["monto" => $tmp_monto]);
+                ->where("categoria_id", $detalle->categoria_id)
+                ->update([
+                    "monto" => $tmp_monto,
+                    "edit" => 0
+                ]);
             
             return [
                 "status" => true,

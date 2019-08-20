@@ -1,7 +1,9 @@
 <template>
     <div class="card-body">
 
-        <form class="row align-items-center" id="register-obligacion" v-on:submit="register">
+        <form class="row align-items-center" id="register-obligacion" v-on:submit="register"
+            v-if="show"
+        >
             <div class="col-md-3">
                 <input type="text" class="form-control" v-model="form.beneficiario" name="beneficiario" placeholder="Beneficiario">
                 <small class="text-danger">
@@ -32,6 +34,8 @@
                     {{ errors.monto ? errors.monto[0] : '' }}
                 </small>
                 <input type="hidden" name="work_id" :value="param">
+                <input type="hidden" name="cronograma_id" :value="cronograma.id">
+                <input type="hidden" name="categoria_id" :value="categoria">
             </div>
             <div class="col-md-1">
                 <button class="btn btn-sm btn-success" v-if="!loader">
@@ -39,9 +43,10 @@
                 </button>
                 <div class="spinner-border text-primary" v-if="loader"></div>
             </div>
+
         </form>
 
-        <hr>
+        <hr v-if="show">
 
         <form class="row align-items-center mt-3" 
             v-on:submit="submit($event, obligacion.id)" v-for="(obligacion, obl) in obligaciones" 
@@ -68,7 +73,7 @@
             </div>
             <div class="col-md-2">
                 <input type="number" class="form-control" name="up_monto" step="any" placeholder="Monto" 
-                    :value="obligacion.monto"
+                    v-model="obligacion.monto"
                     :disabled="edit"
                 >
                 <input type="hidden" name="up_work_id" :value="param">
@@ -107,7 +112,9 @@ export default {
         return {
             obligaciones: [],
             loader: false,
+            show: true,
             errors: {},
+            cronograma: {},
             form: {
                 beneficiario: '',
                 numero_de_documento: '',
@@ -139,12 +146,17 @@ export default {
 
             api.then(res => {
 
-                let { obligaciones } = res.data;
+                let { obligaciones, cronograma, numeros } = res.data;
                 this.obligaciones = obligaciones;
+                this.cronograma = cronograma;
+                this.$emit('get-numeros', numeros);
+                this.$emit('get-cronograma', cronograma);
+                this.show = true;
 
             }).catch(err => {
 
                 console.log("algo salió mal");
+                this.show = false;
 
             });
 

@@ -474,10 +474,33 @@ class JobController extends Controller
     public function obligacion($id)
     {
         $work = Work::with('obligaciones')->findOrFail($id);
+        
+        // configuración
+        $year = request()->input('year', date('Y'));
+        $mes = request()->input('mes', date('m'));
+        $adicional = request()->adicional ? 1 : 0;
+        $categoria_id = request()->categoria_id;
+        $numero = request()->numero ? request()->numero : null;
+        $seleccionar = [];
+
+        $cronograma = Cronograma::where('mes', $mes)
+                ->where('año', $year)
+                ->where("adicional", $adicional);
+
+        if($adicional) {
+
+            $seleccionar = $cronograma->get();
+            $cronograma = $cronograma->where("numero", $numero);
+        
+        }
+        
+        $cronograma = $cronograma->firstOrFail();
 
         return [
             "work" => $work,
-            "obligaciones" => $work->obligaciones
+            "obligaciones" => $work->obligaciones->where("categoria_id", $categoria_id),
+            "cronograma" => $cronograma,
+            "numeros" => $seleccionar
         ];
 
     }
@@ -726,7 +749,8 @@ class JobController extends Controller
     }
 
 
-    public function detalle($id) {
+    public function detalle($id) 
+    {
 
         $work = Work::findOrFail($id);
 
@@ -768,6 +792,8 @@ class JobController extends Controller
             ->select("observacion")
             ->first();
 
+        $observacion = isset($observacion->observacion) ? $observacion->observacion : '';
+
         $dias = $cronograma->dias;
 
         return [
@@ -782,4 +808,25 @@ class JobController extends Controller
         ];
     } 
 
+
+    public function observacion(Request $request, $id)
+    {
+        try {
+            $cronograma_id = $request->cronograma_id;
+            $observacion = $request->observacion;
+            $create = DB::table("work_cronograma")->where("cronograma_id", $cronograma_id)
+                ->where("work_id", $id)
+                ->update(["observacion" => $observacion]);
+            return [
+                "status" => true,
+                "message" => "La observación se guardo correctamente!"
+            ];
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al guardar la observación"
+            ];
+        }
+    }
 }

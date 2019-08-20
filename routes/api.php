@@ -81,7 +81,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post('work/{id}/sindicato', 'JobController@sindicatoStore');
     Route::get('work/{id}/retencion', 'JobController@retencion');
     Route::post('work/{id}/retencion', 'JobController@retencionStore');
-    Route::get('work/{cronograma}/detalle', 'JobController@detalle');
+    Route::get('work/{id}/detalle', 'JobController@detalle');
+    Route::post('work/{id}/observacion', 'JobController@observacion');
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');

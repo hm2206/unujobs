@@ -14841,6 +14841,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -14851,10 +14867,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       type_detalles: [],
       detalles: [],
       loader: false,
+      show: true,
       cronograma: {},
-      total: 0,
-      base: 0,
-      tota_neto: 0,
+      observacion: '',
       errors: {}
     };
   },
@@ -14944,14 +14959,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         var _res$data2 = res.data,
             detalles = _res$data2.detalles,
             cronograma = _res$data2.cronograma,
-            numeros = _res$data2.numeros;
+            numeros = _res$data2.numeros,
+            observacion = _res$data2.observacion;
         _this4.detalles = detalles;
         _this4.cronograma = cronograma;
+        _this4.observacion = observacion;
 
         _this4.$emit('get-numeros', numeros);
 
         _this4.$emit('get-cronograma', cronograma);
 
+        _this4.show = true;
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
@@ -15005,6 +15023,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }
       })["catch"](function (err) {
         console.log("algo salió mal");
+        _this4.show = false;
       });
     },
     submit: function () {
@@ -15053,6 +15072,54 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return submit;
+    }(),
+    saveObservacion: function () {
+      var _saveObservacion = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                this.loader = true;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('post', "/work/".concat(this.param, "/observacion"), {
+                  cronograma_id: this.cronograma.id,
+                  observacion: this.observacion
+                });
+                _context3.next = 4;
+                return api.then(function (res) {
+                  var _res$data4 = res.data,
+                      status = _res$data4.status,
+                      message = _res$data4.message;
+                  var icon = status ? 'success' : 'error';
+                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+                    icon: icon,
+                    text: message
+                  });
+                })["catch"](function (err) {
+                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+                    icon: 'error',
+                    text: 'Algo salió mal :('
+                  });
+                });
+
+              case 4:
+                this.loader = false;
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function saveObservacion() {
+        return _saveObservacion.apply(this, arguments);
+      }
+
+      return saveObservacion;
     }()
   }
 });
@@ -15177,6 +15244,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -15185,7 +15257,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       obligaciones: [],
       loader: false,
+      show: true,
       errors: {},
+      cronograma: {},
       form: {
         beneficiario: '',
         numero_de_documento: '',
@@ -15212,10 +15286,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var adicional = this.adicional ? 1 : 0;
       var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', "/work/".concat(this.param, "/obligacion?mes=").concat(this.mes, "&year=").concat(this.year, "&adicional=").concat(adicional, "&categoria_id=").concat(this.categoria, "&numero=").concat(this.numero));
       api.then(function (res) {
-        var obligaciones = res.data.obligaciones;
+        var _res$data = res.data,
+            obligaciones = _res$data.obligaciones,
+            cronograma = _res$data.cronograma,
+            numeros = _res$data.numeros;
         _this.obligaciones = obligaciones;
+        _this.cronograma = cronograma;
+
+        _this.$emit('get-numeros', numeros);
+
+        _this.$emit('get-cronograma', cronograma);
+
+        _this.show = true;
       })["catch"](function (err) {
         console.log("algo salió mal");
+        _this.show = false;
       });
     },
     register: function () {
@@ -15235,10 +15320,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/obligacion", form);
                 _context.next = 6;
                 return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message,
-                      body = _res$data.body;
+                  var _res$data2 = res.data,
+                      status = _res$data2.status,
+                      message = _res$data2.message,
+                      body = _res$data2.body;
                   var icon = status ? 'success' : 'error';
                   sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                     icon: icon,
@@ -15294,9 +15379,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/obligacion/".concat(id), form);
                 _context2.next = 7;
                 return api.then(function (res) {
-                  var _res$data2 = res.data,
-                      status = _res$data2.status,
-                      message = _res$data2.message;
+                  var _res$data3 = res.data,
+                      status = _res$data3.status,
+                      message = _res$data3.message;
                   var icon = status ? 'success' : 'error';
                   sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                     icon: icon,
@@ -15335,9 +15420,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         _method: 'DELETE'
       });
       api.then(function (res) {
-        var _res$data3 = res.data,
-            status = _res$data3.status,
-            message = _res$data3.message;
+        var _res$data4 = res.data,
+            status = _res$data4.status,
+            message = _res$data4.message;
         var icon = status ? 'success' : 'error';
         sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
           icon: icon,
@@ -71066,197 +71151,255 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "card-body" }, [
-    _c(
-      "form",
-      {
-        staticClass: "row",
-        attrs: { id: "form-detalle" },
-        on: { submit: _vm.saveDetalle }
-      },
-      [
-        _c("div", { staticClass: "col-md-4" }, [
-          _c(
-            "select",
-            {
-              staticClass: "form-control",
-              attrs: { name: "type_descuento_id" }
-            },
-            [
-              _c("option", { attrs: { value: "" } }, [
-                _vm._v("Seleccionar...")
-              ]),
-              _vm._v(" "),
-              _vm._l(_vm.type_descuentos, function(descuento, desc) {
-                return _c(
-                  "option",
-                  { key: desc, domProps: { value: descuento.id } },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(descuento.descripcion) +
-                        "\n                "
+    _vm.show
+      ? _c(
+          "form",
+          {
+            staticClass: "row",
+            attrs: { id: "form-detalle" },
+            on: { submit: _vm.saveDetalle }
+          },
+          [
+            _c("div", { staticClass: "col-md-4" }, [
+              _c(
+                "select",
+                {
+                  staticClass: "form-control",
+                  attrs: { name: "type_descuento_id" }
+                },
+                [
+                  _c("option", { attrs: { value: "" } }, [
+                    _vm._v("Seleccionar...")
+                  ]),
+                  _vm._v(" "),
+                  _vm._l(_vm.type_descuentos, function(descuento, desc) {
+                    return _c(
+                      "option",
+                      { key: desc, domProps: { value: descuento.id } },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(descuento.descripcion) +
+                            "\n                "
+                        )
+                      ]
                     )
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("small", { staticClass: "text-danger" }, [
+                _vm._v(
+                  _vm._s(
+                    _vm.errors.type_descuento_id
+                      ? _vm.errors.type_descuento_id[0]
+                      : ""
+                  )
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-md-4" }, [
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  name: "descripcion",
+                  placeholder: "Descripción"
+                }
+              }),
+              _vm._v(" "),
+              _c("small", { staticClass: "text-danger" }, [
+                _vm._v(
+                  _vm._s(
+                    _vm.errors.descripcion ? _vm.errors.descripcion[0] : ""
+                  )
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-md-2" }, [
+              !_vm.loader
+                ? _c("button", { staticClass: "btn btn-success" }, [
+                    _c("i", { staticClass: "fas fa-save" }),
+                    _vm._v(" Guardar\n            ")
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.loader
+                ? _c("div", { staticClass: "text-center" }, [
+                    _c("div", { staticClass: "spinner-border" })
+                  ])
+                : _vm._e()
+            ]),
+            _vm._v(" "),
+            _vm._m(0)
+          ]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.show
+      ? _c("div", { staticClass: "mt-4 row justify-content-between" }, [
+          _c("div", { staticClass: "col-md-6" }, [
+            _c(
+              "div",
+              { staticClass: "row" },
+              _vm._l(_vm.type_detalles, function(type, ty) {
+                return _c(
+                  "form",
+                  {
+                    key: ty,
+                    staticClass: "col-md-12",
+                    attrs: { id: "form-detalles-" + ty },
+                    on: {
+                      submit: function($event) {
+                        return _vm.submit($event, ty)
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "row align-items-center mb-1" }, [
+                      _c("div", { staticClass: "col-md-7 text-right" }, [
+                        _c("span", { staticClass: "text-primary" }, [
+                          _vm._v(
+                            _vm._s(
+                              type.type_descuento
+                                ? type.type_descuento.descripcion
+                                : ""
+                            )
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("i", {
+                          staticClass: "fas fa-arrow-left text-danger"
+                        }),
+                        _vm._v(" "),
+                        _c("span", { staticClass: "text-dark" }, [
+                          _vm._v(_vm._s(type.descripcion))
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          attrs: { type: "hidden", name: "type_descuento_id" },
+                          domProps: { value: type.type_descuento_id }
+                        }),
+                        _vm._v(" "),
+                        _c("input", {
+                          attrs: { type: "hidden", name: "type_detalle_id" },
+                          domProps: { value: type.id }
+                        }),
+                        _vm._v(" "),
+                        _c("input", {
+                          attrs: { type: "hidden", name: "cronograma_id" },
+                          domProps: { value: _vm.cronograma.id }
+                        }),
+                        _vm._v(" "),
+                        _c("input", {
+                          attrs: { type: "hidden", name: "categoria_id" },
+                          domProps: { value: _vm.categoria }
+                        }),
+                        _vm._v(" "),
+                        _c("input", {
+                          attrs: { type: "hidden", name: "work_id" },
+                          domProps: { value: _vm.param }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-3" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: type.monto,
+                              expression: "type.monto"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: {
+                            type: "number",
+                            step: "any",
+                            name: "monto",
+                            disabled: _vm.loader
+                          },
+                          domProps: { value: type.monto },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(type, "monto", $event.target.value)
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-2" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn-success btn btn-sm",
+                            attrs: { disabled: _vm.loader }
+                          },
+                          [_c("div", { staticClass: "fas fa-save" })]
+                        )
+                      ])
+                    ])
                   ]
                 )
-              })
-            ],
-            2
-          ),
-          _vm._v(" "),
-          _c("small", { staticClass: "text-danger" }, [
-            _vm._v(
-              _vm._s(
-                _vm.errors.type_descuento_id
-                  ? _vm.errors.type_descuento_id[0]
-                  : ""
-              )
+              }),
+              0
             )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-4" }, [
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              name: "descripcion",
-              placeholder: "Descripción"
-            }
-          }),
+          ]),
           _vm._v(" "),
-          _c("small", { staticClass: "text-danger" }, [
-            _vm._v(
-              _vm._s(_vm.errors.descripcion ? _vm.errors.descripcion[0] : "")
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-2" }, [
-          !_vm.loader
-            ? _c("button", { staticClass: "btn btn-success" }, [
-                _c("i", { staticClass: "fas fa-save" }),
-                _vm._v(" Guardar\n            ")
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.loader
-            ? _c("div", { staticClass: "text-center" }, [
-                _c("div", { staticClass: "spinner-border" })
-              ])
-            : _vm._e()
-        ]),
-        _vm._v(" "),
-        _vm._m(0)
-      ]
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "mt-4 row justify-content-between" }, [
-      _c("div", { staticClass: "col-md-6" }, [
-        _c(
-          "div",
-          { staticClass: "row" },
-          _vm._l(_vm.type_detalles, function(type, ty) {
-            return _c(
-              "form",
-              {
-                key: ty,
-                staticClass: "col-md-12",
-                attrs: { id: "form-detalles-" + ty },
-                on: {
-                  submit: function($event) {
-                    return _vm.submit($event, ty)
-                  }
+          _c("div", { staticClass: "col-md-5" }, [
+            _c("label", { attrs: { for: "" } }, [_vm._v("Observación")]),
+            _vm._v(" "),
+            _c("textarea", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.observacion,
+                  expression: "observacion"
                 }
+              ],
+              staticClass: "form-control",
+              attrs: { name: "observacion", disabled: _vm.loader, rows: "5" },
+              domProps: { value: _vm.observacion },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.observacion = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-success mt-3",
+                attrs: { disabled: _vm.loader },
+                on: { click: _vm.saveObservacion }
               },
               [
-                _c("div", { staticClass: "row align-items-center mb-1" }, [
-                  _c("div", { staticClass: "col-md-7 text-right" }, [
-                    _c("span", { staticClass: "text-primary" }, [
-                      _vm._v(
-                        _vm._s(
-                          type.type_descuento
-                            ? type.type_descuento.descripcion
-                            : ""
-                        )
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("i", { staticClass: "fas fa-arrow-left text-danger" }),
-                    _vm._v(" "),
-                    _c("span", { staticClass: "text-dark" }, [
-                      _vm._v(_vm._s(type.descripcion))
-                    ]),
-                    _vm._v(" "),
-                    _c("input", {
-                      attrs: { type: "hidden", name: "type_descuento_id" },
-                      domProps: { value: type.type_descuento_id }
-                    }),
-                    _vm._v(" "),
-                    _c("input", {
-                      attrs: { type: "hidden", name: "type_detalle_id" },
-                      domProps: { value: type.id }
-                    }),
-                    _vm._v(" "),
-                    _c("input", {
-                      attrs: { type: "hidden", name: "cronograma_id" },
-                      domProps: { value: _vm.cronograma.id }
-                    }),
-                    _vm._v(" "),
-                    _c("input", {
-                      attrs: { type: "hidden", name: "work_id" },
-                      domProps: { value: _vm.param }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-3" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: type.monto,
-                          expression: "type.monto"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "number",
-                        step: "any",
-                        name: "monto",
-                        disabled: _vm.loader
-                      },
-                      domProps: { value: type.monto },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(type, "monto", $event.target.value)
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-2" }, [
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn-success btn btn-sm",
-                        attrs: { disabled: _vm.loader }
-                      },
-                      [_c("div", { staticClass: "fas fa-save" })]
-                    )
-                  ])
-                ])
+                _c("i", { staticClass: "fas fa-save" }),
+                _vm._v(" Guardar\n            ")
               ]
             )
-          }),
-          0
-        )
-      ]),
-      _vm._v(" "),
-      _vm._m(1)
-    ])
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    !_vm.show
+      ? _c("div", { staticClass: "w-100" }, [
+          _c("div", { staticClass: "text-center" }, [
+            _vm._v("\n            No hay registros disponibles!\n        ")
+          ])
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = [
@@ -71265,19 +71408,6 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-12" }, [_c("hr")])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-5" }, [
-      _c("label", { attrs: { for: "" } }, [_vm._v("Observación")]),
-      _vm._v(" "),
-      _c("textarea", {
-        staticClass: "form-control",
-        attrs: { name: "observacion", rows: "5" }
-      })
-    ])
   }
 ]
 render._withStripped = true
@@ -71305,189 +71435,211 @@ var render = function() {
     "div",
     { staticClass: "card-body" },
     [
-      _c(
-        "form",
-        {
-          staticClass: "row align-items-center",
-          attrs: { id: "register-obligacion" },
-          on: { submit: _vm.register }
-        },
-        [
-          _c("div", { staticClass: "col-md-3" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.form.beneficiario,
-                  expression: "form.beneficiario"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "beneficiario",
-                placeholder: "Beneficiario"
-              },
-              domProps: { value: _vm.form.beneficiario },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+      _vm.show
+        ? _c(
+            "form",
+            {
+              staticClass: "row align-items-center",
+              attrs: { id: "register-obligacion" },
+              on: { submit: _vm.register }
+            },
+            [
+              _c("div", { staticClass: "col-md-3" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.beneficiario,
+                      expression: "form.beneficiario"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    name: "beneficiario",
+                    placeholder: "Beneficiario"
+                  },
+                  domProps: { value: _vm.form.beneficiario },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "beneficiario", $event.target.value)
+                    }
                   }
-                  _vm.$set(_vm.form, "beneficiario", $event.target.value)
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c("small", { staticClass: "text-danger" }, [
-              _vm._v(
-                "\n                " +
-                  _vm._s(
-                    _vm.errors.beneficiario ? _vm.errors.beneficiario[0] : ""
-                  ) +
-                  "\n            "
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-3" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.form.mumero_de_documento,
-                  expression: "form.mumero_de_documento"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "numero_de_documento",
-                placeholder: "DNI"
-              },
-              domProps: { value: _vm.form.mumero_de_documento },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(_vm.form, "mumero_de_documento", $event.target.value)
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c("small", { staticClass: "text-danger" }, [
-              _vm._v(
-                "\n                " +
-                  _vm._s(
-                    _vm.errors.numero_de_documento
-                      ? _vm.errors.numero_de_documento[0]
-                      : ""
-                  ) +
-                  "\n            "
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-3" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.form.numero_de_cuenta,
-                  expression: "form.numero_de_cuenta"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                name: "numero_de_cuenta",
-                placeholder: "N° de Cuenta"
-              },
-              domProps: { value: _vm.form.numero_de_cuenta },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(_vm.form, "numero_de_cuenta", $event.target.value)
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c("small", { staticClass: "text-danger" }, [
-              _vm._v(
-                "\n                " +
-                  _vm._s(
-                    _vm.errors.numero_de_cuenta
-                      ? _vm.errors.numero_de_cuenta[0]
-                      : ""
-                  ) +
-                  "\n            "
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-2" }, [
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.form.monto,
-                  expression: "form.monto"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "number",
-                name: "monto",
-                placeholder: "Monto",
-                step: "any"
-              },
-              domProps: { value: _vm.form.monto },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(_vm.form, "monto", $event.target.value)
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c("small", { staticClass: "text-danger" }, [
-              _vm._v(
-                "\n                " +
-                  _vm._s(_vm.errors.monto ? _vm.errors.monto[0] : "") +
-                  "\n            "
-              )
-            ]),
-            _vm._v(" "),
-            _c("input", {
-              attrs: { type: "hidden", name: "work_id" },
-              domProps: { value: _vm.param }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-1" }, [
-            !_vm.loader
-              ? _c("button", { staticClass: "btn btn-sm btn-success" }, [
-                  _c("i", { staticClass: "fas fa-save" })
+                }),
+                _vm._v(" "),
+                _c("small", { staticClass: "text-danger" }, [
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(
+                        _vm.errors.beneficiario
+                          ? _vm.errors.beneficiario[0]
+                          : ""
+                      ) +
+                      "\n            "
+                  )
                 ])
-              : _vm._e(),
-            _vm._v(" "),
-            _vm.loader
-              ? _c("div", { staticClass: "spinner-border text-primary" })
-              : _vm._e()
-          ])
-        ]
-      ),
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-3" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.mumero_de_documento,
+                      expression: "form.mumero_de_documento"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    name: "numero_de_documento",
+                    placeholder: "DNI"
+                  },
+                  domProps: { value: _vm.form.mumero_de_documento },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.form,
+                        "mumero_de_documento",
+                        $event.target.value
+                      )
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("small", { staticClass: "text-danger" }, [
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(
+                        _vm.errors.numero_de_documento
+                          ? _vm.errors.numero_de_documento[0]
+                          : ""
+                      ) +
+                      "\n            "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-3" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.numero_de_cuenta,
+                      expression: "form.numero_de_cuenta"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    name: "numero_de_cuenta",
+                    placeholder: "N° de Cuenta"
+                  },
+                  domProps: { value: _vm.form.numero_de_cuenta },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.form,
+                        "numero_de_cuenta",
+                        $event.target.value
+                      )
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("small", { staticClass: "text-danger" }, [
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(
+                        _vm.errors.numero_de_cuenta
+                          ? _vm.errors.numero_de_cuenta[0]
+                          : ""
+                      ) +
+                      "\n            "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-2" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.monto,
+                      expression: "form.monto"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "number",
+                    name: "monto",
+                    placeholder: "Monto",
+                    step: "any"
+                  },
+                  domProps: { value: _vm.form.monto },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.form, "monto", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("small", { staticClass: "text-danger" }, [
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(_vm.errors.monto ? _vm.errors.monto[0] : "") +
+                      "\n            "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "hidden", name: "work_id" },
+                  domProps: { value: _vm.param }
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "hidden", name: "cronograma_id" },
+                  domProps: { value: _vm.cronograma.id }
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "hidden", name: "categoria_id" },
+                  domProps: { value: _vm.categoria }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-md-1" }, [
+                !_vm.loader
+                  ? _c("button", { staticClass: "btn btn-sm btn-success" }, [
+                      _c("i", { staticClass: "fas fa-save" })
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.loader
+                  ? _c("div", { staticClass: "spinner-border text-primary" })
+                  : _vm._e()
+              ])
+            ]
+          )
+        : _vm._e(),
       _vm._v(" "),
-      _c("hr"),
+      _vm.show ? _c("hr") : _vm._e(),
       _vm._v(" "),
       _vm._l(_vm.obligaciones, function(obligacion, obl) {
         return _c(
@@ -71544,6 +71696,14 @@ var render = function() {
             _vm._v(" "),
             _c("div", { staticClass: "col-md-2" }, [
               _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: obligacion.monto,
+                    expression: "obligacion.monto"
+                  }
+                ],
                 staticClass: "form-control",
                 attrs: {
                   type: "number",
@@ -71552,7 +71712,15 @@ var render = function() {
                   placeholder: "Monto",
                   disabled: _vm.edit
                 },
-                domProps: { value: obligacion.monto }
+                domProps: { value: obligacion.monto },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(obligacion, "monto", $event.target.value)
+                  }
+                }
               }),
               _vm._v(" "),
               _c("input", {

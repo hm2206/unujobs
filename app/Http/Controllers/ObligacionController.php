@@ -49,7 +49,9 @@ class ObligacionController extends Controller
             "numero_de_documento" => "required",
             "numero_de_cuenta" => "required",
             "monto" => "required|numeric",
-            "work_id" => "required"
+            "work_id" => "required",
+            "cronograma_id" => "required",
+            "categoria_id" => "required"
         ]);
 
         try {
@@ -64,6 +66,7 @@ class ObligacionController extends Controller
 
         } catch (\Throwable $th) {
             
+            \Log::info($th);
             return [
                 "status" => false,
                 "message" => "Ocurrio un error al procesar la operación",
@@ -109,7 +112,6 @@ class ObligacionController extends Controller
             "up_numero_de_documento" => "required",
             "up_numero_de_cuenta" => "required",
             "up_monto" => "required|numeric",
-            "up_work_id" => "required"
         ]);
 
         try {

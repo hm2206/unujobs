@@ -1,7 +1,9 @@
 <template>
     <div class="card-body">
 
-        <form class="row" id="form-detalle" v-on:submit="saveDetalle">
+        <form class="row" id="form-detalle" v-on:submit="saveDetalle"
+            v-if="show"
+        >
             <div class="col-md-4">
                 <select name="type_descuento_id" class="form-control">
                     <option value="">Seleccionar...</option>
@@ -30,7 +32,7 @@
             </div>
         </form>
 
-        <div class="mt-4 row justify-content-between">
+        <div class="mt-4 row justify-content-between" v-if="show">
             <div class="col-md-6">
                 <div class="row">
                     <form :id="`form-detalles-${ty}`" class="col-md-12" v-for="(type, ty) in type_detalles" :key="ty"
@@ -44,6 +46,7 @@
                                 <input type="hidden" name="type_descuento_id" :value="type.type_descuento_id"/>
                                 <input type="hidden" name="type_detalle_id" :value="type.id"/>
                                 <input type="hidden" name="cronograma_id" :value="cronograma.id">
+                                <input type="hidden" name="categoria_id" :value="categoria">
                                 <input type="hidden" name="work_id" :value="param">
                             </div>
                             <div class="col-md-3">
@@ -66,7 +69,20 @@
             </div>
             <div class="col-md-5">
                 <label for="">Observación</label>
-                <textarea name="observacion" class="form-control" rows="5"></textarea>
+                <textarea name="observacion" :disabled="loader" 
+                    class="form-control" rows="5" v-model="observacion"></textarea>
+                <button class="btn btn-success mt-3"
+                    v-on:click="saveObservacion"
+                    :disabled="loader"
+                >
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+
+        <div class="w-100" v-if="!show">
+            <div class="text-center">
+                No hay registros disponibles!
             </div>
         </div>
     
@@ -87,10 +103,9 @@ export default {
             type_detalles: [],
             detalles: [],
             loader: false,
+            show: true,
             cronograma: {},
-            total: 0,
-            base: 0,
-            tota_neto: 0,
+            observacion: '',
             errors: {}
         };
     },
@@ -146,11 +161,13 @@ export default {
 
             api.then(res => {
 
-                let { detalles, cronograma, numeros } = res.data;
+                let { detalles, cronograma, numeros, observacion } = res.data;
                 this.detalles = detalles;
                 this.cronograma = cronograma;
+                this.observacion = observacion;
                 this.$emit('get-numeros', numeros);
                 this.$emit('get-cronograma', cronograma);
+                this.show = true;
 
                 for(let type of this.type_detalles) {
                     for(let detalle of this.detalles) {
@@ -167,6 +184,7 @@ export default {
             }).catch(err => {
 
                 console.log("algo salió mal");
+                this.show = false;
 
             });
 
@@ -180,6 +198,21 @@ export default {
                 let { status, message } = res.data;
                 let icono = status ? 'success' : 'error';
                 notify({icon: icono, text: message});
+            }).catch(err => {
+                notify({icon: 'error', text: 'Algo salió mal :('});
+            });
+            this.loader = false;
+        },
+        async saveObservacion() {
+            this.loader = true;
+            let api = unujobs('post', `/work/${this.param}/observacion`, {
+                cronograma_id: this.cronograma.id,
+                observacion: this.observacion
+            });
+            await api.then(res => {
+                let { status, message } = res.data;
+                let icon = status ? 'success' : 'error';
+                notify({icon, text: message});
             }).catch(err => {
                 notify({icon: 'error', text: 'Algo salió mal :('});
             });
