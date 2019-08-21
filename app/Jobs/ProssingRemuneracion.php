@@ -70,6 +70,8 @@ class ProssingRemuneracion implements ShouldQueue
      */
     private function configurarRemuneracion($cronograma, $job)
     {
+        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         $collection = new WorkCollection($job);
         $collection->createOrUpdateRemuneracion($cronograma);
     }

@@ -25,10 +25,6 @@ class WorkCollection
 
     public function updateOrCreateDescuento($cronograma)
     {   
-
-        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
-        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
-
         $work = $this->work;
         $types =  $this->type_descuentos;
         $infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
@@ -73,26 +69,25 @@ class WorkCollection
                     $total = round($remuneraciones->sum("monto"), 2);
                     $total = $total > 0 ? $total : round($info->total, 2);
                     $suma = 0;
-
+                    
                     // configurar descuentos automaticos de los sindicatos
                     if ($work->sindicatos->count() > 0) {
-
                         // obtenemos la configuracion de los sindicatos que tiene el descuento
                         $sindicatoIn = $type->sindicatos->pluck(["id"]);
-
+                        
                         if (count($sindicatoIn) > 0) {
-
+                            
                             //almacenar el porcentaje de los sindicatos de la configuración
                             $porcentaje_sindicato = 0;
-                
+                            
                             //obtener los porcentajes de los sindicatos del trabajador
                             $porcentaje_sindicato = $work->sindicatos->whereIn("id", $sindicatoIn)->sum('porcentaje');
-                
+                            
                             // terminamos la configuracion de los sindicatos
                             $suma =  round(($total * $porcentaje_sindicato) / 100, 2);
-
+                            $tmp_total = $work->descanso ? 0 : round($suma, 2);
                             // guardamos los datos
-                            $newDescuento->monto = $work->descanso ? 0 : round($suma, 2);
+                            $newDescuento->monto = $tmp_total;
                             $newDescuento->edit = $type->edit;
                             $newDescuento->save();
                             
@@ -228,29 +223,14 @@ class WorkCollection
     {
         $total = 0;
         $work = $this->work;
-        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
-        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año;
         $types = $this->type_remuneraciones;
         $infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
-        \Log::info($infos);
-       
+        
         try {
 
             foreach ($infos as $info) {
     
-                $current_total = 0;
-    
-                $hasRemuneraciones = Remuneracion::where("work_id", $work->id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("adicional", $cronograma->adicional)
-                    ->where("dias", $cronograma->dias)
-                    ->where("mes", $mes)
-                    ->where("año", $year)
-                    ->get();
-    
-                
+                $current_total = 0;            
                 
                 foreach ($types as $type) {
                     $config = DB::table("concepto_type_remuneracion")

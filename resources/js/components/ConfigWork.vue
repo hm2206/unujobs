@@ -117,7 +117,7 @@
             <div class="col-md-12 mt-4">
                 <hr>
                 <div class="row">
-                    <div class="col-md-4" v-for="(info, inf) in infos" :key="inf">
+                    <div class="col-md-4" v-for="(info, inf) in tmp_infos" :key="inf">
                         <div class="card">
                             <div class="card-header">
                                 <div class="row justify-content-between">
@@ -187,10 +187,12 @@ export default {
             escuela: '',
             observacion: '',
             fuente_id: '',
-            ruc: ''
+            ruc: '',
+            tmp_infos: []
         }
     },
     mounted() {
+        this.tmp_infos = this.infos;
         this.getPlanillas();
         this.getMetas();
     },
@@ -314,7 +316,7 @@ export default {
                 notify({icon: icon, text: message});
 
                 if (body) {
-                    this.infos = body;
+                    this.tmp_infos = body;
                 }
 
             }).catch(err => {

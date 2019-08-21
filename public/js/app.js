@@ -12617,10 +12617,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       escuela: '',
       observacion: '',
       fuente_id: '',
-      ruc: ''
+      ruc: '',
+      tmp_infos: []
     };
   },
   mounted: function mounted() {
+    this.tmp_infos = this.infos;
     this.getPlanillas();
     this.getMetas();
   },
@@ -12762,7 +12764,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
 
                   if (body) {
-                    _this5.infos = body;
+                    _this5.tmp_infos = body;
                   }
                 })["catch"](function (err) {
                   var data = err.response.data;
@@ -69443,7 +69445,7 @@ var render = function() {
         _c(
           "div",
           { staticClass: "row" },
-          _vm._l(_vm.infos, function(info, inf) {
+          _vm._l(_vm.tmp_infos, function(info, inf) {
             return _c("div", { key: inf, staticClass: "col-md-4" }, [
               _c("div", { staticClass: "card" }, [
                 _c("div", { staticClass: "card-header" }, [

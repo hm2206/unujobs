@@ -7,6 +7,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Obligacion;
+use App\Models\TypeDescuento;
+use App\Models\Descuento;
 use Illuminate\Http\Request;
 
 /**
@@ -57,6 +59,20 @@ class ObligacionController extends Controller
         try {
             
             $obligacion = Obligacion::create($request->all());
+            $monto = Obligacion::where("work_id", $request->work_id)
+                ->where("cronograma_id", $request->cronograma_id)
+                ->where("categoria_id", $request->categoria_id)
+                ->sum("monto");
+
+            $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
+            $descuento = Descuento::where("cronograma_id", $request->cronograma_id)
+                    ->where("work_id", $request->work_id)
+                    ->where("categoria_id", $request->categoria_id)
+                    ->whereIn("type_descuento_id", $type)
+                    ->update([
+                        "monto" => $monto,
+                        "edit" => 0
+                    ]);
 
             return [
                 "status" => true,
@@ -70,7 +86,7 @@ class ObligacionController extends Controller
             return [
                 "status" => false,
                 "message" => "Ocurrio un error al procesar la operación",
-                "body" => ""
+                "body" => "error"
             ];
 
         }
@@ -124,6 +140,21 @@ class ObligacionController extends Controller
                 "monto" => $request->input("up_monto"),
             ]);
 
+            $monto = Obligacion::where("work_id", $obligacion->work_id)
+                ->where("cronograma_id", $obligacion->cronograma_id)
+                ->where("categoria_id", $obligacion->categoria_id)
+                ->sum("monto");
+
+            $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
+            $descuento = Descuento::where("cronograma_id", $obligacion->cronograma_id)
+                    ->where("work_id", $obligacion->work_id)
+                    ->where("categoria_id", $obligacion->categoria_id)
+                    ->whereIn("type_descuento_id", $type)
+                    ->update([
+                        "monto" => $monto,
+                        "edit" => 0
+                    ]);
+
             return [
                 "status" => true,
                 "message" => "Los datos se guardarón correctamente!",
@@ -157,6 +188,21 @@ class ObligacionController extends Controller
 
             $obligacion = Obligacion::findOrFail($id);
             $obligacion->delete();
+
+            $monto = Obligacion::where("work_id", $obligacion->work_id)
+                ->where("cronograma_id", $obligacion->cronograma_id)
+                ->where("categoria_id", $obligacion->categoria_id)
+                ->sum("monto");
+
+            $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
+            $descuento = Descuento::where("cronograma_id", $obligacion->cronograma_id)
+                    ->where("work_id", $obligacion->work_id)
+                    ->where("categoria_id", $obligacion->categoria_id)
+                    ->whereIn("type_descuento_id", $type)
+                    ->update([
+                        "monto" => $monto,
+                        "edit" => 0
+                    ]);
     
             return [
                 "status" => true,

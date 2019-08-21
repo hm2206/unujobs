@@ -72,6 +72,8 @@ class ProssingDescuento implements ShouldQueue
      */
     private function configurarDescuento($cronograma, $job)
    {
+        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         $collecion = new WorkCollection($job);
         $collecion->updateOrCreateDescuento($cronograma);
    }

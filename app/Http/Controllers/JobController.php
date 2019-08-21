@@ -603,6 +603,7 @@ class JobController extends Controller
             $info->update($request->all());
 
             $infos = Info::with(['planilla', 'cargo', 'categoria', 'meta'])
+                ->where("work_id", $work->id)
                 ->where("active", 1)->get();
 
             return [
