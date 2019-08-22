@@ -108,8 +108,6 @@ Route::group(["prefix" => "export"], function() {
 Route::group(["prefix" => "import"], function() {
 
     Route::post("/work", "ImportController@work")->name("import.work");
-    Route::post("/remuneracion/{id}", "ImportController@remuneracion")->name("import.remuneracion");
-    Route::post("/descuento/{id}", "ImportController@descuento")->name("import.descuento");
     Route::post('/etapa/{id}', "ImportController@etapa")->name("import.etapa");
     Route::post("/meta", "ImportController@meta")->name("import.meta");
     Route::post("/categoria", "ImportController@categoria")->name("import.categoria");

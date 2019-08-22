@@ -57,6 +57,7 @@ Vue.component('btn-detalle', require('./components/BtnDetalle.vue').default);
 Vue.component('btn-work-config', require('./components/BtnWorkConfig.vue').default);
 Vue.component('config-work-mas', require('./components/ConfigWorkMas.vue').default);
 Vue.component('btn-reporte', require('./components/BtnReporte.vue').default);
+Vue.component('import', require('./components/Import.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

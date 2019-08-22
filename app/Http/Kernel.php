@@ -62,7 +62,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'validacion' => \App\Http\Middleware\ValidationPassword::class,
         'origen' => \App\Http\Middleware\VerifyOrigen::class,
-        'cronograma' => \App\Http\Middleware\CronogramaMiddleware::class,
+        'import' => \App\Http\Middleware\ImportMiddleware::class,
     ];
 
     /**

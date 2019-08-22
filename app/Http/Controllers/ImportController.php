@@ -32,7 +32,7 @@ class ImportController extends Controller
 
     public function __construct()
     {
-        $this->middleware('validacion');
+        $this->middleware('import')->only('descuento', 'remuneracion');
     }
     
     
@@ -73,7 +73,7 @@ class ImportController extends Controller
     public function remuneracion(Request $request, $slug)
     {
         $this->validate(request(), [
-            "import_remuneracion" => "required|file|max:1024"
+            "import" => "required|file|max:1024"
         ]);
 
         try {
@@ -85,14 +85,21 @@ class ImportController extends Controller
                 ->findOrFail($id);
             // configurar archivo de excel
             $name = "remuneracion_import_" . date('Y-m-d') . ".xlsx";
-            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_remuneracion'), $name);
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
             // Procesar importacion
             (new RemuneracionImport($cronograma, $name))->import("/imports/{$name}", "public");
     
-            return back()->with(["success" => "La importación ha sido exitosa"]);
+            return [
+                "status" => true,
+                "message" => "La importación ha sido exitosa"
+            ];
+
         } catch (\Throwable $th) {
             \Log::info($th);
-            return back()->with(["danger" => "La importación falló"]); 
+            return [
+                "status" => false,
+                "message" => "La importación falló, El formato es incorrecto!"
+            ]; 
         }
     }
 
@@ -106,7 +113,7 @@ class ImportController extends Controller
     public function descuento(Request $request, $slug)
     {
         $this->validate(request(), [
-            "import_descuento" => "required|file|max:1024"
+            "import" => "required|file|max:1024"
         ]);
 
         try {
@@ -118,14 +125,14 @@ class ImportController extends Controller
                 ->findOrFail($id);
             // configurar archivo de excel
             $name = "descuento_import_" . date('Y-m-d') . ".xlsx";
-            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_descuento'), $name);
+            $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
             // Procesar importacion
             (new DescuentoImport($cronograma, $name))->import("/imports/{$name}", "public");
     
-            return back()->with(["success" => "La importación ha sido exitosa"]);
+            return ["message" => "La importación ha sido exitosa"];
         } catch (\Throwable $th) {
             \Log::info($th);
-            return back()->with(["danger" => "La importación falló"]); 
+            return ["message" => "La importación falló"]; 
         }
 
     }

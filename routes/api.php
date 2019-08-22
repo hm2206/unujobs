@@ -119,4 +119,9 @@ Route::group(["prefix" => 'v1'], function() {
     // Marcar los reportes como leidos
     Route::post("/report/{id}/markasread", "ReportController@markAsRead");
 
+
+    // Importaciones
+    Route::post("/descuento/{id}", "ImportController@descuento")->name("import.descuento");
+    Route::post("/remuneracion/{id}", "ImportController@remuneracion")->name("import.remuneracion");
+
 });

@@ -106,53 +106,27 @@
                         <div class="col-md-6">
 
                             <div class="row">
-                                
-                                <validacion 
-                                    btn_text="Imp. Remuneraciones"
-                                    method="post"
-                                    token="{{ csrf_token() }}"
-                                    url="{{ route('import.remuneracion', $cronograma->slug()) }}"
-                                >
-    
-                                    <div class="form-group">
-                                        <a href="{{ url('/formatos/remuneracion_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                                            <i class="fas fa-file-excel"></i> Formato de importación
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="import_remuneracion" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
-                                            <input type="file" name="import_remuneracion" id="import_remuneracion" hidden>
-                                        </label>
-                                        <small class="text-danger">{{ $errors->first('import_remuneracion') }}</small>
-                                    </div>
-    
-                                </validacion>
 
-                                <validacion 
+                                <import id="import-remuneracion"
                                     class="ml-1"
-                                    btn_text="Imp. Descuentos"
-                                    method="post"
-                                    token="{{ csrf_token() }}"
-                                    url="{{ route('import.descuento', $cronograma->slug()) }}"
+                                    formato="{{ url('/formatos/remuneracion_import.xlsx') }}"
+                                    url="/remuneracion/{{ $cronograma->slug() }}"
+                                    formulario="form-import-remuneracion"
+                                    param="{{ auth()->user()->id }}"
                                 >
-    
-                                    <div class="form-group">
-                                        <a href="{{ url('/formatos/descuento_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                                            <i class="fas fa-file-excel"></i> Formato de importación
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="import_descuento" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
-                                            <input type="file" name="import_descuento" id="import_descuento" hidden>
-                                        </label>
-                                        <small class="text-danger">{{ $errors->first('import_descuento') }}</small>
-                                    </div>
-    
-                                </validacion>
+                                    <i class="fas fa-file-excel"></i> Imp. Remuneraciones
+                                </import>
+
+                                <import id="import-descuento"
+                                    class="ml-1"
+                                    formato="{{ url('/formatos/descuento_import.xlsx') }}"
+                                    url="/descuento/{{ $cronograma->slug() }}"
+                                    formulario="form-import-descuento"
+                                    param="{{ auth()->user()->id }}"
+                                >
+                                    <i class="fas fa-file-excel"></i> Imp. Descuentos
+                                </import>
+
                             </div>
 
                         </div>
