@@ -15,13 +15,16 @@
                    </span>
                 </div>
                 <div class="col-md-6 text-dark">
-                    {{ file.name }}
+                    {{ file.name }} 
+                    <span class="badge badge-warning" v-if="!file.read">nuevo</span>
                 </div>
                 <div class="col-md-3">
                     <small class="text-primary">Creado el {{ file.created_at }}</small>
                 </div>
                 <div class="col-md-1">
-                    <a target="__blank" :href="file.path" class="btn btn-sm btn-success">
+                    <a target="__blank" :href="file.path" class="btn btn-sm btn-success"
+                        v-on:click="markAsRead($event, file)"
+                    >
                         <i class="fas fa-download"></i>
                     </a>
                 </div>
@@ -46,6 +49,21 @@ export default {
         this.getFiles();
     },
     methods: {
+        async markAsRead(e, file) {
+            this.loader = true;
+            let api = unujobs("post", `/report/${file.id}/markasread`);
+            await api.then(res => {
+                this.files.map((fil, iter) => {
+                    if (fil.id == file.id) {
+                        fil.read = 1;
+                    }
+                    return fil;
+                });
+            }).catch(err => {
+                console.log("algo salió mal");
+            });
+            this.loader = false;
+        },
         async getFiles(e) {
 
             this.loader = true;

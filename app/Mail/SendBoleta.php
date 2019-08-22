@@ -38,7 +38,7 @@ class SendBoleta extends Mailable
 
     public function build()
     {
-        return $this->from()
+        return $this
             ->subject("Hola " . strtoupper($this->work->nombres) . ", tu boleta {$this->cronograma->mes} de {$this->cronograma->year} ya está lista.")
             ->view('mails.send_boleta')
             ->attachData($this->pdf->output(), 'boleta', [

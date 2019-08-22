@@ -9,9 +9,9 @@
         <title>Reporte Mesual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
+    @foreach ($work->infos as $info)
     <body class="bg-white text-dark">
 
-            @foreach ($work->infos as $info)
             <div class="mb-7">
                     <div class="text-center"></div>
                         
@@ -162,7 +162,11 @@
                                         
                                         @foreach ($info->aportaciones as $aporte)
                                             <tr>
-                                                <td class="py-0">{{ $aporte->key }}.-{{ $aporte->descripcion }}</td>
+                                                <td class="py-0">
+                                                    {{ $aporte->typeDescuento ? $aporte->typeDescuento->key : '' }}
+                                                    .-
+                                                    {{ $aporte->typeDescuento ? $aporte->typeDescuento->descripcion : '' }}
+                                                </td>
                                                 <td class="py-0">{{ $aporte->monto }}</td>
                                             </tr>
                                         @endforeach
@@ -194,7 +198,7 @@
                         </tbody>
                     </table>
                 </div>
-            @endforeach
-            
-    </body>
+                
+            </body>
+    @endforeach
 </html>

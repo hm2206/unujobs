@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es_Es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Reporte de boleta del {{ $mes }}-{{ $year }}</title>
+    <title>Reporte de boleta del {{ $cronograma->mes }}-{{ $cronograma->año }}</title>
 </head>
 <body>
     
     
-    Hola {{ strtoupper($work->nombre_completo) }}, La boleta electrónica {{ $mes }} del {{ $year }} ya está lista. <br> <br>
+    Hola {{ strtoupper($work->nombre_completo) }}, La boleta electrónica {{ $cronograma->mes }} del {{ $cronograma->año }} ya está lista. <br> <br>
     Esta boleta es solo informátiva. <br><br>
 
     @if ($jefe)
     
-        Atte. {{ $jefe->profesion }} {{ $jefe->nombre_completo }} 
+        Atte. Oficina Ejecutiva de Remuneraciones y Pensiones
         
     @endif
   

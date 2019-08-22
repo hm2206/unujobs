@@ -13593,6 +13593,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['param', 'type'],
@@ -13606,10 +13609,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getFiles();
   },
   methods: {
-    getFiles: function () {
-      var _getFiles = _asyncToGenerator(
+    markAsRead: function () {
+      var _markAsRead = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e, file) {
         var _this = this;
 
         var api;
@@ -13618,13 +13621,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context.prev = _context.next) {
               case 0:
                 this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/file/".concat(this.param, "/type/").concat(this.type));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/report/".concat(file.id, "/markasread"));
                 _context.next = 4;
                 return api.then(function (res) {
-                  _this.files = res.data;
+                  _this.files.map(function (fil, iter) {
+                    if (fil.id == file.id) {
+                      fil.read = 1;
+                    }
+
+                    return fil;
+                  });
                 })["catch"](function (err) {
-                  _this.files = [];
-                  console.log("algo salió mal al obtener los ficheros");
+                  console.log("algo salió mal");
                 });
 
               case 4:
@@ -13638,7 +13646,45 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee, this);
       }));
 
-      function getFiles(_x) {
+      function markAsRead(_x, _x2) {
+        return _markAsRead.apply(this, arguments);
+      }
+
+      return markAsRead;
+    }(),
+    getFiles: function () {
+      var _getFiles = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+        var _this2 = this;
+
+        var api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                this.loader = true;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/file/".concat(this.param, "/type/").concat(this.type));
+                _context2.next = 4;
+                return api.then(function (res) {
+                  _this2.files = res.data;
+                })["catch"](function (err) {
+                  _this2.files = [];
+                  console.log("algo salió mal al obtener los ficheros");
+                });
+
+              case 4:
+                this.loader = false;
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function getFiles(_x3) {
         return _getFiles.apply(this, arguments);
       }
 
@@ -14916,12 +14962,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return api.then(function (res) {
                   var _res$data = res.data,
                       status = _res$data.status,
-                      message = _res$data.message;
+                      message = _res$data.message,
+                      body = _res$data.body;
                   var icon = status ? 'success' : 'error';
                   sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                     icon: icon,
                     text: message
                   });
+
+                  if (body) {
+                    _this3.type_detalles.push(body);
+                  }
                 })["catch"](function (err) {
                   var data = err.response.data;
 
@@ -70364,8 +70415,15 @@ var render = function() {
               _vm._v(" "),
               _c("div", { staticClass: "col-md-6 text-dark" }, [
                 _vm._v(
-                  "\n                " + _vm._s(file.name) + "\n            "
-                )
+                  "\n                " +
+                    _vm._s(file.name) +
+                    " \n                "
+                ),
+                !file.read
+                  ? _c("span", { staticClass: "badge badge-warning" }, [
+                      _vm._v("nuevo")
+                    ])
+                  : _vm._e()
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "col-md-3" }, [
@@ -70379,7 +70437,12 @@ var render = function() {
                   "a",
                   {
                     staticClass: "btn btn-sm btn-success",
-                    attrs: { target: "__blank", href: file.path }
+                    attrs: { target: "__blank", href: file.path },
+                    on: {
+                      click: function($event) {
+                        return _vm.markAsRead($event, file)
+                      }
+                    }
                   },
                   [_c("i", { staticClass: "fas fa-download" })]
                 )

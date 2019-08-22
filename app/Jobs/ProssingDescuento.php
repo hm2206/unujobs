@@ -53,6 +53,7 @@ class ProssingDescuento implements ShouldQueue
             $this->configurarDescuento($cronograma, $job);
         }
 
+        $cronograma->update(["pendiente" => 0]);
         $users = User::all();
 
         foreach ($users as $user) {

@@ -25,6 +25,11 @@ class TypeRemuneracion extends Model
     ];
 
 
+    public function conceptos()
+    {
+        return $this->belongsToMany(Concepto::class, 'concepto_type_remuneracion');
+    }
+
     /**
      * Slug para proteger los id en las urls
      *

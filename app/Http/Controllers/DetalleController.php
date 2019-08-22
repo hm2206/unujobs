@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Detalle;
-use App\Models\Descuento;   
+use App\Models\Descuento;
+use App\Models\Cronograma;
 use Illuminate\Http\Request;
 
 class DetalleController extends Controller
@@ -47,24 +48,29 @@ class DetalleController extends Controller
         try {
 
             $detalle = Detalle::updateOrCreate($payload);
+            // obtenemos los descuentos
+            $descuento = Descuento::where("work_id", $detalle->work_id)
+                ->where("cronograma_id", $detalle->cronograma_id)
+                ->where("type_descuento_id", $detalle->type_descuento_id)
+                ->where("categoria_id", $detalle->categoria_id)
+                ->firstOrFail();
+            // verificamos que el cronograma este activo
+            $cronograma =  Cronograma::where("estado", 1)
+                ->findOrFail($descuento->cronograma_id);
+            // actualizamos el monto del detalle
             $detalle->monto = $request->monto;
             $detalle->save();
-
-
+            // obtenemos y sumamos los montos de los detalles
             $tmp_monto = Detalle::where("work_id", $detalle->work_id)
                 ->where("cronograma_id", $detalle->cronograma_id)
                 ->where("type_descuento_id", $detalle->type_descuento_id)
                 ->where("categoria_id", $detalle->categoria_id)
                 ->sum("monto");
-
-            $descuento = Descuento::where("work_id", $detalle->work_id)
-                ->where("cronograma_id", $detalle->cronograma_id)
-                ->where("type_descuento_id", $detalle->type_descuento_id)
-                ->where("categoria_id", $detalle->categoria_id)
-                ->update([
-                    "monto" => $tmp_monto,
-                    "edit" => 0
-                ]);
+            // actualizamons el monto del descuento
+            $descuento->update([
+                "monto" => $tmp_monto,
+                "edit" => 0
+            ]);
             
             return [
                 "status" => true,

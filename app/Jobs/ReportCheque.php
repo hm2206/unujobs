@@ -97,7 +97,7 @@ class ReportCheque implements ShouldQueue
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage{$name}", "EL Resumen de cheques, {$cronograma->mes} del {$cronograma->year} fué generada"));
+            $user->notify(new ReportNotification("/storage/pdf/{$name}", "EL Resumen de cheques, {$cronograma->mes} del {$cronograma->year} fué generada"));
         }
 
     }

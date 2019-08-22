@@ -57,6 +57,9 @@ class ReportBoleta implements ShouldQueue
 
         foreach ($works as $work) {
             
+            $infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
+            $work->infos = $infos;
+
             foreach ($work->infos as $info) {
 
                 $remuneraciones = Remuneracion::orderBy('type_remuneracion_id', 'ASC')

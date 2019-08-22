@@ -17,4 +17,12 @@ class ReportController extends Controller
             ->get();
     }
 
+
+    public function markAsRead($id)
+    {
+        $report = Report::findOrFail($id);
+        $report->update(["read" => 1]);
+        return $report;
+    }
+
 }

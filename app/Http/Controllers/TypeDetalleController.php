@@ -50,6 +50,7 @@ class TypeDetalleController extends Controller
             $year = date('Y');
             $type_descuento = TypeDescuento::findOrFail($request->type_descuento_id);
             $type = TypeDetalle::create($request->all());
+            $type->typeDescuento;
             $type_descuento->edit = 0;
             $type_descuento->save();
             $descuentos = Descuento::where("type_descuento_id", $type_descuento->id)
@@ -59,7 +60,8 @@ class TypeDetalleController extends Controller
             
             return [
                 "status" => true,
-                "message" => "Los datos se guardarón correctamente!"
+                "message" => "Los datos se guardarón correctamente!",
+                "body" => $type
             ];
 
         } catch (\Throwable $th) {
@@ -67,7 +69,8 @@ class TypeDetalleController extends Controller
             \Log::info($th);
             return [
                 "status" => false,
-                "message" => "Ocurrió un error al procesar la operación"
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
             ];
 
         }

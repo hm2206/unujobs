@@ -130,6 +130,7 @@
                                 <th>Planilla</th>
                                 <th>Observación</th>
                                 <th>Sede</th>
+                                <th>Estado</th>
                                 <th class="text-right">Acciones</th>
                             </tr>
                         </thead>
@@ -151,24 +152,55 @@
                                         @endif
                                         <th class="uppercase">{{ $cronograma->observacion }}</th>
                                     <th class="uppercase">{{ $cronograma->sede ? $cronograma->sede->descripcion : null }}</th>
+                                    <th>
+                                        @if ($cronograma->pendiente)
+                                            <button class="btn btn-sm btn-warning">
+                                                <i class="fas fa-clock"></i> Procesando...
+                                            </button>
+                                        @else
+                                            @if ($cronograma->estado)
+                                                <button class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-clock"></i> En curso
+                                                </button>
+                                            @else
+                                                <button class="btn-sm btn btn-danger">
+                                                    <i class="fas fa-history"></i> Terminado
+                                                </button>
+                                            @endif
+                                        @endif
+                                    </th>
                                     <th class="">
                                         <div class="text-right">
 
-                                            <a href="{{ route('cronograma.job', $cronograma->slug()) }}" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                            @if ($cronograma->pendiente)
+                                                <button class="btn btn-sm btn-primary" disabled>
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            @else
+                                                <a href="{{ route('cronograma.job', $cronograma->slug()) }}" 
+                                                    class="btn btn-sm btn-primary"
+                                                >
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            @endif
 
-                                            <btn-cronograma
-                                                theme="btn-warning btn-sm"
-                                                class="text-left"
-                                                :datos="{{ $cronograma }}"
-                                                redirect="{{ route('cronograma.index', ['mes=' . $mes, 'year=' . $year])}}"
-                                            >
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </btn-cronograma>
+                                            @if ($cronograma->pendiente)
+                                                <button class="btn btn-sm btn-warning" disabled>
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                            @else
+                                                <btn-cronograma
+                                                    theme="btn-warning btn-sm"
+                                                    class="text-left"
+                                                    :datos="{{ $cronograma }}"
+                                                    redirect="{{ route('cronograma.index', ['mes=' . $mes, 'year=' . $year])}}"
+                                                >
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </btn-cronograma>
+                                            @endif
 
-                                            
-                                            @if ($cronograma->adicional)
+                                                
+                                            @if ($cronograma->adicional && !$cronograma->pendiente)
                                                 <add-work
                                                     theme="btn-dark btn-sm"
                                                     class="text-left"
@@ -176,8 +208,7 @@
                                                 >
                                                 </add-work>
                                             @endif
-
-                                            
+                                                
                                             @if ($cronograma->pdf)
                                                 <a target="__blank" title="PDF, resumen de todas las metas" href="{{ url($cronograma->pdf) }}" class="btn btn-sm btn-outline-danger">
                                                     <i class="far fa-file-pdf" aria-hidden="true"></i>
@@ -190,17 +221,24 @@
                                                 </a>
                                             @endif
 
-                                            <validacion 
-                                                btn_text="Exportar" 
-                                                class="text-left"
-                                                url="{{ route('export.cronograma', $cronograma->id) }}"
-                                                method="post"
-                                                token="{{ csrf_token() }}"
-                                                id="exportar-cronograma"
-                                            >
-                                            </validacion>
+                                            @if ($cronograma->pendiente)
+                                                <button class="btn btn-sm btn-success" disabled>
+                                                    <i class="fas fa-file-excel"></i> Exportar
+                                                </button>
+                                            @else
+                                                <validacion 
+                                                    btn_text="Exportar" 
+                                                    class="text-left"
+                                                    url="{{ route('export.cronograma', $cronograma->id) }}"
+                                                    method="post"
+                                                    token="{{ csrf_token() }}"
+                                                    id="exportar-cronograma"
+                                                >
+                                                </validacion>
+                                            @endif
 
                                         </div>
+                                        
                                     </th>
                                 </tr>
                             @empty

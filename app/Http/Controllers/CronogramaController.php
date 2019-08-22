@@ -22,6 +22,7 @@ use App\Jobs\ReportCronograma;
 use Illuminate\Support\Facades\Storage;
 use \DB;
 use App\Models\TypeReport;
+use App\Http\Middleware\CronogramaMiddleware;
 
 /**
  * Class CronogramaController
@@ -30,6 +31,7 @@ use App\Models\TypeReport;
  */
 class CronogramaController extends Controller
 {
+
     /**
      * Muestra una lista cronogramas de planillas
      *
@@ -50,15 +52,9 @@ class CronogramaController extends Controller
             ->where('adicional', $adicional)
             ->paginate(20);
 
-        //traer reportes
-        $report_planilla_metas = "/storage/pdf/planilla_metas_{$mes}_{$year}_{$adicional}.pdf";
-        $report_boletas = "/storage/pdf/boletas_{$mes}_{$year}_{$adicional}.pdf";
-
-
         return view('cronogramas.index', 
             \compact(
-                'cronogramas', 'categoria_id', 'mes', 'year', 'adicional', 
-                'report_planilla_metas', 'report_boletas'
+                'cronogramas', 'categoria_id', 'mes', 'year', 'adicional'
             ));
     }
 
@@ -110,7 +106,8 @@ class CronogramaController extends Controller
         $cronograma->update([
             "mes" => $mes,
             "año" => $year,
-            "adicional" => $adicional
+            "adicional" => $adicional,
+            "pendiente" => 1
         ]);
 
         if($cronograma->adicional == 0) {
@@ -121,8 +118,9 @@ class CronogramaController extends Controller
             $cronograma->works()->syncWithoutDetaching($jobs->pluck(["id"]));
 
             ProssingRemuneracion::withChain([
-                new ProssingDescuento($cronograma, $jobs)
-            ])->dispatch($cronograma, $jobs);
+                (new ProssingDescuento($cronograma, $jobs))->onQueue('high')
+            ])->dispatch($cronograma, $jobs)
+            ->onQueue('high');
 
         }elseif($cronograma->adicional == 1) {
             $cronograma->update([
@@ -176,7 +174,7 @@ class CronogramaController extends Controller
             "observacion" => "max:225"
         ]);
 
-        $cronograma = Cronograma::findOrFail($id);
+        $cronograma = Cronograma::where("estado", 1)->findOrFail($id);
         $cronograma->update(["observacion" => $request->observacion]);
         return [
             "status" => true,
@@ -205,7 +203,7 @@ class CronogramaController extends Controller
     public function job($slug)
     {
         $id = \base64_decode($slug);
-        $cronograma = Cronograma::with("planilla")->findOrFail($id);
+        $cronograma = Cronograma::with("planilla")->where("pendiente", 0)->findOrFail($id);
         $typeReports = TypeReport::all();
         $jobs = [];
         $like = request()->query_search;
@@ -235,7 +233,10 @@ class CronogramaController extends Controller
      */
     public function add($id)
     {
-        $cronograma = Cronograma::where("adicional", 1)->findOrFail($id);
+        $cronograma = Cronograma::where("adicional", 1)
+            ->where("pendiente", 0)
+            ->findOrFail($id);
+
         $like = request()->query_search;
         $notIn = $cronograma->works->pluck(["id"]);
 
@@ -268,7 +269,10 @@ class CronogramaController extends Controller
         ]);
 
         try {
-            $cronograma = Cronograma::where('adicional', 1)->findOrFail($id);
+            $cronograma = Cronograma::where('adicional', 1)
+                ->where("estado", 1)
+                ->where("pendiente", 0)
+                ->findOrFail($id);
             
             $tmp_jobs = $request->input('jobs', []);
 

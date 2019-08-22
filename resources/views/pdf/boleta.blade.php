@@ -8,12 +8,11 @@
         <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
         <title>Boleta - {{ strtolower($work->nombre_completo) }} </title>
     </head>
-
-    <body class="bg-white text-dark">
-
-        @foreach ($infos as $info)
-            @foreach ($info->cronogramas as $cronograma)
-                @if($cronograma->total_remuneracion > 0)
+    
+    
+@foreach ($infos as $info)
+    @foreach ($info->cronogramas as $cronograma)
+        <body class="bg-white text-dark">
                 <div class="mb-7">
                     <div class="text-center"></div>
                         
@@ -203,9 +202,7 @@
                         </tbody>
                     </table>
                 </div>
-                @endif
-            @endforeach
+            </body>
         @endforeach
-            
-    </body>
+    @endforeach
 </html>

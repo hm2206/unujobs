@@ -9,6 +9,7 @@ namespace App\Http\Controllers;
 use App\Models\Obligacion;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
+use App\Models\Cronograma;
 use Illuminate\Http\Request;
 
 /**
@@ -57,7 +58,8 @@ class ObligacionController extends Controller
         ]);
 
         try {
-            
+            // verificamos que el cronograma este activo
+            $cronograma = Cronograma::where("estado", 1)->findOrFail($request->cronograma_id);
             $obligacion = Obligacion::create($request->all());
             $monto = Obligacion::where("work_id", $request->work_id)
                 ->where("cronograma_id", $request->cronograma_id)

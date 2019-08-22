@@ -47,7 +47,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            GeneratePlanillaPDF::dispatch($cronograma, $type);
+            GeneratePlanillaPDF::dispatch($cronograma, $type)->onQueue("medium");
 
             return [
                 "status" => true,
@@ -79,7 +79,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            GeneratePlanillaMetaPDF::dispatch($cronograma, $type);
+            GeneratePlanillaMetaPDF::dispatch($cronograma, $type)->onQueue("high");
 
             return [
                 "status" => true,
@@ -109,7 +109,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportBoleta::dispatch($cronograma, $type);
+            ReportBoleta::dispatch($cronograma, $type)->onQueue('medium');
 
             return [
                 "status" => true,
@@ -148,11 +148,11 @@ class ExportCronogramaController extends Controller
             }
 
             if ($cuenta) {
-                ReportCuenta::dispatch($cronograma, $type);
+                ReportCuenta::dispatch($cronograma, $type)->onQueue('low');
             }
 
             if ($cheque) {
-                ReportCheque::dispatch($cronograma, $type);
+                ReportCheque::dispatch($cronograma, $type)->onQueue('low');
             }
 
             return [
@@ -196,8 +196,8 @@ class ExportCronogramaController extends Controller
 
             // exportar afp-net
             (new AfpNet($cronograma))->queue($ruta_apt_net)->chain([
-                new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net, $config)
-            ]);
+                (new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net, $config))->onQueue("low")
+            ])->onQueue("low");
 
             return [
                 "status" => true,
@@ -232,7 +232,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportCronograma::dispatch($cronograma, $type);
+            ReportCronograma::dispatch($cronograma, $type)->onQueue('high');
 
             return [
                 "status" => true,
@@ -262,7 +262,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportDescuento::dispatch($cronograma, $type);
+            ReportDescuento::dispatch($cronograma, $type)->onQueue('medium');
 
             return [
                 "status" => true,

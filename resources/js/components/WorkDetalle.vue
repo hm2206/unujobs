@@ -137,9 +137,14 @@ export default {
             const form = new FormData(document.getElementById('form-detalle'));
             let api = unujobs('post', '/type_detalle', form);
             await api.then(res => {
-                let { status, message } = res.data;
+                let { status, message, body } = res.data;
                 let icon = status ? 'success' : 'error';
                 notify({icon: icon, text: message});
+
+                if (body) {
+                    this.type_detalles.push(body);
+                }
+
             }).catch(err => {
                 let { data } = err.response;
                 if (data.errors) {

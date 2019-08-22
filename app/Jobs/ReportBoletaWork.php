@@ -19,6 +19,7 @@ use App\Models\Descuento;
 use App\Models\User;
 use App\Models\Report;
 use \Carbon\Carbon;
+use \DB;
 
 class ReportBoletaWork implements ShouldQueue
 {
@@ -48,14 +49,15 @@ class ReportBoletaWork implements ShouldQueue
     public function handle()
     {
         $work = $this->work;
-        $infos = $work->infos;
+        $cronogramas = Cronograma::whereIn("id", $this->whereIn)->get();
+        $infos = $work->infos->whereIn("planilla_id", $cronogramas->pluck("planilla_id"));
 
         foreach ($infos as $info) {
             
-            $info->cronogramas = Cronograma::whereIn("id", $this->whereIn)->get();
-
+            $info->cronogramas = $cronogramas;
+            
             foreach ($info->cronogramas as $cro) {
-                $cro->tmp_remuneraciones = Remuneracion::where("work_id", $work->id)
+                $tmp_remuneraciones = Remuneracion::where("work_id", $work->id)
                     ->where("planilla_id", $info->planilla_id)
                     ->where("cargo_id", $info->cargo_id)
                     ->where("categoria_id", $info->categoria_id)
@@ -70,6 +72,7 @@ class ReportBoletaWork implements ShouldQueue
                     ->where("cronograma_id", $cro->id)
                     ->get();
 
+                $cro->tmp_remuneraciones = $tmp_remuneraciones; 
                 $cro->tmp_descuentos = $tmp_descuentos->where('base', 0);
 
                 

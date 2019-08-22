@@ -258,55 +258,66 @@ class JobController extends Controller
             "categoria_id" => "required",
             "planilla_id" => "required"
         ]);
+
+        try {
         
-        $job = Work::findOrFail($id);
-        $cronograma = Cronograma::findOrFail($request->cronograma_id);
+            $job = Work::findOrFail($id);
+            $cronograma = Cronograma::where("estado", 1)
+                ->findOrFail($request->cronograma_id);
 
-        $remuneraciones = $job->remuneraciones
-            ->where("cronograma_id", $cronograma->id)
-            ->where("cargo_id", $request->cargo_id)
-            ->where("planilla_id", $request->planilla_id)
-            ->where("categoria_id", $request->categoria_id);
+            $remuneraciones = $job->remuneraciones
+                ->where("cronograma_id", $cronograma->id)
+                ->where("cargo_id", $request->cargo_id)
+                ->where("planilla_id", $request->planilla_id)
+                ->where("categoria_id", $request->categoria_id);
 
-        $info = Info::where('active', 1)->where("work_id", $job->id)
-            ->where("cargo_id", $request->cargo_id)
-            ->where("categoria_id", $request->categoria_id)
-            ->firstOrFail();
+            $info = Info::where('active', 1)->where("work_id", $job->id)
+                ->where("cargo_id", $request->cargo_id)
+                ->where("categoria_id", $request->categoria_id)
+                ->firstOrFail();
 
-        $total = 0;
+            $total = 0;
 
-        foreach ($remuneraciones as $remuneracion) {
-            if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
-                $tmp_remuneracion = $request->input($remuneracion->id);
-                if (is_numeric($tmp_remuneracion)) {
-                    $remuneracion->monto = round($tmp_remuneracion, 2);
-                    $remuneracion->save();
-                    $total += $tmp_remuneracion;
+            foreach ($remuneraciones as $remuneracion) {
+                if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
+                    $tmp_remuneracion = $request->input($remuneracion->id);
+                    if (is_numeric($tmp_remuneracion)) {
+                        $remuneracion->monto = round($tmp_remuneracion, 2);
+                        $remuneracion->save();
+                        $total += $tmp_remuneracion;
+                    }
+                }else {
+                    return [
+                        "status" => false,
+                        "message" => "Ocurrió un error al procesar la operación",
+                        "total" => 0
+                    ];
                 }
-            }else {
-                return [
-                    "status" => false,
-                    "message" => "Ocurrió un error al procesar la operación",
-                    "total" => 0
-                ];
             }
+
+
+            // procesar los descuentos
+            $collection = new WorkCollection($job);
+            $collection->updateOrCreateDescuento($cronograma);
+            
+
+            // guardar monto total actual
+            $info->update(["total" => round($total, 2)]);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se actualizarón correctamente!",
+                "body" => round($total, 2)
+            ];
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "total" => 0
+            ];
         }
 
-
-        // procesar los descuentos
-        $collection = new WorkCollection($job);
-        $collection->updateOrCreateDescuento($cronograma);
-        
-
-        // guardar monto total actual
-        $info->update(["total" => round($total, 2)]);
-
-        return [
-            "status" => true,
-            "message" => "Los datos se actualizarón correctamente!",
-            "body" => round($total, 2)
-        ];
-        
     }
 
 
@@ -415,53 +426,63 @@ class JobController extends Controller
             "categoria_id" => "required",
             "planilla_id" => "required"
         ]);
+        
+        try {
+            
+            $job = Work::findOrFail($id);
+            $cronograma = Cronograma::where("estado", 1)
+                ->find($request->cronograma_id);
 
-        $job = Work::findOrFail($id);
-        $cronograma = Cronograma::find($request->cronograma_id);
+            $remuneraciones = $remuneraciones = Remuneracion::where("work_id", $id)
+                ->where("cronograma_id", $cronograma->id)
+                ->where("categoria_id", $request->categoria_id)
+                ->where("planilla_id", $request->planilla_id)
+                ->where("cargo_id", $request->cargo_id)
+                ->get();
 
-        $remuneraciones = $remuneraciones = Remuneracion::where("work_id", $id)
-            ->where("cronograma_id", $cronograma->id)
-            ->where("categoria_id", $request->categoria_id)
-            ->where("planilla_id", $request->planilla_id)
-            ->where("cargo_id", $request->cargo_id)
-            ->get();
+            $descuentos = Descuento::where("work_id", $job->id)
+                ->where("cronograma_id", $cronograma->id)
+                ->where("categoria_id", $request->categoria_id)
+                ->where("planilla_id", $request->planilla_id)
+                ->where("cargo_id", $request->cargo_id)
+                ->get();
 
-        $descuentos = Descuento::where("work_id", $job->id)
-            ->where("cronograma_id", $cronograma->id)
-            ->where("categoria_id", $request->categoria_id)
-            ->where("planilla_id", $request->planilla_id)
-            ->where("cargo_id", $request->cargo_id)
-            ->get();
-
-        foreach ($descuentos as $descuento) {
-            if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
-                $tmp_descuento = $request->input($descuento->id);
-                if (is_numeric($tmp_descuento) && $descuento->edit) {
-                    $descuento->monto = round($tmp_descuento, 2);
-                    $descuento->save();
+            foreach ($descuentos as $descuento) {
+                if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
+                    $tmp_descuento = $request->input($descuento->id);
+                    if (is_numeric($tmp_descuento) && $descuento->edit) {
+                        $descuento->monto = round($tmp_descuento, 2);
+                        $descuento->save();
+                    }
+                }else {
+                    return [
+                        "status" => false,
+                        "message" => "Ocurrió un error al procesar la operación",
+                        "body" => ""
+                    ];
                 }
-            }else {
-                return [
-                    "status" => false,
-                    "message" => "Ocurrió un error al procesar la operación",
-                    "body" => ""
-                ];
             }
+
+            $total = round($descuentos->where('base', 0)->sum('monto'), 2);
+            $base = round($remuneraciones->where('base', 0)->sum('monto'), 2);
+            $total_neto = round($remuneraciones->sum('monto') - $total, 2);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se actualizarón correctamente!",
+                "body" => [
+                    "total" => $total,
+                    "total_neto" => $total_neto,
+                    "base" => $base
+                ]
+            ];
+        } catch (\Throwable $th) {
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => ""
+            ];
         }
-
-        $total = round($descuentos->where('base', 0)->sum('monto'), 2);
-        $base = round($remuneraciones->where('base', 0)->sum('monto'), 2);
-        $total_neto = round($remuneraciones->sum('monto') - $total, 2);
-
-        return [
-            "status" => true,
-            "message" => "Los datos se actualizarón correctamente!",
-            "body" => [
-                "total" => $total,
-                "total_neto" => $total_neto,
-                "base" => $base
-            ]
-        ];
     }
 
 
@@ -534,7 +555,8 @@ class JobController extends Controller
         $work = Work::findOrFail($id);
         $whereIn = $request->input('cronogramas', []);
 
-        ReportBoletaWork::dispatch($work, $whereIn);
+        ReportBoletaWork::dispatch($work, $whereIn)
+            ->onQueue('medium');
 
         return "";
     }

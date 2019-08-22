@@ -80,7 +80,9 @@ class ImportController extends Controller
             // recuperar id
             $id = \base64_decode($slug);
             // obtener cronograma
-            $cronograma = Cronograma::findOrFail($id);
+            $cronograma = Cronograma::where("estado", 1)
+                ->where("pendiente", 0)
+                ->findOrFail($id);
             // configurar archivo de excel
             $name = "remuneracion_import_" . date('Y-m-d') . ".xlsx";
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_remuneracion'), $name);
@@ -111,7 +113,9 @@ class ImportController extends Controller
             // recuperar id
             $id = \base64_decode($slug);
             // obtener cronograma
-            $cronograma = Cronograma::findOrFail($id);
+            $cronograma = Cronograma::where("estado", 1)
+                ->where("pendiente", 0)
+                ->findOrFail($id);
             // configurar archivo de excel
             $name = "descuento_import_" . date('Y-m-d') . ".xlsx";
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import_descuento'), $name);

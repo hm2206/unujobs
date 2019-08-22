@@ -113,8 +113,10 @@ Route::group(["prefix" => 'v1'], function() {
     // Detalles de los descuentos
     Route::resource('type_detalle', 'TypeDetalleController');
 
-
     // Recursos de los detalles
     Route::resource('detalle', 'DetalleController');
+
+    // Marcar los reportes como leidos
+    Route::post("/report/{id}/markasread", "ReportController@markAsRead");
 
 });
