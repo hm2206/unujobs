@@ -188,21 +188,26 @@ class JobController extends Controller
     public function remuneracion($id)
     {
         $work = Work::findOrFail($id);
-
+        
         // configuración
         $year = request()->input('year', date('Y'));
         $mes = request()->input('mes', date('m'));
         $adicional = request()->adicional ? 1 : 0;
         $categoria_id = request()->categoria_id;
         $numero = request()->numero ? request()->numero : 1;
+        
+        // obtener planilla del trabajador
+        $planilla_id = $work->infos->where("categoria_id", $categoria_id)
+            ->pluck(['planilla_id']);
 
         // almacenar
         $total = 0;
         $dias = 30;
         $seleccionar = [];
-        $cronograma = Cronograma::where('mes', $mes)
-                ->where('año', $year)
-                ->where("adicional", $adicional);
+        $cronograma = Cronograma::whereIn('planilla_id', $planilla_id)
+            ->where('mes', $mes)
+            ->where('año', $year)
+            ->where("adicional", $adicional);
 
         if($adicional) {
 
@@ -347,6 +352,9 @@ class JobController extends Controller
         $categoria_id = request()->categoria_id;
         $numero = request()->numero ? request()->numero : 1;
 
+        // obtener planilla del trabajador
+        $planilla_id = $work->infos->where("categoria_id", $categoria_id)
+            ->pluck(['planilla_id']);
 
         // almacenar
         $total = 0;
@@ -354,7 +362,8 @@ class JobController extends Controller
         $base = 0;
         $seleccionar = [];
         $types = [];
-        $cronograma = Cronograma::where('mes', $mes)
+        $cronograma = Cronograma::whereIn("planilla_id", $planilla_id)
+                ->where('mes', $mes)
                 ->where('año', $year)
                 ->where("adicional", $adicional);
 

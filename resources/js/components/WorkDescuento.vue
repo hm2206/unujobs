@@ -72,7 +72,7 @@ export default {
         }
     },
     methods: {
-        getDescuentos() {
+        async getDescuentos() {
 
             let adicional = this.adicional ? 1 : 0;
 
@@ -81,7 +81,7 @@ export default {
                 `/work/${this.param}/descuento?mes=${this.mes}&year=${this.year}&adicional=${adicional}&categoria_id=${this.categoria}&numero=${this.numero}`
             );
 
-            api.then(res => {
+            await api.then(res => {
 
                 let { descuentos, cronograma, base, total, total_neto } = res.data;
                 this.descuentos = descuentos;
@@ -93,11 +93,11 @@ export default {
                     this.tmp_descuentos.push(des.monto);
                 });
 
-                this.$emit('get-cronograma', cronograma);
-
             }).catch(err => {
-                console.log("algo salió mal");
+                this.cronograma = {};
             });
+
+            this.$emit('get-cronograma', this.cronograma);
 
         },
         async submit(e) {

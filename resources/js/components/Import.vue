@@ -105,7 +105,13 @@ export default {
             await api.then(res => {
                 let { message, status } = res.data;
                 let icon = status ? 'success' : 'error'
-                notify({icon, text: message});
+                notify({icon, text: message}).then(res => {
+                    this.ventana = false;
+                    this.form.password = '';
+                }).catch(err => {
+                    this.ventana = false;
+                })
+
             }).catch(err => {
                 let { status, data } = err.response;
 

@@ -129,10 +129,16 @@ class ImportController extends Controller
             // Procesar importacion
             (new DescuentoImport($cronograma, $name))->import("/imports/{$name}", "public");
     
-            return ["message" => "La importación ha sido exitosa"];
+            return [
+                "status" => true,
+                "message" => "La importación ha sido exitosa"
+            ];
         } catch (\Throwable $th) {
             \Log::info($th);
-            return ["message" => "La importación falló"]; 
+            return [
+                "status" => false,
+                "message" => "La importación falló"
+            ]; 
         }
 
     }

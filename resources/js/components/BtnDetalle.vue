@@ -260,6 +260,7 @@ export default {
             this.cronograma = e;
             this.dias = e.dias;
             this.adicional = e.adicional;
+            console.log(e);
 
         },
         getNumeros(e) {

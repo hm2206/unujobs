@@ -46,6 +46,11 @@ class CronogramaController extends Controller
         $year = $year > date('Y') ? date('Y') : $year;
 
         $categoria_id = "";
+
+        // verificar cronogramas que ya expirarón
+        $expire = Cronograma::where("estado", 1)
+            ->where("mes", date('m') - 1)
+            ->update(["estado" => 0]);
         
         $cronogramas = Cronograma::where('mes', $mes)
             ->where('año', $year)

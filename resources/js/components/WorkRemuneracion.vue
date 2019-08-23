@@ -72,7 +72,7 @@ export default {
         }
     },
     methods: {
-        getRemuneraciones() {
+        async getRemuneraciones() {
 
             let adicional = this.adicional ? 1 : 0;
 
@@ -81,25 +81,22 @@ export default {
                 `/work/${this.param}/remuneracion?mes=${this.mes}&year=${this.year}&adicional=${adicional}&categoria_id=${this.categoria}&numero=${this.numero}`
             );
 
-            api.then(res => {
+            await api.then(res => {
 
                 let { remuneraciones, cronograma, total, numeros } = res.data;
                 this.remuneraciones = remuneraciones;
                 this.cronograma = cronograma;
                 this.$emit('get-numeros', numeros);
                 this.total = total;
-                
                 this.remuneraciones.filter(re => {
                     this.tmp_remuneraciones.push(re.monto);
                 });
 
-                this.$emit('get-cronograma', cronograma);
-
             }).catch(err => {
-
-                console.log("algo salió mal");
-
+                this.cronograma = {};
             });
+
+            this.$emit('get-cronograma', cronograma);
 
         },
         async submit(e) {

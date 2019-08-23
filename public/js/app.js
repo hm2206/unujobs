@@ -10138,6 +10138,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.cronograma = e;
       this.dias = e.dias;
       this.adicional = e.adicional;
+      console.log(e);
     },
     getNumeros: function getNumeros(e) {
       this.numeros = e;
@@ -13288,6 +13289,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                     icon: icon,
                     text: message
+                  }).then(function (res) {
+                    _this.ventana = false;
+                    _this.form.password = '';
+                  })["catch"](function (err) {
+                    _this.ventana = false;
                   });
                 })["catch"](function (err) {
                   var _err$response = err.response,
@@ -14876,43 +14882,67 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   methods: {
-    getDescuentos: function getDescuentos() {
-      var _this = this;
-
-      var adicional = this.adicional ? 1 : 0;
-      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', "/work/".concat(this.param, "/descuento?mes=").concat(this.mes, "&year=").concat(this.year, "&adicional=").concat(adicional, "&categoria_id=").concat(this.categoria, "&numero=").concat(this.numero));
-      api.then(function (res) {
-        var _res$data = res.data,
-            descuentos = _res$data.descuentos,
-            cronograma = _res$data.cronograma,
-            base = _res$data.base,
-            total = _res$data.total,
-            total_neto = _res$data.total_neto;
-        _this.descuentos = descuentos;
-        _this.cronograma = cronograma;
-        _this.base = base;
-        _this.total = total;
-        _this.total_neto = total_neto;
-
-        _this.descuentos.filter(function (des) {
-          _this.tmp_descuentos.push(des.monto);
-        });
-
-        _this.$emit('get-cronograma', cronograma);
-      })["catch"](function (err) {
-        console.log("algo salió mal");
-      });
-    },
-    submit: function () {
-      var _submit = _asyncToGenerator(
+    getDescuentos: function () {
+      var _getDescuentos = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
-        var _this2 = this;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var _this = this;
 
-        var form, api;
+        var adicional, api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
+              case 0:
+                adicional = this.adicional ? 1 : 0;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', "/work/".concat(this.param, "/descuento?mes=").concat(this.mes, "&year=").concat(this.year, "&adicional=").concat(adicional, "&categoria_id=").concat(this.categoria, "&numero=").concat(this.numero));
+                _context.next = 4;
+                return api.then(function (res) {
+                  var _res$data = res.data,
+                      descuentos = _res$data.descuentos,
+                      cronograma = _res$data.cronograma,
+                      base = _res$data.base,
+                      total = _res$data.total,
+                      total_neto = _res$data.total_neto;
+                  _this.descuentos = descuentos;
+                  _this.cronograma = cronograma;
+                  _this.base = base;
+                  _this.total = total;
+                  _this.total_neto = total_neto;
+
+                  _this.descuentos.filter(function (des) {
+                    _this.tmp_descuentos.push(des.monto);
+                  });
+                })["catch"](function (err) {
+                  _this.cronograma = {};
+                });
+
+              case 4:
+                this.$emit('get-cronograma', this.cronograma);
+
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function getDescuentos() {
+        return _getDescuentos.apply(this, arguments);
+      }
+
+      return getDescuentos;
+    }(),
+    submit: function () {
+      var _submit = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+        var _this2 = this;
+
+        var form, api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 if (e) {
                   e.preventDefault();
@@ -14929,7 +14959,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 form.append("categoria_id", this.info.categoria_id);
                 form.append("planilla_id", this.info.planilla_id);
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/work/".concat(this.param, "/descuento"), form);
-                _context.next = 12;
+                _context2.next = 12;
                 return api.then(function (res) {
                   var _res$data2 = res.data,
                       status = _res$data2.status,
@@ -14959,10 +14989,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 14:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
 
       function submit(_x) {
@@ -15769,43 +15799,67 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   methods: {
-    getRemuneraciones: function getRemuneraciones() {
-      var _this = this;
-
-      var adicional = this.adicional ? 1 : 0;
-      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', "/work/".concat(this.param, "/remuneracion?mes=").concat(this.mes, "&year=").concat(this.year, "&adicional=").concat(adicional, "&categoria_id=").concat(this.categoria, "&numero=").concat(this.numero));
-      api.then(function (res) {
-        var _res$data = res.data,
-            remuneraciones = _res$data.remuneraciones,
-            cronograma = _res$data.cronograma,
-            total = _res$data.total,
-            numeros = _res$data.numeros;
-        _this.remuneraciones = remuneraciones;
-        _this.cronograma = cronograma;
-
-        _this.$emit('get-numeros', numeros);
-
-        _this.total = total;
-
-        _this.remuneraciones.filter(function (re) {
-          _this.tmp_remuneraciones.push(re.monto);
-        });
-
-        _this.$emit('get-cronograma', cronograma);
-      })["catch"](function (err) {
-        console.log("algo salió mal");
-      });
-    },
-    submit: function () {
-      var _submit = _asyncToGenerator(
+    getRemuneraciones: function () {
+      var _getRemuneraciones = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
-        var _this2 = this;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var _this = this;
 
-        var form, api;
+        var adicional, api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
+              case 0:
+                adicional = this.adicional ? 1 : 0;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', "/work/".concat(this.param, "/remuneracion?mes=").concat(this.mes, "&year=").concat(this.year, "&adicional=").concat(adicional, "&categoria_id=").concat(this.categoria, "&numero=").concat(this.numero));
+                _context.next = 4;
+                return api.then(function (res) {
+                  var _res$data = res.data,
+                      remuneraciones = _res$data.remuneraciones,
+                      cronograma = _res$data.cronograma,
+                      total = _res$data.total,
+                      numeros = _res$data.numeros;
+                  _this.remuneraciones = remuneraciones;
+                  _this.cronograma = cronograma;
+
+                  _this.$emit('get-numeros', numeros);
+
+                  _this.total = total;
+
+                  _this.remuneraciones.filter(function (re) {
+                    _this.tmp_remuneraciones.push(re.monto);
+                  });
+                })["catch"](function (err) {
+                  _this.cronograma = {};
+                });
+
+              case 4:
+                this.$emit('get-cronograma', cronograma);
+
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function getRemuneraciones() {
+        return _getRemuneraciones.apply(this, arguments);
+      }
+
+      return getRemuneraciones;
+    }(),
+    submit: function () {
+      var _submit = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+        var _this2 = this;
+
+        var form, api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 if (e) {
                   e.preventDefault();
@@ -15822,7 +15876,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 form.append("categoria_id", this.info.categoria_id);
                 form.append("planilla_id", this.info.planilla_id);
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/work/".concat(this.param, "/remuneracion"), form);
-                _context.next = 12;
+                _context2.next = 12;
                 return api.then(function (res) {
                   var _res$data2 = res.data,
                       status = _res$data2.status,
@@ -15847,10 +15901,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 14:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
 
       function submit(_x) {
