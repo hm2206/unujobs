@@ -63,6 +63,7 @@ class Kernel extends HttpKernel
         'validacion' => \App\Http\Middleware\ValidationPassword::class,
         'origen' => \App\Http\Middleware\VerifyOrigen::class,
         'import' => \App\Http\Middleware\ImportMiddleware::class,
+        'auditoria' => \App\Http\Middleware\AuditoriaMiddleware::class,
     ];
 
     /**

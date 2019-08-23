@@ -120,6 +120,7 @@ export default {
             let api = unujobs(method, ruta, form);
             await api.then(async res => {
 
+                console.log(res.data);
                 let { status, message } = res.data; 
 
                 if (status) {

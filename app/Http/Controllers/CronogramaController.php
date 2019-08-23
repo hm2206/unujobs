@@ -32,6 +32,11 @@ use App\Http\Middleware\CronogramaMiddleware;
 class CronogramaController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware("auditoria:crear planilla")->only(['store']);
+    }
+
     /**
      * Muestra una lista cronogramas de planillas
      *

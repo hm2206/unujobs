@@ -9391,32 +9391,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                       while (1) {
                         switch (_context3.prev = _context3.next) {
                           case 0:
+                            console.log(res.data);
                             _res$data = res.data, status = _res$data.status, message = _res$data.message;
 
                             if (!status) {
-                              _context3.next = 7;
+                              _context3.next = 8;
                               break;
                             }
 
-                            _context3.next = 4;
+                            _context3.next = 5;
                             return sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                               icon: 'success',
                               text: message
                             });
 
-                          case 4:
+                          case 5:
                             location.href = _this2.redirect + "&adicional=".concat(_this2.form.adicional);
-                            _context3.next = 9;
+                            _context3.next = 10;
                             break;
 
-                          case 7:
-                            _context3.next = 9;
+                          case 8:
+                            _context3.next = 10;
                             return sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
                               icon: 'error',
                               text: message
                             });
 
-                          case 9:
+                          case 10:
                           case "end":
                             return _context3.stop();
                         }
