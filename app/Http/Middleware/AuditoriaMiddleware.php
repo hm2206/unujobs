@@ -17,7 +17,7 @@ class AuditoriaMiddleware
     public function handle($request, Closure $next)
     {
         $user = auth()->user();
-        $user_id = 1;
+        $user_id = 0;
 
         if ($user) {
             $user_id = $user->id;

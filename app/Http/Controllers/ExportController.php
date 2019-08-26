@@ -163,8 +163,8 @@ class ExportController extends Controller
             $ruta_apt_net = "public/excels/{$name_afp_net}";
             // exportar afp-net
             (new AfpNet($cronograma))->queue($ruta_apt_net)->chain([
-                new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net)
-            ]);
+                (new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net))->onQueue('medium')
+            ])->onQueue('medium');
 
             return [
                 "status" => true,

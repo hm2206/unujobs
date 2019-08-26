@@ -58,6 +58,7 @@ Vue.component('btn-work-config', require('./components/BtnWorkConfig.vue').defau
 Vue.component('config-work-mas', require('./components/ConfigWorkMas.vue').default);
 Vue.component('btn-reporte', require('./components/BtnReporte.vue').default);
 Vue.component('import', require('./components/Import.vue').default);
+Vue.component('search', require('./components/Search.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

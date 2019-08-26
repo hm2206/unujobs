@@ -17,6 +17,7 @@
   {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css"> --}}
   <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
   <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon">
 
   <!-- Custom styles for this template-->
 
@@ -33,7 +34,7 @@
 
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
-        <div class="sidebar-brand-text mx-3">RRHH</div>
+        <div class="sidebar-brand-text mx-3">SGRHP</div>
       </a>
 
       <!-- Divider -->
@@ -70,6 +71,8 @@
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
+
+                  <!-- <search></search>-->
 
                   <!-- Nav Item - Alerts -->
                   <notification></notification>
