@@ -17,24 +17,27 @@ use App\Models\User;
 use App\Notifications\ReportNotification;
 use App\Models\TypeDescuento;
 use App\Models\TypeRemuneracion;
+use App\Models\TypeDetalle;
 
-class ReportDescuento implements ShouldQueue
+class ReportDescuentoTypeMulti implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
     private $cronograma;
     private $type_report;
+    private $type_descuentos;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($cronograma, $type_report)
+    public function __construct($cronograma, $type_report, $type_descuentos)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
+        $this->type_descuentos = $type_descuentos;
     }
 
     /**
@@ -55,6 +58,8 @@ class ReportDescuento implements ShouldQueue
         $works = $cronograma->works;
         $count = 1;
 
+        $types = TypeDescuento::whereIn("id", $this->type_descuentos)->get();
+
         foreach ($works as $work) {
         
             $work->tmp_infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
@@ -65,22 +70,12 @@ class ReportDescuento implements ShouldQueue
                     ->where("cronograma_id", $cronograma->id)
                     ->where("cargo_id", $info->cargo_id)
                     ->where("categoria_id", $info->categoria_id)
+                    ->whereIn("type_descuento_id", $types->pluck(['id']))
                     ->get();
 
-                $info->descuentos = $descuentos->where("base", 0);
-                $info->aportaciones = $descuentos->where("base", 1);
-                $info->total_descuentos = $descuentos->where("base", 0)->sum('monto');
-
-                $remuneraciones = Remuneracion::where("work_id", $work->id)
-                    ->where("cronograma_id", $cronograma->id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->get();
-
-                $info->total_bruto = $remuneraciones->sum('monto');
-                $info->base_imponible = $remuneraciones->sum("base", 1);
-                $info->total_neto = $info->total_bruto - $info->total_descuentos;
+                $info->descuentos = $descuentos;
                 $info->count = $count;
+                $info->total = $descuentos->sum("monto");
                 $count++;
 
             }
@@ -88,7 +83,7 @@ class ReportDescuento implements ShouldQueue
         }
 
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento", compact('cronograma', 'works', 'meses'));
+        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'works', 'meses', 'types'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
 
         $fecha = strtotime(Carbon::now());

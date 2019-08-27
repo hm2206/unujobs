@@ -1,10 +1,10 @@
 <template>
-    <div class="card-body">
+    <form class="card-body" id="form-rpt-descuento">
 
         <div class="row mb-4">
 
             <div class="col-md-3" v-for="(type, ty) in tmp_types" :key="`type-descuentos-${ty}`">
-                <input type="checkbox" name="type_descuentos[]" id=""> {{ type.descripcion }}
+                <input type="checkbox" name="type_descuentos[]" :value="type.id"> {{ type.descripcion }}
             </div>
 
         </div>
@@ -21,7 +21,7 @@
         <hr>
 
         <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
-    </div>
+    </form>
 </template>
 
 <script>
@@ -47,10 +47,10 @@ export default {
     methods: {
         async generatePDF() {
 
+            const form = new FormData(document.getElementById('form-rpt-descuento'));
+            form.append('type_report_id', this.report.id);
             this.loader = true;
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/descuento`, {
-                type_report_id: this.report.id
-            });
+            let api = unujobs("post", `/cronograma/${this.cronograma.id}/descuento`, form);
             
             await api.then(res => {
                 let { status, message } = res.data;

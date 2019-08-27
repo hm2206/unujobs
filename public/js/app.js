@@ -14375,16 +14375,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var api;
+        var form, api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                form = new FormData(document.getElementById('form-rpt-descuento'));
+                form.append('type_report_id', this.report.id);
                 this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/descuento"), {
-                  type_report_id: this.report.id
-                });
-                _context.next = 4;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/descuento"), form);
+                _context.next = 6;
                 return api.then(function (res) {
                   var _res$data = res.data,
                       status = _res$data.status,
@@ -14401,10 +14401,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   });
                 });
 
-              case 4:
+              case 6:
                 this.loader = false;
 
-              case 5:
+              case 7:
               case "end":
                 return _context.stop();
             }
@@ -72130,8 +72130,8 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "div",
-    { staticClass: "card-body" },
+    "form",
+    { staticClass: "card-body", attrs: { id: "form-rpt-descuento" } },
     [
       _c(
         "div",
@@ -72142,7 +72142,8 @@ var render = function() {
             { key: "type-descuentos-" + ty, staticClass: "col-md-3" },
             [
               _c("input", {
-                attrs: { type: "checkbox", name: "type_descuentos[]", id: "" }
+                attrs: { type: "checkbox", name: "type_descuentos[]" },
+                domProps: { value: type.id }
               }),
               _vm._v(" " + _vm._s(type.descripcion) + "\n        ")
             ]

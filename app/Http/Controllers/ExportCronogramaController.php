@@ -20,6 +20,8 @@ use App\Jobs\GeneratePlanillaPDF;
 use App\Jobs\GeneratePlanillaMetaPDF;
 use App\Jobs\ReportCronograma;
 use App\Jobs\ReportDescuento;
+use App\Jobs\ReportDescuentoType;
+use App\Jobs\ReportDescuentoTypeMulti;
 use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCuenta;
 use App\Jobs\ReportCheque;
@@ -262,7 +264,16 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportDescuento::dispatch($cronograma, $type)->onQueue('medium');
+            $type_descuentos = $request->input('type_descuentos', []);
+
+            if (count($type_descuentos) > 1) {
+                ReportDescuentoTypeMulti::dispatch($cronograma, $type, $type_descuentos)->onQueue('medium');
+            }else if (count($type_descuentos) == 1) {
+                ReportDescuentoType::dispatch($cronograma, $type, $type_descuentos)->onQueue('medium');
+            }else {
+                ReportDescuento::dispatch($cronograma, $type)->onQueue('medium');
+            }
+
 
             return [
                 "status" => true,
@@ -270,7 +281,9 @@ class ExportCronogramaController extends Controller
             ];
 
         } catch (\Throwable $th) {
-           
+            
+            \Log::info($th);
+
             return [
                 "status" => false,
                 "message" => "Ocurrió un error al procesar la operación"
@@ -278,6 +291,8 @@ class ExportCronogramaController extends Controller
 
         }
     }
+
+
     /**
      * Crea un archivos pdf del cronograma
      *

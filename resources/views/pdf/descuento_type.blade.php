@@ -47,10 +47,10 @@
                     <th class="py-0"><small>N°</small></th>
                     <th class="py-0"><small>Nombre Completo</small></th>
                     <th class="py-0"><small>N° de Documento</small></th>
-                    <th class="py-0 text-right"><small>Total Bruto</small></th>
-                    <th class="py-0 text-right"><small>Base Imponible</small></th>
-                    <th class="py-0 text-right"><small>Total Descuento</small></th>
-                    <th class="py-0 text-right"><small>Total Neto</small></th>
+                    @foreach ($types as $type)
+                        <th class="py-0 text-right"><small>{{ $type->descripcion }}</small></th>
+                    @endforeach
+                    <th class="py-0 text-right"><small>Total</small></th>
                 </tr>
             </thead>
             @foreach ($works as $work)
@@ -60,10 +60,10 @@
                             <td class="py-0"><small class="font-12">{{ $info->count }}</small></td>
                             <td class="py-0"><small class="font-12">{{ $work->nombre_completo }}</small></td>
                             <td class="py-0"><small class="font-12">{{ $work->numero_de_documento }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12">{{ $info->total_bruto }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->base_imponible }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_descuentos }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_neto }}</small></td>
+                            @foreach ($info->descuentos as $descuento)
+                                <td class="py-0 text-right"><small class="font-12">{{ $descuento->monto }}</small></td>
+                            @endforeach
+                            <th class="py-0 text-right"><small>{{ $info->total }}</small></th>
                         </tr>
                    @endforeach
                 </tbody>
