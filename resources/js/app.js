@@ -59,6 +59,7 @@ Vue.component('config-work-mas', require('./components/ConfigWorkMas.vue').defau
 Vue.component('btn-reporte', require('./components/BtnReporte.vue').default);
 Vue.component('import', require('./components/Import.vue').default);
 Vue.component('search', require('./components/Search.vue').default);
+Vue.component('edit-concepto', require('./components/EditConcepto.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

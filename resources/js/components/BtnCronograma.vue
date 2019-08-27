@@ -5,12 +5,12 @@
             <slot></slot>
         </button>
 
-        <modal :show="show" @close="show = false">
+        <modal :show="show" @close="show = false" height="90vh">
             <template slot="header">
                 Registro de planilla x mes
             </template>
             <template slot="content">
-                <form class="card-body" id="register-cronograma" v-on:submit="submit">
+                <form class="card-body p-relative scroll-y" id="register-cronograma" v-on:submit="submit">
                     <div class="form-group">
                         <label for="">Planilla <small class="text-danger">*</small></label>
                         <select name="planilla_id" class="form-control" 
@@ -24,6 +24,12 @@
                         </select>
                         <input type="hidden" name="planilla_id" v-model="form.planilla_id">
                         <small class="text-danger">{{ errors.planilla_id ? errors.planilla_id[0] : '' }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Mes <small class="text-danger">*</small></label>
+                        <input type="number" min="1" max="12" name="mes" v-model="form.mes" class="form-control" :disabled="edit">
+                        <small class="text-danger">{{ errors.mes ? errors.mes[0] : '' }}</small>
                     </div>
 
                     <div class="form-group">
@@ -140,3 +146,21 @@ export default {
 }
 </script>
 
+
+
+<style scoped>
+
+    .p-relative {
+        position: relative;
+    }
+
+    .btn-fixed {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .min-height {
+        height: 100%;
+    }
+</style>

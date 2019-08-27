@@ -33,9 +33,9 @@
         </form>
 
         <div class="mt-4 row justify-content-between" v-if="show">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="row">
-                    <form :id="`form-detalles-${ty}`" class="col-md-12" v-for="(type, ty) in type_detalles" :key="ty"
+                    <form :id="`form-detalles-${ty}`" class="col-md-6" v-for="(type, ty) in type_detalles" :key="ty"
                         v-on:submit="submit($event, ty)"
                     >
                         <div class="row align-items-center mb-1">
@@ -66,17 +66,6 @@
                         </div>
                     </form>
                 </div>
-            </div>
-            <div class="col-md-5">
-                <label for="">Observación</label>
-                <textarea name="observacion" :disabled="loader" 
-                    class="form-control" rows="5" v-model="observacion"></textarea>
-                <button class="btn btn-success mt-3"
-                    v-on:click="saveObservacion"
-                    :disabled="loader"
-                >
-                    <i class="fas fa-save"></i> Guardar
-                </button>
             </div>
         </div>
 
@@ -166,10 +155,9 @@ export default {
 
             api.then(res => {
 
-                let { detalles, cronograma, numeros, observacion } = res.data;
+                let { detalles, cronograma, numeros } = res.data;
                 this.detalles = detalles;
                 this.cronograma = cronograma;
-                this.observacion = observacion;
                 this.$emit('get-numeros', numeros);
                 this.$emit('get-cronograma', cronograma);
                 this.show = true;

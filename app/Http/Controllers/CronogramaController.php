@@ -88,10 +88,20 @@ class CronogramaController extends Controller
     {
         $this->validate(request(), [
             "planilla_id" => "required",
+            "mes" => "required",
             "dias" => "required",
         ]);
 
-        $mes = (int)date('m');
+        $mes = $request->mes < 13 && $request->mes > 0 ? (int)$request->mes : (int)date('m');
+        $current_mes = (int)date('m') + 1;
+
+        if ($mes > $current_mes || $mes < $current_mes - 1) {
+            return [
+                "status" => false,
+                "message" => "El mes no está permitido!"
+            ];
+        }
+
         $year = date('Y');
         $adicional = $request->adicional ? 1 : 0;
 
@@ -219,7 +229,7 @@ class CronogramaController extends Controller
         $like = request()->query_search;
 
         if($cronograma->works->count() > 0) {
-            $jobs = Work::with(['infos' => function($i) {
+            $jobs = Work::orderBy('nombre_completo', 'ASC')->with(['infos' => function($i) {
                 $i->where("active", 1);
             }])->whereIn("id", $cronograma->works->pluck(['id']));
             

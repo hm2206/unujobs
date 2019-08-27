@@ -14,12 +14,7 @@ class TypeDescuentoController extends Controller
      */
     public function index()
     {
-        return TypeDescuento::where('activo', 1)
-            ->where("base", 0)
-            ->where("ley", 0)
-            ->where("config_afp", null)
-            ->where('retencion', 0)
-            ->get();
+        return TypeDescuento::where('activo', 1)->get();
     }
 
     /**

@@ -1,7 +1,7 @@
 <template>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-4 mb-1" v-for="(remuneracion, re) in remuneraciones" :key="`remuneracion-${re}`">
+            <div class="col-md-4 mb-1" v-for="(remuneracion, re) in remuneraciones" :key="`remuneracion-${re}-${param}`">
                 <form class="row align-items-center" id="update-remuneracion" v-on:submit="submit">
                     <div class="col-md-7">
                         <small class="text-danger">
@@ -96,7 +96,7 @@ export default {
                 this.cronograma = {};
             });
 
-            this.$emit('get-cronograma', cronograma);
+            this.$emit('get-cronograma', this.cronograma);
 
         },
         async submit(e) {

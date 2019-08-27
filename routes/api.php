@@ -35,6 +35,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/categoria", "CategoriaController@store");
     // actualizar una categoria determinada
     Route::put("/categoria/{id}", "CategoriaController@update");
+    Route::put("/categoria/{id}/concepto", "CategoriaController@updateConcepto");
 
     // registrar un nuevo concepto
     Route::post("/concepto", "ConceptoController@store");
@@ -82,7 +83,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('work/{id}/retencion', 'JobController@retencion');
     Route::post('work/{id}/retencion', 'JobController@retencionStore');
     Route::get('work/{id}/detalle', 'JobController@detalle');
-    Route::post('work/{id}/observacion', 'JobController@observacion');
+    Route::get('work/{id}/observacion', 'JobController@observacion');
+    Route::post('work/{id}/observacion', 'JobController@observacionUpdate');
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');

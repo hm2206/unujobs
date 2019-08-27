@@ -1,5 +1,16 @@
 <template>
     <div class="card-body">
+
+        <div class="row mb-4">
+
+            <div class="col-md-3" v-for="(type, ty) in tmp_types" :key="`type-descuentos-${ty}`">
+                <input type="checkbox" name="type_descuentos[]" id=""> {{ type.descripcion }}
+            </div>
+
+        </div>
+
+        <hr>
+
         <button class="btn btn-danger"
             v-if="!loader"
             v-on:click="generatePDF"
@@ -24,9 +35,13 @@ export default {
     components: {
         'historial': ReportHistorial
     },
+    mounted() {
+        this.getDescuentos();
+    },
     data() {
         return {
-            loader: false
+            loader: false,
+            tmp_types: []
         };
     },
     methods: {
@@ -47,6 +62,16 @@ export default {
 
             this.loader = false;
 
+        },
+        async getDescuentos() {
+            let api = unujobs("get", '/type_descuento');
+            this.loader = true;
+            await api.then(res => {
+                this.tmp_types = res.data;
+            }).catch(err => {
+                console.log("error: no se pudó obtener los tipos de descuentos");
+            });
+            this.loader = false;
         }
     }
 }

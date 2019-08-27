@@ -284,7 +284,7 @@ class JobController extends Controller
             $total = 0;
 
             foreach ($remuneraciones as $remuneracion) {
-                if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
+                if($cronograma->mes >= (int)date('m') && $cronograma->año == date('Y')) {
                     $tmp_remuneracion = $request->input($remuneracion->id);
                     if (is_numeric($tmp_remuneracion)) {
                         $remuneracion->monto = round($tmp_remuneracion, 2);
@@ -329,9 +329,17 @@ class JobController extends Controller
 
     public function informacion($id) 
     {
-        return Info::where('active', 1)->with(["cargo", "planilla", "categoria", "meta"])
+        $infos = Info::where('active', 1)->with(["cargo", "planilla", "categoria", "meta"])
             ->where("work_id", $id)
             ->get();
+        $work = Work::whereIn("id", $infos->pluck(['work_id']))->first();
+
+        return [
+            "infos" => $infos,
+            "work" =>  $work,
+            "afps" => Afp::all(),
+            "bancos" => Banco::all()
+        ];
     }
 
     /**
@@ -457,7 +465,7 @@ class JobController extends Controller
                 ->get();
 
             foreach ($descuentos as $descuento) {
-                if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
+                if($cronograma->mes >= (int)date('m') && $cronograma->año == date('Y')) {
                     $tmp_descuento = $request->input($descuento->id);
                     if (is_numeric($tmp_descuento) && $descuento->edit) {
                         $descuento->monto = round($tmp_descuento, 2);
@@ -815,14 +823,11 @@ class JobController extends Controller
         
         $cronograma = $cronograma->firstOrFail();
         $detalles = Detalle::where("cronograma_id", $cronograma->id)
+            ->orderBy("type_descuento_id", 'ASC')
             ->where("work_id", $work->id)
             ->get();
 
-        $observacion = DB::table("work_cronograma")
-            ->where("cronograma_id", $cronograma->id)
-            ->where("work_id", $work->id)
-            ->select("observacion")
-            ->first();
+        
 
         $observacion = isset($observacion->observacion) ? $observacion->observacion : '';
 
@@ -836,12 +841,46 @@ class JobController extends Controller
             "year" => $year,
             "mes" => $mes,
             "detalles" => $detalles,
-            "observacion" => $observacion
         ];
     } 
 
 
-    public function observacion(Request $request, $id)
+    public function observacion($id) 
+    {
+        $mes = request()->mes ? request()->mes : date('mes');
+        $year = request()->year ? request()->year : date('Y');
+        $adicional = request()->adicional ? 1 : 0;
+        $numero = request()->numero ? request()->numero : 1;
+        $seleccionar = [];
+
+        $cronograma = Cronograma::where("mes", $mes)
+            ->where("año", $year)
+            ->where("adicional", $adicional);
+            
+        if ($adicional) {
+            $seleccionar = $cronograma->get();
+            $cronograma = $cronograma->where("numero", $numero);
+        }
+
+        $cronograma = $cronograma->firstOrFail();
+
+        $observacion = DB::table("work_cronograma")
+            ->where("cronograma_id", $cronograma->id)
+            ->where("work_id", $id)
+            ->select("observacion")
+            ->first();
+
+        $obs = isset($observacion->observacion) ? $observacion->observacion : '';
+
+        return [
+            "observacion" => $obs,
+            "seleccionar" => $seleccionar,
+            "cronograma" => $cronograma
+        ];
+    }   
+
+
+    public function observacionUpdate(Request $request, $id)
     {
         try {
             $cronograma_id = $request->cronograma_id;
@@ -849,6 +888,7 @@ class JobController extends Controller
             $create = DB::table("work_cronograma")->where("cronograma_id", $cronograma_id)
                 ->where("work_id", $id)
                 ->update(["observacion" => $observacion]);
+
             return [
                 "status" => true,
                 "message" => "La observación se guardo correctamente!"

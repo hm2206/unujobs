@@ -38,6 +38,7 @@
         <span class="text-danger"> >> </span>
     @endif
     {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }} 
+    del {{ $cronograma->mes }} - {{ $cronograma->año }}
     <i class="fas fa-users fa-sm text-primary"></i>
     {{ $cronograma->works->count() }}
 </h3>
@@ -85,7 +86,7 @@
 
     <div class="card">
         <div class="card-header card-header-danger">
-            <h4 class="card-title">Lista de Trabajadores </h4>
+            <h4 class="card-title">Lista de Trabajadores</h4>
             <p class="card-category">Que pertenecen a esta planilla</p>
         </div>
         <div class="card-body">
@@ -145,6 +146,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $paginations = $jobs->pluck(['id']);
+                        @endphp
                         @forelse ($jobs as $job)
                             <tr>
                                 <th>{{ $job->id }}</th>
@@ -191,6 +195,8 @@
                                             mes="{{ $cronograma->mes }}"
                                             year="{{ $cronograma->año }}"
                                             categoria="{{ $categoria_id }}"
+                                            :paginate="{{ $paginations }}"
+                                            planilla_id="{{ $cronograma->planilla_id }}"
                                         >
                                             <i class="fas fa-wallet"></i>
                                         </btn-detalle>

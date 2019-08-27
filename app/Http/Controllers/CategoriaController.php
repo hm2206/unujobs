@@ -279,4 +279,36 @@ class CategoriaController extends Controller
 
     }
 
+
+
+    public function updateConcepto(Request $request, $id)
+    {
+        $this->validate(request(), [
+            "monto" => "required|min:1|numeric"
+        ]);
+
+        return $request->all();
+
+        try {
+            $concepto = DB::table("categoria_concepto")
+            ->where("id", $id)
+            ->update([
+                "monto" => $request->monto
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "El monto fué actualizado."
+            ];
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error :("
+            ];
+        }
+
+        
+    }
+
 }

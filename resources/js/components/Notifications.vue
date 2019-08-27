@@ -16,7 +16,7 @@
                     v-for="(notify, n) in notifications" :key="notify.id"
                     v-on:click="markAsRead(notify.id, n)"
                 >
-                    <a class="mr-3" :href="notify.data ? notify.data.url : '#'" >
+                    <a class="mr-3" :href="notify.data ? notify.data.url : '#'" target="__blank">
                         <div :class="`icon-circle ${notify.data ? notify.data.background : 'bg-primary'}`">
                             <i :class="`${notify.data ? notify.data.icono : 'fas fa-file-alt'} text-white`"></i>
                         </div>
@@ -53,14 +53,14 @@ export default {
             count: "",
         }
     },
-    mounted() {
+    async mounted() {
         let that = this;
-        that.countUnread();
-        this.countUnread();
+        await this.getNotify();
+        await that.countUnread();
         this.intervalo = setInterval(function() {
             that.getNotify();
             that.countUnread();
-        }, 3000);
+        }, 5000);
     },
     methods: {
         getNotify(){

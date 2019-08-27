@@ -141,7 +141,8 @@ export default {
             let api = unujobs("get", `/work/${this.param}/info`);
 
             await api.then(res => {
-                this.infos = res.data;
+                let { infos } = res.data;
+                this.infos = infos;
 
             }).catch(err => {
                 console.log("algo salió mal");

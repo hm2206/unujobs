@@ -9,7 +9,7 @@
             <template slot="header">
                 Situación laboral
                 <i class="fas fa-arrow-right text-danger"></i> 
-                <span v-text="nombre_completo"></span>
+                <span v-text="fullname"></span>
             </template>
             <template slot="content">
                 <div class="card-body p-relative scroll-y">
@@ -18,7 +18,7 @@
                         <div class="row align-items-center">
 
                             <div class="col-md-2">
-                                <select name="categoria_id" v-model="categoria_id" :disabled="loader" 
+                                <select name="categoria_id" v-model="categoria_id" :disabled="true" 
                                     class="form-control"
                                     v-on:change="cambioCategoria"
                                 >
@@ -92,13 +92,15 @@
 
                     <component :is="current" v-if="!loader" 
                         :categoria="categoria_id"
-                        :param="param"
+                        :param="job_current"
                         :mes="mes"
                         :year="year"
                         :adicional="adicional"
                         :numero="numero"
                         :send="send"
                         :info="info"
+                        :work="work"
+                        :objetos="objetos"
                         @get-cronograma="getCronograma"
                         @get-numeros="getNumeros"
                         @ready="setLoader"
@@ -114,6 +116,23 @@
                 </div>
 
                 <div :class="`card-footer ${send ? 'text-center' : 'text-right'}`" v-if="btn">
+
+                    <button class="btn btn-dark"
+                        v-on:click="prev"
+                        :disabled="block"
+                        v-if="!send"
+                    >
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+
+                    <button class="btn btn-dark"
+                        v-on:click="next"
+                        :disabled="block"
+                        v-if="!send"
+                    >
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+
                     <button class="btn btn-primary"
                         v-if="!send"
                         v-on:click="btnPress"
@@ -134,30 +153,45 @@
 import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
+import WorkGeneral from './WorkGeneral';
 import WorkRemuneracion from './WorkRemuneracion';
 import WorkDescuento from './WorkDescuento';
 import WorkObligacion from './WorkObligacion';
 import WorkDetalle from './WorkDetalle';
+import WorkAfectacion from './WorkAfectacion';
 import { setTimeout } from 'timers';
 
 export default {
     components: {
+        'work-general': WorkGeneral,
+        'work-afectacion': WorkAfectacion,
         'work-remuneracion': WorkRemuneracion,
         'work-descuento': WorkDescuento,
         'work-obligacion': WorkObligacion,
         'work-detalle': WorkDetalle
     },
-    props: ["theme", 'param', "nombre_completo", "mes", "year", "categoria"],
+    props: ["theme", 'param', "nombre_completo", "mes", "year", "categoria", "paginate", 'planilla_id'],
     data() {
         return {
             show: false,
             loader: false,
-            current: 'work-remuneracion',
+            current: 'work-general',
+            job_current: '',
+            fullname: '',
+            isCategoria: false,
+            work: {},
+            objetos: {
+                bancos: [],
+                afps: []
+            },
+            block: false,
             items: [
-                {id: 1, text: "Remuneraciones", active: true, component: 'work-remuneracion', btn: true},
-                {id: 2, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
-                {id: 3, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
-                {id: 4, text: "Más...", active: false,  component: 'work-detalle', btn: false}
+                {id: 1, text: "Datos Generales", active: true, component: 'work-general', btn: true},
+                {id: 2, text: "Afectación Presupuestal", active: false, component: 'work-afectacion', btn: true},
+                {id: 3, text: "Remuneraciones", active: false, component: 'work-remuneracion', btn: true},
+                {id: 4, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
+                {id: 5, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
+                {id: 6, text: "Más...", active: false,  component: 'work-detalle', btn: false}
             ],
             infos: [],
             info: {},
@@ -171,13 +205,18 @@ export default {
             btn: true
         }
     },
+    mounted() {
+        this.job_current = this.param;
+        this.fullname = this.nombre_completo;
+        this.isCategoria = this.categoria ? true : false;
+    },
     watch: {
         show() {
             if (this.categoria) {
                 this.categoria_id = this.categoria;
+                this.getCargos();
             }
-            this.getCargos();
-        }
+        },
     },
     methods: {
         async seleccionar(e, item) {
@@ -220,21 +259,27 @@ export default {
         async getCargos() {
 
             this.loader = true;
-            let api = unujobs("get", `/work/${this.param}/info`);
+            let api = unujobs("get", `/work/${this.job_current}/info`);
 
             await api.then(res => {
-                this.infos = res.data;
+                let { infos, work, bancos, afps } = res.data;
+                this.infos = infos;
+                this.work = work;
+                this.objetos.bancos = bancos;
+                this.objetos.afps = afps;
+                this.fullname = work.nombre_completo;
 
                 for(let info of this.infos) {
                     
-                    if (!this.categoria) {
-    
-                        this.categoria_id = info.categoria_id;
-                        this.info = info;
-                        break;
+                    if (!this.isCategoria) {
+                        
+                        if (this.planilla_id == info.planilla_id) {
+                            this.categoria_id = info.categoria_id;
+                            this.info = info;
+                            break;
+                        }
 
-                    }else if(this.categoria == info.categoria_id) {
-
+                    }else if(this.categoria_id == info.categoria_id) {
                         this.info = info;
                         break;
 
@@ -247,6 +292,7 @@ export default {
             });
 
             this.loader = false;
+            this.block = false;
 
         },
         btnPress(e) {
@@ -259,14 +305,44 @@ export default {
 
             this.cronograma = e;
             this.dias = e.dias;
-            this.adicional = e.adicional;
-            console.log(e);
+            this.block = false;
 
         },
         getNumeros(e) {
 
             this.numeros = e;
 
+        },
+        next(e) {
+            if (this.paginate.length > this.findCurrent + 1) {
+                this.isCategoria = false;   
+                this.block = true;
+                this.job_current = this.paginate[this.findCurrent + 1];
+                this.getCargos();
+            }else {
+                alert("No hay mas trabajadores");
+            }
+        },
+        prev(e) {
+            if (this.findCurrent >= 1) {
+                this.isCategoria = false;   
+                this.block = true;
+                this.job_current = this.paginate[this.findCurrent - 1];
+                this.getCargos();
+            }else {
+                alert("No hay mas trabajadores");
+            }
+        }
+    },
+    computed: {
+        findCurrent() {
+            let index = 0;
+            for (let pag of this.paginate) {
+                if (pag == this.job_current) {
+                    return index;
+                }
+                index++;
+            }
         }
     }
 }
