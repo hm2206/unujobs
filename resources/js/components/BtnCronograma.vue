@@ -73,7 +73,7 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ["redirect", "datos", "theme"],
+    props: ["redirect", "datos", "theme", "mes"],
     data() {
         return {
             show: false,
@@ -91,7 +91,7 @@ export default {
     },
     mounted() {
         this.getPlanillas();
-
+        this.form.mes = this.mes;
         if (this.datos) {
             this.edit = true;
             this.form = this.datos;

@@ -20,7 +20,7 @@ class Cargo extends Model
      *
      * @var array
      */
-    protected $fillable = ["descripcion", "planilla_id", "tag"];
+    protected $fillable = ["descripcion", "planilla_id", "tag", "ext_pptto"];
 
 
     /**

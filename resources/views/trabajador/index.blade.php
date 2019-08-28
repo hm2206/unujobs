@@ -59,14 +59,21 @@
                                 <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-info">Buscar <i class="fas fa-search"></i></button>
+                        <div class="col-md-1">
+                            <button class="btn btn-info">Buscar</button>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-2">
+                            <select name="estado" class="form-control">
+                                <option value="1" {!! $estado == 1 ? 'selected' : '' !!}>Activos</option>
+                                <option value="0" {!! $estado == 0 ? 'selected' : '' !!}>Inactivos</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-5">
                             <div class="row justify-content-around">
                                 <validacion 
-                                    btn_text="Importar Trabajadores"
+                                    btn_text="Imp. Trabajadores"
                                     method="post"
                                     token="{{ csrf_token() }}"
                                     url="{{ route('import.work') }}"
@@ -89,7 +96,7 @@
                                 </validacion>
 
                                 <validacion 
-                                    btn_text="Importar Configuración"
+                                    btn_text="Imp. Configuración"
                                     method="post"
                                     token="{{ csrf_token() }}"
                                     url="{{ route('import.work.config') }}"
@@ -145,21 +152,33 @@
                         <thead class="text-primary">
                             <tr>
                                 <th>Nombre Completo</th>
-                                <th>Número de documento</th>
+                                <th>N° Documento</th>
                                 <th>Profesión</th>
                                 <th>teléfono</th>
                                 <th>Número de cuenta</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($jobs as $job)
                                 <tr>
-                                    <th class="capitalize">{{ $job->nombre_completo }}</th>
+                                    <th class="capitalize" width="30%">{{ $job->nombre_completo }}</th>
                                     <th>{{ $job->numero_de_documento }}</th>
                                     <th class="uppercase">{{ $job->profesion }}</th>
                                     <th>{{ $job->phone }}</th>
                                     <th>{{ $job->numero_de_cuenta }}</th>
+                                    <th>
+                                        @if ($job->activo)
+                                            <button class="btn-sm btn btn-success">
+                                                Activo
+                                            </button>
+                                        @else
+                                            <button class="btn-sm btn btn-danger">
+                                                Inactivo
+                                            </button>
+                                        @endif
+                                    </th>
                                     <th>
                                         <div class="row justify-content-around">
                                             <btn-work-config theme="btn-warning btn-sm btn-circle"

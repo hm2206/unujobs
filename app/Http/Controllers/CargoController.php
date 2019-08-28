@@ -55,7 +55,8 @@ class CargoController extends Controller
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos",
             "planilla_id" => "required",
-            "tag" => "required"
+            "tag" => "required",
+            "ext_pptto" => "required|max:45"
         ]);
 
         try {
@@ -109,7 +110,8 @@ class CargoController extends Controller
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos,id,".$request->descripcion,
             "planilla_id" => "required",
-            "tag" => "required"
+            "tag" => "required",
+            "ext_pptto" => "required|max:45"
         ]);
 
         try {

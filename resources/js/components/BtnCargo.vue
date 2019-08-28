@@ -5,12 +5,12 @@
             <slot></slot>
         </button>
 
-        <modal :show="show" @close="show = false">
+        <modal :show="show" @close="show = false" height="80vh">
             <template slot="header">
                 Registro de cargo
             </template>
             <template slot="content">
-                <form class="card-body" id="register-cargo" v-on:submit="submit">
+                <form class="card-body p-relative scroll-y" id="register-cargo" v-on:submit="submit">
                     <div class="form-group">
                         <label for="">Planilla <small class="text-danger">*</small></label>
                         <select name="planilla_id" class="form-control" 
@@ -36,6 +36,12 @@
                         <label for="">P.A.P <small class="text-danger">*</small></label>
                         <input type="text" class="form-control" name="tag" v-model="form.tag">
                         <small class="text-danger">{{ errors.tag ? errors.tag[0] : '' }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Ext. Pptto <small class="text-danger">*</small></label>
+                        <input type="text" class="form-control" name="ext_pptto" v-model="form.ext_pptto">
+                        <small class="text-danger">{{ errors.ext_pptto ? errors.ext_pptto[0] : '' }}</small>
                     </div>
 
                 </form>
@@ -127,3 +133,19 @@ export default {
 }
 </script>
 
+<style scoped>
+
+    .p-relative {
+        position: relative;
+    }
+
+    .btn-fixed {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    .min-height {
+        height: 100%;
+    }
+</style>

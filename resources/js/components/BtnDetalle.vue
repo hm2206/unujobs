@@ -115,7 +115,7 @@
 
                 </div>
 
-                <div :class="`card-footer ${send ? 'text-center' : 'text-right'}`" v-if="btn">
+                <div :class="`card-footer ${send ? 'text-center' : 'text-right'}`">
 
                     <button class="btn btn-dark"
                         v-on:click="prev"
@@ -134,7 +134,7 @@
                     </button>
 
                     <button class="btn btn-primary"
-                        v-if="!send"
+                        v-if="!send  && btn"
                         v-on:click="btnPress"
                     >
                             <i class="fa fa-sync"></i> Actualizar
@@ -186,7 +186,7 @@ export default {
             },
             block: false,
             items: [
-                {id: 1, text: "Datos Generales", active: true, component: 'work-general', btn: true},
+                {id: 1, text: "Datos Generales", active: true, component: 'work-general', btn: false},
                 {id: 2, text: "Afectación Presupuestal", active: false, component: 'work-afectacion', btn: true},
                 {id: 3, text: "Remuneraciones", active: false, component: 'work-remuneracion', btn: true},
                 {id: 4, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
@@ -202,7 +202,7 @@ export default {
             adicional: 0,
             cronograma: {},
             send: false,
-            btn: true
+            btn: false
         }
     },
     mounted() {

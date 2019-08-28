@@ -32,7 +32,8 @@ class Work extends Model
         "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso", "cheque",
         "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta", "descanso",
         "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
-        "nombre_completo", "direccion", "total", "profesion", "email", "jefe", "afecto"
+        "nombre_completo", "direccion", "total", "profesion", "email", "jefe", "afecto",
+        "activo"
     ];
 
 

@@ -58,6 +58,33 @@
                 </div>
             </div>
 
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Actividad <span class="text-danger">*</span></label>
+                    <select v-model="meta_id" class="form-control" :disabled="true">
+                        <option value="">Seleccionar...</option>
+                        <option :value="meta.id" v-for="(meta, met) in metas" :key="`meta-${met}`"
+                            v-text="`${meta.actividadID}`"
+                        >
+                        </option>
+                    </select>
+                    <small class="text-danger" v-text="errors.meta_id ? errors.meta_id[0] : ''"></small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Ext Pptto <span class="text-danger">*</span></label>
+                    <select v-model="form_cargo" class="form-control" :disabled="true">
+                        <option value="">Seleccionar...</option>
+                        <option :value="cargo.id" v-for="(cargo, car) in cargos" :key="`cargo-${car}`"
+                            v-text="cargo.ext_pptto"
+                        >
+                        </option>
+                    </select>
+                    <small class="text-danger" v-text="errors.cargo_id ? errors.cargo_id[0] : ''"></small>
+                </div>
+            </div>
 
             <div class="col-md-4">
                 <div class="form-group">

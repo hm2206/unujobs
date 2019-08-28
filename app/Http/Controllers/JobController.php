@@ -46,15 +46,19 @@ class JobController extends Controller
      */
     public function index()
     {
-        $jobs = Work::orderBy('id', 'DESC');
+        $estado = request()->estado != "" ? request()->estado : 1;
         $like = request()->query_search;
 
-        if($like) {
+        $jobs = Work::orderBy('id', 'DESC');
+
+        if($like && $estado == 1) {
             $jobs = self::query($like, $jobs);
+        }else {
+            $jobs = $jobs->where("activo", $estado);
         }
 
         $jobs = $jobs->paginate(20);
-        return view('trabajador.index', \compact('jobs'));
+        return view('trabajador.index', \compact('jobs', 'estado'));
     }
 
     /**
@@ -174,6 +178,13 @@ class JobController extends Controller
      */
     public function query($like, \Illuminate\Database\Eloquent\Builder $jobs) 
     {
+        $metas = Meta::where("metaID", $like)->get();
+
+        if ($metas->count()) {
+            $infos = Info::whereIn("meta_id", $metas->pluck(['id']))->get();
+            return $jobs->whereIn("id", $infos->pluck(['work_id']));
+        }
+
         return $jobs->where("nombre_completo", "like", "%{$like}%")
             ->orWhere("numero_de_documento", "like", "%{$like}%");
     }

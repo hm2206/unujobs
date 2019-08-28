@@ -72,7 +72,7 @@
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
 
-                  <!-- <search></search>-->
+                  <search></search>
 
                   <!-- Nav Item - Alerts -->
                   <notification></notification>

@@ -146,9 +146,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $paginations = $jobs->pluck(['id']);
-                        @endphp
                         @forelse ($jobs as $job)
                             <tr>
                                 <th>{{ $job->id }}</th>
@@ -195,7 +192,7 @@
                                             mes="{{ $cronograma->mes }}"
                                             year="{{ $cronograma->año }}"
                                             categoria="{{ $categoria_id }}"
-                                            :paginate="{{ $paginations }}"
+                                            :paginate="{{ $indices }}"
                                             planilla_id="{{ $cronograma->planilla_id }}"
                                         >
                                             <i class="fas fa-wallet"></i>

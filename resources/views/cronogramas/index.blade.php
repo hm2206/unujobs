@@ -49,6 +49,7 @@
         <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
         <btn-cronograma 
             theme="btn-primary"
+            mes="{{ $mes }}"
             redirect="{{ route('cronograma.index', ['mes=' . $mes, 'year=' . $year])}}"
         >
             <i class="fas fa-plus"></i> Nuevo

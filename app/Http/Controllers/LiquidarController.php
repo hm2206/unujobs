@@ -46,7 +46,7 @@ class LiquidarController extends Controller
             
             $liquidar = Liquidar::create($payload);
             $work = Work::findOrFail($request->work_id);
-            $work->delete();
+            $work->update(["activo" => 0]);
 
             return [
                 "status" => true,

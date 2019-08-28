@@ -17,6 +17,7 @@ class CreateCargosTable extends Migration
             $table->bigIncrements('id');
             $table->string("tag");
             $table->string("descripcion")->unique();
+            $table->string("ext_pptto")->nullable();
             $table->integer("planilla_id");
             $table->integer("type_categoria_id")->nullable();
             $table->timestamps();

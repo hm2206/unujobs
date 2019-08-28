@@ -45,6 +45,7 @@ class CreateWorksTable extends Migration
             $table->integer("jefe")->default(0);
             $table->integer("afecto")->default(1);
             $table->integer("cheque")->default(0);
+            $table->integer("activo")->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

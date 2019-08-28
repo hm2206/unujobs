@@ -131,7 +131,7 @@ class CronogramaController extends Controller
         ]);
 
         if($cronograma->adicional == 0) {
-            $jobs = Work::whereHas('infos', function($i) use($cronograma) {
+            $jobs = Work::where("activo", 1)->whereHas('infos', function($i) use($cronograma) {
                     $i->where("planilla_id", $cronograma->planilla_id);
                 })->get();
 
@@ -227,21 +227,25 @@ class CronogramaController extends Controller
         $typeReports = TypeReport::all();
         $jobs = [];
         $like = request()->query_search;
+        $indices = [];
 
         if($cronograma->works->count() > 0) {
             $jobs = Work::orderBy('nombre_completo', 'ASC')->with(['infos' => function($i) {
                 $i->where("active", 1);
             }])->whereIn("id", $cronograma->works->pluck(['id']));
+
+            $indices = $jobs;
             
             if ($like) {
                 $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
                 $jobs = $jobs->where($indice, "like", "%{$like}%");
             }
             
+            $indices = $indices->get(["id"])->pluck(["id"]);
             $jobs = $jobs->paginate(20);
         }
 
-        return view('cronogramas.job', compact('jobs', 'cronograma', 'like', 'typeReports'));
+        return view('cronogramas.job', compact('jobs', 'cronograma', 'like', 'typeReports', 'indices'));
     }
 
 
