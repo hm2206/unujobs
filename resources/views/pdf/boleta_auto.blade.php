@@ -44,7 +44,7 @@
                                 <thead> 
                                     <tr>
                                         <td class="py-0 pl-3 pt-1">Boleta de Pago N°:</td>
-                                        <td class="py-0 pt-1">00001</td>
+                                        <td class="py-0 pt-1">{{ $count++ }}</td>
                                         <td class="py-0 pt-1">Fecha de Ingreso:</td>
                                         <td class="py-0 pt-1">{{ date($work->fecha_de_ingreso) }}</td>
                                         <td class="py-0 pt-1" width="10%">D.N.I.</td>
@@ -52,7 +52,7 @@
                                     </tr>
                                     <tr>
                                         <td class="py-0 pl-3">A.F.P:</td>
-                                        <td class="py-0" colspan="3">{{ $work->afp ? $work->afp->desripcion: null }}</td>
+                                        <td class="py-0" colspan="3">{{ $work->afp ? $work->afp->nombre: null }}</td>
                                         <td class="py-0" width="10%">N° CUSSP</td>
                                         <td class="py-0">{{ $work->numero_de_cussp }}</td>
                                     </tr>

@@ -56,12 +56,6 @@ class ProssingRemuneracion implements ShouldQueue
         foreach ($jobs as $job) {
             $this->configurarRemuneracion($cronograma, $job);
         }
-
-        $users = User::all();
-
-        foreach ($users as $user) {
-            $user->notify(new BasicNotification("#", "Remuneraciones agregadas a los trabajadores"));
-        }
     }
 
     /**

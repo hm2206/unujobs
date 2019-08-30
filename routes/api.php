@@ -70,7 +70,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/export/alta-baja/{year}/{mes}", "ExportController@altaBaja");
     Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
 
-    // Remuneracion de los trabajadores
+    // Remuneracion de los trabajadores y otros
+    Route::resource("work", 'WorkController');
     Route::get('work/{id}/remuneracion', 'JobController@remuneracion');
     Route::put('work/{id}/remuneracion', 'JobController@remuneracionUpdate');
     Route::get('work/{id}/descuento', 'JobController@descuento');
@@ -85,6 +86,9 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('work/{id}/detalle', 'JobController@detalle');
     Route::get('work/{id}/observacion', 'JobController@observacion');
     Route::post('work/{id}/observacion', 'JobController@observacionUpdate');
+
+    // informacion de los trabajadores
+    Route::resource("info", "InfoController")->except(["create", "edit"]);
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');

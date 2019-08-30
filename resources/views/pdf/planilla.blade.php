@@ -76,17 +76,18 @@
             @php
                 $numero = 1;
             @endphp
-
-            @foreach ($meta->works as $work)
                 
-                @foreach ($work->infos as $info)
+                @foreach ($meta->infos as $info)
+                    @php
+                        $work = $info->work;
+                    @endphp
                     <table class="table-sm w-100 uppercase">
                         <thead class="bbt-1 bbb-1">
                             <tr>
-                                <td class="py-0">N° {{ $numero++ }} CODIGO {{ $work->id }} </td>
-                                <td class="py-0">PLAZA {{ $work->plaza }}</td>
+                                <td class="py-0">N° {{ $numero++ }} CODIGO {{ $info->work_id }} </td>
+                                <td class="py-0">PLAZA {{ $info->plaza }}</td>
                                 <td class="py-0">DEDICACION</td>
-                                <td class="py-0">AFP {{ $work->afp ? $work->afp->descripcion : null }}</td>
+                                <td class="py-0">AFP {{ $work->afp ? $work->afp->nombre : "" }}</td>
                                 <td class="py-0">N° CUSPP: {{ $work->numero_de_cuspp }}</td>
                                 <td class="py-0">N° ESSALUD: {{ $work->numero_de_essalud }}</td>
                                 <td class="py-0">OBS: {{ $info->observacion }}</td>
@@ -96,7 +97,7 @@
                                     APELLIDOS Y NOMBRES: {{ $work->profesion }} {{ $work->nombre_completo }}
                                 </td>
                                 <td class="py-0" colspan="2">
-                                    COND.LABORAL: {{ $info->cargo ? $info->cargo->descripcion : null }} - {{ $info->cargo ? $info->cargo->tag : null }}
+                                    COND.LABORAL: {{ $info->cargo ? $info->cargo->descripcion : "" }} - {{ $info->pap == 1 ? "Contratado" : "" }} {{ $info->pap == 0 ? "Nombrado" : "" }}
                                 </td>
                                 <td class="py-0">CARGO: {{ $info->perfil }}</td>
                                 <td class="py-0" colspan="2">DNI/LE: {{ $work->numero_de_documento }}</td>
@@ -199,14 +200,6 @@
                                             <td class="py-0">BASE IMPONIBLE</td>
                                             <td class="py-0">{{ $info->base }}</td>
                                         </tr>
-                                        @foreach ($info->aportaciones as $aport)
-                                            <tr>
-                                                <td class="py-0">{{ 
-                                                    $aport->typeDescuento ? $aport->typeDescuento->descripcion : '' }}
-                                                </td>
-                                                <td class="py-0">{{ $aport->monto }}</td>
-                                            </tr>
-                                        @endforeach
                                         <tr>
                                             <td class="py-0">NETO A PAGAR</td>
                                             <td class="py-0">{{ $info->neto }}</td>
@@ -214,7 +207,7 @@
                                         <tr>
                                             <td class="py-0"></td>
                                             <td class="py-0"></td>
-                                        </tr>¿
+                                        </tr>
                                         <tr>
                                             <td colspan="2" class="py-0">
                                                 <div class="ml-3 pt-5">--------------------------------------</div>
@@ -234,8 +227,6 @@
                         </tbody>
                     </table>
                 @endforeach
-
-            @endforeach
             </div>
 
         </div>

@@ -57,8 +57,13 @@ class ReportCuenta implements ShouldQueue
         
         foreach ($bancos as $banco) {
 
-            $works = $cronograma->works->whereIn("banco_id", $banco->id)
-                ->where("cheque", 0);
+            $workIn = $cronograma->works->whereIn("banco_id", $banco->id)
+                ->where("cheque", 0)
+                ->pluck(["id"]);
+
+            $works = Work::orderBy("nombre_completo", 'ASC')
+                ->whereIn("id", $workIn)
+                ->get();
 
             $banco->count = $works->count();
             $banco->works = $works;

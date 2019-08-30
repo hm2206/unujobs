@@ -81,7 +81,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            GeneratePlanillaMetaPDF::dispatch($cronograma, $type)->onQueue("high");
+            GeneratePlanillaMetaPDF::dispatch($cronograma, $type)->onQueue("medium");
 
             return [
                 "status" => true,
@@ -234,7 +234,7 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportCronograma::dispatch($cronograma, $type)->onQueue('high');
+            ReportCronograma::dispatch($cronograma, $type)->onQueue('medium');
 
             return [
                 "status" => true,

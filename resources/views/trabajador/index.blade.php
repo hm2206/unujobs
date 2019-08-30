@@ -12,8 +12,89 @@
 
 <div class="row">
     <div class="col-md-12">
-        <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-        <a href="{{ route('job.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+        
+        <div class="row">
+            <div class="col-md-10">
+                <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+                <a href="{{ route('job.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+                
+                <validacion 
+                    btn_text="Imp. Trabajadores"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.work') }}"
+                >
+        
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/work_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                                
+                    <div class="form-group">
+                        <label for="import" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+        
+                </validacion>
+        
+                <validacion 
+                    btn_text="Imp. Configuración"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.work.config') }}"
+                >
+        
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/work_config_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                                
+                    <div class="form-group">
+                        <label for="import_config" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import_config" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+        
+                </validacion>
+        
+                <validacion 
+                    btn_text="Exportar"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('export.work') }}"
+                >
+        
+                            
+                    <div class="form-group">
+                        <small>Limite de trabajadores: <span class="text-danger">{{ $jobs->total() }}</span></small>
+                    </div>
+        
+                    <div class="form-group">
+                        <input type="number" name="limite" class="form-control" value="{{ $jobs->total() }}" max="{{ $jobs->total() }}">
+                    </div>
+                                
+                    <div class="form-group">
+                        <input type="checkbox" name="order" title="Ordenar Descendentemente"> 
+                        <i class="fas fa-sort-alpha-up"></i> Ordenar Descendentemente
+                    </div>
+        
+                    <hr>
+        
+                </validacion>
+            </div>
+
+            <div class="col-md-2 text-right">
+                <h1>{{ $infos }}</h1>
+            </div>
+        </div>
+
     </div>
     
     @if (session('success'))
@@ -43,7 +124,16 @@
     
     <div class="col-md-12 mt-3">
     
-        {!! $jobs->appends(['query_search' => request('query_search')])->links() !!}
+        {!! 
+            $jobs->appends([
+                'query_search' => request('query_search'),
+                "planilla_id" => $planilla_id,
+                "cargo_id" => $cargo_id,
+                "categoria_id" => $categoria_id,
+                "meta_id" => $meta_id,
+                "estado" => $estado
+            ])->links() 
+        !!}
     
         <div class="card">
             <div class="card-header card-header-danger">
@@ -59,90 +149,20 @@
                                 <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <select-filtro
+                                planilla_id="{{ $planilla_id }}"
+                                cargo_id="{{ $cargo_id }}"
+                                categoria_id="{{ $categoria_id }}"
+                                meta_id="{{ $meta_id }}"
+                                estado_id="{{ $estado }}"
+                            >
+                            </select-filtro>
+                        </div>
+
                         <div class="col-md-1">
                             <button class="btn btn-info">Buscar</button>
-                        </div>
-
-                        <div class="col-md-2">
-                            <select name="estado" class="form-control">
-                                <option value="1" {!! $estado == 1 ? 'selected' : '' !!}>Activos</option>
-                                <option value="0" {!! $estado == 0 ? 'selected' : '' !!}>Inactivos</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-5">
-                            <div class="row justify-content-around">
-                                <validacion 
-                                    btn_text="Imp. Trabajadores"
-                                    method="post"
-                                    token="{{ csrf_token() }}"
-                                    url="{{ route('import.work') }}"
-                                >
-    
-                                    <div class="form-group">
-                                        <a href="{{ url('/formatos/work_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                                            <i class="fas fa-file-excel"></i> Formato de importación
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="import" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
-                                            <input type="file" name="import" id="import" hidden>
-                                        </label>
-                                        <small class="text-danger">{{ $errors->first('import') }}</small>
-                                    </div>
-    
-                                </validacion>
-
-                                <validacion 
-                                    btn_text="Imp. Configuración"
-                                    method="post"
-                                    token="{{ csrf_token() }}"
-                                    url="{{ route('import.work.config') }}"
-                                >
-    
-                                    <div class="form-group">
-                                        <a href="{{ url('/formatos/work_config_import.xlsx') }}" class="btn btn-sm btn-outline-success">
-                                            <i class="fas fa-file-excel"></i> Formato de importación
-                                        </a>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="import_config" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-upload"></i> Subir Archivo de Excel
-                                            <input type="file" name="import" id="import_config" hidden>
-                                        </label>
-                                        <small class="text-danger">{{ $errors->first('import') }}</small>
-                                    </div>
-    
-                                </validacion>
-    
-                                <validacion 
-                                    btn_text="Exportar"
-                                    method="post"
-                                    token="{{ csrf_token() }}"
-                                    url="{{ route('export.work') }}"
-                                >
-    
-                                
-                                    <div class="form-group">
-                                        <small>Limite de trabajadores: <span class="text-danger">{{ $jobs->total() }}</span></small>
-                                    </div>
-    
-                                    <div class="form-group">
-                                        <input type="number" name="limite" class="form-control" value="{{ $jobs->total() }}" max="{{ $jobs->total() }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <input type="checkbox" name="order" title="Ordenar Descendentemente"> 
-                                        <i class="fas fa-sort-alpha-up"></i> Ordenar Descendentemente
-                                    </div>
-    
-                                    <hr>
-    
-                                </validacion>
-                            </div>
                         </div>
                     </div>
                 </form>

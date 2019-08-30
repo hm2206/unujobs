@@ -236,14 +236,14 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Afectación</label> <br>
-                        <input type="checkbox" name="afecto" {!! $job->afecto ? 'checked' : '' !!}>
+                        <input type="checkbox" name="afecto" {!! old('afectacion') ? 'checked' : '' !!}>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Cheque</label> <br>
-                        <input type="checkbox" name="cheque" {!! $job->cheque ? 'checked' : '' !!}>
+                        <input type="checkbox" name="cheque" {!! old('cheque') ? 'checked' : '' !!}>
                     </div>
                 </div>
 

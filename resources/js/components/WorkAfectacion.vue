@@ -1,11 +1,11 @@
 <template>
     <div class="card-body">
-        <div class="row" id="form-cafig-work">
+        <form class="row" :id="`form-config-${param}`">
 
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Planilla <span class="text-danger">*</span></label>
-                    <select name="planilla_id" v-model="form_planilla" :disabled="true" class="form-control">
+                    <select name="planilla_id" v-model="form_planilla" :disabled="loading" class="form-control">
                         <option value="">Seleccionar...</option>
                         <option :value="planilla.id" v-for="(planilla, pla) in planillas" :key="`planilla-${pla}`"
                             v-text="planilla.descripcion"
@@ -19,7 +19,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Cargo <span class="text-danger">*</span></label>
-                    <select name="cargo_id" v-model="form_cargo" class="form-control" :disabled="true">
+                    <select name="cargo_id" v-model="form_cargo" class="form-control" :disabled="loading">
                         <option value="">Seleccionar...</option>
                         <option :value="cargo.id" v-for="(cargo, car) in cargos" :key="`cargo-${car}`"
                             v-text="cargo.descripcion"
@@ -33,7 +33,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Categoria <span class="text-danger">*</span></label>
-                    <select name="categoria_id" v-model="form_categoria" class="form-control" :disabled="true">
+                    <select name="categoria_id" v-model="form_categoria" class="form-control" :disabled="loading">
                         <option value="">Seleccionar...</option>
                         <option :value="categoria.id" v-for="(categoria, cat) in categorias" :key="`categoria-${cat}`"
                             v-text="categoria.nombre"
@@ -47,7 +47,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Meta <span class="text-danger">*</span></label>
-                    <select name="meta_id" v-model="meta_id" class="form-control" :disabled="true">
+                    <select name="meta_id" v-model="meta_id" class="form-control" :disabled="loading">
                         <option value="">Seleccionar...</option>
                         <option :value="meta.id" v-for="(meta, met) in metas" :key="`meta-${met}`"
                             v-text="`${meta.metaID}: ${meta.meta}`"
@@ -88,28 +88,39 @@
 
             <div class="col-md-4">
                 <div class="form-group">
+                    <label for="">Condición P.A.P <span class="text-danger">*</span></label>
+                    <select name="pap" v-model="info.pap" class="form-control" :disabled="loading">
+                        <option value="">---------</option>
+                        <option value="0">Nombrado</option>
+                        <option value="1">Contratado</option>
+                    </select>
+                    <small class="text-danger" v-text="errors.pap ? errors.pap[0] : ''"></small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
                     <label for="">Perfil <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" v-model="info.perfil" name="perfil" :disabled="true">
+                    <input type="text" class="form-control" v-model="info.perfil" name="perfil" :disabled="loading">
                     <small class="text-danger" v-text="errors.perfil ? errors.perfil[0] : ''"></small>
                 </div>
             </div>
 
-
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="">Plaza</label>
-                    <input type="text" v-model="info.plaza" class="form-control" name="plaza" :disabled="true">
+                    <input type="text" v-model="info.plaza" class="form-control" name="plaza" :disabled="loading">
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label for="">Escuela </label>
-                    <input type="text" v-model="info.escuela" class="form-control" name="escuela" :disabled="true">
+                    <input type="text" v-model="info.escuela" class="form-control" name="escuela" :disabled="loading">
                 </div>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="form-group">
                     <label for="">Observación</label>
                     <textarea name="observacion" v-model="observacion" :disabled="loading" class="form-control"></textarea>
@@ -128,8 +139,15 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="">Funte de Ingreso </label>
+                        <label for="">Cod Fuente </label>
                         <input type="text" :disabled="loading" v-model="fuente_id" class="form-control" name="fuente_id">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="">Nom Fuente </label>
+                        <input type="text" :disabled="loading" v-model="fuente" class="form-control" name="fuente">
                     </div>
                 </div>
 
@@ -141,7 +159,7 @@
                 </div>
             </div>
 
-        </div>
+        </form>
     </div>
 </template>
 
@@ -281,18 +299,25 @@ export default {
             });
         },
         async setObservacion() {
-            const form = new FormData();
+            const form = new FormData(document.getElementById(`form-config-${this.param}`));
             this.loading = true;
+            this.errors = {};
             form.append("cronograma_id", this.cronograma.id);
-            form.append("observacion", this.observacion);
+            form.append("_method", "PUT");
             
-            let api = unujobs("post", `/work/${this.param}/observacion`, form);
+            let api = unujobs("post", `/info/${this.info.id}`, form);
             await api.then(res => {
                 let { status, message } = res.data;
                 let icon = status ? 'success' : 'error';
                 notify({icon, text: message});
             }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal :('});
+                let { data } = err.response;
+
+                if (Object.keys(data.errors).length > 0) {
+                    this.errors = data.errors;
+                }else {
+                    notify({icon: 'error', text: 'Algo salió mal :('});
+                }
             });
 
             this.loading = false;

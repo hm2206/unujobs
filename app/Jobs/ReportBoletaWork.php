@@ -51,6 +51,7 @@ class ReportBoletaWork implements ShouldQueue
         $work = $this->work;
         $cronogramas = Cronograma::whereIn("id", $this->whereIn)->get();
         $infos = $work->infos->whereIn("planilla_id", $cronogramas->pluck("planilla_id"));
+        $count = 1;
 
         foreach ($infos as $info) {
             
@@ -92,7 +93,7 @@ class ReportBoletaWork implements ShouldQueue
             }
         }
 
-        $pdf = PDF::loadView("pdf.boleta", compact('work', 'infos'));
+        $pdf = PDF::loadView("pdf.boleta", compact('work', 'infos', 'count'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
         $work_name = strtoupper($work->numero_de_documento);
         $nombre = "boletas_" . date('Y-m-d') . "_{$work_name}.pdf";

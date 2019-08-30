@@ -24,9 +24,19 @@ class Info extends Model
      */
     protected $fillable = [
         "categoria_id", "cargo_id", "work_id", "active", "observacion", 
-        'meta_id', 'total', 'perfil', 'planilla_id', 'fuente_id', 'plaza',
-        'escuela', 'observacion', 'ruc'
+        'meta_id', 'plaza', 'perfil', 'planilla_id', 'fuente_id', 'fuente', 
+        'escuela', 'observacion', 'ruc', 'pap'
     ];
+
+    /**
+     * Relacion de uno a mucho con la tabla works
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function work()
+    {
+        return $this->belongsTo(Work::class);
+    }
 
 
     /**

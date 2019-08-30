@@ -48,9 +48,17 @@ class ReportCronograma implements ShouldQueue
     public function handle()
     {
         $cronograma = $this->cronograma;
-        $infos = Info::where("planilla_id", $cronograma->planilla_id)->get();
+        $workIn = $cronograma->works->pluck(["id"]);
+        $infos = Info::with("work")->where("planilla_id", $cronograma->planilla_id)
+            ->whereIn("work_id", $workIn)
+            ->get();
+
         $metas = $metas = Meta::whereIn("id", $infos->pluck(['meta_id']))->get();
         $pagina = 0;
+
+        // configuracion
+        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
+        $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get();
 
         //traemos trabajadores que pertenescan a la meta actual
         foreach($metas as $meta) {
@@ -59,70 +67,53 @@ class ReportCronograma implements ShouldQueue
             $meta->year = $cronograma->año;
 
             //obtener a los trabajadores que esten en esta meta
-            $works = Work::whereHas('infos', function($i) use($meta) {
-                $i->where('infos.meta_id', $meta->id);
-            })->with(['infos' => function($i) use($meta) {
-                $i->where('infos.meta_id', $meta->id);
-            }])->get();
+            $tmp_infos = $infos->where("meta_id", $meta->id);
 
-            foreach($works as $work) {
+            foreach ($tmp_infos as $info) {
 
-                $infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
-
-                foreach ($infos as $info) {
-
-                    //obtenemos las remuneraciones actuales del trabajador
-                    $tmp_remuneraciones = Remuneracion::where("work_id", $work->id)
+                // obtenemos las remuneraciones actuales del trabajador
+                $tmp_remuneraciones = $remuneraciones->where("work_id", $info->work_id)
                             ->where("categoria_id", $info->categoria_id)
-                            ->where("cargo_id", $info->cargo_id)
-                            ->where("planilla_id", $info->planilla_id)
-                            ->where("cronograma_id", $cronograma->id)
-                            ->get();
+                            ->where("cargo_id", $info->cargo_id);
 
-                    $info->remuneraciones = $tmp_remuneraciones;
-                    $total = $tmp_remuneraciones->sum('monto');
+                $info->remuneraciones = $tmp_remuneraciones;
+                $total = $tmp_remuneraciones->sum('monto');
 
-                    $tmp_base = $info->remuneraciones->where("base", 0)->sum('monto');
-                    $tmp_base = $tmp_base == 0 ? $total : $tmp_base;
+                $tmp_base = $tmp_remuneraciones->where("base", 0)->sum('monto');
+                $tmp_base = $tmp_base == 0 ? $total : $tmp_base;
 
 
-                    // agregamos datos a las remuneraciones
-                    $info->remuneraciones->push([
-                        "nombre" => "TOTAL",
-                        "monto" => $total
-                    ]);
+                // agregamos datos a las remuneraciones
+                $info->remuneraciones->push([
+                    "nombre" => "TOTAL",
+                    "monto" => $total
+                ]);
 
-                    //obtenemos los descuentos actuales del trabajador
-                    $tmp_descuentos= Descuento::where("work_id", $work->id)
-                            ->where('cronograma_id', $cronograma->id)
-                            ->where('cargo_id', $info->cargo_id)
-                            ->where('categoria_id', $info->categoria_id)
-                            ->where('planilla_id', $info->planilla_id)
-                            ->get();
+                //obtenemos los descuentos actuales del trabajador
+                $tmp_descuentos= $descuentos->where("work_id", $info->work_id)
+                    ->where('cargo_id', $info->cargo_id)
+                    ->where('categoria_id', $info->categoria_id);
 
-                    $info->descuentos = $tmp_descuentos->where("base", 0);
-                    $total_descto = $info->descuentos->where("base", 0)->sum('monto');
+                $info->descuentos = $tmp_descuentos->where("base", 0);
+                $total_descto = $info->descuentos->where("base", 0)->sum('monto');
 
-                    //calcular base imponible
-                    $info->base = $tmp_base;
+                //calcular base imponible
+                $info->base = $tmp_base;
 
-                    //calcular total de descuentos
-                    $info->descuentos->push([
-                        "nombre" => "TOTAL",
-                        "monto" => $total_descto
-                    ]);
+                //calcular total de descuentos
+                $info->descuentos->push([
+                    "nombre" => "TOTAL",
+                    "monto" => $total_descto
+                ]);
 
-                    //calcular aportes
-                    $info->aportaciones = $info->descuentos->where("base", 1);
 
-                    //calcular total neto
-                    $info->neto = $total - $total_descto;
-
-                }
+                //calcular total neto
+                $info->neto = $total - $total_descto;
 
             }
 
-            $meta->works = $works;
+            
+            $meta->infos = $tmp_infos;
 
         }
 

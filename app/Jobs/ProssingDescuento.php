@@ -60,8 +60,13 @@ class ProssingDescuento implements ShouldQueue
         $cronograma->update(["pendiente" => 0]);
         $users = User::all();
 
+        $link = "/planilla/cronograma/{$cronograma->slug()}/job";
+        $titulo = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
+        $message = $titulo . " del {$cronograma->mes} - {$cronograma->año}, ya está lista";
+
         foreach ($users as $user) {
-            $user->notify(new BasicNotification("#", "Descuentos agregados a los trabajadores", "fas fa-file-alt", "bg-danger"));
+            $user->notify(new BasicNotification($link, $message,
+                 "fas fa-file-alt", "bg-danger"));
         }
 
     }

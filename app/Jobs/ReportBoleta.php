@@ -52,8 +52,10 @@ class ReportBoleta implements ShouldQueue
     public function handle()
     {
 
-        $works = $this->cronograma->works;
+        $workIn = $this->cronograma->works->pluck(['id']);
+        $works = Work::whereIn("id", $workIn)->orderBy("nombre_completo", "ASC")->get();
         $cronograma = $this->cronograma;
+        $count = 1;
 
         foreach ($works as $work) {
             
@@ -78,7 +80,7 @@ class ReportBoleta implements ShouldQueue
                     ->where("cronograma_id", $this->cronograma->id)
                     ->get();
 
-                $total = $remuneraciones->sum("monto");
+                $info->total = $remuneraciones->sum("monto");
                 
                 $info->remuneraciones = $remuneraciones;
                 $info->descuentos = $descuentos->where("base", 0)->chunk(2)->toArray();
@@ -93,7 +95,7 @@ class ReportBoleta implements ShouldQueue
                 $info->aportaciones = $descuentos->where("base", 1); 
 
                 //total neto
-                $info->neto = $total - $info->total_descuento;
+                $info->neto = $info->total - $info->total_descuento;
                 $info->total_aportes = $info->aportaciones->sum('monto');
 
             }
@@ -120,7 +122,7 @@ class ReportBoleta implements ShouldQueue
         $name = "boletas_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->adicional}_{$fecha}.pdf";
         
         //genera el pdf;
-        $pdf = PDF::loadView("pdf.boleta_auto", compact('works', 'cronograma'));
+        $pdf = PDF::loadView("pdf.boleta_auto", compact('works', 'cronograma', 'count'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
         $pdf->save(storage_path("app/public/pdf/{$name}"));
 

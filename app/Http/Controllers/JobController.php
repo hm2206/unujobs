@@ -27,6 +27,7 @@ use App\Models\Detalle;
 use App\Jobs\ReportBoleta;
 use App\Jobs\ReportBoletaWork;
 use App\Jobs\ReportCronograma;
+use App\Models\Planilla;
 use \PDF;
 use \DB;
 use App\Collections\WorkCollection;
@@ -46,19 +47,61 @@ class JobController extends Controller
      */
     public function index()
     {
+        // request para los filtros
         $estado = request()->estado != "" ? request()->estado : 1;
         $like = request()->query_search;
+        $planilla_id = request()->input("planilla_id", "");
+        $cargo_id = request()->input("cargo_id", "");
+        $categoria_id = request()->input("categoria_id", "");
+        $meta_id = request()->input("meta_id", "");
 
-        $jobs = Work::orderBy('id', 'DESC');
+        // filtros
+        $config = [
+            "planilla" => $planilla_id,
+            "cargo" => $cargo_id,
+            "categoria" => $categoria_id,
+            "meta" => $meta_id,
+            "total" => 0
+        ];
 
-        if($like && $estado == 1) {
-            $jobs = self::query($like, $jobs);
-        }else {
-            $jobs = $jobs->where("activo", $estado);
+        // ejecutar filtro
+        $jobs = Work::whereHas('infos', function($in) use($config) {
+
+            if ($config['planilla']) {
+                $in->where("planilla_id", $config['planilla']);
+            }
+
+            if ($config['cargo']) {
+                $in->where("cargo_id", $config['cargo']);
+            }
+
+            if ($config['categoria']) {
+                $in->where("categoria_id", $config['categoria']);
+            }
+
+            if ($config['meta']) {
+                $in->where("meta_id", $config['meta']);
+            }
+
+        })->orderBy('nombre_completo', 'ASC')
+            ->where('activo', $estado);
+
+        // filtro por nombre_completo
+        if ($like) {
+            self::query($like, $jobs);
         }
 
+        // obteneos los id de las personas
+        $index = $jobs->get(["id"]);
+        // traemos el total de los trabajadores reales
+        $infos = info::whereIn("work_id", $index->pluck(['id']))->count();
+
         $jobs = $jobs->paginate(20);
-        return view('trabajador.index', \compact('jobs', 'estado'));
+
+        return view('trabajador.index', \compact(
+            'jobs', 'estado', 'planilla_id', 'cargo_id', 'categoria_id', 'meta_id',
+            'infos'
+        ));
     }
 
     /**
@@ -104,7 +147,7 @@ class JobController extends Controller
         $job->afecto = $request->afecto ? 1 : 0;
         $job->cheque = $request->cheque ? 1 : 0;
         $job->save();
-        return redirect()->route('job.index')->with(["success" => "El registro se guardo correctamente"]);
+        return redirect()->route('job.show', $job->slug())->with(["success" => "El registro se guardo correctamente"]);
     }
 
 
@@ -178,15 +221,7 @@ class JobController extends Controller
      */
     public function query($like, \Illuminate\Database\Eloquent\Builder $jobs) 
     {
-        $metas = Meta::where("metaID", $like)->get();
-
-        if ($metas->count()) {
-            $infos = Info::whereIn("meta_id", $metas->pluck(['id']))->get();
-            return $jobs->whereIn("id", $infos->pluck(['work_id']));
-        }
-
-        return $jobs->where("nombre_completo", "like", "%{$like}%")
-            ->orWhere("numero_de_documento", "like", "%{$like}%");
+        return $jobs->where("nombre_completo", "like", "%{$like}%");
     }
 
 
@@ -228,6 +263,13 @@ class JobController extends Controller
         }
 
         $cronograma = $cronograma->firstOrFail();
+
+        // preguntamos si estamos agregados a la planilla
+        $isWork = $cronograma->works->find($id);
+
+        if (!$isWork) {
+            abort(404);
+        }
 
         $remuneraciones = Remuneracion::with('typeRemuneracion')
             ->where("work_id", $id)
@@ -309,6 +351,14 @@ class JobController extends Controller
                         "total" => 0
                     ];
                 }
+            }
+
+
+            // preguntamos si estamos agregados a la planilla
+            $isWork = $cronograma->works->find($id);
+
+            if (!$isWork) {
+                abort(404);
             }
 
 

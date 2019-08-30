@@ -31,17 +31,21 @@
 
 </div>
 
-<h3 class="text-center uppercase">
-    @if ($cronograma->adicional)
-        Adicional 
-        <span class="btn btn-sm btn-primary">{{ $cronograma->numero }}</span>
-        <span class="text-danger"> >> </span>
-    @endif
-    {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }} 
-    del {{ $cronograma->mes }} - {{ $cronograma->año }}
-    <i class="fas fa-users fa-sm text-primary"></i>
-    {{ $cronograma->works->count() }}
-</h3>
+<div class="row">
+    <h3 class="ml-2 col-md-10 uppercase">
+        @if ($cronograma->adicional)
+            Adicional 
+            <span class="btn btn-sm btn-primary">{{ $cronograma->numero }}</span>
+            <span class="text-danger"> >> </span>
+        @endif
+        {{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }} 
+        del {{ $cronograma->mes }} - {{ $cronograma->año }}
+    </h3>
+    <h2 class="text-right">
+        <i class="fas fa-users fa-sm text-primary"></i>
+        {{ $cronograma->works->count() }}
+    </h2>
+</div>
 
 @if (session('success'))
     <div class="col-md-12 mt-3 ">
@@ -173,9 +177,6 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
 
                                         <btn-boleta theme="btn-danger btn-sm"
                                             param="{{ $job->id }}"
@@ -194,6 +195,8 @@
                                             categoria="{{ $categoria_id }}"
                                             :paginate="{{ $indices }}"
                                             planilla_id="{{ $cronograma->planilla_id }}"
+                                            tmp_adicional="{{ $cronograma->adicional }}"
+                                            tmp_numero="{{ $cronograma->numero }}"
                                         >
                                             <i class="fas fa-wallet"></i>
                                         </btn-detalle>

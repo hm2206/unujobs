@@ -77,13 +77,6 @@
                         </div>
                     </div>
 
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="">Adicional</label>
-                            <input type="checkbox" name="adicional" {!! $adicional ? 'checked' : null !!}>
-                        </div>
-                    </div>
-
                     <div class="col-md-3">
                         <div class="form-group">
                             <button class="btn btn-info">

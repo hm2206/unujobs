@@ -157,10 +157,11 @@ Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware
 Route::post("user/recovery", "UserController@recovery");
 
 
-Route::get('test', function() {
+Route::get('test/{id}', function($id) {
 
-    $pdf = \PDF::loadView('pdf.resumen');
-    $pdf->setPaper('a4', 'landscape');
-    return $pdf->stream();
-
+    // $pdf = \PDF::loadView('pdf.resumen');
+    // $pdf->setPaper('a4', 'landscape');
+    // return $pdf->stream();
+    $user = App\Models\Work::findOrFail($id);
+    return $user->slug();
 });

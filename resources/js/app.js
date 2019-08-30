@@ -60,6 +60,7 @@ Vue.component('btn-reporte', require('./components/BtnReporte.vue').default);
 Vue.component('import', require('./components/Import.vue').default);
 Vue.component('search', require('./components/Search.vue').default);
 Vue.component('edit-concepto', require('./components/EditConcepto.vue').default);
+Vue.component('select-filtro', require('./components/SelectFiltro.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

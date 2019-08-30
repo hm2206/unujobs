@@ -9,7 +9,7 @@
             <template slot="header">
                 Situación laboral
                 <i class="fas fa-arrow-right text-danger"></i> 
-                <span v-text="fullname"></span>
+                <span v-text="fullname" class="uppercase"></span>
             </template>
             <template slot="content">
                 <div class="card-body p-relative scroll-y">
@@ -52,9 +52,9 @@
                             <div class="col-md-2">
                                 Adicional
                                 <input type="checkbox" 
-                                    :disabled="loader" 
                                     v-model="adicional"
                                     v-on:change="cambio"
+                                    :disabled="true"
                                 >
                             </div>
 
@@ -63,7 +63,7 @@
                             </div>
                             
                             <div class="col-md-2" v-if="numeros.length > 0">
-                                <select name="numero" v-model="numero" class="form-control"
+                                <select name="numero" :disabled="true" v-model="numero" class="form-control"
                                     v-on:change="cambio"
                                 >
                                     <option v-for="(numero, nu) in numeros" :key="`numero-nu${nu}`" 
@@ -170,7 +170,7 @@ export default {
         'work-obligacion': WorkObligacion,
         'work-detalle': WorkDetalle
     },
-    props: ["theme", 'param', "nombre_completo", "mes", "year", "categoria", "paginate", 'planilla_id'],
+    props: ["theme", 'param', "nombre_completo", "mes", "year", "categoria", "paginate", 'planilla_id', 'tmp_adicional', 'tmp_numero'],
     data() {
         return {
             show: false,
@@ -186,7 +186,7 @@ export default {
             },
             block: false,
             items: [
-                {id: 1, text: "Datos Generales", active: true, component: 'work-general', btn: false},
+                {id: 1, text: "Datos Generales", active: true, component: 'work-general', btn: true},
                 {id: 2, text: "Afectación Presupuestal", active: false, component: 'work-afectacion', btn: true},
                 {id: 3, text: "Remuneraciones", active: false, component: 'work-remuneracion', btn: true},
                 {id: 4, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
@@ -199,16 +199,18 @@ export default {
             numeros: [],
             numero: 1,
             categoria_id: '',
-            adicional: 0,
+            adicional: false,
             cronograma: {},
             send: false,
-            btn: false
+            btn: true
         }
     },
     mounted() {
         this.job_current = this.param;
         this.fullname = this.nombre_completo;
+        this.adicional = this.tmp_adicional == 1 ? true : false;
         this.isCategoria = this.categoria ? true : false;
+        this.numero = this.tmp_numero;
     },
     watch: {
         show() {

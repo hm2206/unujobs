@@ -49,7 +49,7 @@
                                             :value="work.id"
                                         >
                                     </td>
-                                    <td>{{ work.nombre_completo }}</td>
+                                    <td class="uppercase">{{ work.nombre_completo }}</td>
                                     <td>{{ work.numero_de_documento }}</td>
                                     <td>
                                         <div class="row">

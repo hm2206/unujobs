@@ -46,7 +46,6 @@ class CronogramaController extends Controller
     {
         $mes = request()->mes ? (int)request()->mes : (int)date('m');
         $year = request()->year ? (int)request()->year : (int)date('Y');
-        $adicional = request()->adicional ? 1 : 0;
         $mes = $mes == 0 || $mes > 12 ? (int)date('m') : $mes;
         $year = $year > date('Y') ? date('Y') : $year;
 
@@ -59,12 +58,11 @@ class CronogramaController extends Controller
         
         $cronogramas = Cronograma::where('mes', $mes)
             ->where('año', $year)
-            ->where('adicional', $adicional)
             ->paginate(20);
 
         return view('cronogramas.index', 
             \compact(
-                'cronogramas', 'categoria_id', 'mes', 'year', 'adicional'
+                'cronogramas', 'categoria_id', 'mes', 'year'
             ));
     }
 
@@ -93,6 +91,7 @@ class CronogramaController extends Controller
         ]);
 
         $mes = $request->mes < 13 && $request->mes > 0 ? (int)$request->mes : (int)date('m');
+        $pendiente = 1;
         $current_mes = (int)date('m') + 1;
 
         if ($mes > $current_mes || $mes < $current_mes - 1) {
@@ -123,12 +122,19 @@ class CronogramaController extends Controller
         }
 
         $cronograma = Cronograma::create($request->except('adicional'));
+
+        
         $cronograma->update([
             "mes" => $mes,
             "año" => $year,
             "adicional" => $adicional,
             "pendiente" => 1
         ]);
+            
+        // actualizamos el pendiente a listo en las planillas adicionales
+        if ($cronograma->adicional == 1) {
+            $cronograma->update(["pendiente" => 0]);
+        }
 
         if($cronograma->adicional == 0) {
             $jobs = Work::where("activo", 1)->whereHas('infos', function($i) use($cronograma) {

@@ -6,7 +6,8 @@
  */
 namespace App\Http\Controllers;
 
-use App\Info;
+use App\Models\Info;
+use \DB;
 use Illuminate\Http\Request;
 
 /**
@@ -76,9 +77,45 @@ class InfoController extends Controller
      * @param  \App\Info  $info
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Info $info)
+    public function update(Request $request, $id)
     {
-        return back();
+
+        $this->validate(request(), [
+            "planilla_id" => "required|max:20",
+            "cargo_id" => "required|max:20",
+            "categoria_id" => "required|max:20",
+            "meta_id" => "required|max:20",
+            "pap" => "required|max:2",
+            "perfil" => "required|max:200",
+        ]);
+
+        try {
+
+            $info = Info::findOrFail($id);
+            $info->update($request->all());
+
+            $cronograma_id = $request->cronograma_id;
+
+            if ($cronograma_id) {
+                $create = DB::table("work_cronograma")->where("cronograma_id", $cronograma_id)
+                    ->where("work_id", $info->work_id)
+                    ->update(["observacion" => $request->observacion]);
+            }
+
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error"
+            ];
+
+        }
     }
 
     /**

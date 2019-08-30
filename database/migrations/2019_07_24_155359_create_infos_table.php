@@ -20,6 +20,7 @@ class CreateInfosTable extends Migration
             $table->integer('categoria_id');
             $table->integer('meta_id');
             $table->integer('fuente_id')->nullable();
+            $table->string('fuente')->nullable();
             $table->integer('planilla_id')->nullable();
             $table->string('plaza')->nullable();
             $table->string('perfil')->nullable();
@@ -27,7 +28,7 @@ class CreateInfosTable extends Migration
             $table->integer('active')->default(1);
             $table->text('observacion')->nullable();
             $table->string('ruc')->nullable();
-            $table->double("total")->default(0);
+            $table->int("pap")->nullable();
             $table->timestamps();
         });
     }
