@@ -9,7 +9,6 @@
         <title>Reporte Mesual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
-    @foreach ($work->infos as $info)
     <body class="bg-white text-dark">
 
             <div class="mb-7">
@@ -63,7 +62,7 @@
                                 </tr>
                                 <tr>
                                     <td class="py-0 pl-3">Condición Laboral</td>
-                                    <td colspan="3" class="uppercase py-0">{{ $info->cargo ? $info->cargo->descripcion : null }} - {{ $info->cargo ? $info->cargo->tag : '' }}</td>
+                                    <td colspan="3" class="uppercase py-0">{{ $info->cargo ? $info->cargo->descripcion : null }} - {{ $info->cargo ? $info->cargo->pap : '' }}</td>
                                     <td class="py-0" width="10%">Meta Siaf:</td>
                                     <td class="py-0">{{ $info->meta ? $info->meta->metaID : null }}</td>
                                 </tr>
@@ -200,5 +199,4 @@
                 </div>
                 
             </body>
-    @endforeach
 </html>

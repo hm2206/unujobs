@@ -67,6 +67,17 @@ class Cronograma extends Model
         return $this->belongsToMany(Work::class, "work_cronograma");
     }
 
+
+    /**
+     * Relacion de muchos a muchos con la tabla infos
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function infos()
+    {
+        return $this->belongsToMany(Info::class, "info_cronograma");
+    }
+
     /**
      * Slug para proteger los id en las urls
      *

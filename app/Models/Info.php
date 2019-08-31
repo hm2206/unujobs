@@ -82,6 +82,37 @@ class Info extends Model
         return $this->belongsTo(Planilla::class);
     }
 
+    /**
+     * Relacion de muchos a mucho con la tabla cronogramas
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function cronogramas()
+    {
+        return $this->belongsToMany(Cronograma::class, 'info_cronograma');
+    }
+
+    /**
+     * Relacion de muchos a mucho con la tabla remuneracions
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function remuneraciones()
+    {
+        return $this->hasMany(Remuneracion::class);
+    }
+
+
+    /**
+     * Relacion de muchos a mucho con la tabla descuentos
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function descuentos()
+    {
+        return $this->hasMany(Descuento::class);
+    }
+
     
     /**
      * Slug para proteger los id en las urls

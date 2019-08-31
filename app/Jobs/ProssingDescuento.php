@@ -9,12 +9,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use \DB;
 use App\Models\Work;
+use App\Models\Info;
 use App\Models\Cronograma;
 use App\Models\User;
 use App\Notifications\BasicNotification;
-use App\Collections\WorkCollection;
+use App\Collections\InfoCollection;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
+use App\Models\Remuneracion;
 
 /**
  * Procesa los descuentos de los trabajadores
@@ -25,7 +27,8 @@ class ProssingDescuento implements ShouldQueue
 
 
     private $cronograma;
-    private $jobs;
+    private $infos;
+    private $infoIn;
     private $types;
 
     public $timeout = 0;
@@ -35,10 +38,11 @@ class ProssingDescuento implements ShouldQueue
      * @param object $jobs
      * @return void
      */
-    public function __construct($cronograma, $jobs)
+    public function __construct($cronograma, $infoIn)
     {
         $this->cronograma = $cronograma;
-        $this->jobs = $jobs;
+        $this->infoIn = $infoIn;
+        $this->infos = Info::with("work")->whereIn("id", $infoIn)->get();
         $this->types = TypeDescuento::where("activo", 1)->get();
     }
 
@@ -50,16 +54,32 @@ class ProssingDescuento implements ShouldQueue
      */
     public function handle()
     {
+        // cronograma actual
         $cronograma = $this->cronograma;
-        $jobs = $this->jobs;
+        // fecha anteriores
+        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
+        // obtenemos remuneraciones anteriores
+        $typeBefores = Descuento::whereIn("info_id", $this->infoIn)
+            ->whereIn("type_descuento_id", $this->types->pluck(['id']))
+            ->where("adicional", $cronograma->adicional)
+            ->where("mes", $mes)
+            ->where("año", $year)
+            ->get();
 
-        foreach ($jobs as $job) {
-            $this->configurarDescuento($cronograma, $job);
+        $bases = Remuneracion::where("base", 0)
+            ->where("cronograma_id", $cronograma->id)
+            ->whereIn("info_id", $this->infoIn)
+            ->get();
+
+        foreach ($this->infos as $info) {
+            $this->configurarDescuento($cronograma, $info, $typeBefores, $bases);
         }
 
+        // habilitamos la planilla
         $cronograma->update(["pendiente" => 0]);
-        $users = User::all();
 
+        $users = User::all();
         $link = "/planilla/cronograma/{$cronograma->slug()}/job";
         $titulo = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
         $message = $titulo . " del {$cronograma->mes} - {$cronograma->año}, ya está lista";
@@ -80,55 +100,43 @@ class ProssingDescuento implements ShouldQueue
      * @param \App\Models\Work $job
      * @return void
      */
-    private function configurarDescuento($cronograma, $job)
+    private function configurarDescuento($cronograma, $info, $typeBefores, $bases)
    {
-        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
-        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
-        $infos = $job->infos->where("planilla_id", $cronograma->planilla_id);
-
-        $isTypeBefore = Descuento::where("work_id", $job->id)
-            ->where("mes", $mes)
-            ->where("año", $year)
-            ->where("adicional", $cronograma->adicional)
-            ->whereIn("type_descuento_id", $this->types->pluck(['id']))
-            ->get();
+        // obtener descuentos de un mes anterior
+        $isTypeBefore = $typeBefores->where("info_id", $info->id);
         // verificamos si hay un registro anterior
         if ($isTypeBefore->count()) {
             // recorremos los tipos de remuneraciones
             foreach ($this->types as $type) {
-                // iteramos a cada informacion de la persona
-                foreach ($infos as $info) {
-                    // obtenemos un tipo de remuneracion especifica
-                    $isType = $isTypeBefore->where("type_descuento_id", $type->id)
-                        ->where("cargo_id", $info->cargo_id)
-                        ->where("categoria_id", $info->categoria_id)
-                        ->first();
-                    // validamos si existe algúna remuneracion
-                    if ($isType) {
-                        $newDescuento = Descuento::updateOrCreate([
-                            "work_id" => $job->id,
-                            "planilla_id" => $isType->planilla_id,
-                            "cargo_id" => $isType->cargo_id,
-                            "categoria_id" => $isType->categoria_id,
-                            "meta_id" => $isType->meta_id,
-                            "cronograma_id" => $cronograma->id,
-                            "type_descuento_id" => $type->id,
-                            "base" => $type->base,
-                            "mes" => $cronograma->mes,
-                            "año" => $cronograma->año,
-                            "adicional" => $cronograma->adicional
-                        ]);
-                        // actualizamos un monto
-                        $newDescuento->update(["monto" => $isType->monto]);
-                    }
+                // obtenemos un tipo de remuneracion especifica
+                $isType = $isTypeBefore->where("type_descuento_id", $type->id)->first();
+                // validamos si existe algúna remuneracion
+                if ($isType) {
+                    $newDescuento = Descuento::updateOrCreate([
+                        "work_id" => $job->id,
+                        "planilla_id" => $isType->planilla_id,
+                        "cargo_id" => $isType->cargo_id,
+                        "categoria_id" => $isType->categoria_id,
+                        "meta_id" => $isType->meta_id,
+                        "cronograma_id" => $cronograma->id,
+                        "type_descuento_id" => $type->id,
+                        "base" => $type->base,
+                        "mes" => $cronograma->mes,
+                        "año" => $cronograma->año,
+                        "adicional" => $cronograma->adicional
+                    ]);
+                    // actualizamos un monto
+                    $newDescuento->update(["monto" => $isType->monto]);
                 }
             }
+
         }else {
 
-            $collecion = new WorkCollection($job);
-            $collecion->updateOrCreateDescuento($cronograma);
+            $collecion = new InfoCollection($info);
+            $collecion->updateOrCreateDescuento($cronograma, $this->types, $bases->where("info_id", $info->id));
 
         }
+
    }
 
 

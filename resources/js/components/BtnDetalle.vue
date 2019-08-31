@@ -18,22 +18,13 @@
                         <div class="row align-items-center">
 
                             <div class="col-md-2">
-                                <select name="categoria_id" v-model="categoria_id" :disabled="true" 
-                                    class="form-control"
-                                    v-on:change="cambioCategoria"
-                                >
-                                    <option v-for="(info, inf) in infos" :key="`info-${inf}`"
-                                        :value="info.categoria_id"
-                                    >
-                                        {{ info.categoria ? info.categoria.nombre : '' }}
-                                    </option>
-                                </select>
+                                <input type="text" :disabled="true" v-model="categoria.nombre" class="form-control">
                             </div>
 
                             <div class="col-md-2">
                                 <input type="number" 
                                     :disabled="loader" name="mes" 
-                                    v-model="mes" min="1" max="12" 
+                                    v-model="tmp_cronograma.mes" min="1" max="12" 
                                     class="form-control"
                                     v-on:change="cambio"
                                 >
@@ -42,7 +33,7 @@
                             <div class="col-md-2">
                                 <input type="number" 
                                     :disabled="loader" 
-                                    v-model="year" name="year" 
+                                    v-model="tmp_cronograma.año" name="year" 
                                     min="1999" 
                                     class="form-control"
                                     v-on:change="cambio"
@@ -59,7 +50,7 @@
                             </div>
 
                             <div class="col-md-2">
-                                <input type="number" name="dias" v-model="dias" disabled class="form-control">
+                                <input type="number" name="dias" v-model="tmp_cronograma.dias" disabled class="form-control">
                             </div>
                             
                             <div class="col-md-2" v-if="numeros.length > 0">
@@ -93,14 +84,15 @@
                     <component :is="current" v-if="!loader" 
                         :categoria="categoria_id"
                         :param="job_current"
-                        :mes="mes"
-                        :year="year"
+                        :mes="tmp_cronograma.mes"
+                        :year="tmp_cronograma.año"
                         :adicional="adicional"
                         :numero="numero"
                         :send="send"
                         :info="info"
                         :work="work"
                         :objetos="objetos"
+                        :tmp_cronograma="tmp_cronograma"
                         @get-cronograma="getCronograma"
                         @get-numeros="getNumeros"
                         @ready="setLoader"
@@ -170,7 +162,10 @@ export default {
         'work-obligacion': WorkObligacion,
         'work-detalle': WorkDetalle
     },
-    props: ["theme", 'param', "nombre_completo", "mes", "year", "categoria", "paginate", 'planilla_id', 'tmp_adicional', 'tmp_numero'],
+    props: [
+        "theme", 'param', "tmp_info", "nombre_completo", 
+        "paginate", 'planilla_id', 'tmp_adicional', 'tmp_numero', "cronograma"
+    ],
     data() {
         return {
             show: false,
@@ -179,6 +174,7 @@ export default {
             job_current: '',
             fullname: '',
             isCategoria: false,
+            categoria: {},
             work: {},
             objetos: {
                 bancos: [],
@@ -193,19 +189,21 @@ export default {
                 {id: 5, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
                 {id: 6, text: "Más...", active: false,  component: 'work-detalle', btn: false}
             ],
-            infos: [],
             info: {},
             dias: 30,
             numeros: [],
             numero: 1,
             categoria_id: '',
             adicional: false,
-            cronograma: {},
+            tmp_cronograma: {},
             send: false,
             btn: true
         }
     },
     mounted() {
+        this.tmp_cronograma = this.cronograma;
+        this.info = this.tmp_info; 
+        this.categoria = this.info.categoria;  
         this.job_current = this.param;
         this.fullname = this.nombre_completo;
         this.adicional = this.tmp_adicional == 1 ? true : false;
@@ -305,7 +303,7 @@ export default {
         },
         getCronograma(e) {
 
-            this.cronograma = e;
+            this.tmp_cronograma = e;
             this.dias = e.dias;
             this.block = false;
 

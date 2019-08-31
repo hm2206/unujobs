@@ -15,10 +15,11 @@ class SendBoleta extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $work;
+    public $info;
     public $cronograma;
     public $pdf;
     public $jefe;
+    public $work;
 
     /**
      * @param \App\Models\Work $work
@@ -27,8 +28,9 @@ class SendBoleta extends Mailable
      * @param string $adicional
      * @param \PDF $pdf
      */
-    public function __construct($work, $cronograma, $pdf)
+    public function __construct($info, $work, $cronograma, $pdf)
     {
+        $this->info = $info;
         $this->work = $work;
         $this->cronograma = $cronograma;
         $this->pdf = $pdf;

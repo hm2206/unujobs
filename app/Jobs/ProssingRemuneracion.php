@@ -8,11 +8,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 use \DB;
-use App\Collections\WorkCollection;
+use App\Collections\InfoCollection;
 use App\Models\User;
 use App\Notifications\BasicNotification;
 use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
+use App\Models\Info;
 
 /**
  * Procesa las remuneraciones de los trabajadores
@@ -23,7 +24,8 @@ class ProssingRemuneracion implements ShouldQueue
 
     
     private $cronograma;
-    private $jobs;
+    private $infos;
+    private $infoIn;
     private $types;
      
 
@@ -35,10 +37,11 @@ class ProssingRemuneracion implements ShouldQueue
      * @param \App\Models\Work $jobs
      * @return void
      */
-    public function __construct($cronograma, $jobs)
+    public function __construct($cronograma, $infoIn)
     {
         $this->cronograma = $cronograma;
-        $this->jobs = $jobs;
+        $this->infoIn = $infoIn;
+        $this->infos = Info::with("work")->whereIn("id", $infoIn)->get();
         $this->types = TypeRemuneracion::where("activo", 1)->get();
     }
 
@@ -49,13 +52,23 @@ class ProssingRemuneracion implements ShouldQueue
      */
     public function handle()
     {
+        // cronograma actual
         $cronograma = $this->cronograma;
-        
-        $jobs = $this->jobs;
+        // fecha anteriores
+        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
+        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
+        // obtenemos remuneraciones anteriores
+        $typeBefores = Remuneracion::whereIn("info_id", $this->infoIn)
+            ->whereIn("type_remuneracion_id", $this->types->pluck(['id']))
+            ->where("adicional", $cronograma->adicional)
+            ->where("mes", $mes)
+            ->where("año", $year)
+            ->get();
 
-        foreach ($jobs as $job) {
-            $this->configurarRemuneracion($cronograma, $job);
+        foreach ($this->infos as $info) {
+            $this->configurarRemuneracion($cronograma, $info, $typeBefores);
         }
+
     }
 
     /**
@@ -66,18 +79,11 @@ class ProssingRemuneracion implements ShouldQueue
      * @param \App\Models\Work $job
      * @return void
      */
-    private function configurarRemuneracion($cronograma, $job)
+    private function configurarRemuneracion($cronograma, $info, $typeBefores)
     {
-        $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
-        $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
-        $infos = $job->infos->where("planilla_id", $cronograma->planilla_id);
+        // obtener remuneracion de un mes anterior
+        $isTypeBefore = $typeBefores->where("info_id", $info->id);
 
-        $isTypeBefore = Remuneracion::where("work_id", $job->id)
-            ->where("mes", $mes)
-            ->where("año", $year)
-            ->where("adicional", $cronograma->adicional)
-            ->whereIn("type_remuneracion_id", $this->types->pluck(['id']))
-            ->get();
         // verificamos si hay un registro anterior
         if ($isTypeBefore->count()) {
             // recorremos los tipos de remuneraciones
@@ -85,14 +91,12 @@ class ProssingRemuneracion implements ShouldQueue
                 // iteramos a cada informacion de la persona
                 foreach ($infos as $info) {
                     // obtenemos un tipo de remuneracion especifica
-                    $isType = $isTypeBefore->where("type_remuneracion_id", $type->id)
-                        ->where("cargo_id", $info->cargo_id)
-                        ->where("categoria_id", $info->categoria_id)
-                        ->first();
+                    $isType = $isTypeBefore->where("type_remuneracion_id", $type->id)->first();
                     // validamos si existe algúna remuneracion
                     if ($isType) {
                         $newRemuneracion = Remuneracion::updateOrCreate([
-                            "work_id" => $job->id,
+                            "work_id" => $info->work_id,
+                            "info_id" => $info->id,
                             "planilla_id" => $isType->planilla_id,
                             "cargo_id" => $isType->cargo_id,
                             "categoria_id" => $isType->categoria_id,
@@ -111,8 +115,8 @@ class ProssingRemuneracion implements ShouldQueue
             }
         }else {
 
-            $collection = new WorkCollection($job);
-            $collection->createOrUpdateRemuneracion($cronograma);
+            $collection = new InfoCollection($info);
+            $collection->createOrUpdateRemuneracion($cronograma, $this->types);
 
         }
     }

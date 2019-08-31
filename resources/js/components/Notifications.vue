@@ -24,6 +24,7 @@
                     <div>
                         <div class="small text-gray-500" v-text="getDate(notify.created_at)"></div>
                         <a class="font-weight-bold" :href="notify.data ? notify.data.url : '#'" 
+                            target="__blank"
                             v-text="notify.data.body">
                         </a>
                     </div>

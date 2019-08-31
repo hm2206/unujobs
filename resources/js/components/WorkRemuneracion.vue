@@ -78,7 +78,7 @@ export default {
 
             let  api = unujobs(
                 'get',
-                `/work/${this.param}/remuneracion?mes=${this.mes}&year=${this.year}&adicional=${adicional}&categoria_id=${this.categoria}&numero=${this.numero}`
+                `/info/${this.param}/remuneracion?mes=${this.mes}&year=${this.year}&adicional=${adicional}&numero=${this.numero}`
             );
 
             await api.then(res => {
@@ -118,7 +118,7 @@ export default {
             form.append("categoria_id", this.info.categoria_id);
             form.append("planilla_id", this.info.planilla_id);
 
-            let api = unujobs("post", `/work/${this.param}/remuneracion`, form);
+            let api = unujobs("post", `/info/${this.param}/remuneracion`, form);
             await api.then(res => {
                 let { status, message, body } = res.data;
                 let icon = status ? 'success' : 'error';

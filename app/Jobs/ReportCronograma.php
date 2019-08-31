@@ -48,9 +48,9 @@ class ReportCronograma implements ShouldQueue
     public function handle()
     {
         $cronograma = $this->cronograma;
-        $workIn = $cronograma->works->pluck(["id"]);
-        $infos = Info::with("work")->where("planilla_id", $cronograma->planilla_id)
-            ->whereIn("work_id", $workIn)
+        $infoIn = $cronograma->infos->pluck(["id"]);
+        $infos = Info::with("work")
+            ->whereIn("id", $infoIn)
             ->get();
 
         $metas = $metas = Meta::whereIn("id", $infos->pluck(['meta_id']))->get();

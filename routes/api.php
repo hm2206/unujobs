@@ -72,10 +72,6 @@ Route::group(["prefix" => 'v1'], function() {
 
     // Remuneracion de los trabajadores y otros
     Route::resource("work", 'WorkController');
-    Route::get('work/{id}/remuneracion', 'JobController@remuneracion');
-    Route::put('work/{id}/remuneracion', 'JobController@remuneracionUpdate');
-    Route::get('work/{id}/descuento', 'JobController@descuento');
-    Route::put('work/{id}/descuento', 'JobController@descuentoUpdate');
     Route::get('work/{id}/obligacion', 'JobController@obligacion');
     Route::get('work/{id}/info', 'JobController@informacion');
     Route::post('work/{id}/config', 'JobController@configStore');
@@ -84,11 +80,15 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('work/{id}/retencion', 'JobController@retencion');
     Route::post('work/{id}/retencion', 'JobController@retencionStore');
     Route::get('work/{id}/detalle', 'JobController@detalle');
-    Route::get('work/{id}/observacion', 'JobController@observacion');
     Route::post('work/{id}/observacion', 'JobController@observacionUpdate');
 
     // informacion de los trabajadores
     Route::resource("info", "InfoController")->except(["create", "edit"]);
+    Route::get("info/{id}/remuneracion", "InfoController@remuneracion");
+    Route::put("info/{id}/remuneracion", "InfoController@remuneracionUpdate");
+    Route::get("info/{id}/descuento", "InfoController@descuento");
+    Route::put("info/{id}/descuento", "InfoController@descuentoUpdate");
+    Route::get("info/{id}/observacion", "InfoController@observacion");
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');

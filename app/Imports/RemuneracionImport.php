@@ -52,16 +52,14 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
         foreach ($collection as $row) {
 
             // obtenemos a todos los trabajadores que pertenecen al cronograma
-            $works = $this->cronograma->works;
+            $infos = $this->cronograma->infos;
             // buscar al trabajador por numero de documento
-            $work = $works->where("numero_de_documento", $row['numero_de_documento'])->first();
+            $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
             
             // verificar si el trabajador existe
             if ($work) {
                 // obtenemos la categoria
-                $categoria = Categoria::where("key", $row['categoria'])->first();
-                // obtenemos la informacion detallada del trabajador
-                $info = $work->infos->where("categoria_id", $categoria->id)->first();
+                $info = $infos->where("work_id", $work->id)->first();
                 
                 if ($info) {
 
@@ -74,17 +72,12 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
 
                             // obtenemos el monto de la remuneración
                             $monto = $row[$type->key];
-                            // obtenemos las remuneraciones del trabajador
-                            $remuneracion = Remuneracion::updateOrCreate([
-                                "work_id" => $work->id,
-                                "categoria_id" => $info->categoria_id,
-                                "cargo_id" => $info->cargo_id,
-                                "planilla_id" => $info->planilla_id,
-                                "cronograma_id" => $this->cronograma->id,
-                                "type_remuneracion_id" => $type->id,
-                                "adicional" => $this->cronograma->adicional,
-                                "base" => $type->base
-                            ]);
+
+                            // obtener las remuneraciones
+                            $remuneracion = Remuneracion::where("info_id", $info->id)
+                                ->where("cronograma_id", $this->cronograma->id)
+                                ->where("type_remuneracion_id", $type->id)
+                                ->first();
                             
                             // verificamos que el valor a guardar sea un numero
                             if (\is_numeric($monto)) {
@@ -97,18 +90,6 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
 
                         }
                     }
-
-                    // actualizamos el monto actual
-                    $total = Remuneracion::where("work_id", $work->id)
-                            ->where("categoria_id", $info->categoria_id)
-                            ->where("cargo_id", $info->cargo_id)
-                            ->where("planilla_id", $info->planilla_id)
-                            ->where("cronograma_id", $this->cronograma->id)
-                            ->get()->sum("monto");
-
-                    $info->update([
-                        "total" => $total
-                    ]);
                    
                 }
             }

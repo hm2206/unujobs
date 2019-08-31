@@ -15,16 +15,17 @@ class CreateRemuneracionsTable extends Migration
     {
         Schema::create('remuneracions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer("work_id");
-            $table->integer("categoria_id");
-            $table->integer("cargo_id");
-            $table->integer("planilla_id");
-            $table->integer("meta_id");
+            $table->bigInteger("sede_id")->default(1);
+            $table->bigInteger("info_id");
+            $table->bigInteger("work_id");
+            $table->bigInteger("categoria_id");
+            $table->bigInteger("cargo_id");
+            $table->bigInteger("planilla_id");
+            $table->bigInteger("meta_id");
+            $table->bigInteger("cronograma_id");
+            $table->bigInteger("type_remuneracion_id");
             $table->integer("dias")->default(30);
-            $table->integer("cronograma_id");
             $table->text("observaciones")->nullable();
-            $table->integer("sede_id")->default(1);
-            $table->integer("type_remuneracion_id");
             $table->integer("mes")->default(6);
             $table->integer("año")->default(2019);
             $table->double("monto")->default(0);

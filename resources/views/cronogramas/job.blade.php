@@ -43,7 +43,7 @@
     </h3>
     <h2 class="text-right">
         <i class="fas fa-users fa-sm text-primary"></i>
-        {{ $cronograma->works->count() }}
+        {{ $infos->total() }}
     </h2>
 </div>
 
@@ -84,8 +84,8 @@
 
 <div class="col-md-12">
 
-    @if ($jobs)
-        {{ $jobs->links() }}
+    @if ($infos)
+        {{ $infos->links() }}
     @endif
 
     <div class="card">
@@ -150,29 +150,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($jobs as $job)
+                        @forelse ($infos as $info)
+                            @php
+                                $job = $info->work;
+                            @endphp
                             <tr>
-                                <th>{{ $job->id }}</th>
+                                <th>{{ $info->id }}</th>
                                 <th class="capitalize">{{ $job->nombre_completo }}</th>
                                 <th>{{ $job->numero_de_documento }}</th>
                                 <th class="uppercase">
-                                    @php
-                                        $categoria_id = null;
-                                        $current = null;
-                                    @endphp
-                                    @foreach ($job->infos as $info)
-
-                                        @if ($info->planilla_id == $cronograma->planilla_id)
-                                            @php
-                                                $current = $info;
-                                                $categoria_id = $info->categoria_id;
-                                            @endphp
-                                        @endif
-
-                                    @endforeach
-
                                     <div class="btn btn-sm btn-danger">
-                                        {{ $current && $current->categoria ? $current->categoria->nombre : '' }}
+                                        {{ $info->categoria ? $info->categoria->nombre : '' }}
                                     </div>
                                 </th>
                                 <th>
@@ -188,15 +176,15 @@
                                         </btn-boleta>
 
                                         <btn-detalle theme="btn-warning btn-sm"
-                                            param="{{ $job->id }}"
+                                            param="{{ $info->id }}"
                                             nombre_completo="{{ $job->nombre_completo }}"
-                                            mes="{{ $cronograma->mes }}"
-                                            year="{{ $cronograma->año }}"
-                                            categoria="{{ $categoria_id }}"
+                                            categoria="{{ $info->categoria_id }}"
                                             :paginate="{{ $indices }}"
                                             planilla_id="{{ $cronograma->planilla_id }}"
                                             tmp_adicional="{{ $cronograma->adicional }}"
                                             tmp_numero="{{ $cronograma->numero }}"
+                                            :tmp_info="{{ $info }}"
+                                            :cronograma="{{ $cronograma }}"
                                         >
                                             <i class="fas fa-wallet"></i>
                                         </btn-detalle>

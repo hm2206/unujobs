@@ -9,9 +9,10 @@
         <title>Reporte Mensual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
-@foreach ($works as $work)
-    @foreach ($work->infos as $info)
-
+    @foreach ($infos as $info)
+        @php
+            $work = $info->work;
+        @endphp
         <body class="bg-white text-dark">
                 <div class="mb-7">
                         <div class="text-center"></div>
@@ -44,7 +45,7 @@
                                 <thead> 
                                     <tr>
                                         <td class="py-0 pl-3 pt-1">Boleta de Pago N°:</td>
-                                        <td class="py-0 pt-1">{{ $count++ }}</td>
+                                        <td class="py-0 pt-1">{{ $info->num }}</td>
                                         <td class="py-0 pt-1">Fecha de Ingreso:</td>
                                         <td class="py-0 pt-1">{{ date($work->fecha_de_ingreso) }}</td>
                                         <td class="py-0 pt-1" width="10%">D.N.I.</td>
@@ -100,7 +101,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="bbr-1 p-relative">
+                                    <td class="bbr-1 p-relative bbb-1">
                                         <table class="w-100">
                                             <tbody>
                                                 @foreach ($info->remuneraciones as $remuneracion)
@@ -124,7 +125,7 @@
                                             </tbody>
                                         </table>
                                     </td>
-                                    <td class="p-relative">
+                                    <td class="p-relative bbb-1">
                                         <table class="p-absolute top-0 w-100">
                                             <tbody>
                                                 @foreach ($info->descuentos as $body)
@@ -158,7 +159,7 @@
                                             </tbody>
                                         </table>
                                     </td>
-                                    <td class="bbl-1 p-relative">
+                                    <td class="bbl-1 bbb-1 p-relative">
                                         <table class="p-absolute top-0 w-100">
 
                                             @foreach ($info->aportaciones as $aporte)
@@ -205,5 +206,4 @@
                     </div>   
                 </body>
         @endforeach
-    @endforeach
 </html>

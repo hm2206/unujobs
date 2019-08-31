@@ -169,7 +169,7 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['param', 'info', 'send', 'mes', 'year', 'adicional', 'numero'],
+    props: ['param', 'info', 'send', 'mes', 'year', 'adicional', 'numero', 'tmp_cronograma'],
     data() {
         return {
             cas: false,
@@ -178,7 +178,6 @@ export default {
             cargos: [],
             categorias: [],
             metas: [],
-            cronograma: {},
             errors: {},
             form_planilla: '',
             form_cargo: '',
@@ -287,13 +286,10 @@ export default {
             });
         },
         getObservacion() {
-            let api = unujobs("get", `/work/${this.param}/observacion?mes=${this.mes}&year=${this.year}&adicional=${this.adicional}&numero=${this.numero}`)
+            let adicional = this.adicional ? 1 : 0;
+            let api = unujobs("get", `/info/${this.param}/observacion?mes=${this.mes}&year=${this.year}&adicional=${adicional}&numero=${this.numero}`)
             api.then(res => {
-                let { observacion, seleccionar, cronograma } = res.data;
-                this.observacion = observacion;
-                this.cronograma = cronograma;
-                this.$emit('get-cronograma', cronograma);
-                this.$emit("get-numeros", seleccionar);
+                this.observacion = res.data;
             }).catch(err => {
                 console.log("no se pudo obtener la observación");
             });
@@ -302,7 +298,7 @@ export default {
             const form = new FormData(document.getElementById(`form-config-${this.param}`));
             this.loading = true;
             this.errors = {};
-            form.append("cronograma_id", this.cronograma.id);
+            form.append("cronograma_id", this.tmp_cronograma.id);
             form.append("_method", "PUT");
             
             let api = unujobs("post", `/info/${this.info.id}`, form);

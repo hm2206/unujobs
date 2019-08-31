@@ -15,11 +15,13 @@ use App\Models\Remuneracion;
 use App\Models\Descuento;
 use \PDF;
 use \Mail;
+use \DB;
 use App\Models\User;
 use \Carbon\Carbon;
 use App\Mail\SendBoleta;
 use App\Models\Report;
 use App\Notifications\ReportNotification;
+use App\Collections\CronogramaCollection;
 
 /**
  * Generar Archivo PDF de las Boletas mesuales de un determinado cronograma
@@ -51,78 +53,22 @@ class ReportBoleta implements ShouldQueue
      */
     public function handle()
     {
-
-        $workIn = $this->cronograma->works->pluck(['id']);
-        $works = Work::whereIn("id", $workIn)->orderBy("nombre_completo", "ASC")->get();
         $cronograma = $this->cronograma;
-        $count = 1;
+        // traer a los ids de los trabajadores de la planilla
 
-        foreach ($works as $work) {
-            
-            $infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
-            $work->infos = $infos;
-
-            foreach ($work->infos as $info) {
-
-                $remuneraciones = Remuneracion::orderBy('type_remuneracion_id', 'ASC')
-                    ->where("work_id", $work->id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("cronograma_id", $this->cronograma->id)
-                    ->get();
-
-                $descuentos = Descuento::with('typeDescuento')
-                    ->where('work_id', $work->id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("cronograma_id", $this->cronograma->id)
-                    ->get();
-
-                $info->total = $remuneraciones->sum("monto");
-                
-                $info->remuneraciones = $remuneraciones;
-                $info->descuentos = $descuentos->where("base", 0)->chunk(2)->toArray();
-                $info->total_descuento = $descuentos->sum('monto');
-
-
-                //base imponible
-                $info->base = $remuneraciones->where('base', 0)->sum('monto');
-
-                //aportes
-                //$info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
-                $info->aportaciones = $descuentos->where("base", 1); 
-
-                //total neto
-                $info->neto = $info->total - $info->total_descuento;
-                $info->total_aportes = $info->aportaciones->sum('monto');
-
-            }
-
-            if ($work->email) {
-
-                try {
-                    $pdf_tmp = PDF::loadView('pdf.send_boleta', compact('work', 'cronograma'));
-                    $pdf_tmp->setPaper('a4', 'landscape');
-
-                    Mail::to($work->email)
-                        ->send(new SendBoleta($work, $cronograma, $pdf_tmp));
-
-                } catch (\Throwable $th) {
-                    \Log::info('No se pudó enviar boleta de: ' . $work->email . " error: " . $th);
-                }
-
-            }
-
-        }
-
+        $collect = new CronogramaCollection($cronograma);
+        $data = $collect->boleta();
 
         $fecha = strtotime(Carbon::now());
         $name = "boletas_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->adicional}_{$fecha}.pdf";
         
         //genera el pdf;
-        $pdf = PDF::loadView("pdf.boleta_auto", compact('works', 'cronograma', 'count'));
+        $pdf = PDF::loadView("pdf.boleta_auto", [
+            'infos' => $data['infos'], 
+            'cronograma' => $data['cronograma'], 
+            'count' => $data['count']
+        ]);
+
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
         $pdf->save(storage_path("app/public/pdf/{$name}"));
 

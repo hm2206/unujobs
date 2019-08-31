@@ -21,6 +21,7 @@ use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCronograma;
 use Illuminate\Support\Facades\Storage;
 use \DB;
+use App\Models\Info;
 use App\Models\TypeReport;
 use App\Http\Middleware\CronogramaMiddleware;
 
@@ -137,15 +138,18 @@ class CronogramaController extends Controller
         }
 
         if($cronograma->adicional == 0) {
-            $jobs = Work::where("activo", 1)->whereHas('infos', function($i) use($cronograma) {
-                    $i->where("planilla_id", $cronograma->planilla_id);
-                })->get();
+            $infoIn = Info::whereHas("work", function($w) {
+                $w->orderBy("nombre_completo", "ASC");
+            })->where("planilla_id", $cronograma->planilla_id)
+            ->where("active", 1)
+            ->get(["id"])
+            ->pluck(["id"]);
 
-            $cronograma->works()->syncWithoutDetaching($jobs->pluck(["id"]));
+            $cronograma->infos()->syncWithoutDetaching($infoIn);
 
             ProssingRemuneracion::withChain([
-                (new ProssingDescuento($cronograma, $jobs))->onQueue('high')
-            ])->dispatch($cronograma, $jobs)
+                (new ProssingDescuento($cronograma, $infoIn))->onQueue('high')
+            ])->dispatch($cronograma, $infoIn)
             ->onQueue('high');
 
         }elseif($cronograma->adicional == 1) {
@@ -231,27 +235,27 @@ class CronogramaController extends Controller
         $id = \base64_decode($slug);
         $cronograma = Cronograma::with("planilla")->where("pendiente", 0)->findOrFail($id);
         $typeReports = TypeReport::all();
-        $jobs = [];
         $like = request()->query_search;
         $indices = [];
+        $infos = [];
 
-        if($cronograma->works->count() > 0) {
-            $jobs = Work::orderBy('nombre_completo', 'ASC')->with(['infos' => function($i) {
-                $i->where("active", 1);
-            }])->whereIn("id", $cronograma->works->pluck(['id']));
+        if($cronograma->infos->count() > 0) {
 
-            $indices = $jobs;
+            $indices = $cronograma->infos->pluck(["id"]);
+            $infos = Info::with("work")->whereIn("id", $indices);
             
             if ($like) {
-                $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
-                $jobs = $jobs->where($indice, "like", "%{$like}%");
+                $infos = $infos->whereHas('work', function($w) use($like) {
+                    $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
+                    $w->where($indice, "like", "%{$like}%");
+                });
             }
+
+            $infos = $infos->paginate(20);
             
-            $indices = $indices->get(["id"])->pluck(["id"]);
-            $jobs = $jobs->paginate(20);
         }
 
-        return view('cronogramas.job', compact('jobs', 'cronograma', 'like', 'typeReports', 'indices'));
+        return view('cronogramas.job', compact('cronograma', 'infos', 'like', 'typeReports', 'indices'));
     }
 
 
