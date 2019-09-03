@@ -55,35 +55,29 @@ class ReportDescuentoTypeMulti implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $works = $cronograma->works;
+        $infos = $cronograma->infos;
         $count = 1;
 
         $types = TypeDescuento::whereIn("id", $this->type_descuentos)->get();
 
-        foreach ($works as $work) {
         
-            $work->tmp_infos = $work->infos->where("planilla_id", $cronograma->planilla_id);
+        // configuracion
+        $descuentos = Descuento::whereIn("info_id", $infos->pluck(['id']))
+            ->where("cronograma_id", $cronograma->id)
+            ->whereIn("type_descuento_id", $this->type_descuentos)
+            ->get();
 
-            foreach ($work->tmp_infos as $info) {
-                
-                $descuentos = Descuento::where("work_id", $work->id)
-                    ->where("cronograma_id", $cronograma->id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->whereIn("type_descuento_id", $types->pluck(['id']))
-                    ->get();
-
-                $info->descuentos = $descuentos;
-                $info->count = $count;
-                $info->total = $descuentos->sum("monto");
-                $count++;
-
-            }
+        foreach ($infos as $info) {
+      
+            $info->descuentos = $descuentos->where("info_id", $info->id);
+            $info->count = $count;
+            $info->total = $info->descuentos->sum("monto");
+            $count++;
 
         }
 
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'works', 'meses', 'types'));
+        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'infos', 'meses', 'types'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
 
         $fecha = strtotime(Carbon::now());

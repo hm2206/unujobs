@@ -15,6 +15,8 @@ use App\Models\Report;
 use \Carbon\Carbon;
 use App\Models\Banco;
 use App\Models\TypeRemuneracion;
+use App\Models\Descuento;
+use App\Models\Remuneracion;
 
 class ReportCheque implements ShouldQueue
 {
@@ -49,42 +51,42 @@ class ReportCheque implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $bancos = Banco::all(); 
+        $infoIn = $cronograma->infos->pluck(['work_id']);
+        $tmp_works = Work::whereIn("id", $infoIn)
+            ->where("cheque", 1)
+            ->orderBy("nombre_completo", "ASC")
+            ->get();
+            
+
+        // configuracion
+        $descuentos = Descuento::whereIn("work_id", $infoIn)
+            ->where("cronograma_id", $cronograma->id)
+            ->where("base", 0)
+            ->get();
+
+        $remuneraciones = Remuneracion::whereIn("work_id", $infoIn)
+            ->where("cronograma_id", $cronograma->id)
+            ->get();
+
+        $bancos = Banco::whereIn("id", $tmp_works->pluck(["banco_id"]))->get(); 
         $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         
         foreach ($bancos as $banco) {
 
-            $workIn = $cronograma->works->whereIn("banco_id", $banco->id)
-                ->where("cheque", 1)
-                ->pluck(["id"]);
-
-            $works = Work::orderBy("nombre_completo", 'ASC')
-                ->whereIn("id", $workIn)
-                ->get();
-
-            $banco->count = $works->count();
-            $banco->works = $works;
+            $banco->count = $tmp_works->where("banco_id", $banco->id)->count();
+            $banco->works = $tmp_works->where("banco_id", $banco->id);
 
             foreach ($banco->works as $work) {
                 
-                $descuentos = Descuento::where("work_id", $work->id)
-                    ->where("cronograma_id", $cronograma->id)
-                    ->where("base", 0)
-                    ->get();
-
-                $remuneraciones = Remuneracion::where("work_id", $work->id)
-                    ->where("cronograma_id", $cronograma->id)
-                    ->get();
-
+                $work->bonificaciones = $remuneraciones->where("work_id", $work->id)
+                    ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
+                $work->total_neto =  $remuneraciones->where("work_id", $work->id)->sum("monto") - $descuentos->where("work_id", $work->id)->sum('monto');
                 
-                $work->bonificaciones = $remuneraciones->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
-                $work->total_neto =  $remuneraciones->sum("monto") - $descuentos->sum('monto');
-
             }
 
         }
         
-        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'works', 'bancos', 'meses'));
+        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'bancos', 'meses'));
 
         $fecha = strtotime(Carbon::now());
         $name = "reporte_cheque_{$fecha}.pdf";

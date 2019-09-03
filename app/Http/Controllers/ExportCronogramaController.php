@@ -17,7 +17,9 @@ use App\Models\Remuneracion;
 use \PDF;
 use App\Models\Meta;
 use App\Jobs\GeneratePlanillaPDF;
+use App\Jobs\ReportGeneral;
 use App\Jobs\GeneratePlanillaMetaPDF;
+use App\Jobs\ReportGeneralMeta;
 use App\Jobs\ReportCronograma;
 use App\Jobs\ReportDescuento;
 use App\Jobs\ReportDescuentoType;
@@ -50,6 +52,7 @@ class ExportCronogramaController extends Controller
             
             $type = $request->type_report_id;
             GeneratePlanillaPDF::dispatch($cronograma, $type)->onQueue("medium");
+            ReportGeneral::dispatch($cronograma, $type)->onQueue("medium");
 
             return [
                 "status" => true,
@@ -82,6 +85,7 @@ class ExportCronogramaController extends Controller
             
             $type = $request->type_report_id;
             GeneratePlanillaMetaPDF::dispatch($cronograma, $type)->onQueue("medium");
+            ReportGeneralMeta::dispatch($cronograma, $type)->onQueue("medium");
 
             return [
                 "status" => true,
@@ -198,8 +202,8 @@ class ExportCronogramaController extends Controller
 
             // exportar afp-net
             (new AfpNet($cronograma))->queue($ruta_apt_net)->chain([
-                (new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net, $config))->onQueue("low")
-            ])->onQueue("low");
+                (new ExportQueue("/storage/excels/{$name_afp_net}", $name_afp_net, $config))
+            ]);
 
             return [
                 "status" => true,

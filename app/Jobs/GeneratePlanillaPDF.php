@@ -62,15 +62,13 @@ class GeneratePlanillaPDF implements ShouldQueue
 
         $cronograma = $this->cronograma;
 
-        $type_remuneraciones = TypeRemuneracion::all();
-        $type_categorias = TypeCategoria::with('cargos')->get();
+        $type_remuneraciones = TypeRemuneracion::where("activo", 1)->get();
         $type_descuentos = TypeDescuento::where("config_afp", null)->where("base", 0)->get();
+        $type_categorias = TypeCategoria::with('cargos')->get();
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $descuentos = Descuento::where('cronograma_id', $cronograma->id)->get();
 
         $afps = Afp::all();
-        $works = Work::whereIn("id", $remuneraciones->pluck(['work_id']))->get();
-
         $results = collect();
         $resumen = collect();
         $totales = 0;
@@ -143,7 +141,6 @@ class GeneratePlanillaPDF implements ShouldQueue
             $whereIn = TypeDescuento::where("config_afp", "<>", null)->get();
             $desct = Descuento::where("cronograma_id", $cronograma->id)
                 ->whereIn("type_descuento_id", $whereIn->pluck(['id']))
-                ->whereIn("work_id", $works->where("afp_id", $afp->id)->pluck(['id']))
                 ->get();
 
             $afp->monto = $desct->sum('monto');
@@ -181,7 +178,6 @@ class GeneratePlanillaPDF implements ShouldQueue
 
         $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
         $titulo = "";
-
 
         $pdf = PDF::loadView('pdf.cronograma', \compact(
             'type_remuneraciones', 'results', 'resumen', 

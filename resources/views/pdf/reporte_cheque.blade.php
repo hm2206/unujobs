@@ -55,8 +55,8 @@
                             <th class="py-1 font-12 text-center"><small><b>Firma</b></small></th>
                         </tr>
                     </thead>
-                    @foreach ($banco->works as $iter => $work)
-                        <tbody>
+                    <tbody>
+                        @foreach ($banco->works as $iter => $work)
                         <tr>
                                 <td class="py-1"><small class="font-12 text-center">{{ $iter + 1 }}</small></td>
                                 <td class="py-1"><small class="font-12">{{ $work->nombre_completo }}</small></td>
@@ -74,8 +74,8 @@
                                     </small>
                                 </td>
                             </tr>
-                        </tbody>
-                    @endforeach
+                        @endforeach
+                    </tbody>
                 </table>
                     
             </body>

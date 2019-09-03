@@ -7,15 +7,6 @@
     <title>AFP NET</title>
 </head>
 <body>
-
-
-    <style>
-    
-        .uppercase {
-            text-transform: uppercase;
-        }
-
-    </style>
     
     <table>
         @foreach ($works as $iter => $work)

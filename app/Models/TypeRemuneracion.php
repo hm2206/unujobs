@@ -30,6 +30,11 @@ class TypeRemuneracion extends Model
         return $this->belongsToMany(Concepto::class, 'concepto_type_remuneracion');
     }
 
+    public function remuneraciones()
+    {
+        return $this->hasMany(Remuneracion::class);
+    }
+
     /**
      * Slug para proteger los id en las urls
      *

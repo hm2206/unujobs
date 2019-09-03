@@ -88,29 +88,26 @@ class ProssingRemuneracion implements ShouldQueue
         if ($isTypeBefore->count()) {
             // recorremos los tipos de remuneraciones
             foreach ($this->types as $type) {
-                // iteramos a cada informacion de la persona
-                foreach ($infos as $info) {
-                    // obtenemos un tipo de remuneracion especifica
-                    $isType = $isTypeBefore->where("type_remuneracion_id", $type->id)->first();
-                    // validamos si existe algúna remuneracion
-                    if ($isType) {
-                        $newRemuneracion = Remuneracion::updateOrCreate([
-                            "work_id" => $info->work_id,
-                            "info_id" => $info->id,
-                            "planilla_id" => $isType->planilla_id,
-                            "cargo_id" => $isType->cargo_id,
-                            "categoria_id" => $isType->categoria_id,
-                            "meta_id" => $isType->meta_id,
-                            "cronograma_id" => $cronograma->id,
-                            "type_remuneracion_id" => $type->id,
-                            "base" => $type->base,
-                            "mes" => $cronograma->mes,
-                            "año" => $cronograma->año,
-                            "adicional" => $cronograma->adicional
-                        ]);
-                        // actualizamos un monto
-                        $newRemuneracion->update(["monto" => $isType->monto]);
-                    }
+                // obtenemos un tipo de remuneracion especifica
+                $isType = $isTypeBefore->where("type_remuneracion_id", $type->id)->first();
+                // validamos si existe algúna remuneracion
+                if ($isType) {
+                    $newRemuneracion = Remuneracion::updateOrCreate([
+                        "work_id" => $info->work_id,
+                        "info_id" => $info->id,
+                        "planilla_id" => $isType->planilla_id,
+                        "cargo_id" => $isType->cargo_id,
+                        "categoria_id" => $isType->categoria_id,
+                        "meta_id" => $isType->meta_id,
+                        "cronograma_id" => $cronograma->id,
+                        "type_remuneracion_id" => $type->id,
+                        "base" => $type->base,
+                        "mes" => $cronograma->mes,
+                        "año" => $cronograma->año,
+                        "adicional" => $cronograma->adicional
+                    ]);
+                    // actualizamos un monto
+                    $newRemuneracion->update(["monto" => $isType->monto]);
                 }
             }
         }else {

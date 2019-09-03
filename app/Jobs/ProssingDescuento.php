@@ -113,7 +113,8 @@ class ProssingDescuento implements ShouldQueue
                 // validamos si existe algúna remuneracion
                 if ($isType) {
                     $newDescuento = Descuento::updateOrCreate([
-                        "work_id" => $job->id,
+                        "work_id" => $info->work_id,
+                        "info_id" => $info->id,
                         "planilla_id" => $isType->planilla_id,
                         "cargo_id" => $isType->cargo_id,
                         "categoria_id" => $isType->categoria_id,

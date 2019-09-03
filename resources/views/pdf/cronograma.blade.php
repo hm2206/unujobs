@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
     <title>Reporte Planilla </title>
 </head>
-<body class="bg-white">
+<body class="bg-white text-dark">
 
     <div class="text-center">{{ $titulo }}</div>
         

@@ -53,6 +53,12 @@ class TypeDescuento extends Model
         return $this->hasOne(ConfigDescuento::class);
     }
 
+
+    public function descuentos()
+    {
+        return $this->hasMany(TypeDescuento::class);
+    }
+
     /**
      * Slug para proteger los id en las urls
      *

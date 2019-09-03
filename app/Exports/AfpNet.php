@@ -27,13 +27,20 @@ class AfpNet implements FromView, ShouldQueue
     public function view() : View
     {
 
-        $works = Work::whereHas("afp")->where("numero_de_cussp", "<>", null)->get();
+        $cronograma = $this->cronograma;
+        $workIn = $cronograma->infos->pluck(["work_id"]);
+        $works = Work::whereIn("id", $workIn)
+            ->orderBy("nombre_completo", 'ASC')
+            ->where("afp_id", "<>", null)
+            ->get();
+
+        $types = TypeDescuento::where("config_afp", "<>", null)->get();
+        $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get();
         
         foreach ($works as $work) {
             
             $whereIn = [];
-            $types = TypeDescuento::where("config_afp", "<>", null)->get();
-
+            
             foreach ($types as $type) {
                 
                 $parse = json_decode($type->config_afp);
@@ -46,10 +53,8 @@ class AfpNet implements FromView, ShouldQueue
 
             }
 
-            $work->tmp_afp = Descuento::where("work_id", $work->id)
-                ->where("cronograma_id", $this->cronograma->id)
-                ->whereIn("type_descuento_id", $whereIn)
-                ->get()
+            $work->tmp_afp = $descuentos->where("work_id")
+                ->whereIn("type_descuento_id", $cronograma->id)
                 ->sum("monto");
 
         }

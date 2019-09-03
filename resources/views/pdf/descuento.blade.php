@@ -53,21 +53,19 @@
                     <th class="py-0 text-right"><small>Total Neto</small></th>
                 </tr>
             </thead>
-            @foreach ($works as $work)
-                <tbody>
-                   @foreach ($work->tmp_infos as $info)
-                        <tr>
-                            <td class="py-0"><small class="font-12">{{ $info->count }}</small></td>
-                            <td class="py-0"><small class="font-12">{{ $work->nombre_completo }}</small></td>
-                            <td class="py-0"><small class="font-12">{{ $work->numero_de_documento }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12">{{ $info->total_bruto }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->base_imponible }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_descuentos }}</small></td>
-                            <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_neto }}</small></td>
-                        </tr>
-                   @endforeach
-                </tbody>
-            @endforeach
+            <tbody>
+                @foreach ($infos as $info)
+                    <tr>
+                        <td class="py-0"><small class="font-12">{{ $info->count }}</small></td>
+                        <td class="py-0"><small class="font-12">{{ $info->work ? $info->work->nombre_completo : '' }}</small></td>
+                        <td class="py-0"><small class="font-12">{{ $info->work ? $info->work->numero_de_documento : '' }}</small></td>
+                        <td class="py-0 text-right"><small class="font-12">{{ $info->total_bruto }}</small></td>
+                        <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->base_imponible }}</small></td>
+                        <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_descuentos }}</small></td>
+                        <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_neto }}</small></td>
+                    </tr>
+                @endforeach
+            </tbody>
         </table>
             
     </body>
