@@ -160,7 +160,7 @@
                                 TOTAL LICUADO PERCIBIDO
                             </td>
                             <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:1px solid black;">
-                                
+                                {{ $total_liquido  }}
                             </td>
                         </tr>
                         <tr>

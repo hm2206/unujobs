@@ -103,6 +103,7 @@ class GeneratePlanillaPDF implements ShouldQueue
 
         // configuracion de los totales
         $total_bruto = $remuneraciones->sum("monto");
+        $total_liquido = $total_bruto - $total_descuentos;
 
         $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
         $titulo = "";
@@ -112,6 +113,7 @@ class GeneratePlanillaPDF implements ShouldQueue
             'type_categorias', 'type_descuentos', "total_bruto",
             'sub_titulo','titulo', 'afps', 'total_descuentos',
             'type_aportaciones', 'total_aportaciones', 'remuneraciones',
+            'total_liquido'
         ));
 
         $fecha = \strtotime(Carbon::now());

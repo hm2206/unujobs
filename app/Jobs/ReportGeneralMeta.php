@@ -112,7 +112,7 @@ class ReportGeneralMeta implements ShouldQueue
             $espacios = $num_remuneraciones - ($num_aportaciones + $num_descuentos + 2);
     
             $sub_titulo = "RESUMEN GENERAL DE LA META {$meta->id} DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
-            $titulo = $meta->id;
+            $titulo = $meta->metaID;
     
             $pdf = PDF::loadView('pdf.resumen_general_metas', \compact(
                 'type_remuneraciones', 'sub_titulo', 'cronograma', 'meses',

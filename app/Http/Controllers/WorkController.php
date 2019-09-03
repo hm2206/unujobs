@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Work;
+use App\Models\Info;
+
 
 class WorkController extends Controller
 {
@@ -14,7 +16,17 @@ class WorkController extends Controller
      */
     public function index()
     {
-        //
+        $query_search = request()->query_search;
+        $infos = [];
+
+        if (strlen($query_search) > 2) {
+
+            $infos = Info::with(['work', 'categoria'])->whereHas("work",function($w) use($query_search) {
+                $w->where("nombre_completo", "like", "%{$query_search}%");
+            })->get();
+        }
+
+        return $infos;
     }
 
     /**

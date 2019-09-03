@@ -21,7 +21,7 @@ class TypeRemuneracion extends Model
     * @var array
     */
     protected $fillable = [
-        "key", "descripcion", "monto", "base", "bonificacion", "activo"
+        "key", "descripcion", "alias", "monto", "base", "bonificacion", "activo"
     ];
 
 

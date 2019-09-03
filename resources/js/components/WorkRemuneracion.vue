@@ -15,7 +15,7 @@
                         <small class="text-primary">
                             <b>{{ 
                                 remuneracion.type_remuneracion ? 
-                                remuneracion.type_remuneracion.descripcion
+                                remuneracion.type_remuneracion.alias
                                 : '' 
                             }}</b>
                         </small>

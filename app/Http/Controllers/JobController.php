@@ -227,14 +227,10 @@ class JobController extends Controller
 
     public function informacion($id) 
     {
-        $infos = Info::where('active', 1)->with(["cargo", "planilla", "categoria", "meta"])
-            ->where("work_id", $id)
-            ->get();
-        $work = Work::whereIn("id", $infos->pluck(['work_id']))->first();
-
+        $info = Info::with(["work", 'categoria'])->FindOrFail($id);
         return [
-            "infos" => $infos,
-            "work" =>  $work,
+            "info" => $info,
+            "work" =>  $info->work,
             "afps" => Afp::all(),
             "bancos" => Banco::all()
         ];

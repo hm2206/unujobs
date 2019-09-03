@@ -105,12 +105,20 @@
                             <tbody>
                                 @if ($only_descuentos->chunk($type_remuneraciones->count())->count() == $count + 1)
                                     <tr>
-                                        <th width="80%" class="py-0 bbt-1 bbb-1">TOTAL DESCUENTOS</th>
-                                        <th width="20%" class="py-0 text-right bbt-1 bbb-1">{{ $total_descuento }}</th>
+                                        <th width="80%" class="py-0">
+                                            <div class="bbt-1">TOTAL DESCUENTOS</div>
+                                        </th>
+                                        <th width="20%" class="py-0 text-right">
+                                            <div class="bbt-1">{{ $total_descuento }}</div>
+                                        </th>
                                     </tr>
                                     <tr>
-                                        <th width="80%" class="py-0 bbt-1 bbb-1">NETO A PAGAR</th>
-                                        <th width="20%" class="py-0 text-right bbt-1 bbb-1">{{ $neto_remuneracion }}</th>
+                                        <th width="80%" class="py-0">
+                                            <div class="bbt-1 bbb-1">NETO A PAGAR</div>
+                                        </th>
+                                        <th width="20%" class="py-0 text-right">
+                                            <div class="bbt-1 bbb-1">{{ $neto_remuneracion }}</div>
+                                        </th>
                                     </tr>
                                     @foreach ($aportaciones as $aport)
                                         <tr>
@@ -119,8 +127,12 @@
                                         </tr>
                                     @endforeach
                                     <tr>
-                                        <th width="80%" class="py-0 bbt-1">TOTAL APORTACIONES</th>
-                                        <th width="20%" class="py-0 text-right bbt-1">{{ $total_aportacion }}</th>
+                                        <th width="80%" class="py-0">
+                                            <div class="bbt-1">TOTAL APORTACIONES</div>
+                                        </th>
+                                        <th width="20%" class="py-0 text-right">
+                                            <div class="bbt-1">{{ $total_aportacion }}</div>
+                                        </th>
                                     </tr>
                                     @for ($i = 0; $i <= $espacios ;$i++)
                                         <tr>

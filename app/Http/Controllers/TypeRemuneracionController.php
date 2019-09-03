@@ -51,6 +51,7 @@ class TypeRemuneracionController extends Controller
         $payload = $this->validate(request(), [
             "key" => "required|unique:type_remuneracions",
             "descripcion" => "required",
+            "alias" => "required"
         ]);
         
         try {
@@ -115,6 +116,7 @@ class TypeRemuneracionController extends Controller
     {
         $this->validate(request(), [
             "descripcion" => "required",
+            "alias" => "required"
         ]);
 
         try {
@@ -126,6 +128,7 @@ class TypeRemuneracionController extends Controller
 
             $remuneracion->update([
                 "descripcion" => $request->descripcion,
+                "alias" => $request->alias,
                 "base" => $base,
                 "activo" => $activo
             ]);

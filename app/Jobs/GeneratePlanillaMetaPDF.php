@@ -166,6 +166,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
 
             // config
             $meta->total_descuentos = $meta->descuentos->where("base", 1)->sum('monto');
+            $meta->total_liquido = $meta->totales - $meta->total_descuentos;
             
 
             $type_aportaciones = TypeDescuento::where("base", 1)->get();

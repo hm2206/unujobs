@@ -5,7 +5,7 @@
             <slot></slot>
         </button>
 
-        <modal :show="show" @close="show = false" heigth="300px">
+        <modal :show="show" @close="show = false" height="90vh">
             <template slot="header">
                 Registro de remuneración
             </template>
@@ -22,6 +22,12 @@
                         <label for="">Descripción <small class="text-danger">*</small></label>
                         <textarea name="descripcion" class="form-control" v-model="form.descripcion"></textarea>
                         <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="">Alias <small class="text-danger">*</small></label>
+                        <input name="alias" type="text" class="form-control" v-model="form.alias">
+                        <small class="text-danger">{{ errors.alias ? errors.alias[0] : '' }}</small>
                     </div>
 
                     <div class="form-group">
@@ -61,6 +67,7 @@ export default {
             form: {
                 key: '',
                 descripcion: '',
+                alias: '',
                 base: '',
                 activo: 0
             },  

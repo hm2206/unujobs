@@ -16,6 +16,7 @@ class CreateTypeRemuneracionsTable extends Migration
         Schema::create('type_remuneracions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string("key")->unique();
+            $table->string("alias");
             $table->string("descripcion");
             $table->double("monto")->nullable();
             $table->integer('base')->default(0);

@@ -107,32 +107,43 @@
 
                 </div>
 
-                <div :class="`card-footer ${send ? 'text-center' : 'text-right'}`">
+                <div :class="`card-footer`">
+                    <div class="row justify-content-between">
+                        <div class="col-md-6">
+                            <buscar-info theme="btn-info" :leave="clear" @find="getFind">
+                                <i class="fas fa-search"></i> Buscar
+                            </buscar-info>
+                            <button class="btn btn-danger" v-if="search" v-on:click="limpiarBusqueda">
+                                <i class="fas fa-times"></i> Limpiar
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-dark"
+                                v-on:click="prev"
+                                :disabled="block"
+                                v-if="!send"
+                            >
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
 
-                    <button class="btn btn-dark"
-                        v-on:click="prev"
-                        :disabled="block"
-                        v-if="!send"
-                    >
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
+                            <button class="btn btn-dark"
+                                v-on:click="next"
+                                :disabled="block"
+                                v-if="!send"
+                            >
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
 
-                    <button class="btn btn-dark"
-                        v-on:click="next"
-                        :disabled="block"
-                        v-if="!send"
-                    >
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
+                            <button class="btn btn-primary"
+                                v-if="!send  && btn"
+                                v-on:click="btnPress"
+                            >
+                                    <i class="fa fa-sync"></i> Actualizar
+                            </button>
 
-                    <button class="btn btn-primary"
-                        v-if="!send  && btn"
-                        v-on:click="btnPress"
-                    >
-                            <i class="fa fa-sync"></i> Actualizar
-                    </button>
-
-                    <div class="text-primary spinner-border" v-if="send"></div>
+                            <div class="text-primary spinner-border" v-if="send"></div>
+                        </div>
+                    </div>
                 </div>
 
             </template>
@@ -151,6 +162,7 @@ import WorkDescuento from './WorkDescuento';
 import WorkObligacion from './WorkObligacion';
 import WorkDetalle from './WorkDetalle';
 import WorkAfectacion from './WorkAfectacion';
+import BuscarInfo from './BuscarInfo';
 import { setTimeout } from 'timers';
 
 export default {
@@ -160,7 +172,8 @@ export default {
         'work-remuneracion': WorkRemuneracion,
         'work-descuento': WorkDescuento,
         'work-obligacion': WorkObligacion,
-        'work-detalle': WorkDetalle
+        'work-detalle': WorkDetalle,
+        'buscar-info': BuscarInfo
     },
     props: [
         "theme", 'param', "tmp_info", "nombre_completo", 
@@ -197,7 +210,9 @@ export default {
             adicional: false,
             tmp_cronograma: {},
             send: false,
-            btn: true
+            btn: true,
+            search: false,
+            clear: false
         }
     },
     mounted() {
@@ -214,6 +229,7 @@ export default {
         show() {
             if (this.categoria) {
                 this.categoria_id = this.categoria;
+                this.job_current = this.param;
                 this.getCargos();
             }
         },
@@ -262,33 +278,26 @@ export default {
             let api = unujobs("get", `/work/${this.job_current}/info`);
 
             await api.then(res => {
-                let { infos, work, bancos, afps } = res.data;
-                this.infos = infos;
+                let { info , work, bancos, afps } = res.data;
+                this.info = info;
                 this.work = work;
                 this.objetos.bancos = bancos;
                 this.objetos.afps = afps;
                 this.fullname = work.nombre_completo;
 
-                for(let info of this.infos) {
-                    
-                    if (!this.isCategoria) {
+                if (!this.isCategoria) {
                         
-                        if (this.planilla_id == info.planilla_id) {
-                            this.categoria_id = info.categoria_id;
-                            this.info = info;
-                            break;
-                        }
+                    this.categoria_id = info.categoria_id;
+                    this.info = info;
+                    this.categoria = info.categoria;
 
-                    }else if(this.categoria_id == info.categoria_id) {
-                        this.info = info;
-                        break;
-
-                    }
-
+                }else if(this.categoria_id == info.categoria_id) {
+                    this.info = info;
+                    this.categoria = info.categoria;
                 }
 
             }).catch(err => {
-                console.log("algo salió mal");
+                console.log("algo salió mal  al obtener la informacion del trabajador");
             });
 
             this.loader = false;
@@ -309,9 +318,23 @@ export default {
 
         },
         getNumeros(e) {
-
             this.numeros = e;
-
+        },
+        async getFind(e) {
+            this.isCategoria = false;
+            this.block = true;
+            this.job_current = e;
+            this.search = true;
+            await this.getCargos();
+            this.block = true;
+        },
+        limpiarBusqueda(e) {
+            this.block = true;
+            this.search = false;
+            this.clear = true;
+            this.categoria_id = this.categoria;
+            this.job_current = this.param;
+            this.getCargos();
         },
         next(e) {
             if (this.paginate.length > this.findCurrent + 1) {
