@@ -13,7 +13,7 @@
     
     @if ($meta->totales > 0)
    
-    <body class="bg-white">
+    <body class="bg-white text-dark">
 
             <div class="text-center">Meta {{ $meta->metaID }}</div>
                 

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
     <title>Reporte Planilla </title>
 </head>
-<body class="bg-white text-dark">
+<body class="bg-white text-dark mt-0 pt-0">
 
     <div class="text-center">{{ $titulo }}</div>
         
@@ -27,7 +27,7 @@
         </thead>
     </table>
 
-    <h6 class="mt-1 text-center mb-2 uppercase">{{ $sub_titulo }}</h6>
+    <h6 class="mt-1 text-center uppercase">{{ $sub_titulo }}</h6>
 
     <div class="text-md uppercase">
         <b> 
@@ -43,18 +43,19 @@
 
     <table style="width:100%;">
         <tr>
-            <td style="position:relative;">
+            <td style="position:relative;" class="py-0">
                 <table class="table-sm table table-bordered" style="position:absolute;top:0px;left:0px;width:100%;">
                     <thead class="table-thead text-center">
                         <tr>
-                            <td></td>
+                            <td class="py-0"></td>
                             @foreach ($type_categorias as $categoria)
-                                <td>{{ $categoria->descripcion }} 
+                                <td class="py-0">{{ $categoria->descripcion }} 
                                     <table width="100%">
                                         <tr>
                                             @foreach ($categoria->cargos as $cargo)
-                                                <td class="small text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                    {{ $cargo->tag }}
+                                                <td class="small text-center py-0" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                                    {{ $cargo->tag }} <br>
+                                                    {{ $cargo->ext_pptto }}
                                                 </td>
                                             @endforeach
                                         </tr>
@@ -66,36 +67,40 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td width="25%"><b>2.1 PERSONAL Y OBLIGACIONES SOCIALES</b></td>
-                            @foreach ($resumen as $res)
-                                <td>
+                            <td width="25%" class="py-0"><b>2.1 PERSONAL Y OBLIGACIONES SOCIALES</b></td>
+                            @foreach ($type_categorias as $type_categoria)
+                                <td class="py-0">
                                     <table width="100%">
                                         <tr>
-                                            @foreach ($res['cargos'] as $car)
+                                            @foreach ($type_categoria->cargos as $cargo)
                                                 <td width="50%" class="text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                    <b>{{ $car['total'] }}</b>
+                                                    <b>{{ $remuneraciones->where("cargo_id", $cargo->id)->sum("monto") }}</b>
                                                 </td>
                                             @endforeach
                                         </tr>
                                     </table>
                                 </td>
                             @endforeach
-                            <td class="text-center"><b>{{ $totales }}</b></td>
+                            <td class="text-center py-0"><b>{{ $remuneraciones->sum("monto") }}</b></td>
                         </tr>
-                        @foreach ($results as $type)
+                        @foreach ($type_remuneraciones as $type)
                             <tr class="table-height">
 
                                 <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $type['id'] }}. {{ $type['descripcion'] }}
+                                    {{ $type->key }}. {{ $type->descripcion }}
                                 </td>
 
-                                @foreach ($type['categorias'] as $categoria)
+                                @foreach ($type->type_categorias as $type_categoria)
                                     <td class="table-height text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                         <table width="100%">
                                             <tr>
-                                                @foreach ($categoria['tags'] as $tag)
+                                                @foreach ($type_categoria->cargos as $cargo)
                                                     <td width="50%" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                        {{ $tag['monto'] }}
+                                                        {{ 
+                                                            $remuneraciones->where("cargo_id", $cargo->id)
+                                                                ->where("type_remuneracion_id", $type->id)
+                                                                ->sum('monto') 
+                                                        }}
                                                     </td>
                                                 @endforeach
                                             </tr>
@@ -104,7 +109,7 @@
                                 @endforeach
 
                                 <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="text-center">
-                                    {{ $type['total'] }}
+                                    {{ $type->total }}
                                 </td>
 
                             </tr>
@@ -113,11 +118,11 @@
                 </table>
             </td>
 
-            <td style="position:relative;">
+            <td style="position:relative;" class="py-0">
                 <table class="table table-sm table-bordered" style="position:absolute;top:0px;left:0px;width:100%;">
                     <thead>
                         <tr>
-                            <th colspan="2">DESCUENTOS</th>
+                            <th colspan="2" class="py-0">DESCUENTOS</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -126,7 +131,7 @@
                                 <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                     {{ $descuento->descripcion }}
                                 </td>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                <td class="text-right" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                     {{ $descuento->monto }}
                                 </td>
                             </tr>
@@ -137,7 +142,7 @@
                                 <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                     AFP {{ $afp->nombre }}
                                 </td>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                <td class="text-right" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                     {{ $afp->monto }}
                                 </td>
                             </tr>
@@ -146,7 +151,7 @@
                             <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                 TOTAL DESCUENTOS
                             </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
+                            <td class="text-right" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
                                 {{ $total_descuentos }}
                             </td>
                         </tr>
@@ -162,17 +167,17 @@
                             <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                 TOTAL PLANILLA BRUTA
                             </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:2px solid black;">
-                                {{ $totales }}
+                            <td class="text-right" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:2px solid black;">
+                                {{ $total_bruto }}
                             </td>
                         </tr>
-                        @foreach ($aportaciones as $aport)
+                        @foreach ($type_aportaciones as $aport)
                             <tr>
                                 <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $aport['key'] }}.- {{ $aport['descripcion'] }}
+                                    {{ $aport->key }}.- {{ $aport->descripcion }}
                                 </td>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $aport['monto'] }}
+                                <td class="text-right" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $aport->monto }}
                                 </td>
                             </tr>
                         @endforeach
@@ -180,7 +185,7 @@
                             <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                 84.-TOTAL APORTACIONES
                             </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                            <td class="text-right" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                 {{ $total_aportaciones }}
                             </td>
                         </tr>
