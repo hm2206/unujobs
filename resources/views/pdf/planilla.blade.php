@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
     <title>Reporte Planillas Meta x Metas </title>
 </head>
-<body class="bg-white">
+<body class="bg-white text-dark">
 
     @foreach ($metas as $meta)
 
@@ -16,7 +16,7 @@
             $pagina++;
         @endphp
 
-        @foreach ($meta->infos->chunk(5) as $item)
+        @foreach ($meta->infos as $item)
             <div>
                 <div style="height:15%;">
                     <table>
@@ -91,7 +91,7 @@
                                     <td class="py-0">AFP {{ $work->afp ? $work->afp->nombre : "" }}</td>
                                     <td class="py-0">N° CUSPP: {{ $work->numero_de_cuspp }}</td>
                                     <td class="py-0">N° ESSALUD: {{ $work->numero_de_essalud }}</td>
-                                    <td class="py-0">OBS: {{ $info->observacion }}</td>
+                                    <td class="py-0" colspan="2">OBS: {{ $info->observacion }}</td>
                                 </tr>
                                 <tr>
                                     <td class="py-0" colspan="2">
@@ -106,96 +106,85 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td colspan="2">
-                                        {{-- Tabla de remuneraciones --}}
-                                        <table class="w-100">
-                                            @foreach ($info->remuneraciones->chunk(3) as $row)
-                                                <tr>
-                                                    @foreach ($row as $remuneracion)
-                                                        <td class="py-0">
-                                                            <table class="w-100">
-                                                                <tr>
-                                                                    
-                                                                    @if (isset($remuneracion['nombre']))
-                                                                        <th class="py-0" width="30%">
-                                                                            <div class="bbt-2">
-                                                                                {{ $remuneracion['nombre'] }}.-
-                                                                            </div>
-                                                                        </th>
-                                                                    @else
-                                                                        <td class="py-0" width="30%">
-                                                                            {{ $remuneracion->typeRemuneracion ?  
-                                                                                $remuneracion->typeRemuneracion->key :  null}}.-
-                                                                        </td>
-                                                                    @endif
-                                                                    
-                                                                    
-                                                                    @if (isset($remuneracion['nombre']))
-                                                                        <th class="text-right py-0">
-                                                                            <div class="bbt-2">
-                                                                                {{ $remuneracion['monto'] }}
-                                                                            </div>
-                                                                        </th>
-                                                                    @else
-                                                                        <td class="text-right py-0">
-                                                                            {{ $remuneracion->monto }}
-                                                                        </td>
-                                                                    @endif    
-        
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                    @endforeach
-                                                </tr>
+                                    @foreach ($info->remuneraciones as $columna)
+                                        <td width="12%">
+                                            @foreach ($columna as $remuneracion)
+                                                <table class="w-100">
+                                                    @if (!$remuneracion->nivel)
+                                                        <tr>
+                                                            <td class="py-0">
+                                                                {{   
+                                                                    $remuneracion->typeRemuneracion ?
+                                                                        $remuneracion->typeRemuneracion->key
+                                                                        : null
+                                                                }}.-   
+                                                            </td>
+                                                            <td class="py-0 text-right">
+                                                                {{   
+                                                                    $remuneracion->monto
+                                                                }}         
+                                                            </td>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <td class="py-0">
+                                                                <div class="bbt-1">{{ $remuneracion->key }}</div>
+                                                            </td>
+                                                            <td class="py-0 text-right">
+                                                                <div class="bbt-1">{{  $remuneracion->monto }}</div>      
+                                                            </td>
+                                                        </tr>
+                                                        @for ($i = 0; $i < 9 - $columna->count(); $i++)
+                                                            <tr>
+                                                                <td class="py-0">&nbsp;</td>
+                                                                <td class="py-0 text-right">&nbsp;</td>
+                                                            </tr>
+                                                        @endfor
+                                                    @endif
+                                                </table>
                                             @endforeach
-                                        </table>
-                                    </td>
-                                    <td colspan="3">
-                                        <table class="w-100">
-                                            @foreach ($info->descuentos->chunk(4) as $row)
-                                                <tr>
-                                                    @foreach ($row as $descuento)
-                                                        <td class="py-0">
-                                                            <table class="w-100">
-                                                                <tr>
-                                                                    @if (isset($descuento['nombre']))
-                                                                        <th class="py-0" width="30%">
-                                                                            <div class="bbt-2">
-                                                                                {{ $descuento['nombre'] }}.-
-                                                                            </div>
-                                                                        </th>
-                                                                    @else
-                                                                        <td class="py-0" width="30%">
-                                                                            <div>
-                                                                                {{ $descuento->typeDescuento ?  
-                                                                                    $descuento->typeDescuento->key :  null}}.-
-                                                                            </div>
-                                                                        </td>
-                                                                    @endif
-                                                                    
-                                                                    
-                                                                    @if (isset($descuento['nombre']))
-                                                                        <th class="text-right py-0">
-                                                                            <div class="bbt-2">
-                                                                                {{ $descuento['monto'] }}
-                                                                            </div>
-                                                                        </th>
-                                                                    @else
-                                                                        <td class="text-right py-0">
-                                                                            <div>
-                                                                                {{ $descuento->monto }}
-                                                                            </div>
-                                                                        </td>
-                                                                    @endif    
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                    @endforeach
-                                                </tr>
+                                        </td>
+                                    @endforeach
+                                    @foreach ($info->descuentos as $columna)
+                                        <td width="12%">
+                                            @foreach ($columna as $descuento)
+                                                <table class="w-100">
+                                                    @if (!$descuento->nivel)
+                                                        <tr>
+                                                            <td class="py-0">
+                                                                {{   
+                                                                    $descuento->typeDescuento ?
+                                                                        $descuento->typeDescuento->key
+                                                                        : null
+                                                                }}.-   
+                                                            </td>
+                                                            <td class="py-0 text-right">
+                                                                {{   
+                                                                    $descuento->monto
+                                                                }}         
+                                                            </td>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <td class="py-0">
+                                                                <div class="bbt-1">{{ $descuento->key }}</div>
+                                                            </td>
+                                                            <td class="py-0 text-right">
+                                                                <div class="bbt-1">{{  $descuento->monto }}</div>      
+                                                            </td>
+                                                        </tr>
+                                                        @for ($i = 0; $i < 9 - $columna->count(); $i++)
+                                                            <tr>
+                                                                <td class="py-0">&nbsp;</td>
+                                                                <td class="py-0 text-right">&nbsp;</td>
+                                                            </tr>
+                                                        @endfor
+                                                    @endif
+                                                </table>
                                             @endforeach
-                                        </table>
-                                    </td>
-                                    <td colspan="2">
+                                        </td>
+                                    @endforeach
+                                    <td>
                                         <table class="w-100">
                                             <tr>
                                                 <td class="py-0">BASE IMPONIBLE</td>

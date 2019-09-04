@@ -49,16 +49,14 @@ class ReportCronograma implements ShouldQueue
     {
         $cronograma = $this->cronograma;
         $infoIn = $cronograma->infos->pluck(["id"]);
-        $infos = Info::with("work")
-            ->whereIn("id", $infoIn)
-            ->get();
+        $infos = Info::with("work")->whereIn("id", $infoIn)->get();
 
         $metas = $metas = Meta::whereIn("id", $infos->pluck(['meta_id']))->get();
         $pagina = 0;
 
         // configuracion
-        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
-        $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get();
+        $remuneraciones = Remuneracion::with("typeRemuneracion")->where("cronograma_id", $cronograma->id)->get();
+        $descuentos = Descuento::with("typeDescuento")->where("cronograma_id", $cronograma->id)->where("base", 0)->get();
 
         //traemos trabajadores que pertenescan a la meta actual
         foreach($metas as $meta) {
@@ -72,40 +70,35 @@ class ReportCronograma implements ShouldQueue
             foreach ($tmp_infos as $info) {
 
                 // obtenemos las remuneraciones actuales del trabajador
-                $tmp_remuneraciones = $remuneraciones->where("work_id", $info->work_id)
-                            ->where("categoria_id", $info->categoria_id)
-                            ->where("cargo_id", $info->cargo_id);
-
-                $info->remuneraciones = $tmp_remuneraciones;
+                $tmp_remuneraciones = $remuneraciones->where("info_id", $info->id);
+                // total de remuneraciones
                 $total = $tmp_remuneraciones->sum('monto');
-
+                // base imponible
                 $tmp_base = $tmp_remuneraciones->where("base", 0)->sum('monto');
-                $tmp_base = $tmp_base == 0 ? $total : $tmp_base;
-
-
                 // agregamos datos a las remuneraciones
-                $info->remuneraciones->push([
-                    "nombre" => "TOTAL",
+                $tmp_remuneraciones->put(rand(1000, 9999), (Object)[
+                    "nivel" => 1,
+                    "key" => "TOTAL",
                     "monto" => $total
                 ]);
+                    
+                $info->remuneraciones = $tmp_remuneraciones->chunk(9);
 
                 //obtenemos los descuentos actuales del trabajador
-                $tmp_descuentos= $descuentos->where("work_id", $info->work_id)
-                    ->where('cargo_id', $info->cargo_id)
-                    ->where('categoria_id', $info->categoria_id);
-
-                $info->descuentos = $tmp_descuentos->where("base", 0);
-                $total_descto = $info->descuentos->where("base", 0)->sum('monto');
+                $tmp_descuentos = $descuentos->where("info_id", $info->id);
+                $total_descto = $tmp_descuentos->sum('monto');
 
                 //calcular base imponible
                 $info->base = $tmp_base;
 
-                //calcular total de descuentos
-                $info->descuentos->push([
-                    "nombre" => "TOTAL",
+                // agregamos datos a las remuneraciones
+                $tmp_descuentos->put(rand(1000, 9999), (Object)[
+                    "nivel" => 1,
+                    "key" => "TOTAL",
                     "monto" => $total_descto
                 ]);
 
+                $info->descuentos = $tmp_descuentos->chunk(9);
 
                 //calcular total neto
                 $info->neto = $total - $total_descto;
@@ -113,7 +106,7 @@ class ReportCronograma implements ShouldQueue
             }
 
             
-            $meta->infos = $tmp_infos;
+            $meta->infos = $tmp_infos->chunk(5);
 
         }
 
