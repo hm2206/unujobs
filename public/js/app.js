@@ -463,7 +463,7 @@ function previouslyCompared(a, b) {
 /*!*****************************************************!*\
   !*** ./node_modules/apollo-boost/lib/bundle.esm.js ***!
   \*****************************************************/
-/*! exports provided: ApolloClient, ApolloError, FetchType, NetworkStatus, ObservableQuery, isApolloError, Observable, getOperationName, ApolloLink, concat, createOperation, empty, execute, from, fromError, fromPromise, makePromise, split, toPromise, HeuristicFragmentMatcher, InMemoryCache, IntrospectionFragmentMatcher, ObjectCache, StoreReader, StoreWriter, WriteError, assertIdValue, defaultDataIdFromObject, defaultNormalizedCacheFactory, enhanceErrorWithDocument, HttpLink, gql, default */
+/*! exports provided: HttpLink, gql, default, ApolloClient, ApolloError, FetchType, NetworkStatus, ObservableQuery, isApolloError, Observable, getOperationName, ApolloLink, concat, createOperation, empty, execute, from, fromError, fromPromise, makePromise, split, toPromise, HeuristicFragmentMatcher, InMemoryCache, IntrospectionFragmentMatcher, ObjectCache, StoreReader, StoreWriter, WriteError, assertIdValue, defaultDataIdFromObject, defaultNormalizedCacheFactory, enhanceErrorWithDocument */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14541,6 +14541,15 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -73535,24 +73544,39 @@ var render = function() {
     "form",
     { staticClass: "card-body", attrs: { id: "form-rpt-descuento" } },
     [
-      _c(
-        "div",
-        { staticClass: "row mb-4" },
-        _vm._l(_vm.tmp_types, function(type, ty) {
-          return _c(
-            "div",
-            { key: "type-descuentos-" + ty, staticClass: "col-md-3" },
+      _c("div", { staticClass: "row mb-4 align-items-center" }, [
+        _c("div", { staticClass: "col-md-4" }, [
+          _c(
+            "select",
+            { staticClass: "form-control", attrs: { name: "type_descuento" } },
             [
-              _c("input", {
-                attrs: { type: "checkbox", name: "type_descuentos[]" },
-                domProps: { value: type.id }
-              }),
-              _vm._v(" " + _vm._s(type.descripcion) + "\n        ")
-            ]
+              _c("option", { attrs: { value: "" } }, [
+                _vm._v("TODOS LOS DESCUENTOS")
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.tmp_types, function(type, ty) {
+                return _c(
+                  "option",
+                  {
+                    key: "type-descuentos-" + ty,
+                    domProps: { value: type.id }
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(type.descripcion) +
+                        "\n                "
+                    )
+                  ]
+                )
+              })
+            ],
+            2
           )
-        }),
-        0
-      ),
+        ]),
+        _vm._v(" "),
+        _vm._m(0)
+      ]),
       _vm._v(" "),
       _c("hr"),
       _vm._v(" "),
@@ -73578,7 +73602,17 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-3" }, [
+      _c("input", { attrs: { type: "checkbox", name: "detalle", value: "1" } }),
+      _vm._v(" Detalles\n        ")
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -75470,11 +75504,11 @@ var render = function() {
                         _vm._v(" "),
                         _c("input", {
                           attrs: { type: "hidden", name: "categoria_id" },
-                          domProps: { value: _vm.categoria }
+                          domProps: { value: _vm.categoria.id }
                         }),
                         _vm._v(" "),
                         _c("input", {
-                          attrs: { type: "hidden", name: "work_id" },
+                          attrs: { type: "hidden", name: "info_id" },
                           domProps: { value: _vm.param }
                         })
                       ]),

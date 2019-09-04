@@ -527,7 +527,7 @@ class JobController extends Controller
     public function detalle($id) 
     {
 
-        $work = Work::findOrFail($id);
+        $info = Info::findOrFail($id);
 
         // configuración
         $year = request()->input('year', date('Y'));
@@ -546,7 +546,8 @@ class JobController extends Controller
         $types = [];
         $cronograma = Cronograma::where('mes', $mes)
                 ->where('año', $year)
-                ->where("adicional", $adicional);
+                ->where("adicional", $adicional)
+                ->where("planilla_id", $info->planilla_id);
 
 
         if($adicional) {
@@ -559,7 +560,7 @@ class JobController extends Controller
         $cronograma = $cronograma->firstOrFail();
         $detalles = Detalle::where("cronograma_id", $cronograma->id)
             ->orderBy("type_descuento_id", 'ASC')
-            ->where("work_id", $work->id)
+            ->where("info_id", $info->id)
             ->get();
 
         

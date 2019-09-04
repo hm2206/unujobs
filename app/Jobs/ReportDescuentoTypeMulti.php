@@ -18,6 +18,7 @@ use App\Notifications\ReportNotification;
 use App\Models\TypeDescuento;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDetalle;
+use App\Models\Detalle;
 
 class ReportDescuentoTypeMulti implements ShouldQueue
 {
@@ -26,18 +27,18 @@ class ReportDescuentoTypeMulti implements ShouldQueue
 
     private $cronograma;
     private $type_report;
-    private $type_descuentos;
+    private $type_descuento;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($cronograma, $type_report, $type_descuentos)
+    public function __construct($cronograma, $type_report, $type_descuento)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
-        $this->type_descuentos = $type_descuentos;
+        $this->type_descuento = $type_descuento;
     }
 
     /**
@@ -55,29 +56,59 @@ class ReportDescuentoTypeMulti implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $infos = $cronograma->infos;
         $count = 1;
-
-        $types = TypeDescuento::whereIn("id", $this->type_descuentos)->get();
-
         
-        // configuracion
-        $descuentos = Descuento::whereIn("info_id", $infos->pluck(['id']))
+        $type = TypeDescuento::findOrFail($this->type_descuento);
+        $type_detalles = TypeDetalle::where("type_descuento_id", $type->id)->get();
+        
+        // configuracion de los detalles
+        $detalles =  Detalle::where("type_descuento_id", $type->id)
             ->where("cronograma_id", $cronograma->id)
-            ->whereIn("type_descuento_id", $this->type_descuentos)
             ->get();
+        
+        $infos = $cronograma->infos->whereIn("id", $detalles->pluck(['info_id']));
+        // configurar infos
+        $bodies = $infos->chunk(50);
 
-        foreach ($infos as $info) {
-      
-            $info->descuentos = $descuentos->where("info_id", $info->id);
-            $info->count = $count;
-            $info->total = $info->descuentos->sum("monto");
-            $count++;
+        foreach ($bodies as $infos) {
+            foreach ($infos as $info) {
+                $info->type_detalles = $type_detalles;
+                // configurar los descuentos  detalles x detalles
+                foreach ($info->type_detalles as $type_detalle) {
+                    $type_detalle->monto = $detalles->where("info_id", $info->id)
+                        ->where("type_detalle_id", $type_detalle->id)
+                        ->sum("monto");
+                }
+
+                $info->count = $count;
+                $info->total = $detalles->where("info_id", $info->id)->sum("monto");
+                $count++;
+            }
+
+
+            $tmp_detalle = [
+                "nivel" => 1,
+                "body" => []
+            ];
+
+            foreach($type_detalles as $total_type_detalle) {
+                array_push($tmp_detalle["body"], (Object)[
+                    "total" => $detalles->where("type_detalle_id", $total_type_detalle->id)
+                        ->whereIn("info_id", $infos->pluck(['id']))
+                        ->sum("monto")
+                ]);
+            }
+
+            array_push($tmp_detalle["body"], (Object)[
+                "total" => $infos->sum("total")
+            ]);
+
+            $infos->put(rand(10000, 99999), (Object)$tmp_detalle);
 
         }
 
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'infos', 'meses', 'types'));
+        $pdf = PDF::loadView("pdf.descuento_detalle_type", compact('cronograma', 'bodies', 'meses', 'type', 'type_detalles' ,'detalles'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
 
         $fecha = strtotime(Carbon::now());

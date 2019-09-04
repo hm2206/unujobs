@@ -268,12 +268,15 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            $type_descuentos = $request->input('type_descuentos', []);
+            $type_descuento = $request->input('type_descuento', "");
+            $detalle = $request->detalle;
 
-            if (count($type_descuentos) > 1) {
-                ReportDescuentoTypeMulti::dispatch($cronograma, $type, $type_descuentos)->onQueue('medium');
-            }else if (count($type_descuentos) == 1) {
-                ReportDescuentoType::dispatch($cronograma, $type, $type_descuentos)->onQueue('medium');
+            if ($type_descuento) {
+                if ($detalle) {
+                    ReportDescuentoTypeMulti::dispatch($cronograma, $type, $type_descuento)->onQueue('medium');
+                }else {
+                    ReportDescuentoType::dispatch($cronograma, $type, $type_descuento)->onQueue('medium');
+                }
             }else {
                 ReportDescuento::dispatch($cronograma, $type)->onQueue('medium');
             }

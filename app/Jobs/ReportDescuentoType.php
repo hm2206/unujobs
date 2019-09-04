@@ -26,18 +26,18 @@ class ReportDescuentoType implements ShouldQueue
 
     private $cronograma;
     private $type_report;
-    private $type_descuentos;
+    private $type_descuento;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($cronograma, $type_report, $type_descuentos)
+    public function __construct($cronograma, $type_report, $type_descuento)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
-        $this->type_descuentos = $type_descuentos;
+        $this->type_descuento = $type_descuento;
     }
 
     /**
@@ -58,42 +58,44 @@ class ReportDescuentoType implements ShouldQueue
         $infos = $cronograma->infos;
         $count = 1;
 
-        $types = TypeDescuento::whereIn("id", $this->type_descuentos)->get();
-        $type_detalles = TypeDetalle::whereIn("type_descuento_id", $types->pluck(['id']))->get();
-        $isDetalles = $type_detalles->count() ? true : false;
-
+        $type = TypeDescuento::findOrFail($this->type_descuento);
 
         // configuracion
         $descuentos = Descuento::whereIn("info_id", $infos->pluck(['id']))
             ->where("cronograma_id", $cronograma->id)
-            ->whereIn("type_descuento_id", $this->type_descuentos)
+            ->where("type_descuento_id", $this->type_descuento)
             ->get();
 
+        // configurar
+        $bodies = $infos->chunk(50);
 
-        foreach ($infos as $info) {
-                
+        // reconfigurar los descuentos y remuneraciones
+        $tmp_total = 0;
 
-            $info->descuentos = $descuentos->where("info_id", $info->id);
-            $info->count = $count;
-            $count++;
+        foreach ($bodies as $infos) {
+            foreach ($infos as $info) {
+                $info->tmp_monto = $descuentos->where("info_id", $info->id)->sum("monto");
+                $info->count = $count;
+                $count++;
+                $tmp_total += $info->tmp_monto;
+            }
 
+            $infos->put(rand(10000, 99999), (Object)[
+                "nivel" => 1,
+                "total" => $tmp_total
+            ]);
         }
 
 
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'infos', 'meses', 'types'));
-        
-        if ($isDetalles) {
-            $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        }
-
+        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'bodies', 'meses', 'type'));
         $fecha = strtotime(Carbon::now());
         $name = "descuento_{$fecha}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");
 
         $archivo = Report::create([
             "type" => "pdf",
-            "name" => "Planilla del {$cronograma->mes} del {$cronograma->año}",
+            "name" => "El Descuento {$type->descripcion} del {$cronograma->mes} del {$cronograma->año}",
             "icono" => "fas fa-file-pdf",
             "path" => "/storage/pdf/{$name}",
             "cronograma_id" => $cronograma->id,
@@ -104,7 +106,7 @@ class ReportDescuentoType implements ShouldQueue
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/pdf/{$name}", "El descuento del {$cronograma->mes} del {$cronograma->year} fué generada"));
+            $user->notify(new ReportNotification("/storage/pdf/{$name}", "{$archivo->name} fué generada"));
         }
 
     }

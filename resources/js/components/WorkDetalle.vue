@@ -46,8 +46,8 @@
                                 <input type="hidden" name="type_descuento_id" :value="type.type_descuento_id"/>
                                 <input type="hidden" name="type_detalle_id" :value="type.id"/>
                                 <input type="hidden" name="cronograma_id" :value="cronograma.id">
-                                <input type="hidden" name="categoria_id" :value="categoria">
-                                <input type="hidden" name="work_id" :value="param">
+                                <input type="hidden" name="categoria_id" :value="categoria.id">
+                                <input type="hidden" name="info_id" :value="param">
                             </div>
                             <div class="col-md-3">
                                 <input type="number" v-model="type.monto" step="any" 

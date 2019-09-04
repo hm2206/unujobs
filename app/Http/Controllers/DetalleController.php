@@ -39,7 +39,7 @@ class DetalleController extends Controller
     {
         $payload = $this->validate(request(), [
             "cronograma_id" => "required",
-            "work_id" => "required",
+            "info_id" => "required",
             "type_detalle_id" => "required",
             "type_descuento_id" => "required",
             "categoria_id" => "required"
@@ -48,12 +48,13 @@ class DetalleController extends Controller
         try {
 
             $detalle = Detalle::updateOrCreate($payload);
+
             // obtenemos los descuentos
-            $descuento = Descuento::where("work_id", $detalle->work_id)
+            $descuento = Descuento::where("info_id", $request->info_id)
                 ->where("cronograma_id", $detalle->cronograma_id)
                 ->where("type_descuento_id", $detalle->type_descuento_id)
-                ->where("categoria_id", $detalle->categoria_id)
                 ->firstOrFail();
+
             // verificamos que el cronograma este activo
             $cronograma =  Cronograma::where("estado", 1)
                 ->findOrFail($descuento->cronograma_id);
@@ -61,10 +62,9 @@ class DetalleController extends Controller
             $detalle->monto = $request->monto;
             $detalle->save();
             // obtenemos y sumamos los montos de los detalles
-            $tmp_monto = Detalle::where("work_id", $detalle->work_id)
+            $tmp_monto = Detalle::where("info_id", $detalle->work_id)
                 ->where("cronograma_id", $detalle->cronograma_id)
                 ->where("type_descuento_id", $detalle->type_descuento_id)
-                ->where("categoria_id", $detalle->categoria_id)
                 ->sum("monto");
             // actualizamons el monto del descuento
             $descuento->update([

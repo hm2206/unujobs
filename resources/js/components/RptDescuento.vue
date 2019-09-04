@@ -1,10 +1,19 @@
 <template>
     <form class="card-body" id="form-rpt-descuento">
 
-        <div class="row mb-4">
+        <div class="row mb-4 align-items-center">
 
-            <div class="col-md-3" v-for="(type, ty) in tmp_types" :key="`type-descuentos-${ty}`">
-                <input type="checkbox" name="type_descuentos[]" :value="type.id"> {{ type.descripcion }}
+            <div class="col-md-4">
+                <select name="type_descuento" class="form-control">
+                    <option value="">TODOS LOS DESCUENTOS</option>
+                    <option :value="type.id" v-for="(type, ty) in tmp_types" :key="`type-descuentos-${ty}`">
+                        {{ type.descripcion }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <input type="checkbox" name="detalle" value="1"> Detalles
             </div>
 
         </div>

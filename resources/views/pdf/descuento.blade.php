@@ -16,7 +16,8 @@
         }
     
     </style>
-
+    
+@foreach ($bodies as $iter => $infos)
     <body class="bg-white text-dark">
                 
         <table class="text-dark">
@@ -36,7 +37,10 @@
 
         <br>
 
-        <h5 class="font-12"><b>PLANILLA: {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</b></h5>
+        <h5 class="font-12">
+            <b>PLANILLA: {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</b>
+            <small style="margin-left: 5em;">página: {{ $iter + 1 }}</small>
+        </h5>
         <h5 class="font-12">
             <b>MES DE: {{ $meses[$cronograma->mes - 1] }} {{ $cronograma->año }}</b>
         </h5>
@@ -55,18 +59,29 @@
             </thead>
             <tbody>
                 @foreach ($infos as $info)
-                    <tr>
-                        <td class="py-0"><small class="font-12">{{ $info->count }}</small></td>
-                        <td class="py-0"><small class="font-12">{{ $info->work ? $info->work->nombre_completo : '' }}</small></td>
-                        <td class="py-0"><small class="font-12">{{ $info->work ? $info->work->numero_de_documento : '' }}</small></td>
-                        <td class="py-0 text-right"><small class="font-12">{{ $info->total_bruto }}</small></td>
-                        <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->base_imponible }}</small></td>
-                        <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_descuentos }}</small></td>
-                        <td class="py-0 text-right"><small class="font-12 text-right">{{ $info->total_neto }}</small></td>
-                    </tr>
+                    @if (!$info->nivel)
+                        <tr>
+                            <td class="py-0"><small class="font-12">{{ $info->count }}</small></td>
+                            <td class="py-0"><small class="font-12">{{ $info->work ? $info->work->nombre_completo : '' }}</small></td>
+                            <td class="py-0"><small class="font-12">{{ $info->work ? $info->work->numero_de_documento : '' }}</small></td>
+                            <td class="py-0 text-right"><small class="font-12">{{ $info->total_bruto }}</small></td>
+                            <td class="py-0 text-right"><small class="font-12 text-right">{{ round($info->base_imponible, 2) }}</small></td>
+                            <td class="py-0 text-right"><small class="font-12 text-right">{{ round($info->total_descuentos, 2) }}</small></td>
+                            <td class="py-0 text-right">
+                                <small class="font-12 text-right {{ $info->total_neto > 0 ? '' : 'text-danger' }}">
+                                {{ round($info->total_neto, 2) }}
+                                </small>
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <th class="py-0 text-center" colspan="7"><b class="font-12">Total S/. {{ $info->total }}</b></th>
+                        </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>
             
     </body>
+@endforeach
 </html>

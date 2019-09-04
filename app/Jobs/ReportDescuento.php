@@ -64,23 +64,32 @@ class ReportDescuento implements ShouldQueue
             ->where("cronograma_id", $cronograma->id)
             ->get(); 
 
-        foreach ($infos as $info) {
-                
+        // configurar
+        $bodies = $infos->chunk(25);
 
-            $info->descuentos = $descuentos->where("info_id", $info->id)->where("base", 0);
-            $info->aportaciones = $descuentos->where("info_id", $info->id)->where("base", 1);
-            $info->total_descuentos = $descuentos->where("info_id", $info->id)->where("base", 0)->sum('monto');
-            $info->total_bruto = $remuneraciones->where("info_id", $info->id)->sum('monto');
-            $info->base_imponible = $remuneraciones->where("info_id", $info->id)->where("base", 0)->sum("monto");
-            $info->total_neto = $info->total_bruto - $info->total_descuentos;
-            $info->count = $count;
-            $count++;
+        // reconfigurar los descuentos y remuneraciones
+        $tmp_total = 0;
+        foreach ($bodies as $infos) {
+            foreach ($infos as $info) {
+                $info->descuentos = $descuentos->where("info_id", $info->id)->where("base", 0);
+                $info->aportaciones = $descuentos->where("info_id", $info->id)->where("base", 1);
+                $info->total_descuentos = $descuentos->where("info_id", $info->id)->where("base", 0)->sum('monto');
+                $info->total_bruto = $remuneraciones->where("info_id", $info->id)->sum('monto');
+                $info->base_imponible = $remuneraciones->where("info_id", $info->id)->where("base", 0)->sum("monto");
+                $info->total_neto = $info->total_bruto - $info->total_descuentos;
+                $info->count = $count;
+                $count++;
+                $tmp_total += $info->total_neto;
+            }
 
+            $infos->put(rand(10000, 99999), (Object)[
+                "nivel" => 1,
+                "total" => $tmp_total
+            ]);
         }
 
-
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento", compact('cronograma', 'infos', 'meses'));
+        $pdf = PDF::loadView("pdf.descuento", compact('cronograma', 'bodies', 'meses'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
 
         $fecha = strtotime(Carbon::now());
@@ -89,7 +98,7 @@ class ReportDescuento implements ShouldQueue
 
         $archivo = Report::create([
             "type" => "pdf",
-            "name" => "Planilla del {$cronograma->mes} del {$cronograma->año}",
+            "name" => "Reporte de Todos los Descuentos del {$cronograma->mes} del {$cronograma->año}",
             "icono" => "fas fa-file-pdf",
             "path" => "/storage/pdf/{$name}",
             "cronograma_id" => $cronograma->id,

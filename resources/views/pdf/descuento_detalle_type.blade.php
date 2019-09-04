@@ -36,7 +36,7 @@
             </table>
 
             <br>
-
+            <h5 class="font-10"><b>{{ $type->descripcion }}</b></h5>
             <h5 class="font-10"><b>PLANILLA: {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</b></h5>
             <h5 class="font-10">
                 <b>MES DE: {{ $meses[$cronograma->mes - 1] }} {{ $cronograma->año }}</b>
@@ -47,22 +47,33 @@
                     <tr>
                         <th class="py-0 font-10"><small class="font-10">N°</small></th>
                         <th class="py-0 font-10"><small class="font-10">Nombre Completo</small></th>
-                        <th class="py-0 font-10"><small class="font-10">N° de Documento</small></th>
-                        <th class="py-0 font-10 text-right"><small class="font-10">{{ $type->descripcion }}</small></th>
+                        @foreach ($type_detalles as $type_detalle)
+                            <th class="py-0 font-10 text-right"><small class="font-10">{{ $type_detalle->descripcion }}</small></th>
+                        @endforeach
+                        <th class="py-0 font-10"><small class="font-10">Total Genrl.</small></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($infos as $info)
-                        @if (!$info->nivel)
+                        @if(!$info->nivel)
                             <tr>
                                 <td class="py-0"><small class="font-9">{{ $info->count }}</small></td>
                                 <td class="py-0"><small class="font-9">{{ $info->work ? $info->work->nombre_completo : '' }}</small></td>
-                                <td class="py-0 text-center"><small class="font-9">{{ $info->work ? $info->work->numero_de_documento : '' }}</small></td>
-                                <td class="py-0 text-right"><small class="font-9">{{ $info->tmp_monto }}</small></td>
-                            </tr>    
+                                @foreach ($info->type_detalles as $type_detalle)
+                                    <td class="py-0 text-right">
+                                        <small class="font-9">
+                                            {{ $detalles->where("info_id", $info->id)->where("type_detalle_id", $type_detalle->id)->sum("monto") }}
+                                        </small>
+                                    </td>
+                                @endforeach
+                                <th class="py-0 text-right"><b class="font-9">{{ $info->total }}</b></th>
+                            </tr> 
                         @else
                             <tr>
-                                <th class="py-0 text-center" colspan="4"><b class="font-10">Total: S/. {{ $info->total }}</b></th>
+                                <th class="py-0 text-right" colspan="2"><b class="font-10"> TOTALES S/.</b></th>
+                                @foreach ($info->body as $item)
+                                    <th class="py-0 text-right"><b class="font-10">{{ $item->total }}</b></th>
+                                @endforeach
                             </tr>
                         @endif
                     @endforeach
