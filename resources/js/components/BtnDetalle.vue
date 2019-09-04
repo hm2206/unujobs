@@ -73,7 +73,7 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item" v-for="(item, i) in items" :key="`item-${i}`">
                             <a href="#" 
-                                :class="`nav-link ${item.active ? 'active' : ''}`"
+                                :class="`nav-link text-sm ${item.active ? 'active' : ''}`"
                                 v-on:click="seleccionar($event, item)"
                             >
                                 {{ item.text }}
@@ -387,4 +387,14 @@ export default {
     .min-height {
         height: 100%;
     }
+
+    .form-control {
+        font-size: 14px !important;
+        font-weight: bold;
+    }
+
+    .text-sm {
+        font-size: 14px;
+    }
+
 </style>

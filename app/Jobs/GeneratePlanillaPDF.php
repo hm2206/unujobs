@@ -65,7 +65,14 @@ class GeneratePlanillaPDF implements ShouldQueue
         $afps = Afp::all();
         $type_remuneraciones = TypeRemuneracion::where("activo", 1)->get();
         $tmp_descuentos = TypeDescuento::where("activo", 1)->get();
-        $type_categorias = TypeCategoria::with('cargos')->get();
+
+        // VERIFICAR CAS
+        if ($cronograma->planilla_id == 5) {
+            $type_categorias = TypeCategoria::with('cargos')->where("id", 3)->get();
+        }else {
+            $type_categorias = TypeCategoria::with('cargos')->whereNotIn("id", [3])->get();
+        }
+
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
         $descuentos = Descuento::where('cronograma_id', $cronograma->id)->get();
 

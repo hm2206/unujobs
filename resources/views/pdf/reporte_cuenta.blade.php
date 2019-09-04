@@ -19,7 +19,7 @@
 
     @foreach ($bancos as $banco)
 
-        @if($banco->count > 0)
+        @foreach ($banco->works as $works)
             <body class="bg-white text-dark">
                         
                 <table class="text-dark">
@@ -49,32 +49,40 @@
                 <table class="table mt-2 table-bordered">
                     <thead>
                         <tr>
-                            <th class="py-1 font-12"><small class="text-center"><b>N°</b></small></th>
-                            <th class="py-1 font-12 text-center"><small><b>Nombre Completo</b></small></th>
-                            <th class="py-1 font-12"><small><b>Numero de cuenta</b></small></th>
-                            <th class="py-1 font-12 text-center"><small><b>Neto a Pagar</b></small></th>
-                            <th class="py-1 font-12 text-center"><small><b>Firma</b></small></th>
+                            <th class="py-1 font-12"><small class="text-center font-10"><b>N°</b></small></th>
+                            <th class="py-1 font-12 text-center"><small class="font-10"><b>Apellidos y Nombres</b></small></th>
+                            <th class="py-1 font-12"><small><b class="font-10">Numero de cuenta</b></small></th>
+                            <th class="py-1 font-12 text-center"><small class="font-10"><b>Neto a Pagar</b></small></th>
+                            <th class="py-1 font-12 text-center"><small class="font-10"><b>Firma</b></small></th>
                         </tr>
                     </thead>
-                    @foreach ($banco->works as $iter => $work)
-                        <tbody>
-                        <tr>
+                    <tbody>
+                        @foreach ($works as $iter => $work)
+                            @if(!$work->nivel)
+                            <tr>
                                 <td class="py-1"><small class="font-12 text-center">{{ $iter + 1 }}</small></td>
                                 <td class="py-1"><small class="font-12">{{ $work->nombre_completo }}</small></td>
                                 <td class="py-1 text-center"><small class="font-12 text-center">{{ $work->numero_de_cuenta }}</small></td>
                                 <td class="py-1 text-center"><small class="font-12 text-center">{{ $work->total_neto }}</small></td>
-                                <td class="py-1 text-center pt-1">
+                                <td class="py-1 text-center pt-1" style="padding-bottom: 1px;">
                                     <small class="font-12 text-center mt-5">
                                         {{ $work->numero_de_documento }}
                                     </small>
                                 </td>
                             </tr>
-                        </tbody>
-                    @endforeach
+                            @else
+                                <tr>
+                                    <th class="py-1 text-center" colspan="5">
+                                        <b class="font-12 text-center">Total S/. {{ $work->total }}</b>
+                                    </th>
+                                </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
                 </table>
                     
             </body>
-        @endif
+        @endforeach
 
     @endforeach
 </html>

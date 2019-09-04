@@ -324,3 +324,10 @@ export default {
 }
 
 </script>
+
+<style scoped>
+    .form-control {
+        font-size: 14px !important;
+        font-weight: bold;
+    }
+</style>

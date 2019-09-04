@@ -75,20 +75,30 @@ class ReportCuenta implements ShouldQueue
         foreach ($bancos as $banco) {
 
             $banco->count = $tmp_works->where("banco_id", $banco->id)->count();
-            $banco->works = $tmp_works->where("banco_id", $banco->id);
+            $banco->works = $tmp_works->where("banco_id", $banco->id)->chunk(23);
 
-            foreach ($banco->works as $work) {
+            $total_pagina = 0;
+
+            foreach ($banco->works as $page => $works) {
+                foreach ($works as $work) {
                     
-                $tmp_descuentos = $descuentos->where("work_id", $work->id)
-                    ->where("base", 0);
+                    $tmp_descuentos = $descuentos->where("work_id", $work->id)
+                        ->where("base", 0);
+    
+                    $tmp_remuneraciones = $remuneraciones->where("work_id", $work->id);
+    
+                    $work->total_neto =  $tmp_remuneraciones->sum("monto") - $tmp_descuentos->sum('monto');
+                    $total_pagina += $work->total_neto;
+    
+                }
 
-                $tmp_remuneraciones = $remuneraciones->where("work_id", $work->id);
-
-                $work->total_neto =  $tmp_remuneraciones->sum("monto") - $tmp_descuentos->sum('monto');
-
+                
+                $works->put($works->count() * ($page + 1), (Object)[
+                    "nivel" => 1,
+                    "total" => round($total_pagina, 2)
+                ]);
             }
-        }
-
+        }  
         
         $pdf = PDF::loadView("pdf.reporte_cuenta", compact('cronograma', 'bancos', 'meses'));
 

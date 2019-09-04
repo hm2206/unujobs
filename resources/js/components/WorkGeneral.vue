@@ -255,4 +255,9 @@ export default {
         right: 20px;
     }
 
+    .form-control {
+        font-size: 14px !important;
+        font-weight: bold;
+    }
+
 </style>
