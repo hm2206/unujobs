@@ -60,7 +60,7 @@ class ReportGeneral implements ShouldQueue
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
-    $cronograma = $this->cronograma;
+        $cronograma = $this->cronograma;
 
         $type_remuneraciones = TypeRemuneracion::orderBy("id", "ASC")->where("activo", 1)->get();
         $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where("activo", 1)->get();
@@ -120,7 +120,10 @@ class ReportGeneral implements ShouldQueue
             ->first();
 
         if ($archivo) {
-            $archivo->update(["read" => 0]);
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
         }else {
             $archivo = Report::create([
                 "type" => "pdf",

@@ -24,7 +24,9 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get("/cronograma/{id}/add", "CronogramaController@add");
     // agregar trabajadores a la planilla x mes
     Route::post("/cronograma/{id}/add", "CronogramaController@addStore");
-
+    // cambiar estado de la planilla
+    Route::post("/cronograma/{id}/estado", "CronogramaController@estado");
+    
 
     // registrar un nuevo cargo
     Route::post("/cargo", "CargoController@store");

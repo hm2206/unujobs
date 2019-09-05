@@ -22,7 +22,7 @@
                     <img src="{{ public_path() . "/img/logo.png" }}" width="50" alt="">
                 </th>
                 <th>
-                    <div><b class="font-13">UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
+                    <div><b class="font-14">UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
                     <div class="ml-1 text-sm"><b class="font-13">OFICINA GENERAL DE RECURSOS HUMANOS</b></div>
                     <div class="ml-1 text-sm"><b class="font-13">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</b></div>
                 </th>
@@ -30,10 +30,10 @@
         </thead>
     </table>
 
-    <h6 class="mt-1 text-center mb-2 uppercase font-14">{{ $sub_titulo }}</h6>
+    <h6 class="mt-1 text-center mb-2 uppercase"><b class="font-13">{{ $sub_titulo }}</b></h6>
 
-    <div class="text-md uppercase font-12">
-        <b> 
+    <div class="text-md uppercase">
+        <b class="font-13"> 
             RESUMEN DE PLANILLA UNICA DE PAGO : 
             {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}
         </b>
@@ -42,10 +42,10 @@
     <table width="100%" class="table-sm font-12">
         <thead>
             <tr>
-                <td class="font-12">OBSERVACIONES: {{ $cronograma->observacion }}</td>
-                <td class="uppercase font-12">MES DE: {{ $meses[$cronograma->mes - 1] }}</td>
-                <td class="font-12">META SIAF: {{ $titulo }}</td>
-                <td class="font-12">Página : 1</td>
+                <th class="font-12">OBSERVACIONES: {{ $cronograma->observacion }}</th>
+                <th class="uppercase font-12">MES DE: {{ $meses[$cronograma->mes - 1] }}</th>
+                <th class="font-12">META SIAF: {{ $titulo }}</th>
+                <th class="font-12">Página : 1</th>
             </tr>
         </thead>
     </table>
@@ -55,16 +55,16 @@
         <table class="table-boleta table-sm" style="width:100%;">
             <thead> 
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-11">5. GASTO CORRIENTE:</td>
+                    <th class="py-0 pl-3 pt-0 font-11">5. GASTO CORRIENTE:</th>
                 </tr>
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-11">1. PERSONAL Y OBLIGACIONES SOCIALES:</td>
+                    <th class="py-0 pl-3 pt-0 font-11">1. PERSONAL Y OBLIGACIONES SOCIALES:</th>
                 </tr>
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-11">11. APLICACIONES DIRECTAS:</td>
+                    <th class="py-0 pl-3 pt-0 font-11">11. APLICACIONES DIRECTAS:</th>
                 </tr>
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-11">01. RETRIBUCIONES Y COMPLEMENTOS - LEY DE BASES DE LA CARRERA ADMINISTRATIVA:</td>
+                    <th class="py-0 pl-3 pt-0 font-11">01. RETRIBUCIONES Y COMPLEMENTOS - LEY DE BASES DE LA CARRERA ADMINISTRATIVA:</th>
                 </tr>
             </thead>
         </table>
@@ -73,36 +73,38 @@
     <table width="100%" class="table-sm mt-0">
         <thead>
             <tr>
-                <td width="55%">
+                <th width="55%">
                     <table width="100%">
                         <thead>
                             @foreach ($type_remuneraciones as $remuneracion)
                                 <tr>
-                                    <td width="80%" class="py-0 font-11">{{ $remuneracion->key }}.-{{ $remuneracion->descripcion }}</td>
-                                    <td width="20%" class="py-0 text-right font-11">{{ $remuneracion->monto }}</td>
+                                    <th width="80%" class="py-0 font-12">{{ $remuneracion->key }}.-{{ $remuneracion->descripcion }}</th>
+                                    <th width="20%" class="py-0 text-right">
+                                        <div class="font-13">{{ $remuneracion->monto }}</div>
+                                    </th>
                                 </tr>
                             @endforeach
                         </thead>
                         <tbody>
                             <tr>
-                                <th width="80%" class="py-0 font-11">
-                                    <div class="bbt-1">TOTAL REMUNERACION</div>
+                                <th width="80%" class="py-0">
+                                    <div class="bbt-1 font-13">TOTAL REMUNERACION</div>
                                 </th>
-                                <th width="20%" class="py-0 text-right font-11">
-                                    <div class="bbt-1">{{ $total_remuneracion }}</div>    
+                                <th width="20%" class="py-0 text-right">
+                                    <div class="bbt-1 font-13">{{ $total_remuneracion }}</div>    
                                 </th>
                             </tr>
                         </tbody>
                     </table>
-                </td>
+                </th>
                 @foreach ($only_descuentos->chunk($type_remuneraciones->count() + 1) as $count => $body)
-                    <td width="20%">
+                    <th width="20%">
                         <table width="100%">
                             <thead>
                                 @foreach ($body as $descuento)
                                     <tr>
-                                        <td width="80%" class="py-0 font-11">{{ $descuento->key }}.-{{ $descuento->descripcion }}</td>
-                                        <td width="20%" class="py-0 text-right font-11">{{ $descuento->monto }}</td>
+                                        <th width="80%" class="py-0 font-13">{{ $descuento->key }}.-{{ $descuento->descripcion }}</th>
+                                        <th width="20%" class="py-0 text-right font-13">{{ $descuento->monto }}</th>
                                     </tr>
                                 @endforeach
                             </thead>
@@ -112,7 +114,7 @@
                                         <th width="80%" class="py-0 font-11">
                                             <div class="bbt-1">TOTAL DESCUENTOS</div>
                                         </th>
-                                        <th width="20%" class="py-0 text-right font-11">
+                                        <th width="20%" class="py-0 text-right font-13">
                                             <div class="bbt-1">{{ $total_descuento }}</div>
                                         </th>
                                     </tr>
@@ -120,25 +122,29 @@
                                         <th width="80%" class="py-0 font-11">
                                             <div class="bbt-1 bbb-1">NETO A PAGAR</div>
                                         </th>
-                                        <th width="20%" class="py-0 text-right font-11">
+                                        <th width="20%" class="py-0 text-right font-13">
                                             <div class="bbt-1 bbb-1">{{ $neto_remuneracion }}</div>
                                         </th>
                                     </tr>
                                     @foreach ($aportaciones as $aport)
                                         <tr>
-                                            <td width="80%" class="py-0 font-11">{{ $aport->key }}.-{{ $aport->descripcion }}</td>
-                                            <td width="20%" class="py-0 text-right font-11">{{ $aport->monto }}</td>
+                                            <th width="80%" class="py-0 font-12">
+                                                <b>{{ $aport->key }}.-{{ $aport->descripcion }}</b>
+                                            </th>
+                                            <th width="20%" class="py-0 text-right font-13">
+                                                <b>{{ $aport->monto }}</b>
+                                            </th>
                                         </tr>
                                     @endforeach
                                     <tr>
-                                        <th width="80%" class="py-0 font-11">
-                                            <div class="bbt-1">TOTAL APORTACIONES</div>
+                                        <th width="80%" class="py-0 font-12">
+                                            <b class="bbt-1">TOTAL APORTACIONES</b>
                                         </th>
-                                        <th width="20%" class="py-0 text-right font-11">
-                                            <div class="bbt-1">{{ $total_aportacion }}</div>
+                                        <th width="20%" class="py-0 text-right font-13">
+                                            <div class="bbt-1"><b>{{ $total_aportacion }}</b></div>
                                         </th>
                                     </tr>
-                                    @for ($i = 0; $i <= $espacios ;$i++)
+                                    @for ($i = 0; $i <= $espacios + 2 ;$i++)
                                         <tr>
                                             <td width="80%" class="py-0 font-11">&nbsp;</td>
                                             <td width="20%" class="py-0 font-11">&nbsp;</td>
@@ -157,19 +163,19 @@
         <table class="table-boleta table-sm" style="width:100%;">
             <thead> 
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-12">
+                    <th class="py-0 pl-3 pt-0 font-12">
                         LOS NUMEROS DE {{ $first_remuneracion->key }} AL {{ $remuneracion->key }} CORRESPONDEN  A REMUNERACIONES, DEL {{ $first_descuento->key }} AL {{ $descuento->key }} CORRESPONDEN A DESCUENTOS
-                    </td>
+                    </th>
                 </tr>
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-12">
+                    <th class="py-0 pl-3 pt-0 font-12">
                         EL NUMERO 61 INDICA EL TOTAL DE DESCUENTOS Y EL NUMERO 62 INDICA EL NETO A PAGAR
-                    </td>
+                    </th>
                 </tr>
                 <tr>
-                    <td class="py-0 pl-3 pt-0 font-12">
+                    <th class="py-0 pl-3 pt-0 font-12">
                         LOS NUMEROS DEL 80 AL 83 CORRESPONDEN A APORTACIONES Y EL NUMERO 84 EL TOTAL DE APORTACIONES
-                    </td>
+                    </th>
                 </tr>
             </thead>
         </table>

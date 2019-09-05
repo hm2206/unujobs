@@ -212,5 +212,16 @@
         </div>
     </div>        
 
+    @php
+        $estado = $cronograma->estado ? 1 : 0;
+    @endphp
+
+    <switch-planilla 
+        :active="{{ $estado }}"
+        :param="'{{ $cronograma->id }}'"
+        :user_id="'{{ auth()->user()->id }}'"
+    >
+    </switch-planilla>
+
 </div>
 @endsection

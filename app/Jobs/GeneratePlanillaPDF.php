@@ -135,7 +135,10 @@ class GeneratePlanillaPDF implements ShouldQueue
             ->first();
 
         if ($archivo) {
-            $archivo->update(["read" => 0]);
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
         }else {
             $archivo = Report::create([
                 "type" => "pdf",

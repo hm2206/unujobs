@@ -37,6 +37,7 @@ class CronogramaController extends Controller
     public function __construct()
     {
         $this->middleware("auditoria:crear planilla")->only(['store']);
+        $this->middleware("import")->only('estado');
     }
 
     /**
@@ -335,6 +336,33 @@ class CronogramaController extends Controller
             ];
         }
 
+    }
+
+
+
+    public function estado(Request $request, $id) 
+    {
+        $cronograma = Cronograma::findOrFail($id);
+        try {
+            
+            $cronograma->estado = $cronograma->estado ? 0 : 1;
+            $cronograma->save();
+            $message = $cronograma->estado ? 'activada' : 'desactivada';
+
+            return [
+                "status" => true,
+                "message" => "Planilla {$message} correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
     }
 
 

@@ -23,11 +23,10 @@ class CreateCronogramasTable extends Migration
             $table->integer("numero")->nullable();
             $table->integer("dias")->default(30);
             $table->string('pdf')->nullable();
-            $table->string('pdf_meta')->nullable();
             $table->integer('pendiente')->default(0);
             $table->text('observacion')->nullable();
             $table->tinyInteger("estado")->default(0);
-            $table->string("ruta")->nullable();
+            $table->tinyInteger('auto')->default(1);
             $table->timestamps();
         });
     }

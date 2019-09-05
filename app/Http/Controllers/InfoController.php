@@ -196,29 +196,27 @@ class InfoController extends Controller
         try {
         
             $info = Info::where("active", 1)->findOrFail($id);
-            $cronograma = Cronograma::where("estado", 1)
-                ->findOrFail($request->cronograma_id);
+            $cronograma = Cronograma::findOrFail($request->cronograma_id);
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla está desactivada",
+                    "body" => ""
+                ];
+            }
 
             $remuneraciones = $info->remuneraciones->where("cronograma_id", $cronograma->id);
             $total = 0;
 
             foreach ($remuneraciones as $remuneracion) {
-                if($cronograma->mes >= (int)date('m') && $cronograma->año == date('Y')) {
-                    $tmp_remuneracion = $request->input($remuneracion->id);
-                    if (is_numeric($tmp_remuneracion)) {
-                        $remuneracion->monto = round($tmp_remuneracion, 2);
-                        $remuneracion->save();
-                        $total += $tmp_remuneracion;
-                    }
-                }else {
-                    return [
-                        "status" => false,
-                        "message" => "Ocurrió un error al procesar la operación",
-                        "total" => 0
-                    ];
+                $tmp_remuneracion = $request->input($remuneracion->id);
+                if (is_numeric($tmp_remuneracion)) {
+                    $remuneracion->monto = round($tmp_remuneracion, 2);
+                    $remuneracion->save();
+                    $total += $tmp_remuneracion;
                 }
             }
-
 
             // preguntamos si estamos agregados a la planilla
             $isWork = $cronograma->infos->find($id);
@@ -247,6 +245,7 @@ class InfoController extends Controller
                 "body" => round($total, 2)
             ];
         } catch (\Throwable $th) {
+
             \Log::info($th);
             return [
                 "status" => false,
@@ -342,8 +341,15 @@ class InfoController extends Controller
         try {
             
             $info = Info::findOrFail($id);
-            $cronograma = Cronograma::where("estado", 1)
-                ->find($request->cronograma_id);
+            $cronograma = Cronograma::findOrFail($request->cronograma_id);
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla está desactivada",
+                    "body" => ""
+                ];
+            }
 
             $remuneraciones = $info->remuneraciones->where("cronograma_id", $cronograma->id);
 
@@ -352,18 +358,10 @@ class InfoController extends Controller
                 ->get();
 
             foreach ($descuentos as $descuento) {
-                if($cronograma->mes >= (int)date('m') && $cronograma->año == date('Y')) {
-                    $tmp_descuento = $request->input($descuento->id);
-                    if (is_numeric($tmp_descuento) && $descuento->edit) {
+                $tmp_descuento = $request->input($descuento->id);
+                if (is_numeric($tmp_descuento) && $descuento->edit) {
                         $descuento->monto = round($tmp_descuento, 2);
                         $descuento->save();
-                    }
-                }else {
-                    return [
-                        "status" => false,
-                        "message" => "Ocurrió un error al procesar la operación",
-                        "body" => ""
-                    ];
                 }
             }
 

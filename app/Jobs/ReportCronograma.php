@@ -54,7 +54,7 @@ class ReportCronograma implements ShouldQueue
         $cronograma = $this->cronograma;
         $infos = Info::with("work")->whereIn("id", $this->infoIn)->get();
         $meta = Meta::findOrFail($this->meta_id);
-        $pagina = 0;
+        $pagina = 1;
 
         // configuracion
         $remuneraciones = Remuneracion::with("typeRemuneracion")->where("cronograma_id", $cronograma->id)->get();
@@ -135,7 +135,10 @@ class ReportCronograma implements ShouldQueue
             ->first();
 
         if ($archivo) {
-            $archivo->update(["read" => 0]);
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
         }else {
             $archivo = Report::create([
                 "type" => "pdf",
@@ -150,7 +153,7 @@ class ReportCronograma implements ShouldQueue
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/pdf/{$nombre}", "{$archivo->name} fué generada"));
+            $user->notify(new ReportNotification("/storage/{$path}", "{$archivo->name} fué generada"));
         }
 
     }
