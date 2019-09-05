@@ -9,7 +9,7 @@
         <title>Reporte Mesual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
-    <body class="bg-white text-dark">
+    <body class="bg-white text-negro">
 
             <div class="mb-7">
                     <div class="text-center"></div>
@@ -37,7 +37,7 @@
                         </b>
                     </div>
                     
-                    <div class="boleta-header" style="width:90%;">
+                    <div class="boleta-header" style="width:95%;">
                         <table class="table-boleta table-sm" style="width:100%;">
                             <thead> 
                                 <tr>
@@ -76,7 +76,7 @@
                         </table>
                     </div>
     
-                    <table class="table-sm mt-2" style="width:90%;">
+                    <table class="table-sm mt-2" style="width:95%;">
                         <thead class="py-0 bbt-1 bbl-1 bbb-1">
                             <tr class="text-center py-0">
                                 <th class="py-0">

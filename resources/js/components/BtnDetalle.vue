@@ -110,7 +110,9 @@
                 <div :class="`card-footer`">
                     <div class="row justify-content-between">
                         <div class="col-md-6">
-                            <buscar-info theme="btn-info" :leave="clear" @find="getFind">
+                            <buscar-info theme="btn-info" :leave="clear" @find="getFind"
+                                :planilla_id="planilla_id"
+                            >
                                 <i class="fas fa-search"></i> Buscar
                             </buscar-info>
                             <button class="btn btn-danger" v-if="search" v-on:click="limpiarBusqueda">

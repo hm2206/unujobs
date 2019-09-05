@@ -12,6 +12,7 @@ use App\Models\Categoria;
 use App\Models\Remuneracion;
 use App\Models\Work;
 use App\Models\Planilla;
+use App\Models\Meta;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
@@ -238,6 +239,7 @@ class CronogramaController extends Controller
         $like = request()->query_search;
         $indices = [];
         $infos = [];
+        $metas = [];
 
         if($cronograma->infos->count() > 0) {
 
@@ -252,10 +254,11 @@ class CronogramaController extends Controller
             }
 
             $infos = $infos->paginate(20);
+            $metas = Meta::whereIn("id", $infos->pluck(["meta_id"]))->get();
             
         }
 
-        return view('cronogramas.job', compact('cronograma', 'infos', 'like', 'typeReports', 'indices'));
+        return view('cronogramas.job', compact('cronograma', 'infos', 'like', 'metas', 'typeReports', 'indices'));
     }
 
 

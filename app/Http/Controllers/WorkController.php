@@ -17,11 +17,12 @@ class WorkController extends Controller
     public function index()
     {
         $query_search = request()->query_search;
+        $planilla_id = request()->planilla_id;
         $infos = [];
 
         if (strlen($query_search) > 2) {
-
-            $infos = Info::with(['work', 'categoria'])->whereHas("work",function($w) use($query_search) {
+            $infos = Info::with(['work', 'categoria'])->where("planilla_id", $planilla_id)
+            ->whereHas("work",function($w) use($query_search) {
                 $w->where("nombre_completo", "like", "%{$query_search}%");
             })->get();
         }

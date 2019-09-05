@@ -123,20 +123,29 @@ class GeneratePlanillaPDF implements ShouldQueue
             'total_liquido'
         ));
 
-        $fecha = \strtotime(Carbon::now());
-        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $nombre = "pdf/planilla_general_{$fecha}.pdf";
+        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+        $path = "pdf/planilla_general_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v1.pdf";
+        $nombre = "Resumen general del {$cronograma->mes} del {$cronograma->año} - v1";
 
-        $pdf->save(storage_path("app/public") . "/{$nombre}");
+        $pdf->save(storage_path("app/public") . "/{$path}");
 
-        $archivo = Report::create([
-            "type" => "pdf",
-            "name" => "Resumen general del {$cronograma->mes} del {$cronograma->año}",
-            "icono" => "fas fa-file-pdf",
-            "path" => "/storage/{$nombre}",
-            "cronograma_id" => $cronograma->id,
-            "type_report_id" => $this->type_report
-        ]);
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update(["read" => 0]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
         $users = User::all();
 

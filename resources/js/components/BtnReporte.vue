@@ -26,6 +26,7 @@
                     <component :is="current" v-if="!loader"
                         :report="report"
                         :cronograma="cronograma"
+                        :metas="metas"
                     >
                     </component>
 
@@ -78,7 +79,7 @@ export default {
         'rpt-descuento': RptDescuento,
         'rpt-planilla': RptPlanilla
     },
-    props: ["theme", 'cronograma', 'type_reports'],
+    props: ["theme", 'cronograma', 'type_reports', 'metas'],
     mounted() {
 
         var componentes = [

@@ -84,8 +84,12 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            GeneratePlanillaMetaPDF::dispatch($cronograma, $type)->onQueue("medium");
-            ReportGeneralMeta::dispatch($cronograma, $type)->onQueue("medium");
+            $meta_id = $request->meta_id;
+
+            if ($meta_id) {
+                GeneratePlanillaMetaPDF::dispatch($cronograma, $type, $meta_id)->onQueue("medium");
+                ReportGeneralMeta::dispatch($cronograma, $type, $meta_id)->onQueue("medium");
+            }
 
             return [
                 "status" => true,
@@ -94,6 +98,7 @@ class ExportCronogramaController extends Controller
 
         } catch (\Throwable $th) {
            
+            \Log::info($th);
             return [
                 "status" => false,
                 "message" => "Ocurrió un error al procesar la operación"
@@ -115,7 +120,13 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportBoleta::dispatch($cronograma, $type)->onQueue('medium');
+            $meta_id = $request->meta_id;
+            
+            if ($meta_id) {
+                ReportBoleta::dispatch($cronograma, $type, $meta_id)->onQueue('medium');
+            }else {
+                abort(401);
+            }
 
             return [
                 "status" => true,
@@ -238,7 +249,14 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            ReportCronograma::dispatch($cronograma, $type)->onQueue('medium');
+            $meta_id = $request->meta_id;
+
+            if ($meta_id) {
+                $infoIn = $cronograma->infos->where("meta_id", $meta_id)->pluck(["id"]);
+                ReportCronograma::dispatch($cronograma, $type, $infoIn, $meta_id)->onQueue('medium');
+            }else {
+                abort(401);
+            }
 
             return [
                 "status" => true,

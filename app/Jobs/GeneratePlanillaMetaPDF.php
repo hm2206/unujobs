@@ -7,46 +7,51 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-use \PDF;
-use App\Models\Work;
-use App\Models\User;
-use App\Notifications\ReportNotification;
-use App\Models\Meta;
+use App\Exports\PlanillaExport;
 use App\Models\TypeRemuneracion;
-use App\Models\TypeDescuento;
 use App\Models\TypeCategoria;
+use App\Models\TypeDescuento;
+use App\Models\Cargo;
+use App\Models\Cronograma;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Afp;
+use App\Models\Work;
+use App\Notifications\ReportNotification;
+use \PDF;
+use App\Models\User;
 use App\Models\Report;
+use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
+use App\Models\Meta;
 
 /**
- * Genera un pdf de las planillas meta por meta 
+ * Genera pdf de la planilla
  */
 class GeneratePlanillaMetaPDF implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Obtenemos el cronograma
-     *
-     * @var array
-     */
-    private $cronograma = [];
+
+    private $cronograma;
     public $timeout = 0;
     private $type_report;
+    private $meta_id;
 
-
-    public function __construct($cronograma, $type_report)
+    /**
+     * configuramos un poco
+     *
+     * @param \App\Models\Cronograma $cronograma
+     */
+    public function __construct($cronograma, $type_report, $meta_id)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
+        $this->meta_id = $meta_id;
     }
 
-
     /**
-     * Procesamos y creamos el PDF de la planilla
+     * Generamos el pdf de las planilas generales
      *
      * @return void
      */
@@ -59,172 +64,99 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $works = $cronograma->works;
+
+        $afps = Afp::all();
+        $meta = Meta::findOrFail($this->meta_id);
+        $type_remuneraciones = TypeRemuneracion::where("activo", 1)->get();
+        $tmp_descuentos = TypeDescuento::where("activo", 1)->get();
+
+        // VERIFICAR CAS
+        if ($cronograma->planilla_id == 5) {
+            $type_categorias = TypeCategoria::with('cargos')->where("id", 3)->get();
+        }else {
+            $type_categorias = TypeCategoria::with('cargos')->whereNotIn("id", [3])->get();
+        }
+
+        $remuneraciones = Remuneracion::where("meta_id", $meta->id)->where('cronograma_id', $cronograma->id)->get();
+        $descuentos = Descuento::where("meta_id", $meta->id)->where('cronograma_id', $cronograma->id)->get();
 
 
-        $metas = Meta::all();
+        foreach ($type_remuneraciones as $type_remuneracion) {
+            // obtenemos los tipos de categorias
+            $type_remuneracion->type_categorias = $type_categorias;
+            $type_remuneracion->total = $remuneraciones->where("type_remuneracion_id", $type_remuneracion->id)->sum("monto");
+        }
 
-        foreach ($metas as $meta) {
-            
-            $meta->type_remuneraciones = TypeRemuneracion::all();
-            $meta->type_categorias = TypeCategoria::with('cargos')->get();
-            $meta->type_descuentos = TypeDescuento::where("base", 0)->where("config_afp", null)->get();
-            $meta->remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)
-                ->where("meta_id", $meta->id)
-                ->get();
+        // configurar afps
+        $whereIn = $tmp_descuentos->where("config_afp", "<>", null)->pluck(["id"]);
+        foreach($afps as $afp) {
+            $afp->monto = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
+        }
 
-            $meta->descuentos = Descuento::where('cronograma_id', $cronograma->id)
-                ->where("meta_id", $meta->id)
-                ->get();
-
-            $meta->afps = Afp::all();
-
-            $meta->results = collect();
-            $meta->resumen = collect();
-            $meta->totales = 0;
-            $meta->rows = 0;
-
-            // tipos de remuneración
-            foreach ($meta->type_remuneraciones as $type) {
-
-                $cats = collect();
-                $total = 0;
-
-                foreach($meta->type_categorias as $categoria) {
-
-                    $tags = collect();
-
-                    foreach ($categoria->cargos as $cargo) {
-                        $tmp = $meta->remuneraciones->where('cargo_id', $cargo->id)
-                            ->where('type_remuneracion_id', $type->id)
-                            ->sum('monto');
-
-                        $tags->push([
-                            "id" => $cargo->id,
-                            "descripcion" => $cargo->descripcion,
-                            "monto" => $tmp
-                        ]);
-
-                        $total += $tmp;
-                    }
-
-                    $cats->push([
-                        "id" => $categoria->id,
-                        "descripcion" => $categoria->descripcion,
-                        "tags" => $tags
-                    ]);
-                }
-
-                $meta->results->push([
-                    "id" => $type->id,
-                    "descripcion" => $type->descripcion,
-                    "categorias" => $cats,
-                    "total" => $total
-                ]);
-            }
-
-
-            // tipos de categorias
-            foreach ($meta->type_categorias as $categoria) {
-                $cars = collect();
-                $suma = 0;
-    
-                foreach ($categoria->cargos as $cargo) {
-                    $suma = $meta->remuneraciones->where('cargo_id', $cargo->id)->sum('monto');
-                    $cars->push([
-                        "id" => $cargo->descripcion,
-                        "total" => $suma 
-                    ]);
-    
-                    $meta->totales += $suma;
-                }
-    
-                $meta->resumen->push([
-                    "id" => $categoria['id'],
-                    "descripcion" => $categoria['descripcion'],
-                    "cargos" => $cars
-                ]);
-            }
-
-            // tipos de descuentos
-            foreach ($meta->type_descuentos as $desc) {
-                $desc->monto = $meta->descuentos->where("type_descuento_id", $desc->id)
-                    ->where("base", 0)
-                    ->sum('monto');
-            }
-            
-            // afps
-            foreach($meta->afps as $afp) {
-                $whereIn = TypeDescuento::where("base", 0)->where("config_afp", "<>", null)->get();
-                $desct = Descuento::where("cronograma_id", $cronograma->id)
-                    ->where("meta_id", $meta->id)
-                    ->whereIn("type_descuento_id", $whereIn->pluck(['id']))
-                    ->whereIn("work_id", $works->where("afp_id", $afp->id)->pluck(['id']))
-                    ->get();
-                $afp->monto = $desct->sum('monto');
-            }
-
-            // config
-            $meta->total_descuentos = $meta->descuentos->where("base", 1)->sum('monto');
-            $meta->total_liquido = $meta->totales - $meta->total_descuentos;
-            
-
-            $type_aportaciones = TypeDescuento::where("base", 1)->get();
-            $aportaciones = collect();
-            $total_aportaciones = 0;
-
-            foreach ($type_aportaciones as $aport) {
-
-                $tmp_aportes = Descuento::where("cronograma_id", $cronograma->id)
-                    ->where("type_descuento_id", $aport->id)
-                    ->get();
-
-                if ($tmp_aportes->count() > 0) {
-
-                    $monto = $tmp_aportes->sum('monto');
-
-                    $aportaciones->push([
-                        "key" => $aport->key,
-                        "descripcion" => $aport->descripcion,
-                        "monto" => $monto
-                    ]);
-
-                    $total_aportaciones += $monto;
-
-                }
-
-            }
-
-
-            $meta->aportaciones = $aportaciones;
-            $meta->total_aportaciones = $total_aportaciones;
-
+        // configuracion de los descuentos
+        $type_descuentos = $tmp_descuentos->whereNotIn("id", $whereIn)->where("base", 0);
+        foreach ($type_descuentos as $desc) {
+            $desc->monto = $descuentos->where("type_descuento_id", $desc->id)->sum('monto');
         }
 
 
-        $pdf = PDF::loadView('pdf.resumen_meta_por_meta', compact([
-            "meses", "metas", "cronograma"
-        ]));
+        // total de los descuentos
+        $total_descuentos = $descuentos->where("base", 0)->sum("monto");
 
-        $fecha = \strtotime(Carbon::now());
-        $nombre = "pdf/planilla_meta_x_meta_{$fecha}.pdf";
-        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $pdf->save(storage_path("app/public") . "/{$nombre}");
+        // configurar aportaciones
+        $type_aportaciones = $tmp_descuentos->where("base", 1);
+        $total_aportaciones = 0;
 
-        $archivo = Report::create([
-            "type" => "pdf",
-            "name" => "Resumen general meta x meta del {$cronograma->mes} del {$cronograma->año}",
-            "icono" => "fas fa-file-pdf",
-            "path" => "/storage/{$nombre}",
-            "cronograma_id" => $cronograma->id,
-            "type_report_id" => $this->type_report
-        ]);
+        foreach ($type_aportaciones as $aport) {
+            $aport->monto = $descuentos->where("type_descuento_id", $aport->id)->sum("monto");
+            $total_aportaciones += $aport->monto;
+        }
+
+        // configuracion de los totales
+        $total_bruto = $remuneraciones->sum("monto");
+        $total_liquido = $total_bruto - $total_descuentos;
+
+        $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
+        $titulo = $meta->metaID;
+
+        $pdf = PDF::loadView('pdf.resumen_meta_por_meta', \compact(
+            'type_remuneraciones', 'meses', 'cronograma', 
+            'type_categorias', 'type_descuentos', "total_bruto",
+            'sub_titulo','titulo', 'afps', 'total_descuentos',
+            'type_aportaciones', 'total_aportaciones', 'remuneraciones',
+            'total_liquido'
+        ));
+
+        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+        $path = "pdf/planilla_general_meta_{$meta->metaID}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v1.pdf";
+        $nombre = "Resumen general del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID} - v1";
+        $pdf->save(storage_path("app/public") . "/{$path}");
+
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update(["read" => 0]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification($cronograma->pdf ,"La Planilla general meta x meta se genero correctamente"));
+            $user->notify(new ReportNotification($cronograma->pdf ,"{$archivo->name}, ya está lista"));
         }
 
+
     }
+
 }

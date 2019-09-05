@@ -9966,6 +9966,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 
 
 
@@ -11430,6 +11432,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 
 
 
@@ -11451,7 +11454,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     'rpt-descuento': _RptDescuento__WEBPACK_IMPORTED_MODULE_9__["default"],
     'rpt-planilla': _RptPlanilla__WEBPACK_IMPORTED_MODULE_10__["default"]
   },
-  props: ["theme", 'cronograma', 'type_reports'],
+  props: ["theme", 'cronograma', 'type_reports', 'metas'],
   mounted: function mounted() {
     var _this = this;
 
@@ -12651,10 +12654,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["leave", "theme"],
+  props: ["leave", "theme", "planilla_id"],
   data: function data() {
     return {
       show: false,
@@ -12685,7 +12691,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 e.preventDefault();
                 this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/work?query_search=".concat(this.search));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/work?query_search=".concat(this.search, "&planilla_id=").concat(this.planilla_id));
                 _context.next = 5;
                 return api.then(function (res) {
                   _this.resultados = res.data;
@@ -14454,18 +14460,58 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma'],
+  props: ['report', 'cronograma', 'metas'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
-      loader: false
+      loader: false,
+      meta_id: ''
     };
+  },
+  mounted: function mounted() {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.metas[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var meta = _step.value;
+        this.meta_id = meta.id;
+        break;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
   },
   methods: {
     generatePDF: function () {
@@ -14479,7 +14525,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 this.loader = true;
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/boleta"), {
-                  type_report_id: this.report.id
+                  type_report_id: this.report.id,
+                  meta_id: this.meta_id
                 });
                 _context.next = 4;
                 return api.then(function (res) {
@@ -14821,18 +14868,58 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma'],
+  props: ['report', 'cronograma', 'metas'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
-      loader: false
+      loader: false,
+      meta_id: ''
     };
+  },
+  mounted: function mounted() {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.metas[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var meta = _step.value;
+        this.meta_id = meta.id;
+        break;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
   },
   methods: {
     generatePDF: function () {
@@ -14846,7 +14933,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 this.loader = true;
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/meta"), {
-                  type_report_id: this.report.id
+                  type_report_id: this.report.id,
+                  meta_id: this.meta_id
                 });
                 _context.next = 4;
                 return api.then(function (res) {
@@ -15042,18 +15130,58 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma'],
+  props: ['report', 'cronograma', 'metas'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
-      loader: false
+      loader: false,
+      meta_id: ''
     };
+  },
+  mounted: function mounted() {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = this.metas[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var meta = _step.value;
+        this.meta_id = meta.id;
+        break;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
   },
   methods: {
     generatePDF: function () {
@@ -15067,7 +15195,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 this.loader = true;
                 api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/planilla"), {
-                  type_report_id: this.report.id
+                  type_report_id: this.report.id,
+                  meta_id: this.meta_id
                 });
                 _context.next = 4;
                 return api.then(function (res) {
@@ -69293,7 +69422,11 @@ var render = function() {
                     _c(
                       "buscar-info",
                       {
-                        attrs: { theme: "btn-info", leave: _vm.clear },
+                        attrs: {
+                          theme: "btn-info",
+                          leave: _vm.clear,
+                          planilla_id: _vm.planilla_id
+                        },
                         on: { find: _vm.getFind }
                       },
                       [
@@ -70475,7 +70608,11 @@ var render = function() {
                 !_vm.loader
                   ? _c(_vm.current, {
                       tag: "component",
-                      attrs: { report: _vm.report, cronograma: _vm.cronograma }
+                      attrs: {
+                        report: _vm.report,
+                        cronograma: _vm.cronograma,
+                        metas: _vm.metas
+                      }
                     })
                   : _vm._e(),
                 _vm._v(" "),
@@ -71737,7 +71874,13 @@ var render = function() {
                           _c("hr")
                         ]
                       )
-                    })
+                    }),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12 text-center" }, [
+                      _vm._v(
+                        "\n                        No hay registros disponibles\n                    "
+                      )
+                    ])
                   ],
                   2
                 )
@@ -73547,6 +73690,59 @@ var render = function() {
     "div",
     { staticClass: "card-body" },
     [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-5" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.meta_id,
+                  expression: "meta_id"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { name: "meta_id" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.meta_id = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.metas, function(meta, me) {
+              return _c(
+                "option",
+                { key: "metas-" + me, domProps: { value: meta.id } },
+                [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(meta.metaID) +
+                      ": " +
+                      _vm._s(meta.meta) +
+                      "\n                "
+                  )
+                ]
+              )
+            }),
+            0
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("hr"),
+      _vm._v(" "),
       !_vm.loader
         ? _c(
             "button",
@@ -73737,6 +73933,59 @@ var render = function() {
     "div",
     { staticClass: "card-body" },
     [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-5" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.meta_id,
+                  expression: "meta_id"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { name: "meta_id" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.meta_id = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.metas, function(meta, me) {
+              return _c(
+                "option",
+                { key: "metas-" + me, domProps: { value: meta.id } },
+                [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(meta.metaID) +
+                      ": " +
+                      _vm._s(meta.meta) +
+                      "\n                "
+                  )
+                ]
+              )
+            }),
+            0
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("hr"),
+      _vm._v(" "),
       !_vm.loader
         ? _c(
             "button",
@@ -73872,6 +74121,59 @@ var render = function() {
     "div",
     { staticClass: "card-body" },
     [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-5" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.meta_id,
+                  expression: "meta_id"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { name: "meta_id" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.meta_id = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.metas, function(meta, me) {
+              return _c(
+                "option",
+                { key: "metas-" + me, domProps: { value: meta.id } },
+                [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(meta.metaID) +
+                      ": " +
+                      _vm._s(meta.meta) +
+                      "\n                "
+                  )
+                ]
+              )
+            }),
+            0
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("hr"),
+      _vm._v(" "),
       !_vm.loader
         ? _c(
             "button",

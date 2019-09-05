@@ -33,7 +33,7 @@ class CronogramaCollection
     }
 
 
-    public function boleta()
+    public function boleta($infos)
     {
         $count = 1;
         $cronograma = $this->cronograma;
@@ -41,42 +41,58 @@ class CronogramaCollection
         // obtenemos todas las remuneraciones del cronograma
         $remuneraciones = Remuneracion::with("typeRemuneracion")
             ->orderBy("type_remuneracion_id", "ASC")
+            ->whereIn("info_id", $infos->pluck(["id"]))
             ->where("cronograma_id", $cronograma->id)
             ->get();
             
         // obtenemos todos los descuentos del cronograma
         $descuentos = Descuento::with("typeDescuento")
             ->orderBy("type_descuento_id", "ASC")
+            ->whereIn("info_id", $infos->pluck(["id"]))
             ->where("cronograma_id", $cronograma->id)
             ->get(); 
-
-        // obtenemos la información de los trabajadores
-        $infoIn = $cronograma->infos->pluck(["id"]);
-        $infos = Info::with(["work", "cargo", "categoria", "meta"])->whereIn("id", $infoIn)->get();
-
 
         foreach ($infos as $info) {
 
             $tmp_remuneraciones = $remuneraciones->where("info_id", $info->id);
             $tmp_descuentos = $descuentos->where('info_id', $info->id);
 
-            $info->total = $tmp_remuneraciones->sum("monto");
                 
             $info->remuneraciones = $tmp_remuneraciones;
-            $info->descuentos = $tmp_descuentos->where("base", 0)->chunk(2)->toArray();
-            $info->total_descuento = $tmp_descuentos->where("base", 0)->sum('monto');
+            // total de remuneraciones
+            $total_remuneracion = $tmp_remuneraciones->sum("monto");
+            $info->remuneraciones->put(rand(1000, 9999), (Object)[
+                "nivel" => 1,
+                "nombre" => "Total",
+                "monto" =>  $tmp_remuneraciones->sum("monto")
+            ]);
 
+            $info->descuentos = $tmp_descuentos->where("base", 0);
+            // total de descuentos
+            $total_descuento = $info->descuentos->sum("monto");
+            $info->descuentos->put(rand(1000, 9999), (Object)[
+                "nivel" => 1,
+                "nombre" => "TOTAL DESCUENTOS",
+                "monto" =>  $total_descuento
+            ]);
 
-            //base imponible
-            $info->base = $tmp_remuneraciones->where('base', 0)->sum('monto');
+            $info->descuentos = $info->descuentos->chunk(23);
 
             //aportes
             //$info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
-            $info->aportaciones = $tmp_descuentos->where("base", 1); 
+            $info->aportaciones = $tmp_descuentos->where("base", 1);
+            // total de aportaciones
+            $total_aportes = $info->aportaciones->sum("monto");
+            $info->aportaciones->put(rand(1000, 9999), (Object)[
+                "nivel" => 1,
+                "nombre" => "TOTAL APORTE",
+                "monto" =>  $total_aportes
+            ]);
 
             //total neto
-            $info->neto = $info->total - $info->total_descuento;
-            $info->total_aportes = $info->aportaciones->sum('monto');
+            $info->neto = $total_remuneracion - $total_descuento;
+            //base imponible
+            $info->base = $tmp_remuneraciones->where('base', 0)->sum('monto');
 
             $info->num = $count++;
 

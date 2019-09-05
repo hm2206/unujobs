@@ -37,16 +37,18 @@ class ReportGeneralMeta implements ShouldQueue
     private $cronograma;
     public $timeout = 0;
     public $type_report;
+    private $meta_id;
 
     /**
      * configuramos un poco
      *
      * @param \App\Models\Cronograma $cronograma
      */
-    public function __construct($cronograma, $type_report)
+    public function __construct($cronograma, $type_report, $meta_id)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
+        $this->meta_id = $meta_id;
     }
 
     /**
@@ -63,8 +65,7 @@ class ReportGeneralMeta implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $metaIn = $cronograma->infos->pluck(["meta_id"]);
-        $metas = Meta::whereIn("id", $metaIn)->get();
+        $meta = Meta::findOrFail($this->meta_id);
 
         $type_remuneraciones = TypeRemuneracion::orderBy("id", "ASC")->where("activo", 1)->get();
         $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where("activo", 1)->get();
@@ -74,69 +75,73 @@ class ReportGeneralMeta implements ShouldQueue
         $first_remuneracion = $type_remuneraciones->first();
 
         // configuracion
-        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get(["monto", "type_remuneracion_id", "meta_id"]);
-        $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get(["monto", "type_descuento_id", "meta_id"]);
+        $remuneraciones = Remuneracion::where("meta_id", $this->meta_id)
+            ->where("cronograma_id", $cronograma->id)
+            ->get(["monto", "type_remuneracion_id", "meta_id"]);
+
+        $descuentos = Descuento::where("meta_id", $this->meta_id)
+            ->where("cronograma_id", $cronograma->id)
+            ->get(["monto", "type_descuento_id", "meta_id"]);
 
 
-        foreach ($metas as $meta) {
 
-            $espacios = 0;
+        $espacios = 0;
             
-            foreach($type_remuneraciones as $type_rem) {
-                $type_rem->monto = $remuneraciones->where("type_remuneracion_id", $type_rem->id)
-                    ->where("meta_id", $meta->id)
-                    ->sum("monto");
-            }
+        foreach($type_remuneraciones as $type_rem) {
+            $type_rem->monto = $remuneraciones->where("type_remuneracion_id", $type_rem->id)->sum("monto");
+        }
     
-            foreach($only_descuentos as $type_desc) {
-                $type_desc->monto = $descuentos->where("type_descuento_id", $type_desc->id)
-                    ->where("meta_id", $meta->id)
-                    ->sum("monto");
-            }
+        foreach($only_descuentos as $type_desc) {
+            $type_desc->monto = $descuentos->where("type_descuento_id", $type_desc->id)->sum("monto");
+        }
     
-            foreach($aportaciones as $aport) {
-                $aport->monto = $descuentos->where("type_descuento_id", $aport->id)
-                    ->where("meta_id", $meta->id)
-                    ->sum("monto");
-            }
+        foreach($aportaciones as $aport) {
+            $aport->monto = $descuentos->where("type_descuento_id", $aport->id)->sum("monto");
+        }
     
-            $total_remuneracion = $type_remuneraciones->sum('monto');
-            $total_descuento = $only_descuentos->sum("monto");
-            $total_aportacion = $aportaciones->sum("monto");
-            $neto_remuneracion = $type_remuneraciones->sum("monto") - $total_descuento;
+        $total_remuneracion = $type_remuneraciones->sum('monto');
+        $total_descuento = $only_descuentos->sum("monto");
+        $total_aportacion = $aportaciones->sum("monto");
+        $neto_remuneracion = $type_remuneraciones->sum("monto") - $total_descuento;
     
-            // contar filas
-            $num_remuneraciones = $type_remuneraciones->count();
-            $num_aportaciones = $aportaciones->count();
-            $num_descuentos = $only_descuentos->count() - $num_remuneraciones;
-            $espacios = $num_remuneraciones - ($num_aportaciones + $num_descuentos + 2);
+        // contar filas
+        $num_remuneraciones = $type_remuneraciones->count();
+        $num_aportaciones = $aportaciones->count();
+        $num_descuentos = $only_descuentos->count() - $num_remuneraciones;
+        $espacios = $num_remuneraciones - ($num_aportaciones + $num_descuentos + 2);
     
-            $sub_titulo = "RESUMEN GENERAL DE LA META {$meta->id} DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
-            $titulo = $meta->metaID;
+        $sub_titulo = "RESUMEN GENERAL DE LA META {$meta->id} DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
+        $titulo = "META " . $meta->metaID;
     
-            $pdf = PDF::loadView('pdf.resumen_general_metas', \compact(
-                'type_remuneraciones', 'sub_titulo', 'cronograma', 'meses',
-                'type_descuentos', 'first_descuento', 'first_remuneracion',
-                'only_descuentos', 'total_descuento', 'neto_remuneracion',
-                'aportaciones', 'total_aportacion', 'espacios', 'titulo',
-                "total_remuneracion"
-            ));
-    
-            $fecha = \strtotime(Carbon::now());
-            $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-            $nombre = "pdf/planilla_general_meta_{$titulo}_{$fecha}.pdf";
-    
-            $pdf->save(storage_path("app/public") . "/{$nombre}");
-    
+        $pdf = PDF::loadView('pdf.resumen_general_metas', \compact(
+            'type_remuneraciones', 'sub_titulo', 'cronograma', 'meses',
+            'type_descuentos', 'first_descuento', 'first_remuneracion',
+            'only_descuentos', 'total_descuento', 'neto_remuneracion',
+            'aportaciones', 'total_aportacion', 'espacios', 'titulo',
+            "total_remuneracion"
+        ));
+
+        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+        $path = "pdf/planilla_general_meta_{$meta->metaID}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v2.pdf";
+        $nombre = "Resumen general del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID} - v2";
+        $pdf->save(storage_path("app/public") . "/{$path}");
+
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update(["read" => 0]);
+        }else {
             $archivo = Report::create([
                 "type" => "pdf",
-                "name" => "Resumen general del {$cronograma->mes} del {$cronograma->año} - Meta {$titulo}",
+                "name" => $nombre,
                 "icono" => "fas fa-file-pdf",
-                "path" => "/storage/{$nombre}",
+                "path" => "/storage/{$path}",
                 "cronograma_id" => $cronograma->id,
                 "type_report_id" => $this->type_report
             ]);
-
         }
 
 

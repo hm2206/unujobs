@@ -25,6 +25,7 @@
     <btn-reporte theme="btn-primary"
         :cronograma="{{ $cronograma }}"
         :type_reports="{{ $typeReports }}"
+        :metas="{{ $metas }}"
     >
         <i class="fas fa-file-pdf"></i> Reportes
     </btn-reporte>

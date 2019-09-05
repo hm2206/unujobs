@@ -44,6 +44,9 @@
                             </div>
                             <hr/>
                         </div>
+                        <div class="col-md-12 text-center">
+                            No hay registros disponibles
+                        </div>
                     </div>
                 </form>
             </template>
@@ -57,7 +60,7 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ["leave", "theme"],
+    props: ["leave", "theme", "planilla_id"],
     data() {
         return {
             show: false,
@@ -78,7 +81,7 @@ export default {
         async buscar(e) {
             e.preventDefault();
             this.loader = true;
-            let api = unujobs("get", `/work?query_search=${this.search}`);
+            let api = unujobs("get", `/work?query_search=${this.search}&planilla_id=${this.planilla_id}`);
             await api.then(res => {
                 this.resultados = res.data;
             }).catch(err => {

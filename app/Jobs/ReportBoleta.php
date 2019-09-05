@@ -16,9 +16,11 @@ use App\Models\Descuento;
 use \PDF;
 use \Mail;
 use \DB;
+use App\Models\Info;
 use App\Models\User;
 use \Carbon\Carbon;
 use App\Mail\SendBoleta;
+use App\Models\Meta;
 use App\Models\Report;
 use App\Notifications\ReportNotification;
 use App\Collections\CronogramaCollection;
@@ -34,16 +36,18 @@ class ReportBoleta implements ShouldQueue
     public $timeout = 0;
     private $cronograma;
     private $type_report;
+    private $meta_id;
 
     /**
      * @param string $mes
      * @param string $year
      * @param string $adicional
      */
-    public function __construct($cronograma, $type_report)
+    public function __construct($cronograma, $type_report, $meta_id)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
+        $this->meta_id = $meta_id;
     }
 
     /**
@@ -54,13 +58,19 @@ class ReportBoleta implements ShouldQueue
     public function handle()
     {
         $cronograma = $this->cronograma;
-        // traer a los ids de los trabajadores de la planilla
+        $meta = Meta::findOrFail($this->meta_id);
+        $infos = Info::with(["work" => function($w) {
+            $w->orderBy("nombre_completo", 'ASC');
+        }, "cargo", "categoria", "meta"])
+        ->whereHas("meta", function($m) use($meta){
+            $m->where("id", $meta->id);
+        })->get();
 
         $collect = new CronogramaCollection($cronograma);
-        $data = $collect->boleta();
+        $data = $collect->boleta($infos);
 
-        $fecha = strtotime(Carbon::now());
-        $name = "boletas_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->adicional}_{$fecha}.pdf";
+        $path = "pdf/boletas_meta_{$meta->metaID}_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->id}.pdf";
+        $nombre = "Boletas del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID}";
         
         //genera el pdf;
         $pdf = PDF::loadView("pdf.boleta_auto", [
@@ -70,22 +80,31 @@ class ReportBoleta implements ShouldQueue
         ]);
 
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $pdf->save(storage_path("app/public/pdf/{$name}"));
+        $pdf->save(storage_path("app/public/{$path}"));
 
-        $archivo = Report::create([
-            "type" => "pdf",
-            "name" => "Boletas del {$cronograma->mes} del {$cronograma->año}",
-            "icono" => "fas fa-file-pdf",
-            "path" => "/storage/pdf/{$name}",
-            "cronograma_id" => $this->cronograma->id,
-            "type_report_id" => $this->type_report
-        ]);
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update(["read" => 0]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/pdf/{$name}", 
-                "La boleta {$this->cronograma->mes} del {$this->cronograma->año} fué generada"
+            $user->notify(new ReportNotification("/storage/{$path}", 
+                $nombre
             ));
         }
 
