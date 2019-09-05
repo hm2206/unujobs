@@ -14,8 +14,7 @@
             $work = $info->work;
         @endphp
         <body class="bg-white text-negro">
-                <div class="mb-7">
-                        <div class="text-center"></div>
+                <div class="">
                             
                         <table>
                             <thead>
@@ -25,16 +24,14 @@
                                     </th>
                                     <th>
                                         <div><b>UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
-                                        <div class="ml-1 text-sm">OFICINA GENERAL DE RECURSOS HUMANOS</div>
-                                        <div class="ml-1 text-sm">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</div>
+                                        <div class="ml-1 text-sm"><b class="font-11">OFICINA GENERAL DE RECURSOS HUMANOS</b></div>
+                                        <div class="ml-1 text-sm"><b class="font-11">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</b></div>
                                     </th>
                                 </tr>
                             </thead>
                         </table>
                     
-                        <h6 class="mt-1 text-center mb-2 uppercase"></h6>
-                    
-                        <div class="text-md uppercase">
+                        <div class="text-md uppercase mt-2">
                             <b> 
                                 Actividad: {{ $info->meta ? $info->meta->actividadID : null }} {{ $info->meta ? $info->meta->actividad : null }}
                             </b>
@@ -131,27 +128,33 @@
                                         </td>
                                         @foreach ($info->descuentos as $body)
                                             <td class="p-relative bbb-1">
-                                                <table class="p-absolute top-0 w-100">
+                                                <table class="w-100">
                                                     <tbody>
                                                         @foreach ($body as $descuento)
                                                             @if (!$descuento->nivel)
                                                                 <tr>
-                                                                    <td class="py-0 font-10" width="35%">
+                                                                    <td class="py-0 font-10">
                                                                         {{ $descuento->typeDescuento ? $descuento->typeDescuento->key : null }}
                                                                         <span>.-</span>
                                                                         {{ $descuento->typeDescuento ? $descuento->typeDescuento->descripcion : null }}
                                                                     </td>
-                                                                    <td class="py-0 text-right font-10">{{ round($descuento->monto, 2) }}</td>
+                                                                    <td class="py-0 text-right font-10" width="25%">{{ round($descuento->monto, 2) }}</td>
                                                                 </tr>
                                                             @else
                                                                 <tr>
-                                                                    <td class="py-0 font-10" width="35%">
+                                                                    <td class="py-0 font-10">
                                                                         {{ $descuento->nombre }}
                                                                     </td>
-                                                                    <td class="py-0 text-right font-10">
+                                                                    <td class="py-0 text-right font-10" width="25%">
                                                                         <div class="bbt-1">{{ round($descuento->monto, 2) }}</div>
                                                                     </td>
                                                                 </tr>
+                                                                @for ($i = 0; $i < 24 - $body->count(); $i++)
+                                                                    <tr>
+                                                                        <td class="py-0 font-10">&nbsp;</td>
+                                                                        <td class="py-0 text-right font-10" width="25%">&nbsp;</td>
+                                                                    </tr>
+                                                                @endfor
                                                             @endif
                                                         @endforeach
                                                     </tbody>
@@ -168,24 +171,24 @@
                                                                 {{ $aporte->typeDescuento ? $aporte->typeDescuento->key : '' }}
                                                                 .-{{ $aporte->typeDescuento ? $aporte->TypeDescuento->descripcion : '' }}
                                                             </td>
-                                                            <td class="py-0">{{ round($aporte->monto, 2) }}</td>
+                                                            <td class="py-0 text-right">{{ round($aporte->monto, 2) }}</td>
                                                         </tr>
                                                     @else
                                                         <tr>
                                                             <td class="py-0">{{ $aporte->nombre }}</td>
-                                                            <td class="py-0 bbt-1">
+                                                            <td class="py-0 text-right">
                                                                 <div class="bbt-1">
                                                                     {{ round($aporte->monto, 2) }}
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td class="py-0"></td>
-                                                            <td class="py-0 bbt-1"></td>
+                                                            <td class="py-0">&nbsp;</td>
+                                                            <td class="py-0">&nbsp;</td>
                                                         </tr>
                                                         <tr>
                                                             <td class="py-0">BASE IMPONIBLE</td>
-                                                            <td class="py-0 bbt-1">{{ round($info->base, 2) }}</td>
+                                                            <td class="py-0">{{ round($info->base, 2) }}</td>
                                                         </tr>
                                                         @for ($i = 0; $i < 16; $i++)
                                                             <tr>

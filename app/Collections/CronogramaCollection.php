@@ -63,7 +63,7 @@ class CronogramaCollection
             $total_remuneracion = $tmp_remuneraciones->sum("monto");
             $info->remuneraciones->put(rand(1000, 9999), (Object)[
                 "nivel" => 1,
-                "nombre" => "Total",
+                "nombre" => "TOTAL",
                 "monto" =>  $tmp_remuneraciones->sum("monto")
             ]);
 

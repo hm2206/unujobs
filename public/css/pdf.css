@@ -24,6 +24,9 @@ h6 {
     border-bottom: 0px !important;
 }
 
+.table-bordered, td, th {
+    border-color: black !important;
+}
 
 .flex {
     justify-content: space-between;
