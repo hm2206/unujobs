@@ -48,6 +48,13 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
+        if ($cronograma->estado > 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla aún está en curso, espere el cierre!"
+            ];
+        }
+
         try {
             
             $type = $request->type_report_id;
@@ -80,6 +87,13 @@ class ExportCronogramaController extends Controller
     public function meta(Request $request, $id)
     {
         $cronograma = Cronograma::findOrFail($id);
+
+        if ($cronograma->estado > 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla aún está en curso, espere el cierre!"
+            ];
+        }
 
         try {
             
@@ -116,6 +130,13 @@ class ExportCronogramaController extends Controller
     public function boleta(Request $request, $id)
     {
         $cronograma = Cronograma::findOrFail($id);
+
+        if ($cronograma->estado > 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla aún está en curso, espere el cierre!"
+            ];
+        }
 
         try {
             
@@ -245,6 +266,13 @@ class ExportCronogramaController extends Controller
     public function planilla(Request $request, $id)
     {
         $cronograma = Cronograma::findOrFail($id);
+
+        if ($cronograma->estado > 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla aún está en curso, espere el cierre!"
+            ];
+        }
 
         try {
             
