@@ -25,6 +25,7 @@ use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Models\Meta;
+use App\Tools\Money;
 
 /**
  * Genera pdf de la planilla
@@ -66,6 +67,7 @@ class ReportGeneralMeta implements ShouldQueue
 
         $cronograma = $this->cronograma;
         $meta = Meta::findOrFail($this->meta_id);
+        $money = new Money;
 
         $type_remuneraciones = TypeRemuneracion::orderBy("id", "ASC")->where("activo", 1)->get();
         $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where("activo", 1)->get();
@@ -118,7 +120,7 @@ class ReportGeneralMeta implements ShouldQueue
             'type_descuentos', 'first_descuento', 'first_remuneracion',
             'only_descuentos', 'total_descuento', 'neto_remuneracion',
             'aportaciones', 'total_aportacion', 'espacios', 'titulo',
-            "total_remuneracion"
+            "total_remuneracion", "money"
         ));
 
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);

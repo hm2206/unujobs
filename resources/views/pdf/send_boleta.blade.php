@@ -9,7 +9,6 @@
         <title>Reporte Mensual de boleta - {{ $cronograma->mes }}-{{ $cronograma->year }}</title>
     </head>
 
-    @foreach ($infos as $info)
         @php
             $work = $info->work;
         @endphp
@@ -212,5 +211,4 @@
                         </div>
                     </div>   
                 </body>
-        @endforeach
 </html>

@@ -61,6 +61,8 @@ class CronogramaCollection
             $info->remuneraciones = $tmp_remuneraciones;
             // total de remuneraciones
             $total_remuneracion = $tmp_remuneraciones->sum("monto");
+            //base imponible
+            $info->base = $tmp_remuneraciones->where('base', 0)->sum('monto');
             $info->remuneraciones->put(rand(1000, 9999), (Object)[
                 "nivel" => 1,
                 "nombre" => "TOTAL",
@@ -76,7 +78,7 @@ class CronogramaCollection
                 "monto" =>  $total_descuento
             ]);
 
-            $info->descuentos = $info->descuentos->chunk(23);
+            $info->descuentos = $info->descuentos->chunk(24);
 
             //aportes
             //$info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
@@ -91,8 +93,6 @@ class CronogramaCollection
 
             //total neto
             $info->neto = $total_remuneracion - $total_descuento;
-            //base imponible
-            $info->base = $tmp_remuneraciones->where('base', 0)->sum('monto');
 
             $info->num = $count++;
 

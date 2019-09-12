@@ -241,6 +241,7 @@ class CronogramaController extends Controller
 
             $indices = $cronograma->infos->pluck(["id"]);
             $infos = Info::with("work")->whereIn("id", $indices);
+            $metaId = $infos->get("meta_id")->pluck(["meta_id"]);
             
             if ($like) {
                 $infos = $infos->whereHas('work', function($w) use($like) {
@@ -250,7 +251,7 @@ class CronogramaController extends Controller
             }
 
             $infos = $infos->paginate(20);
-            $metas = Meta::whereIn("id", $infos->pluck(["meta_id"]))->get();
+            $metas = Meta::whereIn("id", $metaId)->get();
             
         }
 

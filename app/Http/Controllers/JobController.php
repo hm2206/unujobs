@@ -93,14 +93,14 @@ class JobController extends Controller
 
         // obteneos los id de las personas
         $index = $jobs->get(["id"]);
-        // traemos el total de los trabajadores reales
-        $infos = info::whereIn("work_id", $index->pluck(['id']))->count();
+        $count = $index->count();
 
+        // obtenos a los trabajadores
         $jobs = $jobs->paginate(20);
 
         return view('trabajador.index', \compact(
             'jobs', 'estado', 'planilla_id', 'cargo_id', 'categoria_id', 'meta_id',
-            'infos'
+            'count'
         ));
     }
 

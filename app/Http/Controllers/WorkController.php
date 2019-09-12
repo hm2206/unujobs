@@ -23,7 +23,8 @@ class WorkController extends Controller
         if (strlen($query_search) > 2) {
             $infos = Info::with(['work', 'categoria'])->where("planilla_id", $planilla_id)
             ->whereHas("work",function($w) use($query_search) {
-                $w->where("nombre_completo", "like", "%{$query_search}%");
+                $w->where("nombre_completo", "like", "%{$query_search}%")
+                    ->orWhere("numero_de_documento", "like", "%{$query_search}%");
             })->get();
         }
 

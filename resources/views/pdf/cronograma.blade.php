@@ -74,14 +74,23 @@
                                         <tr>
                                             @foreach ($type_categoria->cargos as $cargo)
                                                 <td width="50%" class="text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                    <b class="font-13">{{ $remuneraciones->where("cargo_id", $cargo->id)->sum("monto") }}</b>
+                                                    <b class="font-13">
+                                                        {{ 
+                                                            $money->parseTo(
+                                                                $remuneraciones->where("cargo_id", $cargo->id)
+                                                                    ->sum("monto")
+                                                            )     
+                                                        }}
+                                                    </b>
                                                 </td>
                                             @endforeach
                                         </tr>
                                     </table>
                                 </td>
                             @endforeach
-                            <td class="text-center bbb-1 py-0"><b class="font-13">{{ $remuneraciones->sum("monto") }}</b></td>
+                            <td class="text-center bbb-1 py-0">
+                                <b class="font-13">{{ $money->parseTo($remuneraciones->sum("monto")) }}</b>
+                            </td>
                         </tr>
                         @foreach ($type_remuneraciones as $type)
                             <tr class="table-height">
@@ -97,9 +106,11 @@
                                                 @foreach ($type_categoria->cargos as $cargo)
                                                     <th width="50%" class="font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                                         {{ 
-                                                            $remuneraciones->where("cargo_id", $cargo->id)
-                                                                ->where("type_remuneracion_id", $type->id)
-                                                                ->sum('monto') 
+                                                            $money->parseTo(
+                                                                $remuneraciones->where("cargo_id", $cargo->id)
+                                                                    ->where("type_remuneracion_id", $type->id)
+                                                                    ->sum('monto') 
+                                                            )
                                                         }}
                                                     </th>
                                                 @endforeach
@@ -109,7 +120,7 @@
                                 @endforeach
 
                                 <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="bbr-1 font-13 text-center">
-                                    {{ $type->total }}
+                                    {{ $money->parseTo($type->total) }}
                                 </th>
 
                             </tr>
@@ -123,7 +134,7 @@
                             <th colspan="{{ $type->type_categorias->count() }}" class="font-12 bbb-1"></th>
                             <th class="font-12 bbb-1" colspan="2">
                                 <div class="bbt-1 font-13">
-                                    TOTAL PLANILLA BRUTA: S/. {{ $total_bruto }}
+                                    TOTAL PLANILLA BRUTA: S/. {{ $money->parseTo($total_bruto) }}
                                 </div>
                             </th>
                         </tr>
@@ -142,21 +153,30 @@
                         @foreach ($type_descuentos as $descuento)
                             <tr>
                                 <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
-                                    {{ $descuento->descripcion }}
+                                    {{ $descuento->key }}.-{{ $descuento->descripcion }}
                                 </th>
                                 <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $descuento->monto }}
+                                    {{ $money->parseTo($descuento->monto) }}
                                 </th>
                             </tr>
                         @endforeach
+
+                        <tr>
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
+                                SISTEMA PRIVADO DE PENSIONES
+                            </th>
+                            <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $money->parseTo($afp_total) }}
+                            </th>
+                        </tr>
 
                         @foreach ($afps as $afp)
                             <tr>
                                 <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
                                     AFP {{ $afp->nombre }}
                                 </th>
-                                <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $afp->monto }}
+                                <th class="text-left font-13" style="height: 10px; border:0px;padding:0px;">
+                                    {{ $money->parseTo($afp->monto) }}
                                 </th>
                             </tr>
                         @endforeach
@@ -165,7 +185,7 @@
                                 TOTAL DESCUENTOS
                             </th>
                             <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
-                                {{ $total_descuentos }}
+                                <div class="bbb-1">{{ $money->parseTo($total_descuentos) }}</div>
                             </th>
                         </tr>
                         <tr>
@@ -175,7 +195,7 @@
                             <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:1px solid black;"
                                 class="font-13 text-right"
                             >
-                                {{ $total_liquido  }}
+                                {{ $money->parseTo($total_liquido)  }}
                             </th>
                         </tr>
                         <tr>
@@ -183,7 +203,7 @@
                                 TOTAL PLANILLA BRUTA
                             </th>
                             <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:2px solid black;">
-                                {{ $total_bruto }}
+                                {{ $money->parseTo($total_bruto) }}
                             </th>
                         </tr>
                         @foreach ($type_aportaciones as $aport)
@@ -192,7 +212,7 @@
                                     {{ $aport->key }}.- {{ $aport->descripcion }}
                                 </th>
                                 <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $aport->monto }}
+                                    {{ $money->parseTo($aport->monto) }}
                                 </th>
                             </tr>
                         @endforeach
@@ -201,7 +221,7 @@
                                 <div class="bbb-1 font-12">84.-TOTAL APORTACIONES</div>
                             </th>
                             <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                <div class="bbb-1 font-13 bbt-1">{{ $total_aportaciones }}</div>
+                                <div class="bbb-1 font-13 bbt-1">{{ $money->parseTo($total_aportaciones) }}</div>
                             </th>
                         </tr>
                     </tbody>

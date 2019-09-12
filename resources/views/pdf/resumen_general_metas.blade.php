@@ -91,7 +91,7 @@
                                     <div class="bbt-1 font-13">TOTAL REMUNERACION</div>
                                 </th>
                                 <th width="20%" class="py-0 text-right">
-                                    <div class="bbt-1 font-13">{{ $total_remuneracion }}</div>    
+                                    <div class="bbt-1 font-13">{{ $money->parseTo($total_remuneracion) }}</div>    
                                 </th>
                             </tr>
                         </tbody>
@@ -104,44 +104,50 @@
                                 @foreach ($body as $descuento)
                                     <tr>
                                         <th width="80%" class="py-0 font-13">{{ $descuento->key }}.-{{ $descuento->descripcion }}</th>
-                                        <th width="20%" class="py-0 text-right font-13">{{ $descuento->monto }}</th>
+                                        <th width="20%" class="py-0 text-right font-13">
+                                            {{ $money->parseTo($descuento->monto) }}
+                                        </th>
                                     </tr>
                                 @endforeach
                             </thead>
                             <tbody>
                                 @if ($only_descuentos->chunk($type_remuneraciones->count())->count() == $count + 1)
                                     <tr>
-                                        <th width="80%" class="py-0 font-11">
+                                        <th width="80%" class="py-0 font-13">
                                             <div class="bbt-1">TOTAL DESCUENTOS</div>
                                         </th>
                                         <th width="20%" class="py-0 text-right font-13">
-                                            <div class="bbt-1">{{ $total_descuento }}</div>
+                                            <div class="bbt-1">
+                                                {{ $money->parseTo($total_descuento) }}
+                                            </div>
                                         </th>
                                     </tr>
                                     <tr>
-                                        <th width="80%" class="py-0 font-11">
+                                        <th width="80%" class="py-0 font-13">
                                             <div class="bbt-1 bbb-1">NETO A PAGAR</div>
                                         </th>
                                         <th width="20%" class="py-0 text-right font-13">
-                                            <div class="bbt-1 bbb-1">{{ $neto_remuneracion }}</div>
+                                            <div class="bbt-1 bbb-1">
+                                                {{ $money->parseTo($neto_remuneracion) }}
+                                            </div>
                                         </th>
                                     </tr>
                                     @foreach ($aportaciones as $aport)
                                         <tr>
-                                            <th width="80%" class="py-0 font-12">
+                                            <th width="80%" class="py-0 font-13">
                                                 <b>{{ $aport->key }}.-{{ $aport->descripcion }}</b>
                                             </th>
                                             <th width="20%" class="py-0 text-right font-13">
-                                                <b>{{ $aport->monto }}</b>
+                                                <b>{{ $money->parseTo($aport->monto) }}</b>
                                             </th>
                                         </tr>
                                     @endforeach
                                     <tr>
-                                        <th width="80%" class="py-0 font-12">
+                                        <th width="80%" class="py-0 font-13">
                                             <b class="bbt-1">TOTAL APORTACIONES</b>
                                         </th>
                                         <th width="20%" class="py-0 text-right font-13">
-                                            <div class="bbt-1"><b>{{ $total_aportacion }}</b></div>
+                                            <div class="bbt-1"><b>{{ $money->parseTo($total_aportacion) }}</b></div>
                                         </th>
                                     </tr>
                                     @for ($i = 0; $i <= $espacios + 2 ;$i++)

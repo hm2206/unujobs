@@ -73,11 +73,11 @@
         
                             
                     <div class="form-group">
-                        <small>Limite de trabajadores: <span class="text-danger">{{ $jobs->total() }}</span></small>
+                        <small>Limite de trabajadores: <span class="text-danger">{{ $count }}</span></small>
                     </div>
         
                     <div class="form-group">
-                        <input type="number" name="limite" class="form-control" value="{{ $jobs->total() }}" max="{{ $jobs->total() }}">
+                        <input type="number" name="limite" class="form-control" value="{{ $count }}" max="{{ $count }}">
                     </div>
                                 
                     <div class="form-group">
@@ -91,7 +91,7 @@
             </div>
 
             <div class="col-md-2 text-right">
-                <h1>{{ $infos }}</h1>
+                <h1>{{ $count }}</h1>
             </div>
         </div>
 

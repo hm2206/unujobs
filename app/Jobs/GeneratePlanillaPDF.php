@@ -23,6 +23,7 @@ use App\Models\User;
 use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
+use App\Tools\Money;
 
 /**
  * Genera pdf de la planilla
@@ -61,8 +62,11 @@ class GeneratePlanillaPDF implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
+        $workId = $cronograma->infos->pluck("work_id");
+        $works = Work::whereIn("id", $workId)->get(["id", "afp_id"]);
+        $money = new Money;
 
-        $afps = Afp::all();
+        $afps = Afp::orderBy("descripcion", "ASC")->where("activo", 1)->get();
         $type_remuneraciones = TypeRemuneracion::where("activo", 1)->get();
         $tmp_descuentos = TypeDescuento::where("activo", 1)->get();
 
@@ -84,9 +88,13 @@ class GeneratePlanillaPDF implements ShouldQueue
         }
 
         // configurar afps
-        $whereIn = $tmp_descuentos->where("config_afp", "<>", null)->pluck(["id"]);
+        $whereIn = $tmp_descuentos->whereNotIn("config_afp", [null, "[]"])->pluck(["id"]);
+        $afp_total = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
         foreach($afps as $afp) {
-            $afp->monto = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
+            $afpIn = $works->where("afp_id", $afp->id)->pluck("id");
+            $afp->monto = $descuentos->whereIn("work_id", $afpIn)
+                ->whereIn("type_descuento_id", $whereIn)
+                ->sum("monto");
         }
 
         // configuracion de los descuentos
@@ -102,6 +110,7 @@ class GeneratePlanillaPDF implements ShouldQueue
         // configurar aportaciones
         $type_aportaciones = $tmp_descuentos->where("base", 1);
         $total_aportaciones = 0;
+
 
         foreach ($type_aportaciones as $aport) {
             $aport->monto = $descuentos->where("type_descuento_id", $aport->id)->sum("monto");
@@ -120,7 +129,7 @@ class GeneratePlanillaPDF implements ShouldQueue
             'type_categorias', 'type_descuentos', "total_bruto",
             'sub_titulo','titulo', 'afps', 'total_descuentos',
             'type_aportaciones', 'total_aportaciones', 'remuneraciones',
-            'total_liquido'
+            'total_liquido', 'money', 'afp_total'
         ));
 
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);

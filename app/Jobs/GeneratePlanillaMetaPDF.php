@@ -24,6 +24,7 @@ use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Models\Meta;
+use App\Tools\Money;
 
 /**
  * Genera pdf de la planilla
@@ -63,10 +64,13 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
-        $cronograma = $this->cronograma;
-
-        $afps = Afp::all();
         $meta = Meta::findOrFail($this->meta_id);
+        $cronograma = $this->cronograma;
+        $workId = $cronograma->infos->where("meta_id", $meta->id)->pluck("work_id");
+        $works = Work::whereIn("id", $workId)->get(["id", "afp_id"]);
+        $money = new Money;
+
+        $afps = Afp::orderBy("descripcion", "ASC")->where("activo", 1)->get();
         $type_remuneraciones = TypeRemuneracion::where("activo", 1)->get();
         $tmp_descuentos = TypeDescuento::where("activo", 1)->get();
 
@@ -88,9 +92,13 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
         }
 
         // configurar afps
-        $whereIn = $tmp_descuentos->where("config_afp", "<>", null)->pluck(["id"]);
+        $whereIn = $tmp_descuentos->whereNotIn("config_afp", [null, "[]"])->pluck(["id"]);
+        $afp_total = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
         foreach($afps as $afp) {
-            $afp->monto = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
+            $afpIn = $works->where("afp_id", $afp->id)->pluck("id");
+            $afp->monto = $descuentos->whereIn("work_id", $afpIn)
+                ->whereIn("type_descuento_id", $whereIn)
+                ->sum("monto");
         }
 
         // configuracion de los descuentos
@@ -116,7 +124,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
         $total_bruto = $remuneraciones->sum("monto");
         $total_liquido = $total_bruto - $total_descuentos;
 
-        $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
+        $sub_titulo = "RESUMEN SIAF META {$meta->metaID} DEL MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
         $titulo = $meta->metaID;
 
         $pdf = PDF::loadView('pdf.resumen_meta_por_meta', \compact(
@@ -124,7 +132,7 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             'type_categorias', 'type_descuentos', "total_bruto",
             'sub_titulo','titulo', 'afps', 'total_descuentos',
             'type_aportaciones', 'total_aportaciones', 'remuneraciones',
-            'total_liquido'
+            'total_liquido', 'afp_total', 'money'
         ));
 
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);

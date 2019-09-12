@@ -79,7 +79,7 @@ class ReportBoleta implements ShouldQueue
             'count' => $data['count']
         ]);
 
-        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
+        $pdf->setPaper("a3", 'portrait')->setWarnings(false);
         $pdf->save(storage_path("app/public/{$path}"));
 
         $archivo = Report::where("cronograma_id", $cronograma->id)
@@ -88,7 +88,10 @@ class ReportBoleta implements ShouldQueue
             ->first();
 
         if ($archivo) {
-            $archivo->update(["read" => 0]);
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
         }else {
             $archivo = Report::create([
                 "type" => "pdf",
