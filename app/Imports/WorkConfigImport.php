@@ -33,7 +33,6 @@ class WorkConfigImport implements ToCollection, WithHeadingRow
 
             $work = Work::where("numero_de_documento", $numero_de_documento)->first();
             $categoria = Categoria::where("key", $row['categoria'])->first();
-            $planilla = Planilla::where("key", $row['planilla'])->first();
             $meta = Meta::where('metaID', $row['meta'])->first();
 
             if ($work && $categoria && $meta) {
@@ -50,9 +49,10 @@ class WorkConfigImport implements ToCollection, WithHeadingRow
                     "perfil" => $row['perfil'],
                     "plaza" => $row['plaza'],
                     "escuela" => $row['escuela'],
-                    "observacion" => $row['observacion'],
+                    "observacion" => isset($row['observacion']) ? $row['observacion'] : '',
                     "fuente_id" => isset($row['fuente']) ? (int)$row['fuente'] : null,
-                    "ruc" => $row['ruc']
+                    "pap" => isset($row['pap']) ? $row['pap'] : null,
+                    "ruc" => isset($row['ruc']) ? $row['ruc'] : ''
                 ]);
 
             }else {

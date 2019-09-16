@@ -58,8 +58,14 @@ class ReportBoleta implements ShouldQueue
     public function handle()
     {
         $cronograma = $this->cronograma;
+        // ids de los infos
+        $infoIn = DB::table('info_cronograma')
+            ->where("cronograma_id", $cronograma->id)
+            ->get("info_id")->pluck(["info_id"]);
+        // metas
         $meta = Meta::findOrFail($this->meta_id);
-        $infos = Info::with(["work" => function($w) {
+        // infos
+        $infos = Info::whereIn("id", $infoIn)->with(["work" => function($w) {
             $w->orderBy("nombre_completo", 'ASC');
         }, "cargo", "categoria", "meta"])
         ->whereHas("meta", function($m) use($meta){
@@ -68,6 +74,7 @@ class ReportBoleta implements ShouldQueue
 
         $collect = new CronogramaCollection($cronograma);
         $data = $collect->boleta($infos);
+
 
         $path = "pdf/boletas_meta_{$meta->metaID}_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->id}.pdf";
         $nombre = "Boletas del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID}";

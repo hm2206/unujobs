@@ -150,12 +150,20 @@
                                                                 <div class="bbt-1 font-13-5">{{ round($descuento->monto, 2) }}</div>
                                                             </th>
                                                         </tr>
-                                                        @for ($i = 0; $i < 24 - $body->count(); $i++)
+                                                        @for ($i = 0; $i < 23 - $body->count(); $i++)
                                                             <tr>
                                                                 <td class="py-0 font-13">&nbsp;</td>
                                                                 <td class="py-0 text-right font-13" width="25%">&nbsp;</td>
                                                             </tr>
                                                         @endfor
+                                                        <tr>
+                                                            <th class="py-0 font-13">
+                                                                NETO A PAGAR
+                                                            </th>
+                                                            <th class="py-0 text-right font-13-5" width="25%">
+                                                                <div class="bbt-1 font-13-5">{{ round($info->neto, 2) }}</div>
+                                                            </th>
+                                                        </tr>
                                                     @endif
                                                 @endforeach
                                             </tbody>

@@ -86,7 +86,10 @@
 <div class="col-md-12">
 
     @if ($infos)
-        {{ $infos->links() }}
+        {{ $infos->appends([
+            "meta_id" => $meta_id,
+            "cargo_id" => $cargo_id
+        ])->links() }}
     @endif
 
     <div class="card">
@@ -99,17 +102,33 @@
 
                 <form class="col-md-12 mb-3" method="GET">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-2">
+                            <select name="meta_id" class="form-control">
+                                <option value="">Metas</option>
+                                @foreach ($metas as $meta)
+                                    <option value="{{ $meta->id }}" {!! $meta_id == $meta->id ? 'selected' : '' !!}>{{ $meta->metaID }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="cargo_id" class="form-control">
+                                <option value="">Cargos</option>
+                                @foreach ($cargos as $cargo)
+                                    <option value="{{ $cargo->id }}" {!! $cargo_id == $cargo->id ? 'selected' : '' !!}>{{ $cargo->descripcion }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <input type="text" class="form-control" name="query_search" value="{{ $like }}">
                         </div>
         
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <button class="btn btn-info">
-                                <i class="fas fa-search"></i> Buscar
+                                <i class="fas fa-search"></i> 
                             </button>
                         </div>    
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
 
                             <div class="row">
 

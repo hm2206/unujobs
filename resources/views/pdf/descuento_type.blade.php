@@ -18,7 +18,7 @@
     </style>
 
     @foreach ($bodies as $infos)
-        <body class="bg-white text-dark">
+        <body class="bg-white text-negro">
                     
             <table class="text-dark">
                 <thead>

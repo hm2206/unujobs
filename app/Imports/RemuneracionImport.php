@@ -16,6 +16,7 @@ use App\Jobs\ImportQueue;
 use App\Models\User;
 use App\Models\Categoria;
 use App\Notifications\BasicNotification;
+use App\Models\Info;
 
 /**
  * modelo de importación de remuneraciones de los trabajadores
@@ -48,10 +49,16 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
 
         // obtenemos los tipo de remuneracion
         $types = TypeRemuneracion::where("activo", 1)->get();
+        $categorias = Categoria::all();
+        $infos = $this->cronograma->infos;
 
         foreach ($collection as $row) {
 
             // obtenemos a todos los trabajadores que pertenecen al cronograma
+            $cargo_id = isset($row["cargo"]) ? $row['cargo'] : '';
+            $categoria_id = isset($row["categoria"]) ? $row['categoria'] : '';
+            $categoria = $categorias->where("key", $categoria_id)->first();
+            // buscar al trabajador por numero de documento
             $infos = $this->cronograma->infos;
             // buscar al trabajador por numero de documento
             $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
@@ -59,7 +66,10 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
             // verificar si el trabajador existe
             if ($work) {
                 // obtenemos la categoria
-                $info = $infos->where("work_id", $work->id)->first();
+                $info = Info::where("work_id", $work->id)
+                    ->where("cargo_id", $cargo_id)
+                    ->where("categoria_id", isset($categoria->id) ? $categoria->id : '')
+                    ->first();
                 
                 if ($info) {
 
@@ -91,7 +101,11 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
                         }
                     }
                    
+                }else {
+                    \Log::info("persona => {$work->numero_de_documento}, cargo => {$cargo_id}, categoria => $categoria_id");
                 }
+            }else {
+                \Log::info("persona => {$row['numero_de_documento']}");
             }
         }  
     }

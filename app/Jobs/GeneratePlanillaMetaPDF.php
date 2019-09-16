@@ -92,13 +92,15 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
         }
 
         // configurar afps
-        $whereIn = $tmp_descuentos->whereNotIn("config_afp", [null, "[]"])->pluck(["id"]);
+        $whereIn = $tmp_descuentos->whereNotIn("config_afp", [null, "[]", ""])->pluck(["id"]);
         $afp_total = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
         foreach($afps as $afp) {
             $afpIn = $works->where("afp_id", $afp->id)->pluck("id");
-            $afp->monto = $descuentos->whereIn("work_id", $afpIn)
+            $afp_monto = $descuentos->whereIn("work_id", $afpIn)
                 ->whereIn("type_descuento_id", $whereIn)
                 ->sum("monto");
+
+            $afp->monto = $afp_monto;
         }
 
         // configuracion de los descuentos

@@ -37,12 +37,12 @@ class WorkImport implements ToCollection, WithHeadingRow
             $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
             $fecha_de_ingreso = isset($row['fecha_de_ingreso']);
 
-            if (!$work) {
+            if ($work) {
 
                 $ape_paterno = $row['ape_paterno'] ? $row['ape_paterno'] : $work->ape_paterno;
                 $ape_materno = $row['ape_materno'] ? $row['ape_materno'] : $work->ape_materno;
                 $nombres = $row['nombres'] ? $row['nombres'] : $work->nombres;
-                $nombre_completo = $ape_paterno . " " . $ape_paterno . " " . $nombres;
+                $nombre_completo = $ape_paterno . " " . $ape_materno . " " . $nombres;
 
                 $work->update([
                     "ape_paterno" => isset($row['ape_paterno']) ? $row['ape_paterno'] : $work->ape_paterno,
@@ -52,7 +52,7 @@ class WorkImport implements ToCollection, WithHeadingRow
                     "direccion" => isset($row['direccion']) ? $row['direccion'] : $work->direccion,
                     "tipo_documento_id" => isset($row['tipo_documento_id']) ? $row['tipo_documento_id'] : $work->numero_de_documento,
                     "numero_de_documento" => isset($row['numero_de_documento']) ? $row['numero_de_documento'] : $work->numero_de_documento,
-                    "fecha_de_nacimiento" => isset($row['fecha_de_nacimiento']) ? date(strtotime($row['fecha_de_nacimiento'])) : $work->fecha_de_nacimiento,
+                    "fecha_de_nacimiento" => isset($row['fecha_de_nacimiento']) ? date($row['fecha_de_nacimiento']) : $work->fecha_de_nacimiento,
                     "profesion" => isset($row['profesion']) ? $row['profesion'] : $work->profesion,
                     "phone" => isset($row['phone']) ? $row['phone'] : $work->phone, 
                     "fecha_de_ingreso" => $fecha_de_ingreso ? date('Y-m-d', \strtotime($row['fecha_de_ingreso'])) : $work->fecha_de_ingreso,
@@ -67,7 +67,7 @@ class WorkImport implements ToCollection, WithHeadingRow
                     "numero_de_cussp" => isset($row['numero_de_cussp']) ? $row['numero_de_cussp'] : $work->numero_de_cussp,
                     "accidentes" => isset($row['accidentes']) ? (int)$row['accidentes'] : $work->accidentes,
                     "sede_id" => isset($row['sede_id']) ? (int)$row['sede_id'] : $work->sede_id,
-                    "ley" => isset($row['ley']) ? $row['ley'] : $work->ley,
+                    "afecto" => isset($row['afecto']) ? $row['afecto'] : $work->afecto,
                 ]);
 
             }else {
@@ -99,7 +99,7 @@ class WorkImport implements ToCollection, WithHeadingRow
                         "numero_de_cussp" => isset($row['numero_de_cussp']) ? $row['numero_de_cussp'] : null,
                         "accidentes" => isset($row['accidentes']) ? (int)$row['accidentes'] : 0,
                         "sede_id" => isset($row['sede_id']) ? (int)$row['sede_id'] : 1,
-                        "ley" => isset($row['ley']) ? $row['ley'] : null,
+                        "ley" => isset($row['afecto']) ? $row['afecto'] : 1,
                     ]);
 
                 } catch (\Throwable $th) {

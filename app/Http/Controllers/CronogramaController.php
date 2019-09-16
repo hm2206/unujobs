@@ -22,6 +22,7 @@ use App\Jobs\ReportBoleta;
 use App\Jobs\ReportCronograma;
 use Illuminate\Support\Facades\Storage;
 use \DB;
+use App\Models\Cargo;
 use App\Models\Info;
 use App\Models\TypeReport;
 use App\Http\Middleware\CronogramaMiddleware;
@@ -92,12 +93,12 @@ class CronogramaController extends Controller
         $pendiente = 1;
         $current_mes = (int)date('m') + 1;
 
-        if ($mes > $current_mes || $mes < $current_mes - 1) {
+        /*if ($mes > $current_mes || $mes < $current_mes - 1) {
             return [
                 "status" => false,
                 "message" => "El mes no está permitido!"
             ];
-        }
+        }*/
 
         $year = date('Y');
         $adicional = $request->adicional ? 1 : 0;
@@ -233,15 +234,37 @@ class CronogramaController extends Controller
         $cronograma = Cronograma::with("planilla")->where("pendiente", 0)->findOrFail($id);
         $typeReports = TypeReport::all();
         $like = request()->query_search;
+        $meta_id = request()->meta_id;
+        $cargo_id = request()->cargo_id;
         $indices = [];
         $infos = [];
         $metas = [];
 
         if($cronograma->infos->count() > 0) {
 
-            $indices = $cronograma->infos->pluck(["id"]);
+            $metaId = $cronograma->infos->pluck(["meta_id"]);
+            $cargoId = $cronograma->infos->pluck(["cargo_id"]);
+            
+
+            if ($meta_id) {
+                $indices = $cronograma->infos->where("meta_id", $meta_id);
+            }else {
+                $indices = $cronograma->infos;
+            }
+
+
+            if ($cargo_id) {
+                $indices = $indices->where("cargo_id", $cargo_id);   
+            }
+
+
+            $indices = $indices->pluck(["id"]);
             $infos = Info::with("work")->whereIn("id", $indices);
-            $metaId = $infos->get("meta_id")->pluck(["meta_id"]);
+
+            if ($meta_id) {
+                $infos = $infos->where("meta_id", $meta_id);
+            }
+
             
             if ($like) {
                 $infos = $infos->whereHas('work', function($w) use($like) {
@@ -252,10 +275,11 @@ class CronogramaController extends Controller
 
             $infos = $infos->paginate(20);
             $metas = Meta::whereIn("id", $metaId)->get();
+            $cargos = Cargo::whereIn("id", $cargoId)->get();
             
         }
 
-        return view('cronogramas.job', compact('cronograma', 'infos', 'like', 'metas', 'typeReports', 'indices'));
+        return view('cronogramas.job', compact('cronograma', 'cargos', 'cargo_id', 'infos', 'like', 'metas', 'typeReports', 'indices', 'meta_id'));
     }
 
 

@@ -9,7 +9,7 @@
     <title>Resumen de Ingreso</title>
 </head>
    
-    <body class="bg-white text-dark p-relative">
+    <body class="bg-white text-negro p-relative">
                 
         <table>
             <thead>

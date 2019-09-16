@@ -27,6 +27,7 @@ class ReportDescuentoType implements ShouldQueue
     private $cronograma;
     private $type_report;
     private $type_descuento;
+    public $timeout = 0;
 
     /**
      * Create a new job instance.

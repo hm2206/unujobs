@@ -107,7 +107,7 @@
                                                                 <td class="py-0 font-10">
                                                                     {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->key : null }}
                                                                     <span>.-</span>
-                                                                    {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : null }}
+                                                                    {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->alias : null }}
                                                                 </td>
                                                                 <td class="py-0 text-right font-10" width="5%">
                                                                     {{ round($remuneracion->monto, 2) }}
@@ -148,12 +148,20 @@
                                                                         <div class="bbt-1">{{ round($descuento->monto, 2) }}</div>
                                                                     </td>
                                                                 </tr>
-                                                                @for ($i = 0; $i < 24 - $body->count(); $i++)
+                                                                @for ($i = 0; $i < 23 - $body->count(); $i++)
                                                                     <tr>
                                                                         <td class="py-0 font-10">&nbsp;</td>
                                                                         <td class="py-0 text-right font-10" width="25%">&nbsp;</td>
                                                                     </tr>
                                                                 @endfor
+                                                                <tr>
+                                                                    <th class="py-0 font-13">
+                                                                        NETO A PAGAR
+                                                                    </th>
+                                                                    <th class="py-0 text-right font-13-5" width="25%">
+                                                                        <div class="bbt-1 font-13-5">{{ round($info->neto, 2) }}</div>
+                                                                    </th>
+                                                                </tr>
                                                             @endif
                                                         @endforeach
                                                     </tbody>
