@@ -54,22 +54,20 @@ class ObligacionController extends Controller
             "monto" => "required|numeric",
             "work_id" => "required",
             "cronograma_id" => "required",
-            "categoria_id" => "required"
+            "info_id" => "required"
         ]);
 
         try {
             // verificamos que el cronograma este activo
             $cronograma = Cronograma::where("estado", 1)->findOrFail($request->cronograma_id);
             $obligacion = Obligacion::create($request->all());
-            $monto = Obligacion::where("work_id", $request->work_id)
+            $monto = Obligacion::where("info_id", $request->info_id)
                 ->where("cronograma_id", $request->cronograma_id)
-                ->where("categoria_id", $request->categoria_id)
                 ->sum("monto");
 
             $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
             $descuento = Descuento::where("cronograma_id", $request->cronograma_id)
-                    ->where("work_id", $request->work_id)
-                    ->where("categoria_id", $request->categoria_id)
+                    ->where("info_id", $request->work_id)
                     ->whereIn("type_descuento_id", $type)
                     ->update([
                         "monto" => $monto,

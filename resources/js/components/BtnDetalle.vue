@@ -24,7 +24,7 @@
                             <div class="col-md-2">
                                 <input type="number" 
                                     :disabled="loader" name="mes" 
-                                    v-model="tmp_cronograma.mes" min="1" max="12" 
+                                    v-model="mes" min="1" max="12" 
                                     class="form-control"
                                     v-on:change="cambio"
                                 >
@@ -33,7 +33,7 @@
                             <div class="col-md-2">
                                 <input type="number" 
                                     :disabled="loader" 
-                                    v-model="tmp_cronograma.año" name="year" 
+                                    v-model="year" name="year" 
                                     min="1999" 
                                     class="form-control"
                                     v-on:change="cambio"
@@ -50,19 +50,11 @@
                             </div>
 
                             <div class="col-md-2">
-                                <input type="number" name="dias" v-model="tmp_cronograma.dias" disabled class="form-control">
+                                <input type="number" name="dias" v-model="dias" disabled class="form-control">
                             </div>
                             
-                            <div class="col-md-2" v-if="numeros.length > 0">
-                                <select name="numero" :disabled="true" v-model="numero" class="form-control"
-                                    v-on:change="cambio"
-                                >
-                                    <option v-for="(numero, nu) in numeros" :key="`numero-nu${nu}`" 
-                                        :value="numero.numero"
-                                    >
-                                        {{ numero.numero }}
-                                    </option>
-                                </select>
+                            <div class="col-md-2" v-if="numero">
+                                <input type="text" class="form-control" v-model="numero" :disabled="true">
                             </div>
 
                         </div>
@@ -84,8 +76,8 @@
                     <component :is="current" v-if="!loader" 
                         :categoria="categoria_id"
                         :param="job_current"
-                        :mes="tmp_cronograma.mes"
-                        :year="tmp_cronograma.año"
+                        :mes="mes"
+                        :year="year"
                         :adicional="adicional"
                         :numero="numero"
                         :send="send"
@@ -206,6 +198,8 @@ export default {
             ],
             info: {},
             dias: 30,
+            year: '',
+            mes: '',
             numeros: [],
             numero: 1,
             categoria_id: '',
@@ -226,6 +220,9 @@ export default {
         this.adicional = this.tmp_adicional == 1 ? true : false;
         this.isCategoria = this.categoria ? true : false;
         this.numero = this.tmp_numero;
+        this.mes = this.cronograma.mes;
+        this.year = this.cronograma.año;
+        this.dias = this.cronograma.dias;
     },
     watch: {
         show() {
@@ -254,25 +251,21 @@ export default {
                 this.btn = item.btn;
             }
         },
-        cambio(e) {
-            let that = this;
+        async cambio(e) {
+
             this.loader = true;
-            setTimeout(function() {
-                that.loader = false;
-            }, 300);
-        },
-        cambioCategoria(e) {         
-            let that = this;
-            let id = e.value;
-            this.loader = true;
-            this.infos.filter((inf) => {
-                if (inf.id == id) {
-                    this.info = inf;
-                }
-            });
-            setTimeout(function() {
-                that.loader = false;
-            }, 300);
+            let api = unujobs("get", 
+                `/info/${this.job_current}?mes=${this.mes}&year=${this.year}&adicional=${this.adicional}&numero=${this.numero}`)
+
+            await api.then(res => {
+                let { cronograma } = res.data;
+                this.tmp_cronograma = cronograma;
+            }).catch(err => {
+                console.log(err);
+            })
+
+            this.loader = false;
+
         },
         async getCargos() {
 

@@ -35,7 +35,7 @@
                 </small>
                 <input type="hidden" name="work_id" :value="param">
                 <input type="hidden" name="cronograma_id" :value="cronograma.id">
-                <input type="hidden" name="categoria_id" :value="categoria.id">
+                <input type="hidden" name="info_id" :value="info.id">
             </div>
             <div class="col-md-1">
                 <button class="btn btn-sm btn-success" v-if="!loader">
@@ -133,7 +133,7 @@ export default {
     },
     mounted() {
         this.cronograma = this.tmp_cronograma;
-        //this.getObligaciones();
+        this.getObligaciones();
     },
     methods: {
         getObligaciones() {

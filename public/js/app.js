@@ -9967,14 +9967,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -10050,6 +10042,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }],
       info: {},
       dias: 30,
+      year: '',
+      mes: '',
       numeros: [],
       numero: 1,
       categoria_id: '',
@@ -10070,6 +10064,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.adicional = this.tmp_adicional == 1 ? true : false;
     this.isCategoria = this.categoria ? true : false;
     this.numero = this.tmp_numero;
+    this.mes = this.cronograma.mes;
+    this.year = this.cronograma.año;
+    this.dias = this.cronograma.dias;
   },
   watch: {
     show: function show() {
@@ -10125,33 +10122,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return seleccionar;
     }(),
-    cambio: function cambio(e) {
-      var that = this;
-      this.loader = true;
-      Object(timers__WEBPACK_IMPORTED_MODULE_10__["setTimeout"])(function () {
-        that.loader = false;
-      }, 300);
-    },
-    cambioCategoria: function cambioCategoria(e) {
-      var _this = this;
-
-      var that = this;
-      var id = e.value;
-      this.loader = true;
-      this.infos.filter(function (inf) {
-        if (inf.id == id) {
-          _this.info = inf;
-        }
-      });
-      Object(timers__WEBPACK_IMPORTED_MODULE_10__["setTimeout"])(function () {
-        that.loader = false;
-      }, 300);
-    },
-    getCargos: function () {
-      var _getCargos = _asyncToGenerator(
+    cambio: function () {
+      var _cambio = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var _this2 = this;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+        var _this = this;
 
         var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
@@ -10159,8 +10134,46 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context2.prev = _context2.next) {
               case 0:
                 this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/work/".concat(this.job_current, "/info"));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/info/".concat(this.job_current, "?mes=").concat(this.mes, "&year=").concat(this.year, "&adicional=").concat(this.adicional, "&numero=").concat(this.numero));
                 _context2.next = 4;
+                return api.then(function (res) {
+                  var cronograma = res.data.cronograma;
+                  _this.tmp_cronograma = cronograma;
+                })["catch"](function (err) {
+                  console.log(err);
+                });
+
+              case 4:
+                this.loader = false;
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function cambio(_x3) {
+        return _cambio.apply(this, arguments);
+      }
+
+      return cambio;
+    }(),
+    getCargos: function () {
+      var _getCargos = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var _this2 = this;
+
+        var api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                this.loader = true;
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/work/".concat(this.job_current, "/info"));
+                _context3.next = 4;
                 return api.then(function (res) {
                   var _res$data = res.data,
                       info = _res$data.info,
@@ -10191,10 +10204,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 6:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       function getCargos() {
@@ -10220,16 +10233,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getFind: function () {
       var _getFind = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(e) {
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4(e) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 this.isCategoria = false;
                 this.block = true;
                 this.job_current = e;
                 this.search = true;
-                _context3.next = 6;
+                _context4.next = 6;
                 return this.getCargos();
 
               case 6:
@@ -10237,13 +10250,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 7:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
-      function getFind(_x3) {
+      function getFind(_x4) {
         return _getFind.apply(this, arguments);
       }
 
@@ -17407,7 +17420,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   mounted: function mounted() {
-    this.cronograma = this.tmp_cronograma; //this.getObligaciones();
+    this.cronograma = this.tmp_cronograma;
+    this.getObligaciones();
   },
   methods: {
     getObligaciones: function getObligaciones() {
@@ -69432,8 +69446,8 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.tmp_cronograma.mes,
-                            expression: "tmp_cronograma.mes"
+                            value: _vm.mes,
+                            expression: "mes"
                           }
                         ],
                         staticClass: "form-control",
@@ -69444,18 +69458,14 @@ var render = function() {
                           min: "1",
                           max: "12"
                         },
-                        domProps: { value: _vm.tmp_cronograma.mes },
+                        domProps: { value: _vm.mes },
                         on: {
                           change: _vm.cambio,
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
-                            _vm.$set(
-                              _vm.tmp_cronograma,
-                              "mes",
-                              $event.target.value
-                            )
+                            _vm.mes = $event.target.value
                           }
                         }
                       })
@@ -69467,8 +69477,8 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.tmp_cronograma.año,
-                            expression: "tmp_cronograma.año"
+                            value: _vm.year,
+                            expression: "year"
                           }
                         ],
                         staticClass: "form-control",
@@ -69478,18 +69488,14 @@ var render = function() {
                           name: "year",
                           min: "1999"
                         },
-                        domProps: { value: _vm.tmp_cronograma.año },
+                        domProps: { value: _vm.year },
                         on: {
                           change: _vm.cambio,
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
-                            _vm.$set(
-                              _vm.tmp_cronograma,
-                              "año",
-                              $event.target.value
-                            )
+                            _vm.year = $event.target.value
                           }
                         }
                       })
@@ -69547,81 +69553,47 @@ var render = function() {
                           {
                             name: "model",
                             rawName: "v-model",
-                            value: _vm.tmp_cronograma.dias,
-                            expression: "tmp_cronograma.dias"
+                            value: _vm.dias,
+                            expression: "dias"
                           }
                         ],
                         staticClass: "form-control",
                         attrs: { type: "number", name: "dias", disabled: "" },
-                        domProps: { value: _vm.tmp_cronograma.dias },
+                        domProps: { value: _vm.dias },
                         on: {
                           input: function($event) {
                             if ($event.target.composing) {
                               return
                             }
-                            _vm.$set(
-                              _vm.tmp_cronograma,
-                              "dias",
-                              $event.target.value
-                            )
+                            _vm.dias = $event.target.value
                           }
                         }
                       })
                     ]),
                     _vm._v(" "),
-                    _vm.numeros.length > 0
+                    _vm.numero
                       ? _c("div", { staticClass: "col-md-2" }, [
-                          _c(
-                            "select",
-                            {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.numero,
-                                  expression: "numero"
-                                }
-                              ],
-                              staticClass: "form-control",
-                              attrs: { name: "numero", disabled: true },
-                              on: {
-                                change: [
-                                  function($event) {
-                                    var $$selectedVal = Array.prototype.filter
-                                      .call($event.target.options, function(o) {
-                                        return o.selected
-                                      })
-                                      .map(function(o) {
-                                        var val =
-                                          "_value" in o ? o._value : o.value
-                                        return val
-                                      })
-                                    _vm.numero = $event.target.multiple
-                                      ? $$selectedVal
-                                      : $$selectedVal[0]
-                                  },
-                                  _vm.cambio
-                                ]
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.numero,
+                                expression: "numero"
                               }
-                            },
-                            _vm._l(_vm.numeros, function(numero, nu) {
-                              return _c(
-                                "option",
-                                {
-                                  key: "numero-nu" + nu,
-                                  domProps: { value: numero.numero }
-                                },
-                                [
-                                  _vm._v(
-                                    "\n                                    " +
-                                      _vm._s(numero.numero) +
-                                      "\n                                "
-                                  )
-                                ]
-                              )
-                            }),
-                            0
-                          )
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", disabled: true },
+                            domProps: { value: _vm.numero },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.numero = $event.target.value
+                              }
+                            }
+                          })
                         ])
                       : _vm._e()
                   ])
@@ -69670,8 +69642,8 @@ var render = function() {
                       attrs: {
                         categoria: _vm.categoria_id,
                         param: _vm.job_current,
-                        mes: _vm.tmp_cronograma.mes,
-                        year: _vm.tmp_cronograma.año,
+                        mes: _vm.mes,
+                        year: _vm.year,
                         adicional: _vm.adicional,
                         numero: _vm.numero,
                         send: _vm.send,
@@ -77656,8 +77628,8 @@ var render = function() {
                 }),
                 _vm._v(" "),
                 _c("input", {
-                  attrs: { type: "hidden", name: "categoria_id" },
-                  domProps: { value: _vm.categoria.id }
+                  attrs: { type: "hidden", name: "info_id" },
+                  domProps: { value: _vm.info.id }
                 })
               ]),
               _vm._v(" "),

@@ -62,9 +62,24 @@ class InfoController extends Controller
      * @param  \App\Info  $info
      * @return \Illuminate\Http\Response
      */
-    public function show(Info $info)
+    public function show($id)
     {
-        return back();
+        $info = info::findOrFail($id);
+        $mes = request()->mes;
+        $year = request()->year;
+        $adicional = request()->adicional;
+        $numero = request()->numero;
+
+        $cronograma = Cronograma::where("año", $year)
+            ->where("mes", $mes)
+            ->where("adicional", $adicional)
+            ->where("numero", $numero)
+            ->first();
+
+        return [
+            "info" => $info,
+            "cronograma" => $cronograma
+        ];
     }
 
 
@@ -439,6 +454,11 @@ class InfoController extends Controller
             ->get();
 
         return $obligaciones;
+    }
+
+    public function storeObligacion()
+    {
+        
     }
 
 }
