@@ -21,7 +21,7 @@ class CreateObligacionsTable extends Migration
             $table->double("monto")->default(0);
             $table->bigInteger("work_id");
             $table->bigInteger("cronograma_id");
-            $table->bigInteger("categoria_id");
+            $table->bigInteger("info_id");
             $table->timestamps();
         });
     }

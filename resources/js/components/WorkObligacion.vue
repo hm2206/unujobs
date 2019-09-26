@@ -35,7 +35,7 @@
                 </small>
                 <input type="hidden" name="work_id" :value="param">
                 <input type="hidden" name="cronograma_id" :value="cronograma.id">
-                <input type="hidden" name="categoria_id" :value="categoria">
+                <input type="hidden" name="categoria_id" :value="categoria.id">
             </div>
             <div class="col-md-1">
                 <button class="btn btn-sm btn-success" v-if="!loader">
@@ -107,7 +107,7 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['categoria', 'mes', 'year', 'adicional', 'numero', 'param', 'send', 'info'],
+    props: ['categoria', 'mes', 'year', 'tmp_cronograma', 'adicional', 'numero', 'param', 'send', 'info'],
     data() {
         return {
             obligaciones: [],
@@ -132,7 +132,8 @@ export default {
         }
     },
     mounted() {
-        this.getObligaciones();
+        this.cronograma = this.tmp_cronograma;
+        //this.getObligaciones();
     },
     methods: {
         getObligaciones() {
@@ -141,16 +142,12 @@ export default {
 
             let  api = unujobs(
                 'get',
-                `/work/${this.param}/obligacion?mes=${this.mes}&year=${this.year}&adicional=${adicional}&categoria_id=${this.categoria}&numero=${this.numero}`
+                `/info/${this.param}/obligacion?cronograma_id=${this.cronograma.id}`
             );
 
             api.then(res => {
 
-                let { obligaciones, cronograma, numeros } = res.data;
-                this.obligaciones = obligaciones;
-                this.cronograma = cronograma;
-                this.$emit('get-numeros', numeros);
-                this.$emit('get-cronograma', cronograma);
+                this.obligaciones = res.data;
                 this.show = true;
 
             }).catch(err => {

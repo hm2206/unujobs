@@ -30,10 +30,11 @@
                         </form>
                     </div>
 
-                    <form class="table-response" id="add-works">
+                    <form class="table-response" :id="`add-works-${count}`">
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>Seleccionar</th>
                                     <th>Nombre Completo</th>
                                     <th>N° Documento</th>
@@ -41,22 +42,21 @@
                                 </tr>
                             </thead>
                             <tbody v-if="!loader">
-                                <tr v-for="(work, w) in work.data" :key="`work-${w}`">
+                                <tr v-for="(info, w) in info.data" :key="`info-add-${w}`">
+                                    <td>{{ w + 1 }}</td>
                                     <td>
-                                        <input type="checkbox" name="jobs[]" 
+                                        <input type="checkbox" name="infos[]" 
                                             v-on:change="validate"
                                             v-model="check_works"
-                                            :value="work.id"
+                                            :value="info.id"
                                         >
                                     </td>
-                                    <td class="uppercase">{{ work.nombre_completo }}</td>
-                                    <td>{{ work.numero_de_documento }}</td>
+                                    <td class="uppercase">{{ info.work ? info.work.nombre_completo : '' }}</td>
+                                    <td>{{ info.work ? info.work.numero_de_documento : '' }}</td>
                                     <td>
                                         <div class="row">
-                                            <div class="col-md-6" v-for="(info, i) in work.infos" :key="`info-${i}`">
-                                                <div class="btn btn-sm btn-block btn-danger">
-                                                    <span v-text="info.categoria ? info.categoria.nombre : ''"></span>
-                                                </div>
+                                            <div class="btn btn-sm btn-block btn-danger">
+                                                <span v-text="info.categoria ? info.categoria.nombre : '' "></span>
                                             </div>
                                         </div>
                                     </td>
@@ -67,7 +67,7 @@
                                     <small class="spinner-border text-primary"></small>
                                 </td>
                             </tr>
-                            <tr v-if="!loader && work.total == 0">
+                            <tr v-if="!loader && info.total == 0">
                                 <td colspan="4" class="text-center">
                                     <small>No hay registros disponibles, vuelva a recargar</small>
                                     <div>
@@ -91,7 +91,7 @@
 
                 <div class="card-footer text-center" v-if="!loader">
                     <btn-more :config="['btn-block']" 
-                        :url="work.next_page_url"   
+                        :url="info.next_page_url"   
                         @get-data="getData"
                     >
                     </btn-more>
@@ -113,7 +113,9 @@ export default {
         return {
             show: false,
             loader: false,
-            work: {},
+            info: {
+                data: []
+            },
             count: 0,
             check_works: [],
             like: ""
@@ -123,6 +125,9 @@ export default {
         show(nuevo, old) {
             if (nuevo) {
                 this.getWorks();
+                this.count = 0;
+            }else {
+                this.check_works = [];
             }
         }
     },
@@ -138,7 +143,7 @@ export default {
             let api = unujobs("get", `/cronograma/${this.cronograma.id}/add?query_search=${this.like}`);
             
             await api.then(res => {
-                this.work = res.data;
+                this.info = res.data;
             }).catch(err => {
 
             });
@@ -150,10 +155,10 @@ export default {
             this.count = checked ? this.count + 1 : this.count - 1;
         },
         getData(e) {
-            this.work.next_page_url = e.next;
-            this.work.total = e.total;
-            this.work.path = e.path;
-            this.work.data = [...this.cronograma.data, ...e.data];
+            this.info.next_page_url = e.next;
+            this.info.total = e.total;
+            this.info.path = e.path;
+            this.info.data = [...this.info.data, ...e.data];
         },
         async add(e) {
 
@@ -163,7 +168,7 @@ export default {
 
             this.loader = true;
 
-            const form = new FormData(document.getElementById('add-works'));
+            const form = new FormData(document.getElementById(`add-works-${this.count}`));
 
             let api = unujobs("post", `/cronograma/${this.cronograma.id}/add`, form);
 
@@ -176,6 +181,8 @@ export default {
                 await notify({icon: icon, text: message});
 
                 this.getWorks();
+
+                this.check_works = [];
 
             }).catch(err => {
                 notify({icon: 'error', text: err.message});

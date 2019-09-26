@@ -138,11 +138,10 @@ export default {
         async getCargos() {
 
             this.loader = true;
-            let api = unujobs("get", `/work/${this.param}/info`);
+            let api = unujobs("get", `/info?work_id=${this.param}`);
 
             await api.then(res => {
-                let { infos } = res.data;
-                this.infos = infos;
+                this.infos = res.data;
 
             }).catch(err => {
                 console.log("algo salió mal");

@@ -93,12 +93,12 @@ class CronogramaController extends Controller
         $pendiente = 1;
         $current_mes = (int)date('m') + 1;
 
-        /*if ($mes > $current_mes || $mes < $current_mes - 1) {
+        if ($mes > $current_mes || $mes < $current_mes - 1) {
             return [
                 "status" => false,
                 "message" => "El mes no está permitido!"
             ];
-        }*/
+        }
 
         $year = date('Y');
         $adicional = $request->adicional ? 1 : 0;
@@ -136,18 +136,11 @@ class CronogramaController extends Controller
         }
 
         if($cronograma->adicional == 0) {
-            $infoIn = Info::whereHas("work", function($w) {
-                $w->orderBy("nombre_completo", "ASC");
-            })->where("planilla_id", $cronograma->planilla_id)
-            ->where("active", 1)
-            ->get(["id"])
-            ->pluck(["id"]);
-
-            $cronograma->infos()->syncWithoutDetaching($infoIn);
+            $infoIn = [];
 
             ProssingRemuneracion::withChain([
-                (new ProssingDescuento($cronograma, $infoIn))->onQueue('high')
-            ])->dispatch($cronograma, $infoIn)
+                (new ProssingDescuento($cronograma))->onQueue('high')
+            ])->dispatch($cronograma)
             ->onQueue('high');
 
         }elseif($cronograma->adicional == 1) {
@@ -239,47 +232,48 @@ class CronogramaController extends Controller
         $indices = [];
         $infos = [];
         $metas = [];
+        $cargos = [];
 
-        if($cronograma->infos->count() > 0) {
-
-            $metaId = $cronograma->infos->pluck(["meta_id"]);
-            $cargoId = $cronograma->infos->pluck(["cargo_id"]);
-            
-
-            if ($meta_id) {
-                $indices = $cronograma->infos->where("meta_id", $meta_id);
-            }else {
-                $indices = $cronograma->infos;
-            }
+        $metaId = $cronograma->infos->pluck(["meta_id"]);
+        $cargoId = $cronograma->infos->pluck(["cargo_id"]);
 
 
-            if ($cargo_id) {
-                $indices = $indices->where("cargo_id", $cargo_id);   
-            }
-
-
-            $indices = $indices->pluck(["id"]);
-            $infos = Info::with("work")->whereIn("id", $indices);
-
-            if ($meta_id) {
-                $infos = $infos->where("meta_id", $meta_id);
-            }
-
-            
-            if ($like) {
-                $infos = $infos->whereHas('work', function($w) use($like) {
-                    $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
-                    $w->where($indice, "like", "%{$like}%");
-                });
-            }
-
-            $infos = $infos->paginate(20);
-            $metas = Meta::whereIn("id", $metaId)->get();
-            $cargos = Cargo::whereIn("id", $cargoId)->get();
-            
+        if ($meta_id) {
+            $indices = $cronograma->infos->where("meta_id", $meta_id);
+        }else {
+            $indices = $cronograma->infos;
         }
 
-        return view('cronogramas.job', compact('cronograma', 'cargos', 'cargo_id', 'infos', 'like', 'metas', 'typeReports', 'indices', 'meta_id'));
+
+        if ($cargo_id) {
+            $indices = $indices->where("cargo_id", $cargo_id);   
+        }
+
+        $indices = $indices->pluck(["id"]);
+        $infos = Info::with("work")->whereIn("id", $indices);
+
+        if ($meta_id) {
+            $infos = $infos->where("meta_id", $meta_id);
+        }
+
+            
+        if ($like) {
+            $infos = $infos->whereHas('work', function($w) use($like) {
+                $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
+                $w->where($indice, "like", "%{$like}%");
+            });
+        }
+
+
+        $infos = $infos->paginate(20);
+        $metas = Meta::whereIn("id", $metaId)->get();
+        $cargos = Cargo::whereIn("id", $cargoId)->get();
+
+        return view('cronogramas.job', 
+            compact(
+                'cronograma', 'cargos', 'cargo_id', 'infos', 'like', 
+                'metas', 'typeReports', 'indices', 'meta_id'
+            ));
     }
 
 
@@ -296,20 +290,19 @@ class CronogramaController extends Controller
             ->findOrFail($id);
 
         $like = request()->query_search;
-        $notIn = $cronograma->works->pluck(["id"]);
+        $notIn = $cronograma->infos->pluck(["id"]);
 
-        $jobs = Work::whereNotIn("id", $notIn)
-            ->with(["infos" => function($q) {
-                $q->with(["cargo", "categoria"]);
-            }])->whereHas('infos', function($i) use($cronograma) {
-                $i->where('infos.planilla_id', $cronograma->planilla_id);
-            });
+        $infos = Info::with(['work', 'cargo', 'categoria'])
+            ->whereNotIn("id", $notIn)
+            ->where("planilla_id", $cronograma->planilla_id);
 
         if($like) {
-           $jobs->where("nombre_completo", "like", "%{$like}%");
+            $infos->wherehas('work', function($w) use($like) {
+                $w->where("nombre_completo", "like", "%{$like}%");
+            });
         }
 
-        return $jobs->paginate(20);
+        return $infos->paginate(20);
     }
 
 
@@ -322,25 +315,21 @@ class CronogramaController extends Controller
      */
     public function addStore(Request $request, $id)
     {
-        $this->validate(request(), [
-            "jobs" => "required"
-        ]);
-
         try {
             $cronograma = Cronograma::where('adicional', 1)
                 ->where("estado", 1)
                 ->where("pendiente", 0)
                 ->findOrFail($id);
             
-            $tmp_jobs = $request->input('jobs', []);
+            $tmp_infos = $request->input('infos', []);
 
-            $jobs = Work::whereIn("id", $tmp_jobs)->get();
+            $infos = Info::whereIn("id", $tmp_infos)->get();
 
-            $cronograma->works()->syncWithoutDetaching($jobs->pluck(["id"]));
+            $cronograma->infos()->syncWithoutDetaching($infos->pluck(["id"]));
             // procesamos las remuneraciones y los descuentos
             ProssingRemuneracion::withChain([
-                new ProssingDescuento($cronograma, $jobs)
-            ])->dispatch($cronograma, $jobs);
+                (new ProssingDescuento($cronograma))->onQueue('high')
+            ])->dispatch($cronograma)->onQueue('high');
 
             return [
                 "status" => true,

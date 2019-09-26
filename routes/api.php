@@ -91,6 +91,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get("info/{id}/descuento", "InfoController@descuento");
     Route::put("info/{id}/descuento", "InfoController@descuentoUpdate");
     Route::get("info/{id}/observacion", "InfoController@observacion");
+    Route::get("info/{id}/obligacion", "InfoController@obligacion");
 
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');

@@ -32,6 +32,7 @@
 
 </div>
 
+
 <div class="row">
     <h3 class="ml-2 col-md-10 uppercase">
         @if ($cronograma->adicional)
@@ -44,9 +45,10 @@
     </h3>
     <h2 class="text-right">
         <i class="fas fa-users fa-sm text-primary"></i>
-        {{ $infos->total() }}
+        {!! isset($infos) == 1 ? $infos->total() : 0 !!}
     </h2>
 </div>
+
 
 @if (session('success'))
     <div class="col-md-12 mt-3 ">
@@ -65,6 +67,7 @@
     </div>
 @endif
 
+
 @if ($errors->first('import_remuneracion'))
     <div class="col-md-12 mt-3 ">
         <div class="alert alert-danger">
@@ -73,6 +76,7 @@
     </div>
 @endif
 
+
 @if ($errors->first('import_descuento'))
     <div class="col-md-12 mt-3 ">
         <div class="alert alert-danger">
@@ -80,7 +84,6 @@
         </div>
     </div>
 @endif
-
 
 
 <div class="col-md-12">
@@ -243,4 +246,5 @@
     </switch-planilla>
 
 </div>
+
 @endsection

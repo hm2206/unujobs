@@ -21,7 +21,8 @@ class CreateInfosTable extends Migration
             $table->integer('meta_id');
             $table->integer('fuente_id')->nullable();
             $table->string('fuente')->nullable();
-            $table->integer('planilla_id')->nullable();
+            $table->bigInteger('planilla_id')->nullable();
+            $table->bigInteger('sindicato_id')->nullable();
             $table->string('plaza')->nullable();
             $table->string('perfil')->nullable();
             $table->string('escuela')->nullable();

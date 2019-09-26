@@ -15,6 +15,7 @@ use App\Models\Descuento;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
 use App\Collections\InfoCollection;
+use App\Models\Obligacion;
 
 /**
  * Class InfoController
@@ -30,7 +31,17 @@ class InfoController extends Controller
      */
     public function index()
     {
-        return back();
+        if (request()->work_id) {
+            return Info::with(
+                'cargo', 
+                'planilla', 
+                'categoria', 
+                'meta', 
+                'sindicato'
+            )->where("work_id", request()->work_id)
+            ->get();
+        }
+        return Info::paginate(10);
     }
 
 
@@ -417,5 +428,17 @@ class InfoController extends Controller
 
         return $obs;
     }   
+
+
+    public function obligacion($id) 
+    {
+        $cronograma_id = request()->cronograma_id;
+        $info = Info::findOrFail($id);
+        $obligaciones = Obligacion::where("cronograma_id", $cronograma_id)
+            ->where("info_id", $info->id)
+            ->get();
+
+        return $obligaciones;
+    }
 
 }

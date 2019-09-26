@@ -25,7 +25,6 @@ class ProssingRemuneracion implements ShouldQueue
     
     private $cronograma;
     private $infos;
-    private $infoIn;
     private $types;
      
 
@@ -37,12 +36,9 @@ class ProssingRemuneracion implements ShouldQueue
      * @param \App\Models\Work $jobs
      * @return void
      */
-    public function __construct($cronograma, $infoIn)
+    public function __construct($cronograma)
     {
         $this->cronograma = $cronograma;
-        $this->infoIn = $infoIn;
-        $this->infos = Info::with("work")->whereIn("id", $infoIn)->get();
-        $this->types = TypeRemuneracion::where("activo", 1)->get();
     }
 
     /**
@@ -52,70 +48,98 @@ class ProssingRemuneracion implements ShouldQueue
      */
     public function handle()
     {
+        // obtenemos los tipos de remuneracion
+        $this->types = TypeRemuneracion::where("activo", 1)->get();
         // cronograma actual
         $cronograma = $this->cronograma;
+        
+        if ($cronograma->adicional == 0) {
+            // configuracion principal
+            $this->infos = Info::whereHas("work", function($w) {
+                $w->orderBy("nombre_completo", "ASC");
+            })->where("planilla_id", $cronograma->planilla_id)
+                ->where("active", 1)
+                ->get();
+
+            // insertar a los trabajadores en el cronograma
+            $cronograma->infos()->syncWithoutDetaching($this->infos->pluck(['id']));
+
+        }else {
+
+            $this->infos = $cronograma->infos;
+        }
+
+
         // fecha anteriores
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         // obtenemos remuneraciones anteriores
-        $typeBefores = Remuneracion::whereIn("info_id", $this->infoIn)
+        $typeBefores = Remuneracion::whereIn("info_id", $this->infos->pluck(['id']))
             ->whereIn("type_remuneracion_id", $this->types->pluck(['id']))
             ->where("adicional", $cronograma->adicional)
             ->where("mes", $mes)
             ->where("año", $year)
             ->get();
 
-        foreach ($this->infos as $info) {
-            $this->configurarRemuneracion($cronograma, $info, $typeBefores);
+
+        $infoOld = $this->infos->whereIn("id", $typeBefores->pluck('info_id'));
+        $infoNew = $this->infos->whereNotIn("id", $infoOld->pluck('id'));
+
+        if ($infoNew->count() > 0) {
+            $this->configNewRemuneracion($cronograma, $infoNew);
+        }
+
+        if ($infoOld->count() > 0) {
+            $this->configOldRemuneracion($cronograma, $infoOld, $typeBefores);
         }
 
     }
 
-    /**
-     * Se encarga de configurar y procesar las remuneraciones de cada trabajador
-     *
-     * @param \App\Models\TypeRemuneracion $types
-     * @param \App\Models\Cronograma $cronograma
-     * @param \App\Models\Work $job
-     * @return void
-     */
-    private function configurarRemuneracion($cronograma, $info, $typeBefores)
-    {
-        // obtener remuneracion de un mes anterior
-        $isTypeBefore = $typeBefores->where("info_id", $info->id);
 
-        // verificamos si hay un registro anterior
-        if ($isTypeBefore->count()) {
-            // recorremos los tipos de remuneraciones
+    private function configOldRemuneracion($cronograma, $infos, $befores) {
+
+        $payload = [];
+
+        foreach ($infos as $info) {
+
             foreach ($this->types as $type) {
-                // obtenemos un tipo de remuneracion especifica
-                $isType = $isTypeBefore->where("type_remuneracion_id", $type->id)->first();
-                // validamos si existe algúna remuneracion
-                if ($isType) {
-                    $newRemuneracion = Remuneracion::updateOrCreate([
-                        "work_id" => $info->work_id,
-                        "info_id" => $info->id,
-                        "planilla_id" => $isType->planilla_id,
-                        "cargo_id" => $isType->cargo_id,
-                        "categoria_id" => $isType->categoria_id,
-                        "meta_id" => $isType->meta_id,
-                        "cronograma_id" => $cronograma->id,
-                        "type_remuneracion_id" => $type->id,
-                        "base" => $type->base,
-                        "mes" => $cronograma->mes,
-                        "año" => $cronograma->año,
-                        "adicional" => $cronograma->adicional
-                    ]);
-                    // actualizamos un monto
-                    $newRemuneracion->update(["monto" => $isType->monto]);
-                }
-            }
-        }else {
+                
+                $typeBefore = $befores->where("type_remuneracion_id", $type->id)->first();
+                $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
 
+                array_push($payload, [
+                    "work_id" => $info->work_id,
+                    "info_id" => $info->id,
+                    "planilla_id" => $info->planilla_id,
+                    "cargo_id" => $info->cargo_id,
+                    "categoria_id" => $info->categoria_id,
+                    "meta_id" => $info->meta_id,
+                    "cronograma_id" => $cronograma->id,
+                    "type_remuneracion_id" => $type->id,
+                    "base" => $type->base,
+                    "mes" => $cronograma->mes,
+                    "año" => $cronograma->año,
+                    "adicional" => $cronograma->adicional,
+                    "monto" => $monto
+                ]);
+
+            }
+
+        }
+
+        foreach (array_chunk($payload, 1000) as $insert) {
+            Remuneracion::insert($insert);
+        }
+
+    }
+    
+
+    private function configNewRemuneracion($cronograma, $infos) {
+       foreach ($infos as $info) {
             $collection = new InfoCollection($info);
             $collection->createOrUpdateRemuneracion($cronograma, $this->types);
-
-        }
+       }
     }
+
 
 }

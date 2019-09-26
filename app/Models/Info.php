@@ -25,7 +25,7 @@ class Info extends Model
     protected $fillable = [
         "categoria_id", "cargo_id", "work_id", "active", "observacion", 
         'meta_id', 'plaza', 'perfil', 'planilla_id', 'fuente_id', 'fuente', 
-        'escuela', 'observacion', 'ruc', 'pap'
+        'escuela', 'observacion', 'ruc', 'pap', 'sindicato_id'
     ];
 
     /**
@@ -112,6 +112,26 @@ class Info extends Model
     {
         return $this->hasMany(Descuento::class);
     }
+
+    /**
+     * Relacion de uno a mucho con la tabla sindicatos
+     *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function sindicato()
+    {
+        return $this->belongsTo(Sindicato::class);
+    }
+
+
+    /* Relacion de uno a mucho con la tabla sindicatos
+    *
+    * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+    */
+   public function obligaciones()
+   {
+       return $this->hasMany(Obligacion::class);
+   }
 
     
     /**

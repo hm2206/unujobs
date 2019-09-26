@@ -70,6 +70,21 @@
 
             <div class="col-md-4">
                 <div class="form-group">
+                    <label for="">Sindicato</label>
+                    <select name="sindicato_id" v-model="sindicato_id" class="form-control" :disabled="loading">
+                        <option value="">Seleccionar...</option>
+                        <option :value="sindicato.id" v-for="(sindicato, sin) in sindicatos" :key="`sindicato-${sin}`"
+                            v-text="sindicato.nombre"
+                        >
+                        </option>
+                    </select>
+                    <small class="text-danger" v-text="errors.meta_id ? errors.meta_id[0] : ''"></small>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="form-group">
                     <label for="">Plaza</label>
                     <input type="text" v-model="plaza" class="form-control" name="plaza" :disabled="loading">
                 </div>
@@ -143,13 +158,19 @@
                             <div class="card-body">
                                 <div class="row">
                                     <b class="col-md-12">
-                                        Cargo: {{ info.cargo ? info.cargo.descripcion : '' }}
+                                        Cargo: <span class="text-primary">{{ info.cargo ? info.cargo.descripcion : '' }}</span>
                                     </b>
                                     <b class="col-md-12">
-                                        Categoria: {{ info.categoria ? info.categoria.nombre : '' }}
+                                        Categoria: <span class="text-primary">{{ info.categoria ? info.categoria.nombre : '' }}</span>
                                     </b>
                                     <b class="col-md-12">
-                                        Meta: {{ info.meta ? info.meta.metaID : '' }}
+                                        Meta: <span class="text-primary">{{ info.meta ? info.meta.metaID : '' }}</span>
+                                    </b>
+                                    <b class="col-md-12">
+                                        Perfil: <span class="text-primary">{{ info.perfil }}</span>
+                                    </b>
+                                    <b class="col-md-12">
+                                        Sindicato: <span class="text-primary">{{ info.sindicato ? info.sindicato.nombre : 'No Afecto' }}</span>
                                     </b>
                                 </div>
                             </div>
@@ -188,13 +209,16 @@ export default {
             observacion: '',
             fuente_id: '',
             ruc: '',
-            tmp_infos: []
+            tmp_infos: [],
+            sindicatos: [],
+            sindicato_id: ''
         }
     },
     mounted() {
         this.tmp_infos = this.infos;
         this.getPlanillas();
         this.getMetas();
+        this.getSindicatos();
     },
     watch: {
         form_planilla(nuevo) {
@@ -272,6 +296,17 @@ export default {
                 this.loading = false;
             });
         },
+        getSindicatos() {
+            let api = axios.get('/api/v1/sindicato');
+            this.loading = true;
+            api.then(res => {
+                this.sindicatos = res.data;
+                this.loading = false;
+                console.log(res.data);
+            }).catch(err => {
+                this.loading = false;
+            });
+        },
         getMetas() {
             let api = axios.get('/api/v1/meta');
             this.loading = true;
@@ -298,6 +333,7 @@ export default {
             form.append("plaza", this.plaza); 
             form.append("escuela", this.escuela);
             form.append("observacion", this.observacion);
+            form.append('sindicato_id', this.sindicato_id);
             
             if (this.cas) {
                 form.append("fuente_id", this.fuente_id); 
@@ -348,6 +384,7 @@ export default {
             this.observacion = object.observacion;
             this.fuente_id = object.fuente_id;
             this.ruc = object.ruc;
+            this.sindicato_id = object.sindicato_id;
         },
         destroy(e, object, index) {
 
@@ -374,3 +411,16 @@ export default {
 }
 
 </script>
+
+
+<style scoped>
+
+    .form-control {
+        font-size: 14px;
+    }
+
+    .card {
+        font-size: 14px;
+    }
+
+</style>
