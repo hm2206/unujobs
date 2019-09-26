@@ -212,7 +212,7 @@ class ObligacionController extends Controller
         } catch (\Throwable $th) {
             
             return [
-                "status" => falso,
+                "status" => false,
                 "message" => "Ocurrio un error al procesar la operación"
             ];
 
