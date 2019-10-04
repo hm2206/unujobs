@@ -83,6 +83,7 @@ class DescuentoImport implements ToCollection, WithHeadingRow
                             // actualizamos o creamos el descuento del trabajador
                             $descuento = Descuento::where("info_id", $info->id)
                                 ->where("type_descuento_id", $type->id)
+                                ->where("cronograma_id", $this->cronograma->id)
                                 ->first();
     
                             // verificamos que el valor a guardar sea un numero

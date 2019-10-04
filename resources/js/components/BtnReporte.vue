@@ -67,6 +67,7 @@ import RptPago from './RptPago';
 import RptAfpNet from './RptAfpNet';
 import RptDescuento from './RptDescuento';
 import RptPlanilla from './RptPlanilla';
+import RptEjecutar from './RptEjecutar';
 import { setTimeout } from 'timers';
 
 export default {
@@ -77,14 +78,15 @@ export default {
         'rpt-pago': RptPago,
         'rpt-afp': RptAfpNet,
         'rpt-descuento': RptDescuento,
-        'rpt-planilla': RptPlanilla
+        'rpt-planilla': RptPlanilla,
+        'rpt-ejecutar': RptEjecutar
     },
     props: ["theme", 'cronograma', 'type_reports', 'metas'],
     mounted() {
 
         var componentes = [
             'rpt-general', 'rpt-meta', 'rpt-boleta', 'rpt-pago',
-            'rpt-afp', 'rpt-descuento', 'rpt-planilla'
+            'rpt-afp', 'rpt-descuento', 'rpt-planilla', 'rpt-ejecutar'
         ];
 
         this.type_reports.filter((e, iter) => {

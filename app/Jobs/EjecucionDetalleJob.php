@@ -1,0 +1,213 @@
+<?php
+
+namespace App\Jobs;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+
+
+use App\Models\TypeCategoria;
+use App\Models\Descuento;
+use App\Models\Remuneracion;
+use App\Models\TypeRemuneracion;
+use App\Models\Meta;
+use App\Tools\Money;
+use App\Models\Report;
+use App\Models\Cargo;
+use \PDF;
+use App\Models\Info;
+
+
+class EjecucionDetalleJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $timeout = 0;
+    private $neto = 0;
+    private $cronograma;
+    private $type_report;
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct($cronograma, $type_report, $neto)
+    {
+        $this->cronograma = $cronograma;
+        $this->neto = $neto;
+        $this->type_report = $type_report;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $contenidos = [];
+        $footer = [];
+        $cronograma = $this->cronograma;
+
+        $meses = [
+            "Enero", "Febrero", "Marzo", "Abril", 
+            "Mayo", 'Junio', 'Julio', 'Agosto', 
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        $allRemuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
+        $typeBonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
+        $descuentos = [];
+
+        $cuentas = Info::whereHas('cronogramas', function($c) use($cronograma) {
+                            $c->where("cronogramas.id", $cronograma->id);
+                        })->whereHas('work', function($w) {
+                            $w->where('works.cheque', 0);
+                        })->get();
+
+        $cheques = Info::whereHas('cronogramas', function($c) use($cronograma) {
+                            $c->where("cronogramas.id", $cronograma->id);
+                        })->whereHas('work', function($w) {
+                            $w->where('works.cheque', 1);
+                        })->get();
+
+
+        $infos = [
+            "cuentas" => $cuentas,
+            "cheques" => $cheques
+        ];
+
+        $bonificaciones = $allRemuneraciones->whereIn("type_remuneracion_id", $typeBonificaciones->pluck(['id']));
+        $remuneraciones = $allRemuneraciones->whereNotIn("type_remuneracion_id", $typeBonificaciones->pluck(['id']));
+
+        if ($this->neto) {
+            $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get();
+        }
+
+        $metas = Meta::whereIn("id", $allRemuneraciones->pluck('meta_id'))->get();
+        
+        $cargos = Cargo::where("planilla_id", $cronograma->planilla_id)->get();
+
+        $contenidos = [
+            "meta" => ["size" => "20%", "content" => $metas->pluck(['meta'])],
+            "metaID" => ["size" => '4%', 'content' => $metas->pluck(['metaID'])],
+            "actividad" => ["size" => '7%', "content" => $metas->pluck(['actividadID'])],
+        ];
+
+        // recorrer los montos por cargo
+        foreach ($cargos as $cargo) {
+                
+            foreach ($infos as $name => $config) {
+
+                $payload = [];
+                $total = 0;
+                $size = (100 * 1 ) / $cargos->count();
+    
+                foreach ($metas as $meta) {
+
+                    $monto = $remuneraciones->where("cargo_id", $cargo->id)
+                        ->whereIn("info_id", $config->pluck(['id']))
+                        ->where("meta_id", $meta->id)
+                        ->sum("monto");
+    
+                    if ($this->neto) {
+                        $monto = $monto - $descuentos->where("base", 0)
+                            ->whereIn("info_id", $config->pluck(['id']))
+                            ->where("cargo_id", $cargo->id)
+                            ->where("meta_id", $meta->id)
+                            ->sum("monto");
+                    }
+                    
+                    $total += $monto;
+                    array_push($payload,  Money::parse($monto));
+                }
+    
+                $key = str_replace(" ", "-", strtolower($cargo->descripcion)) . "-{$name}";
+                $contenidos[$key] = ["size" => $size, "content" => $payload];
+                array_push($footer, Money::parse($total));
+
+            }
+                
+        }
+
+        // recorrer las bonificaciones
+        foreach ($typeBonificaciones as $bonificacion) {
+            
+            foreach ($infos as $name => $config) {
+
+                $payload = [];
+                $total = 0;
+                $size = (100 * 1 ) / $typeBonificaciones->count();
+                
+                foreach ($metas as $meta) {
+
+                    $monto = $bonificaciones->where("meta_id", $meta->id)
+                        ->whereIn("info_id", $config->pluck(['id']))
+                        ->sum("monto");
+                        
+                    $total += $monto;
+                    array_push($payload, Money::parse($monto));
+                }
+
+                $contenidos[$bonificacion->key . $name] =  ["size" => "{$size}%","content" => $payload];
+                array_push($footer, Money::parse($total));
+                
+            }
+
+        }
+
+        // totales
+        $payload = [];
+        $total = 0;
+        foreach ($metas as $meta) {
+            $monto = $allRemuneraciones->where("meta_id", $meta->id)->sum("monto");
+
+            if ($this->neto) {
+                $monto = $monto - $descuentos->where("base", 0)
+                    ->where("meta_id", $meta->id)
+                    ->sum("monto");
+            }
+
+            $total += $monto;
+            array_push($payload, Money::parse($monto));
+        }
+
+        $contenidos["totales"] = ["size" => "10%", "content" => $payload];
+        array_push($footer, Money::parse($total));
+        $neto = $this->neto;
+
+        $pdf = \PDF::loadView('reportes.ejecucionDetalle', compact('cronograma','meses', 'cargos', 'contenidos', 'neto', 'footer'));
+        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+
+        $message = $this->neto ? 'Neto' : 'Bruto';
+        $path = "pdf/resumen_ejecucion_detalle_{$message}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}.pdf";
+        $planilla = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
+        $nombre = "Descuento Detallado {$message} {$planilla}";
+
+        $pdf->save(storage_path("app/public") . "/{$path}");
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
+    }
+}

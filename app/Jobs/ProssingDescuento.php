@@ -107,8 +107,11 @@ class ProssingDescuento implements ShouldQueue
         foreach ($infos as $info) {
 
             foreach ($this->types as $type) {
-                
-                $typeBefore = $befores->where("type_descuento_id", $type->id)->first();
+                // obtenemos el registro anterior
+                $typeBefore = $befores->where('info_id', $info->id)
+                    ->where("type_descuento_id", $type->id)
+                    ->first();
+                // almacenamos el monto
                 $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
 
                 array_push($payload, [

@@ -40,13 +40,21 @@
 
             <a class="dropdown-item text-center small text-gray-500" href="#">Todas las notificaciones</a>
         </div>
+
+        <push :current="notifications"/>
+
     </li>
 </template>
 
 <script>
 import { setInterval, setTimeout, clearTimeout } from 'timers';
 import notify from 'sweetalert';
+import push from './push';
+
 export default {
+    components: {
+        push
+    },
     data() {
         return {
             notifications: [],

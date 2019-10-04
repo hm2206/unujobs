@@ -12,7 +12,12 @@
 
 
 <div class="col-md-12 mb-2">
-    <a href="{{ route('cronograma.index') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+    <a href="{{ route('cronograma.index', ["mes={$cronograma->mes}&year={$cronograma->año}"]) }}" 
+        class="btn btn-danger"
+    >
+        <i class="fas fa-arrow-left"></i> atrás
+    </a>
+
     @if ($cronograma->adicional)
         <add-work
             theme="btn-primary"

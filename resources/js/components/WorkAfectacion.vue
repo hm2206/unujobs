@@ -8,7 +8,7 @@
                     <select name="planilla_id" v-model="form_planilla" :disabled="loading" class="form-control">
                         <option value="">Seleccionar...</option>
                         <option :value="planilla.id" v-for="(planilla, pla) in planillas" :key="`planilla-${pla}`"
-                            v-text="planilla.descripcion"
+                            v-text="`${planilla.id}: ${planilla.descripcion}`"
                         >
                         </option>
                     </select>
@@ -22,7 +22,7 @@
                     <select name="cargo_id" v-model="form_cargo" class="form-control" :disabled="loading">
                         <option value="">Seleccionar...</option>
                         <option :value="cargo.id" v-for="(cargo, car) in cargos" :key="`cargo-${car}`"
-                            v-text="cargo.descripcion"
+                            v-text="`${cargo.id}: ${cargo.descripcion}`"
                         >
                         </option>
                     </select>
@@ -36,7 +36,7 @@
                     <select name="categoria_id" v-model="form_categoria" class="form-control" :disabled="loading">
                         <option value="">Seleccionar...</option>
                         <option :value="categoria.id" v-for="(categoria, cat) in categorias" :key="`categoria-${cat}`"
-                            v-text="categoria.nombre"
+                            v-text="`${categoria.key}: ${categoria.nombre}`"
                         >
                         </option>
                     </select>

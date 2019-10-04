@@ -114,6 +114,11 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("cronograma/{id}/afp-net", "ExportCronogramaController@afp");
     Route::post("cronograma/{id}/planilla", "ExportCronogramaController@planilla");
     Route::post("cronograma/{id}/descuento", "ExportCronogramaController@descuento");
+    // reportes de ejecucion de los resumenes de todas las metas
+    Route::post("cronograma/{id}/descuento-bruto", 'RptController@descuentoBruto');
+    Route::post("cronograma/{id}/descuento-bruto-detallado", 'RptController@descuentoBrutoDetalle');
+    Route::post("cronograma/{id}/descuento-neto", 'RptController@descuentoNeto');
+    Route::post("cronograma/{id}/descuento-neto-detallado", 'RptController@descuentoNetoDetalle');
 
 
     // Tipos de descuentos

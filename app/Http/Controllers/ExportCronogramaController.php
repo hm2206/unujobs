@@ -48,12 +48,12 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        if ($cronograma->estado > 0) {
+        /*if ($cronograma->estado > 0) {
             return [
                 "status" => false,
                 "message" => "La planilla aún está en curso, espere el cierre!"
             ];
-        }
+        }*/
 
         try {
             
@@ -88,12 +88,12 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        if ($cronograma->estado > 0) {
+        /*if ($cronograma->estado > 0) {
             return [
                 "status" => false,
                 "message" => "La planilla aún está en curso, espere el cierre!"
             ];
-        }
+        }*/
 
         try {
             

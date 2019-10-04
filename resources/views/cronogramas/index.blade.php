@@ -153,13 +153,17 @@
                                             </button>
                                         @else
                                             @if ($cronograma->estado)
-                                                <button class="btn btn-sm btn-primary">
+                                                <a class="btn btn-sm btn-primary" 
+                                                    href="{{ route('cronograma.job', $cronograma->slug()) }}"
+                                                >
                                                     <i class="fas fa-clock"></i> En curso
-                                                </button>
+                                                </a>
                                             @else
-                                                <button class="btn-sm btn btn-danger">
+                                                <a class="btn-sm btn btn-danger"
+                                                    href="{{ route('cronograma.job', $cronograma->slug()) }}"
+                                                >
                                                     <i class="fas fa-history"></i> Terminado
-                                                </button>
+                                                </a>
                                             @endif
                                         @endif
                                     </th>

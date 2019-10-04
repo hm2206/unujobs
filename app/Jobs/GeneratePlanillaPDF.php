@@ -162,9 +162,10 @@ class GeneratePlanillaPDF implements ShouldQueue
         }
 
         $users = User::all();
+        $message = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification($cronograma->pdf ,"La Planilla general se genero correctamente"));
+            $user->notify(new ReportNotification($archivo->path ,"EL Reporte General v1 de la planilla {$message}, ya están listas"));
         }
 
 

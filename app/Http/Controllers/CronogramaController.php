@@ -93,12 +93,12 @@ class CronogramaController extends Controller
         $pendiente = 1;
         $current_mes = (int)date('m') + 1;
 
-        if ($mes > $current_mes || $mes < $current_mes - 1) {
+        /*if ($mes > $current_mes || $mes < $current_mes - 1) {
             return [
                 "status" => false,
                 "message" => "El mes no está permitido!"
             ];
-        }
+        }*/
 
         $year = date('Y');
         $adicional = $request->adicional ? 1 : 0;
