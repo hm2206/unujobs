@@ -175,9 +175,16 @@ class CronogramaController extends Controller
      * @param  string  $slug
      * @return \Illuminate\View\View
      */
-    public function edit($slug)
-    {
-        return back();
+    public function infos($id)
+    {   
+        $like = request()->query_search;
+        $cronograma = Cronograma::findOrFail($id);
+        return Info::with('work', 'categoria')->where("active", 1)
+            ->whereIn("id", $cronograma->infos->pluck(['id']))
+            ->whereHas("work", function($i) use($like) {
+                $i->where("nombre_completo", "like", "%{$like}%")
+                    ->orWhere("numero_de_documento", "like", "%{$like}%");
+            })->paginate(30);
     }
 
     

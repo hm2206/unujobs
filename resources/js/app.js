@@ -43,6 +43,7 @@ Vue.component('btn-remuneracion', require('./components/BtnRemuneracion.vue').de
 Vue.component('btn-liquidar', require('./components/BtnLiquidar.vue').default);
 Vue.component('btn-validate', require('./components/BtnValidate.vue').default);
 Vue.component('add-work', require('./components/AddWork.vue').default);
+Vue.component('delete-work', require('./components/deleteWork.vue').default);
 Vue.component('btn-user', require('./components/BtnUser.vue').default);
 Vue.component('btn-modulo', require('./components/BtnModulo.vue').default);
 Vue.component('btn-role', require('./components/BtnRole.vue').default);

@@ -35,6 +35,14 @@
         <i class="fas fa-file-pdf"></i> Reportes
     </btn-reporte>
 
+    <delete-work
+        theme="btn-danger"
+        class="text-left"
+        :cronograma="{{ $cronograma }}"
+    >
+        Eliminar Trabajador
+    </delete-work>
+
 </div>
 
 

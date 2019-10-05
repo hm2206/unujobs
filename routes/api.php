@@ -26,6 +26,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/cronograma/{id}/add", "CronogramaController@addStore");
     // cambiar estado de la planilla
     Route::post("/cronograma/{id}/estado", "CronogramaController@estado");
+    // obtener informacion de los infos
+    Route::get('/cronograma/{id}/infos', 'CronogramaController@infos');
     
 
     // registrar un nuevo cargo
@@ -60,7 +62,7 @@ Route::group(["prefix" => 'v1'], function() {
     // Recursos de los roles
     Route::resource("role", "RoleController");
 
-    // Guaradar nuevo usuario
+    // Guardar nuevo usuario
     Route::post("/user", "UserController@store");
     Route::put("/user/{id}", "UserController@update");
     Route::get("/menu/{id}", "UserController@menu");
