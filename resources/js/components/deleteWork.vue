@@ -42,7 +42,7 @@
                                 </tr>
                             </thead>
                             <tbody v-if="!loader">
-                                <tr v-for="(info, w) in info.data" :key="`info-add-${w}`">
+                                <tr v-for="(info, w) in info.data" :key="`info-delete-${w}`">
                                     <td>{{ w + 1 }}</td>
                                     <td>
                                         <input type="checkbox" name="infos[]" 
@@ -63,12 +63,12 @@
                                 </tr>
                             </tbody>
                             <tr v-if="loader">
-                                <td colspan="4" class="text-center">
+                                <td colspan="5" class="text-center">
                                     <small class="spinner-border text-primary"></small>
                                 </td>
                             </tr>
                             <tr v-if="!loader && info.total == 0">
-                                <td colspan="4" class="text-center">
+                                <td colspan="5" class="text-center">
                                     <small>No hay registros disponibles, vuelva a recargar</small>
                                     <div>
                                         <button class="btn btn-sm btn-outline-dark"
@@ -168,9 +168,9 @@ export default {
 
             this.loader = true;
 
-            const form = new FormData(document.getElementById(`add-works-${this.count}`));
+            const form = new FormData(document.getElementById(`delete-works-${this.count}`));
 
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/add`, form);
+            let api = unujobs("post", `/cronograma/${this.cronograma.id}/destroy-all-info`, form);
 
             await api.then(async res => {
 

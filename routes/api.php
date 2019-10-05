@@ -28,6 +28,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/cronograma/{id}/estado", "CronogramaController@estado");
     // obtener informacion de los infos
     Route::get('/cronograma/{id}/infos', 'CronogramaController@infos');
+    // eliminar informacion de los infos
+    Route::post('/cronograma/{id}/destroy-all-info', 'CronogramaController@destroyAllInfo');
     
 
     // registrar un nuevo cargo

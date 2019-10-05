@@ -18151,8 +18151,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }
 
                 this.loader = true;
-                form = new FormData(document.getElementById("add-works-".concat(this.count)));
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/add"), form);
+                form = new FormData(document.getElementById("delete-works-".concat(this.count)));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/destroy-all-info"), form);
                 _context3.next = 6;
                 return api.then(
                 /*#__PURE__*/
@@ -78769,7 +78769,7 @@ var render = function() {
                         ? _c(
                             "tbody",
                             _vm._l(_vm.info.data, function(info, w) {
-                              return _c("tr", { key: "info-add-" + w }, [
+                              return _c("tr", { key: "info-delete-" + w }, [
                                 _c("td", [_vm._v(_vm._s(w + 1))]),
                                 _vm._v(" "),
                                 _c("td", [
@@ -78874,7 +78874,7 @@ var render = function() {
                               "td",
                               {
                                 staticClass: "text-center",
-                                attrs: { colspan: "4" }
+                                attrs: { colspan: "5" }
                               },
                               [
                                 _c("small", {
@@ -78891,7 +78891,7 @@ var render = function() {
                               "td",
                               {
                                 staticClass: "text-center",
-                                attrs: { colspan: "4" }
+                                attrs: { colspan: "5" }
                               },
                               [
                                 _c("small", [

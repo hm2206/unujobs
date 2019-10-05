@@ -26,6 +26,7 @@ use App\Models\Cargo;
 use App\Models\Info;
 use App\Models\TypeReport;
 use App\Http\Middleware\CronogramaMiddleware;
+use App\Jobs\DetachInfoJob;
 
 /**
  * Class CronogramaController
@@ -381,5 +382,36 @@ class CronogramaController extends Controller
         }
     }
 
+
+    public function destroyAllInfo(Request $request, $id) 
+    {
+        try {
+            $cronograma = Cronograma::where("estado", 1)->findOrFail($id);
+            $infos = $request->input('infos', []);
+
+            // eliminar remuneraciones
+            Remuneracion::whereIn("info_id", $infos)->where("cronograma_id", $cronograma->id)->delete();
+            // eliminar descuentos 
+            Descuento::whereIn("info_id", $infos)->where("cronograma_id", $cronograma->id)->delete();
+            // eliminar infos
+            $cronograma->infos()->detach($infos);   
+
+            return [
+                "status" => true,
+                "message" => "Los trabajadores fuerón eliminados correctamente de la planilla"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "La operación falló" 
+            ];
+
+        }
+
+    }
 
 }
