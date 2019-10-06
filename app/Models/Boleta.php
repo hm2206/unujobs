@@ -13,7 +13,7 @@ class Boleta extends Model
         'cronograma_id', 'info_id', 'observacion', 'pap', 'ext_pptto',
         'afp_id', 'perfil', 'planilla_id', 'cargo_id', 'categoria_id',
         'numero_de_cussp', 'numero_de_essalud', 'meta_id', 'work_id',
-        'numero_de_documento'
+        'plaza', 'escuela', 'sindicato_id'
     ];
 
 

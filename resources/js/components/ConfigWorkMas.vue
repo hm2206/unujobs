@@ -1,32 +1,5 @@
 <template>
     <div class="card-body">
-        <form class="card" id="data-sindicatos" v-on:submit="storeSindicato">
-            <div class="card-header">
-                <small class="btn btn-sm btn-dark btn-circle">
-                    <i class="fas fa-cog"></i>    
-                </small>
-                Configurar Sindicatos
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4" v-for="(sindicato, sin) in tmp_sindicatos" :key="`sindicato-${sin}`">
-                        <input type="checkbox" name="sindicatos[]" :value="sindicato.id" 
-                            :checked="sindicato.checked"
-                            :disabled="loader"
-                        >
-                        {{ sindicato.nombre }}
-                    </div>
-                    <div class="col-md-12 mt-5 text-right">
-                        <hr>
-                        <button class="btn btn-success"
-                            :disabled="loader"
-                        >
-                            <i class="fas fa-save"></i> Guardar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
 
         <form class="card mt-4" id="store-retencion" v-on:submit="storeRetencion">
             <div class="card-header">

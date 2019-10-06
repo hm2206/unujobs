@@ -27,6 +27,7 @@ use App\Models\Info;
 use App\Models\TypeReport;
 use App\Http\Middleware\CronogramaMiddleware;
 use App\Jobs\DetachInfoJob;
+use App\Jobs\AddInfoCronograma;
 
 /**
  * Class CronogramaController
@@ -139,10 +140,11 @@ class CronogramaController extends Controller
         if($cronograma->adicional == 0) {
             $infoIn = [];
 
-            ProssingRemuneracion::withChain([
-                (new ProssingDescuento($cronograma))->onQueue('high')
+            AddInfoCronograma::withChain([
+                (new ProssingRemuneracion($cronograma))->onQueue('high'),
+                (new ProssingDescuento($cronograma))->onQueue('high'),
             ])->dispatch($cronograma)
-            ->onQueue('high');
+                ->onQueue('medium');
 
         }elseif($cronograma->adicional == 1) {
             $cronograma->update([
@@ -331,18 +333,17 @@ class CronogramaController extends Controller
             
             $tmp_infos = $request->input('infos', []);
 
-            $infos = Info::whereIn("id", $tmp_infos)->get();
-
-            $cronograma->infos()->syncWithoutDetaching($infos->pluck(["id"]));
-            // procesamos las remuneraciones y los descuentos
-            ProssingRemuneracion::withChain([
-                (new ProssingDescuento($cronograma))->onQueue('high')
-            ])->dispatch($cronograma)->onQueue('high');
+            AddInfoCronograma::withChain([
+                (new ProssingRemuneracion($cronograma))->onQueue('high'),
+                (new ProssingDescuento($cronograma))->onQueue('high'),
+            ])->dispatch($cronograma, $tmp_infos)
+                ->onQueue('medium');
 
             return [
                 "status" => true,
                 "message" => "Los trabajadores están siendo procesados. Nosotros le notificaremos"
             ];
+
         } catch (\Throwable $th) {
             
             \Log::info($th);

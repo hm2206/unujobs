@@ -52,23 +52,9 @@ class ProssingRemuneracion implements ShouldQueue
         $this->types = TypeRemuneracion::where("activo", 1)->get();
         // cronograma actual
         $cronograma = $this->cronograma;
-        
-        if ($cronograma->adicional == 0) {
-            // configuracion principal
-            $this->infos = Info::whereHas("work", function($w) {
-                $w->orderBy("nombre_completo", "ASC");
-            })->where("planilla_id", $cronograma->planilla_id)
-                ->where("active", 1)
-                ->get();
 
-            // insertar a los trabajadores en el cronograma
-            $cronograma->infos()->syncWithoutDetaching($this->infos->pluck(['id']));
-
-        }else {
-
-            $this->infos = $cronograma->infos;
-        }
-
+        // infos associados al cronograma
+        $this->infos = $cronograma->infos;
 
         // fecha anteriores
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;

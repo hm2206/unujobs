@@ -463,7 +463,7 @@ function previouslyCompared(a, b) {
 /*!*****************************************************!*\
   !*** ./node_modules/apollo-boost/lib/bundle.esm.js ***!
   \*****************************************************/
-/*! exports provided: ApolloClient, ApolloError, FetchType, NetworkStatus, ObservableQuery, isApolloError, Observable, getOperationName, ApolloLink, concat, createOperation, empty, execute, from, fromError, fromPromise, makePromise, split, toPromise, HeuristicFragmentMatcher, InMemoryCache, IntrospectionFragmentMatcher, ObjectCache, StoreReader, StoreWriter, WriteError, assertIdValue, defaultDataIdFromObject, defaultNormalizedCacheFactory, enhanceErrorWithDocument, HttpLink, gql, default */
+/*! exports provided: HttpLink, gql, default, ApolloClient, ApolloError, FetchType, NetworkStatus, ObservableQuery, isApolloError, Observable, getOperationName, ApolloLink, concat, createOperation, empty, execute, from, fromError, fromPromise, makePromise, split, toPromise, HeuristicFragmentMatcher, InMemoryCache, IntrospectionFragmentMatcher, ObjectCache, StoreReader, StoreWriter, WriteError, assertIdValue, defaultDataIdFromObject, defaultNormalizedCacheFactory, enhanceErrorWithDocument */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13268,33 +13268,6 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -73502,74 +73475,12 @@ var render = function() {
     _c(
       "form",
       {
-        staticClass: "card",
-        attrs: { id: "data-sindicatos" },
-        on: { submit: _vm.storeSindicato }
-      },
-      [
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _c(
-            "div",
-            { staticClass: "row" },
-            [
-              _vm._l(_vm.tmp_sindicatos, function(sindicato, sin) {
-                return _c(
-                  "div",
-                  { key: "sindicato-" + sin, staticClass: "col-md-4" },
-                  [
-                    _c("input", {
-                      attrs: {
-                        type: "checkbox",
-                        name: "sindicatos[]",
-                        disabled: _vm.loader
-                      },
-                      domProps: {
-                        value: sindicato.id,
-                        checked: sindicato.checked
-                      }
-                    }),
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(sindicato.nombre) +
-                        "\n                "
-                    )
-                  ]
-                )
-              }),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-md-12 mt-5 text-right" }, [
-                _c("hr"),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-success",
-                    attrs: { disabled: _vm.loader }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-save" }),
-                    _vm._v(" Guardar\n                    ")
-                  ]
-                )
-              ])
-            ],
-            2
-          )
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "form",
-      {
         staticClass: "card mt-4",
         attrs: { id: "store-retencion" },
         on: { submit: _vm.storeRetencion }
       },
       [
-        _vm._m(1),
+        _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "card-body" }, [
           _c(
@@ -73639,17 +73550,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-header" }, [
-      _c("small", { staticClass: "btn btn-sm btn-dark btn-circle" }, [
-        _c("i", { staticClass: "fas fa-cog" })
-      ]),
-      _vm._v("\n            Configurar Sindicatos\n        ")
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
