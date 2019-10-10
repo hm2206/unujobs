@@ -31,6 +31,7 @@ use App\Jobs\ExportQueue;
 use App\Exports\AfpNet;
 use \Carbon\Carbon;
 use App\Models\Report;
+use App\Jobs\ReportPersonalCronograma;
 
 /**
  * Class ExportCronogramaController
@@ -327,6 +328,40 @@ class ExportCronogramaController extends Controller
                 ReportDescuento::dispatch($cronograma, $type)->onQueue('medium');
             }
 
+
+            return [
+                "status" => true,
+                "message" => "Este proceso durará unos minutos... Vuelva más tarde"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+
+        }
+    }
+
+
+    /**
+     * Crea un archivo de pdf del cronograma
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function personal(Request $request, $id)
+    {
+        $cronograma = Cronograma::findOrFail($id);
+
+        try {
+            
+            $type = $request->type_report;
+            $condicion = $request->condicion;
+
+            ReportPersonalCronograma::dispatch($cronograma, $condicion, $type)->onQueue('medium');
 
             return [
                 "status" => true,

@@ -61,9 +61,13 @@ class CronogramaController extends Controller
             ->where('año', $year)
             ->paginate(20);
 
+        $reporte = Storage::disk('public')->exists("pdf/report_personal_general_{$year}_{$mes}.pdf")
+            ? "/storage/pdf/report_personal_general_{$year}_{$mes}.pdf"
+            : null;
+
         return view('cronogramas.index', 
             \compact(
-                'cronogramas', 'categoria_id', 'mes', 'year'
+                'cronogramas', 'categoria_id', 'mes', 'year', 'reporte'
             ));
     }
 

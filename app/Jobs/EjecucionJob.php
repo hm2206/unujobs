@@ -16,6 +16,8 @@ use App\Models\Meta;
 use App\Tools\Money;
 use App\Models\Report;
 use \PDF;
+use App\Models\User;
+use App\Notifications\ReportNotification;
 
 class EjecucionJob implements ShouldQueue
 {
@@ -173,6 +175,12 @@ class EjecucionJob implements ShouldQueue
                 "cronograma_id" => $cronograma->id,
                 "type_report_id" => $this->type_report
             ]);
+        }
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new ReportNotification($archivo->path ,"{$archivo->name}, ya está lista"));
         }
         
     }

@@ -23,6 +23,9 @@ class Boleta extends Model
         return $this->belongsTo(Cronograma::class);
     }
 
+    public function work() {
+        return $this->belongsTo(Work::class);
+    }
 
     public function info() {
         return $this->belongsTo(Info::class);

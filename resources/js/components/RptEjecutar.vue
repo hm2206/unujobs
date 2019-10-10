@@ -1,32 +1,32 @@
 <template>
     <div class="card-body">
 
-        <button class="btn btn-outline-danger"
+        <button class="btn btn-outline-danger btn-sm"
             v-on:click="generatePDF('descuento-bruto')"
             v-if="!loader"
         >
-            <i class="fas fa-file-pdf"></i> Ver Descuento Bruto
+            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Bruto
         </button>
 
-        <button class="btn btn-outline-danger"
+        <button class="btn btn-outline-danger btn-sm"
             v-on:click="generatePDF('descuento-bruto-detallado')"
             v-if="!loader"
         >
-            <i class="fas fa-file-pdf"></i> Ver Descuento Detallado Bruto
+            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Detallado Bruto
         </button>
 
-        <button class="btn btn-danger"
+        <button class="btn btn-danger btn-sm"
             v-on:click="generatePDF('descuento-neto')"
             v-if="!loader"
         >
-            <i class="fas fa-file-pdf"></i> Ver Descuento Neto
+            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Neto
         </button>
 
-        <button class="btn btn-danger"
+        <button class="btn btn-danger btn-sm"
             v-on:click="generatePDF('descuento-neto-detallado')"
             v-if="!loader"
         >
-            <i class="fas fa-file-pdf"></i> Ver Descuento Detallado Neto
+            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Detallado Neto
         </button>
 
         <hr>

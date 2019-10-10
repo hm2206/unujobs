@@ -19,6 +19,8 @@ use App\Models\Report;
 use App\Models\Cargo;
 use \PDF;
 use App\Models\Info;
+use App\Models\User;
+use App\Notifications\ReportNotification;
 
 
 class EjecucionDetalleJob implements ShouldQueue
@@ -66,13 +68,13 @@ class EjecucionDetalleJob implements ShouldQueue
         $cuentas = Info::whereHas('cronogramas', function($c) use($cronograma) {
                             $c->where("cronogramas.id", $cronograma->id);
                         })->whereHas('work', function($w) {
-                            $w->where('works.cheque', 0);
+                            $w->where('works.numero_de_cuenta', "<>", null);
                         })->get();
 
         $cheques = Info::whereHas('cronogramas', function($c) use($cronograma) {
                             $c->where("cronogramas.id", $cronograma->id);
                         })->whereHas('work', function($w) {
-                            $w->where('works.cheque', 1);
+                            $w->where('works.numero_de_cuenta', null);
                         })->get();
 
 
@@ -209,5 +211,12 @@ class EjecucionDetalleJob implements ShouldQueue
                 "type_report_id" => $this->type_report
             ]);
         }
+    
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->notify(new ReportNotification($archivo->path ,"{$archivo->name}, ya está lista"));
+        }
+
     }
 }

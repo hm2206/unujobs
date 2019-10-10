@@ -24,6 +24,7 @@ class ReportCheque implements ShouldQueue
 
     private $cronograma;
     private $type_report;
+    public $timeout = 0;
 
     /**
      * Create a new job instance.
@@ -50,10 +51,13 @@ class ReportCheque implements ShouldQueue
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
+        $num_page = 1;
+        $num_work = 1;
+
         $cronograma = $this->cronograma;
         $infoIn = $cronograma->infos->pluck(['work_id']);
-        $tmp_works = Work::whereIn("id", $infoIn)
-            ->where("cheque", 1)
+        $works = Work::whereIn("id", $infoIn)
+            ->where("numero_de_cuenta", null)
             ->orderBy("nombre_completo", "ASC")
             ->get();
             
@@ -68,38 +72,43 @@ class ReportCheque implements ShouldQueue
             ->where("cronograma_id", $cronograma->id)
             ->get();
 
-        $bancos = Banco::whereIn("id", $tmp_works->pluck(["banco_id"]))->get(); 
         $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         
-        foreach ($bancos as $banco) {
-
-            $banco->count = $tmp_works->where("banco_id", $banco->id)->count();
-            $banco->works = $tmp_works->where("banco_id", $banco->id);
-
-            foreach ($banco->works as $work) {
+        foreach ($works as $work) {
                 
-                $work->bonificaciones = $remuneraciones->where("work_id", $work->id)
-                    ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
-                $work->total_neto =  $remuneraciones->where("work_id", $work->id)->sum("monto") - $descuentos->where("work_id", $work->id)->sum('monto');
-                
-            }
-
+            $work->bonificaciones = $remuneraciones->where("work_id", $work->id)
+                ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
+            $work->total_neto =  $remuneraciones->where("work_id", $work->id)->sum("monto") - $descuentos->where("work_id", $work->id)->sum('monto');
+            
         }
         
-        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'bancos', 'meses'));
+        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'bonificaciones', 'works', 'meses', 'num_page', 'num_work'));
 
         $fecha = strtotime(Carbon::now());
         $name = "reporte_cheque_{$fecha}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");
 
-        $archivo = Report::create([
-            "type" => "pdf",
-            "name" => "Reporte de Cheques del {$cronograma->mes} del {$cronograma->año}",
-            "icono" => "fas fa-file-pdf",
-            "path" => "/storage/pdf/{$name}",
-            "cronograma_id" => $this->cronograma->id,
-            "type_report_id" => $this->type_report
-        ]);
+        // obtenemos el reporte
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update([
+                "path" => "/storage/pdf/{$name}",
+                "read" => 0,
+                "name" => "Reporte de Cheques del {$cronograma->mes} del {$cronograma->año}"
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => "Reporte de Cheques del {$cronograma->mes} del {$cronograma->año}",
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/pdf/{$name}",
+                "cronograma_id" => $this->cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
         $users = User::all();
 

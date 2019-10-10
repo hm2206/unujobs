@@ -8,6 +8,7 @@ use App\Models\Cronograma;
 use App\Jobs\EjecucionJob;
 use App\Jobs\EjecucionDetalleJob;
 use App\Models\User;
+use App\Jobs\ReportPersonal;
 
 class RptController extends Controller
 {
@@ -112,6 +113,43 @@ class RptController extends Controller
                 "status" => false,
                 "message" => "Ocurrio un error al procesar la operación!"
             ];
+        }
+    }
+
+
+    public function personalGeneral(Request $request) {
+
+        $this->validate(request(), [
+            "year" => "required",
+            "mes" => "required"
+        ]);
+
+        try {
+
+            $year = $request->year;
+            $mes = $request->mes;
+            
+            $cronogramas = Cronograma::where("año", $year)->where('mes', $mes)->count();
+
+            if ($cronogramas <= 0) {
+                abort(404);
+            }
+
+            ReportPersonal::dispatch($year, $mes)->onQueue('medium');
+
+            return [
+                "status" => true,
+                "message" => "El reporte está siendo procesado, porfavor vuelva más tarde"
+            ];
+            
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "La operación falló"
+            ];  
         }
     }
 

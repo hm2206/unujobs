@@ -11,7 +11,7 @@
 
     @foreach ($bancos as $banco)
 
-        @foreach ($banco->works as $works)
+        @foreach ($banco->works->chunk(23) as $works)
             <body class="bg-white text-negro">
                         
                 <table class="text-dark">
@@ -37,23 +37,23 @@
                 <h5 class="font-11"><b>PLANILLA: {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</b></h5>
                 <h5 class="font-11">
                     <b>MES DE: {{ $meses[$cronograma->mes - 1] }} {{ $cronograma->año }}</b>
+                    <b style="float: right;">Página: {{ $num_page }}</b>
                 </h5>
 
                 <table class="table mt-2 table-bordered">
                     <thead>
                         <tr>
-                            <th class="py-2 text-center font-10"><b>N°</b></th>
-                            <th class="py-2 text-center font-10"><b>Apellidos y Nombres</b></th>
-                            <th class="py-2 font-10 text-center"><b>Numero de cuenta</b></th>
-                            <th class="py-2 text-center font-10"><b>Neto a Pagar</b></th>
-                            <th class="py-2 text-center font-10"><b>Firma</b></th>
+                            <th class="py-0 text-center font-10"><b>N°</b></th>
+                            <th class="py-0 text-center font-10" with="40%"><b>Apellidos y Nombres</b></th>
+                            <th class="py-0 font-10 text-center" with="5%"><b>Numero de cuenta</b></th>
+                            <th class="py-0 text-center font-10"><b>Neto a Pagar</b></th>
+                            <th class="py-0 text-center font-10" with="5%"><b>Firma</b></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($works as $iter => $work)
-                            @if(!$work->nivel)
                             <tr>
-                                <td class="py-2 font-10 text-center">{{ $iter + 1 }}</td>
+                                <td class="py-2 font-10 text-center">{{ $num_work }}</td>
                                 <td class="py-2 font-10 text-center">{{ $work->nombre_completo }}</td>
                                 <td class="py-2 font-10 text-center">{{ $work->numero_de_cuenta }}</td>
                                 <td class="py-2 font-10 text-center">{{ $work->total_neto }}</td>
@@ -63,17 +63,20 @@
                                     </b>
                                 </td>
                             </tr>
-                            @else
-                                <tr>
-                                    <th class="py-1 text-center font-10" colspan="5">
-                                        <b class="font-12 text-center">Total S/. {{ $work->total }}</b>
-                                    </th>
-                                </tr>
-                            @endif
+                            @php
+                                $num_work++;
+                            @endphp
                         @endforeach
+                        <tr>
+                            <th class="py-1 text-center font-10" colspan="5">
+                                <b class="font-12 text-center">Total S/. {{ $works->sum('total_neto') }}</b>
+                            </th>
+                        </tr>
                     </tbody>
                 </table>
-                    
+                @php
+                    $num_page++;
+                @endphp
             </body>
         @endforeach
 

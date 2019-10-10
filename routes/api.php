@@ -97,6 +97,11 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get("info/{id}/observacion", "InfoController@observacion");
     Route::get("info/{id}/obligacion", "InfoController@obligacion");
 
+
+    // afps
+    Route::get('afp', 'AfpController@index');
+    Route::post('afp/{id}/pdf', 'AfpController@pdf');
+
     //Obligaciones
     Route::resource('obligacion', 'ObligacionController');
 
@@ -118,6 +123,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("cronograma/{id}/afp-net", "ExportCronogramaController@afp");
     Route::post("cronograma/{id}/planilla", "ExportCronogramaController@planilla");
     Route::post("cronograma/{id}/descuento", "ExportCronogramaController@descuento");
+    Route::post("cronograma/{id}/personal", 'ExportCronogramaController@personal');
     // reportes de ejecucion de los resumenes de todas las metas
     Route::post("cronograma/{id}/descuento-bruto", 'RptController@descuentoBruto');
     Route::post("cronograma/{id}/descuento-bruto-detallado", 'RptController@descuentoBrutoDetalle');
@@ -136,6 +142,8 @@ Route::group(["prefix" => 'v1'], function() {
 
     // Marcar los reportes como leidos
     Route::post("/report/{id}/markasread", "ReportController@markAsRead");
+    // Generar reporte general de todos los trabajadores
+    Route::post("/report-personal", "RptController@personalGeneral");
 
 
     // Importaciones

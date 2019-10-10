@@ -221,7 +221,8 @@ class JobController extends Controller
      */
     public function query($like, \Illuminate\Database\Eloquent\Builder $jobs) 
     {
-        return $jobs->where("nombre_completo", "like", "%{$like}%");
+        return $jobs->where("nombre_completo", "like", "%{$like}%")
+            ->orWhere("numero_de_documento", "like", "%{$like}%");
     }
 
 

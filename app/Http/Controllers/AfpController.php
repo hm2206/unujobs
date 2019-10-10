@@ -8,6 +8,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Afp;
 use Illuminate\Http\Request;
+use App\Jobs\ReportAFP;
+use App\Models\Cronograma;
 
 /**
  * Controla las acciones en al ruta afp
@@ -26,7 +28,12 @@ class AfpController extends Controller
     {
         $afps = Afp::all();
 
+        if (request()->ajax()) {
+            return $afps;
+        }
+
         return view('afps.index', compact('afps'));
+        
     }
 
     
@@ -121,4 +128,34 @@ class AfpController extends Controller
     {
         return back();
     }
+
+
+    public function pdf(Request $request, $id) {
+        
+        $afp = Afp::findOrFail($id);
+        $this->validate(request(), ["cronograma_id" => "required", "type_report" => "required"]);
+        $cronograma = Cronograma::findOrFail($request->cronograma_id);
+
+        try {
+
+            ReportAFP::dispatch($cronograma, $afp, $request->type_report)->onQueue('medium');
+            
+            return [
+                "status" => true,
+                "message" => "El reporte está siendo generado, vuelva más tarde!"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Algo salió mal!"
+            ];
+
+        }
+
+    }
+
 }

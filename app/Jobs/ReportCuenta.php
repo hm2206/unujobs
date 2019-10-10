@@ -26,6 +26,7 @@ class ReportCuenta implements ShouldQueue
 
     private $cronograma;
     private $type_report;
+    public $timeout = 0;
 
     /**
      * Create a new job instance.
@@ -52,10 +53,12 @@ class ReportCuenta implements ShouldQueue
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
+        $num_work = 1;
+        $num_page = 1;
         $cronograma = $this->cronograma;
         $infoIn = $cronograma->infos->pluck(['work_id']);
         $tmp_works = Work::whereIn("id", $infoIn)
-            ->where("cheque", 0)
+            ->where("numero_de_cuenta", "<>", null)
             ->orderBy("nombre_completo", "ASC")
             ->get();
 
@@ -73,47 +76,46 @@ class ReportCuenta implements ShouldQueue
         $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         
         foreach ($bancos as $banco) {
-
-            $banco->count = $tmp_works->where("banco_id", $banco->id)->count();
-            $banco->works = $tmp_works->where("banco_id", $banco->id)->chunk(23);
-
-            $total_pagina = 0;
-
-            foreach ($banco->works as $page => $works) {
-                foreach ($works as $work) {
-                    
-                    $tmp_descuentos = $descuentos->where("work_id", $work->id)
-                        ->where("base", 0);
-    
-                    $tmp_remuneraciones = $remuneraciones->where("work_id", $work->id);
-    
-                    $work->total_neto =  $tmp_remuneraciones->sum("monto") - $tmp_descuentos->sum('monto');
-                    $total_pagina += $work->total_neto;
-    
-                }
-
-                
-                $works->put($works->count() * ($page + 1), (Object)[
-                    "nivel" => 1,
-                    "total" => round($total_pagina, 2)
-                ]);
+            // asignamos los trabajadores por banco asociado
+            $banco->works = $tmp_works->where("banco_id", $banco->id);
+            // configuramos a los trabajadores
+            foreach ($banco->works as  $work) {
+                // obtenemos los descuentos por trabajador
+                $tmp_descuentos = $descuentos->where("work_id", $work->id)
+                    ->where("base", 0);
+                // obtenemos las remuneraciones por trabajador
+                $tmp_remuneraciones = $remuneraciones->where("work_id", $work->id);
+                // guardamos el total neto a pagar
+                $work->total_neto =  $tmp_remuneraciones->sum("monto") - $tmp_descuentos->sum('monto');
             }
         }  
         
-        $pdf = PDF::loadView("pdf.reporte_cuenta", compact('cronograma', 'bancos', 'meses'));
+        $pdf = PDF::loadView("pdf.reporte_cuenta", compact('cronograma', 'bancos', 'meses', 'num_work', 'num_page'));
 
         $fecha = strtotime(Carbon::now());
         $name = "reporte_cuenta_{$fecha}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");
 
-        $archivo = Report::create([
-            "type" => "pdf",
-            "name" => "Reporte de Cuentas del {$cronograma->mes} del {$cronograma->año}",
-            "icono" => "fas fa-file-pdf",
-            "path" => "/storage/pdf/{$name}",
-            "cronograma_id" => $this->cronograma->id,
-            "type_report_id" => $this->type_report
-        ]);
+        $archivo = Report::where("cronograma_id", $this->cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->first();
+            
+        if ($archivo) {
+            $archivo->update([
+                "path" => "/storage/pdf/{$name}",
+                "read" => 0,
+                "name" => "Reporte de Cuentas del {$cronograma->mes} del {$cronograma->año}"
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => "Reporte de Cuentas del {$cronograma->mes} del {$cronograma->año}",
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/pdf/{$name}",
+                "cronograma_id" => $this->cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);    
+        }
 
         $users = User::all();
 

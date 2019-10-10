@@ -5,7 +5,7 @@
         </button>
 
         
-        <modal @close="show = false" col="col-md-10" :show="show" height="95vh" style="padding-top: 10px;">
+        <modal @close="show = false" col="col-md-11" :show="show" height="95vh" style="padding-top: 10px;">
             <template slot="header">
                 Reportes del {{ cronograma ? cronograma.mes : '' }} del {{ cronograma ? cronograma['año'] : '' }}
             </template>
@@ -68,6 +68,7 @@ import RptAfpNet from './RptAfpNet';
 import RptDescuento from './RptDescuento';
 import RptPlanilla from './RptPlanilla';
 import RptEjecutar from './RptEjecutar';
+import RptPersonal from './RptPersonal';
 import { setTimeout } from 'timers';
 
 export default {
@@ -79,14 +80,16 @@ export default {
         'rpt-afp': RptAfpNet,
         'rpt-descuento': RptDescuento,
         'rpt-planilla': RptPlanilla,
-        'rpt-ejecutar': RptEjecutar
+        'rpt-ejecutar': RptEjecutar,
+        'rpt-personal': RptPersonal,
     },
     props: ["theme", 'cronograma', 'type_reports', 'metas'],
     mounted() {
 
         var componentes = [
             'rpt-general', 'rpt-meta', 'rpt-boleta', 'rpt-pago',
-            'rpt-afp', 'rpt-descuento', 'rpt-planilla', 'rpt-ejecutar'
+            'rpt-afp', 'rpt-descuento', 'rpt-planilla', 'rpt-ejecutar',
+            'rpt-personal'
         ];
 
         this.type_reports.filter((e, iter) => {

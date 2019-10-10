@@ -14,6 +14,13 @@
     <h1 class="h3 mb-0 text-gray-800">Crear Planilla x Mes</h1>
     @if ($cronogramas->count() > 0)
         <div class="d-none d-sm-inline-block">
+            <btn-personal
+                theme="btn-primary btn-sm"
+                mes="{{ $mes }}"
+                year="{{ $year }}"
+            >
+                <i class="fas fa-download fa-sm text-white-50"></i> Reporte Personal
+            </btn-personal>
             <btn-mef
                 theme="btn-primary btn-sm"
                 mes="{{ $mes }}"
@@ -50,12 +57,12 @@
         <btn-cronograma 
             theme="btn-primary"
             mes="{{ $mes }}"
+            report="{{ $reporte }}"
             redirect="{{ route('cronograma.index', ['mes=' . $mes, 'year=' . $year])}}"
         >
             <i class="fas fa-plus"></i> Nuevo
         </btn-cronograma>
     </div>
-
 
     <div class="col-md-12 mb-2">
         <div class="card">

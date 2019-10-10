@@ -23,6 +23,7 @@ window.Vue = require('vue');
 Vue.component('ventana', require('./components/Ventana.vue').default);
 Vue.component('modal', require('./components/Modal.vue').default);
 Vue.component('btn-more', require('./components/BtnMore.vue').default);
+Vue.component('btn-personal', require('./components/BtnPersonal.vue').default);
 Vue.component('authentication', require('./components/Authentication.vue').default);
 Vue.component('add-question', require('./components/AddQuestion.vue').default);
 Vue.component('add-base', require('./components/AddBase.vue').default);
