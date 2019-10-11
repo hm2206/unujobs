@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Work;
 use App\Models\Info;
+use App\Models\Cronograma;
+use App\Jobs\ReportRenta;
 
 
 class WorkController extends Controller
@@ -29,6 +31,24 @@ class WorkController extends Controller
         }
 
         return $infos;
+    }
+
+
+    public function list() 
+    {
+        $query_search = request()->query_search;
+        $infos = Info::with(["work" => function($w) {
+            $w->orderBy("ape_paterno", "ASC");
+        }, "categoria"]);
+
+        if ($query_search) {
+            $infos = $infos->whereHas("work", function($w) use($query_search) {
+                $w->where("nombre_completo", "like", "%{$query_search}%")
+                ->orWhere("numero_de_documento", "like", "%{$query_search}%");
+            });
+        }
+
+        return $infos->paginate(30);
     }
 
     /**
@@ -60,7 +80,8 @@ class WorkController extends Controller
      */
     public function show($id)
     {
-        //
+        $info = Info::findOrFail($id);
+        return Cronograma::whereIn("id", $info->cronogramas->pluck('id'))->paginate(30);
     }
 
     /**
@@ -117,5 +138,38 @@ class WorkController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function report(Request $request, $id) 
+    {
+
+        $info = Info::findOrFail($id);
+
+        try {
+
+            $cronogramaID = $request->input("cronogramas", []);
+            $cronogramas = Cronograma::whereIn("id", $cronogramaID)->get();
+            
+            if ($cronogramas->count() <= 0) {
+                abort(404);
+            }
+
+            ReportRenta::dispatch($info, $cronogramas)->onQueue('medium');
+            
+            return [
+                "status" => true,
+                "message" => "El reporte está siendo generado, vuelta más tarde!"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+            return [
+                "status" => false,
+                "messages" => "La operación falló"
+            ];
+
+        }
     }
 }

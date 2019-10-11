@@ -50,6 +50,34 @@ h6 {
     border-radius: 0.5em;
 }
 
+.box-height {
+    height: auto;
+}
+
+.my-0 {
+    margin: 0px;
+}
+
+.boleta-header-0 {
+    border: 0px;
+}
+
+.border-bottom-left {
+    border-bottom-left-radius: 0px;
+}
+
+.border-bottom-right {
+    border-bottom-right-radius: 0px;
+}
+
+.border-top-left {
+    border-top-left-radius: 0px;
+}
+
+.border-top-right {
+    border-top-right-radius: 0px;
+}
+
     .table-boleta thead, tr, td, th {
         padding: 0px;
     }
@@ -78,6 +106,22 @@ h6 {
     border-right: 1px solid black;
 }
 
+.bt-left {
+    border-top-left-radius: 0.5em;
+}
+
+.bt-right {
+    border-top-right-radius: 0.5em;
+}
+
+.bb-left {
+    border-bottom-left-radius: 0.5em;
+}
+
+.bb-right {
+    border-bottom-right-radius: 0.5em;
+}
+
 
 .mb-5 {
     margin-bottom: 5em;
@@ -92,6 +136,10 @@ h6 {
     position: relative;
 }
 
+.m-height-100 {
+    min-height: 100%;
+}
+
 .p-absolute {
     position: absolute;
 }
@@ -104,6 +152,9 @@ h6 {
         bottom: 0px;
     }
 
+    .left-0 {
+        left: 0px;
+    }
 
 .w-100 {
     width: 100%;

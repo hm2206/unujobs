@@ -62,6 +62,12 @@
         >
             <i class="fas fa-plus"></i> Nuevo
         </btn-cronograma>
+        <report-renta
+            theme="btn-outline-dark"
+            class="text-left"
+        >
+            Reporte de Renta
+    </report-renta>
     </div>
 
     <div class="col-md-12 mb-2">

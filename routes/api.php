@@ -78,6 +78,9 @@ Route::group(["prefix" => 'v1'], function() {
 
     // Remuneracion de los trabajadores y otros
     Route::resource("work", 'WorkController');
+    Route::get('listar/work', 'WorkController@list');
+    Route::post('work/{id}/report', 'WorkController@report');
+
     Route::get('work/{id}/obligacion', 'JobController@obligacion');
     Route::get('work/{id}/info', 'JobController@informacion');
     Route::post('work/{id}/config', 'JobController@configStore');

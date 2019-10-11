@@ -53,6 +53,10 @@ class ReportCheque implements ShouldQueue
 
         $num_page = 1;
         $num_work = 1;
+        $beforeTotal = 0;
+        $beforeBon = [];
+
+        $footer = \collect();
 
         $cronograma = $this->cronograma;
         $infoIn = $cronograma->infos->pluck(['work_id']);
@@ -75,17 +79,21 @@ class ReportCheque implements ShouldQueue
         $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         
         foreach ($works as $work) {
-                
+            // guardar las bonificaciones
             $work->bonificaciones = $remuneraciones->where("work_id", $work->id)
                 ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
+            // guardar el total neto
             $work->total_neto =  $remuneraciones->where("work_id", $work->id)->sum("monto") - $descuentos->where("work_id", $work->id)->sum('monto');
             
         }
         
-        $pdf = PDF::loadView("pdf.reporte_cheque", compact('cronograma', 'bonificaciones', 'works', 'meses', 'num_page', 'num_work'));
+        $pdf = PDF::loadView("pdf.reporte_cheque", compact(
+            'cronograma', 'bonificaciones', 'works', 'meses', 'num_page', 'num_work',
+            'beforeTotal', 'remuneraciones', 'beforeBon'
+        ));
 
         $fecha = strtotime(Carbon::now());
-        $name = "reporte_cheque_{$fecha}.pdf";
+        $name = "reporte_cheque_{$cronograma->id}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");
 
         // obtenemos el reporte

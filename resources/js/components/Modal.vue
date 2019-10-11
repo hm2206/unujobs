@@ -1,5 +1,5 @@
 <template>
-    <ventana v-if="show" index="90">
+    <ventana v-if="show" :index="index">
         <div :class="col">
             <div class="card" :style="`height: ${height}`">
                 <div class="card-header">
@@ -33,6 +33,10 @@ export default {
         show: {
             type: Boolean,
             default: true
+        },
+        index: {
+            type: String,
+            default: '90'
         }
     },  
     methods: {
