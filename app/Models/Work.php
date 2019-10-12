@@ -120,4 +120,10 @@ class Work extends Model
         return $this->belongsToMany(TypeDescuento::class, 'work_type_descuento');
     }
 
+
+    public function boletas()
+    {
+        return $this->hasMany(Boleta::class);
+    }
+
 }

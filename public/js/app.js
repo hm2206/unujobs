@@ -15410,6 +15410,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -76184,12 +76196,35 @@ var render = function() {
           _vm._m(1),
           _vm._v(" "),
           _c("div", { staticClass: "col-md-12 mt-5" }, [
-            !_vm.loader
-              ? _c("div", { staticClass: "w-100 text-center" }, [_vm._m(2)])
-              : _c("div", { staticClass: "w-100 text-center" }, [
-                  _c("div", { staticClass: "spinner-border text-primary" })
-                ])
-          ])
+            _c("div", { staticClass: "row justify-content-center" }, [
+              !_vm.loader
+                ? _c("div", { staticClass: "col-xs" }, [_vm._m(2)])
+                : _c("div", { staticClass: "w-100 text-center" }, [
+                    _c("div", { staticClass: "spinner-border text-primary" })
+                  ])
+            ])
+          ]),
+          _vm._v(" "),
+          !_vm.loader
+            ? _c("div", { staticClass: "w-100 text-center" }, [
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-dark",
+                    attrs: {
+                      href: "/api/v1/file/" + _vm.cronograma.id,
+                      target: "__blank"
+                    }
+                  },
+                  [
+                    _c("i", { staticClass: "fas fa-file-pdf" }),
+                    _vm._v(" Generar txt de las cuentas \n            ")
+                  ]
+                )
+              ])
+            : _vm._e()
         ]
       ),
       _vm._v(" "),
@@ -76229,7 +76264,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("button", { staticClass: "btn btn-danger" }, [
       _c("i", { staticClass: "fas fa-file-pdf" }),
-      _vm._v(" Generar \n                ")
+      _vm._v(" Generar PDF\n                    ")
     ])
   }
 ]

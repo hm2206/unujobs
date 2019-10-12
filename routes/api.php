@@ -153,4 +153,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/descuento/{id}", "ImportController@descuento")->name("import.descuento");
     Route::post("/remuneracion/{id}", "ImportController@remuneracion")->name("import.remuneracion");
 
+    // generar files txt
+    Route::resource("file", "FileController");
+
 });

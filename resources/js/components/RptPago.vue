@@ -11,15 +11,27 @@
                 <input type="checkbox" name="cuenta"> Cuenta
             </div>
             <div class="col-md-12 mt-5">
-                <div class="w-100 text-center" v-if="!loader">
-                    <button class="btn btn-danger">
-                        <i class="fas fa-file-pdf"></i> Generar 
-                    </button>
-                </div>
+                <div class="row justify-content-center">
+                    <div class="col-xs" v-if="!loader">
+                        <button class="btn btn-danger">
+                            <i class="fas fa-file-pdf"></i> Generar PDF
+                        </button>
+                    </div>
 
-                <div class="w-100 text-center" v-else>
-                    <div class="spinner-border text-primary"></div>
+                    <div class="w-100 text-center" v-else>
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+
                 </div>
+            </div>
+
+            <div class="w-100 text-center" v-if="!loader">
+
+                <hr>
+
+                <a class="btn btn-dark" :href="`/api/v1/file/${cronograma.id}`" target="__blank">
+                    <i class="fas fa-file-pdf"></i> Generar txt de las cuentas 
+                </a>
             </div>
         </form>
 
