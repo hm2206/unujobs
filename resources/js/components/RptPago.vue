@@ -32,6 +32,10 @@
                 <a class="btn btn-dark" :href="`/api/v1/file/${cronograma.id}`" target="__blank">
                     <i class="fas fa-file-pdf"></i> Generar txt de las cuentas 
                 </a>
+
+                <a class="btn btn-dark" :href="`/api/v1/file/judicial/${cronograma.id}`" target="__blank">
+                    <i class="fas fa-file-pdf"></i> Generar txt Judiciales 
+                </a>
             </div>
         </form>
 

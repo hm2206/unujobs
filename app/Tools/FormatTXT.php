@@ -10,7 +10,9 @@ class FormatTXT
 
     private static $header = [];
     private static $body = "";
+    private static $disk = "public";
     private static $path = "";
+    private static $prefix = "";
 
     /**
      * Inicializar el formato para generar el formato de texto
@@ -64,7 +66,12 @@ class FormatTXT
         return $this;
     } 
 
-
+    /**
+     * configurar el activo de la cabezera
+     *
+     * @param integer $act
+     * @return void
+     */
     public function setActivo(int $act)
     {
         $validate = $act < 10 ? "0{$act}" : $act;
@@ -72,6 +79,17 @@ class FormatTXT
         return $this;
     }
 
+    /**
+     * configurar el prefijo del archivo
+     *
+     * @param [type] $pref
+     * @return void
+     */
+    public function setPrefix($pref) 
+    {   
+        self::$prefix = $pref;
+        return $this;
+    }
 
     /**
      * Generar nombre del archivo
@@ -88,6 +106,8 @@ class FormatTXT
         $file .= self::$header['activo'];
         $file .= self::$header['planilla'];
         $file .= self::$header['normal'];
+        // agregar prefijo
+        $file = self::$prefix ? self::$prefix . "_{$file}" : $file;
         // guardar ruta
         self::$path = "{$path}/{$file}.TXT";
         // devolver objecto
@@ -200,7 +220,9 @@ class FormatTXT
             self::$path = $path;
         }
 
-        return Storage::disk($disk)->put(self::$path, $this->output());
+        self::$disk = $disk;
+
+        return Storage::disk(self::$disk)->put(self::$path, $this->output());
     }
 
 
@@ -217,14 +239,28 @@ class FormatTXT
             self::$path = $path;
         }
 
-        $this->save(self::$path, $disk);
-        return Storage::disk($disk)->download(self::$path);
+        self::$disk = $disk;
+
+        $this->save(self::$path, self::$disk);
+        return Storage::disk(self::$disk)->download(self::$path);
     }
 
 
+    /**
+     * Obtener la ruta del archivo
+     *
+     * @return void
+     */
     public function getPath()
     {
         return self::$path;
+    }
+
+
+    public function stream()
+    {
+        $this->save(self::$path, self::$disk);
+        return Storage::disk(self::$disk)->get(self::$path);
     }
 
 }

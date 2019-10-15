@@ -155,5 +155,7 @@ Route::group(["prefix" => 'v1'], function() {
 
     // generar files txt
     Route::resource("file", "FileController");
+    Route::get("file/judicial/{id}", "FileController@judicial");
+    Route::get("file/enc/{year}/{mes}", "FileController@txtEnc");
 
 });

@@ -22,6 +22,7 @@ class CreateTypeRemuneracionsTable extends Migration
             $table->integer('base')->default(0);
             $table->integer('bonificacion')->default(0);
             $table->integer('activo')->default(1);
+            $table->string("enc")->nullable();
             $table->timestamps();
         });
     }

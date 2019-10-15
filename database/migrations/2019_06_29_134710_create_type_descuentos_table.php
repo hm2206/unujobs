@@ -28,6 +28,7 @@ class CreateTypeDescuentosTable extends Migration
             $table->integer("base")->default(0);
             $table->integer("retencion")->default(0);
             $table->integer("edit")->default(1);
+            $table->string("enc")->nullable();
             $table->timestamps();
         });
     }

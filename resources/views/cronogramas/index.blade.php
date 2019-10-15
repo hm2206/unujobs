@@ -21,7 +21,7 @@
             >
                 <i class="fas fa-download fa-sm text-white-50"></i> Reporte Personal
             </btn-personal>
-            <btn-mef
+           <!-- <btn-mef
                 theme="btn-primary btn-sm"
                 mes="{{ $mes }}"
                 year="{{ $year }}"
@@ -45,7 +45,7 @@
             >
                 <i class="fas fa-file fa-sm text-white-50"></i>
                 Resumen de rentas
-            </btn-resumen-categoria>
+            </btn-resumen-categoria>-->
         
         </div>
     @endif

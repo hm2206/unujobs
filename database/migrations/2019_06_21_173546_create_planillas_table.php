@@ -18,6 +18,7 @@ class CreatePlanillasTable extends Migration
             $table->string('key')->unique();
             $table->string("descripcion")->unique();
             $table->integer('especial')->default(0);
+            $table->string("enc")->nullable();
             $table->timestamps();
         });
     }
