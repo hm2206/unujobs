@@ -1,9 +1,7 @@
 <template>
     <div class="card-body">
 
-        <form class="row align-items-center" id="register-obligacion" v-on:submit="register"
-            v-if="show"
-        >
+        <form class="row align-items-center" id="register-obligacion" v-on:submit="register">
             <div class="col-md-3">
                 <input type="text" class="form-control" v-model="form.beneficiario" name="beneficiario" placeholder="Beneficiario">
                 <small class="text-danger">
@@ -33,9 +31,6 @@
                 <small class="text-danger">
                     {{ errors.monto ? errors.monto[0] : '' }}
                 </small>
-                <input type="hidden" name="work_id" :value="param">
-                <input type="hidden" name="cronograma_id" :value="cronograma.id">
-                <input type="hidden" name="info_id" :value="info.id">
             </div>
             <div class="col-md-1">
                 <button class="btn btn-sm btn-success" v-if="!loader">
@@ -46,7 +41,7 @@
 
         </form>
 
-        <hr v-if="show">
+        <hr>
 
         <form class="row align-items-center mt-3" 
             v-on:submit="submit($event, obligacion.id)" v-for="(obligacion, obl) in obligaciones" 
@@ -54,21 +49,21 @@
             id="update-obligacion"
         >
             <div class="col-md-3">
-                <input type="text" class="form-control" name="up_beneficiario" placeholder="Beneficiario" 
+                <input type="text" class="form-control" placeholder="Beneficiario" 
                     :value="obligacion.beneficiario"
-                    :disabled="edit"
+                    :disabled="true"
                 >
             </div>
             <div class="col-md-2">
-                <input type="text" class="form-control" name="up_numero_de_documento" placeholder="DNI" 
+                <input type="text" class="form-control" placeholder="DNI" 
                     :value="obligacion.numero_de_documento"
-                    :disabled="edit"
+                    :disabled="true"
                 >
             </div>
             <div class="col-md-3">
-                <input type="text" class="form-control" name="up_numero_de_cuenta" placeholder="N° de Cuenta" 
+                <input type="text" class="form-control" placeholder="N° de Cuenta" 
                     :value="obligacion.numero_de_cuenta"
-                    :disabled="edit"
+                    :disabled="true"
                 >
             </div>
             <div class="col-md-2">
@@ -76,7 +71,6 @@
                     v-model="obligacion.monto"
                     :disabled="edit"
                 >
-                <input type="hidden" name="up_work_id" :value="param">
             </div>
             <div class="col-md-2">
                 <button class="btn btn-sm btn-success"
@@ -107,14 +101,13 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['categoria', 'mes', 'year', 'tmp_cronograma', 'adicional', 'numero', 'param', 'send', 'info'],
+    props: ['cronograma', 'send', 'history'],
     data() {
         return {
             obligaciones: [],
             loader: false,
             show: true,
             errors: {},
-            cronograma: {},
             form: {
                 beneficiario: '',
                 numero_de_documento: '',
@@ -125,6 +118,9 @@ export default {
         };
     },
     watch: {
+        async history() {
+            await this.getObligaciones();
+        },
         send(nuevo) {
             if (nuevo) {
                 this.submit();
@@ -132,37 +128,28 @@ export default {
         }
     },
     mounted() {
-        this.cronograma = this.tmp_cronograma;
         this.getObligaciones();
     },
     methods: {
         getObligaciones() {
-
-            let adicional = this.adicional ? 1 : 0;
-
-            let  api = unujobs(
-                'get',
-                `/info/${this.param}/obligacion?cronograma_id=${this.cronograma.id}`
-            );
-
+            let  api = unujobs('get', `/historial/${this.history.id}/obligacion`);
             api.then(res => {
-
                 this.obligaciones = res.data;
                 this.show = true;
-
             }).catch(err => {
-
                 console.log("algo salió mal");
                 this.show = false;
-
             });
-
         },
         async register(e) {
             e.preventDefault();
             this.loader = true;
 
             const form = new FormData(document.getElementById('register-obligacion'));
+            form.append('work_id', this.history.work_id);
+            form.append('info_id', this.history.info_id);
+            form.append('historial_id', this.history.id);
+            form.append('cronograma_id', this.cronograma.id);
             let api = unujobs("post", "/obligacion", form);
             await api.then(res => {
                 let { status, message, body } = res.data;

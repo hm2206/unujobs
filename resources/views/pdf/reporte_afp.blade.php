@@ -20,7 +20,7 @@
         }
     </style>
 
-        @foreach ($pages as $page => $works)
+        @foreach ($pages as $page => $historial)
             <body class="bg-white text-negro" style="">
                         
                 <table class="text-dark">
@@ -63,34 +63,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($works as $iter => $work)
+                        @foreach ($historial as $iter => $history)
                             <tr>
                                 <td class="py-0 font-10 text-left pl-1">{{ $iter + 1 }}</td>
-                                <td class="py-0 font-10 text-left pl-1">{{ $work->nombre_completo }}</td>
-                                <td class="py-0 font-10 text-center pl-1 pr-1">{{ $work->numero_de_cussp }}</td>
+                                <td class="py-0 font-10 text-left pl-1">{{ $history->work ? $history->work->nombre_completo : '' }}</td>
+                                <td class="py-0 font-10 text-center pl-1 pr-1">{{ $history->numero_de_cussp }}</td>
                                 <td class="py-0 font-10 text-center" style="padding-top: 1em;">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($work->bruta) }}
+                                        {{ $money->parseTo($history->total_bruto) }}
                                     </b>
                                 </td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($work->pension) }}
+                                        {{ $money->parseTo($history->pension) }}
                                     </b>
                                 </td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($work->ca) }}
+                                        {{ $money->parseTo($history->ca) }}
                                     </b>
                                 </td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($work->prima_seg) }}
+                                        {{ $money->parseTo($history->prima_seg) }}
                                     </b>
                                 </td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($work->total_dscto) }}
+                                        {{ $money->parseTo($history->total_desct) }}
                                     </b>
                                 </td>
                             </tr>
@@ -98,19 +98,19 @@
                         <tr>
                             <th class="py-0 text-center font-11" colspan="2">&nbsp;</th>
                             <th class="py-0 text-center font-11" colspan="2">
-                                <b class="font-11 text-center py-0">Totales S/. {{ $money->parseTo($works->sum("bruta")) }}</b>
+                                <b class="font-11 text-center py-0">Totales S/. {{ $money->parseTo($historial->sum("total_bruto")) }}</b>
                             </th>
                             <th class="py-0 text-center font-11">
-                                <b class="font-11 text-center py-0">{{ $money->parseTo($works->sum("pension")) }}</b>
+                                <b class="font-11 text-center py-0">{{ $money->parseTo($historial->sum("pension")) }}</b>
                             </th>
                             <th class="py-0 text-center font-11">
-                                <b class="font-11 py-0 text-center">{{ $money->parseTo($works->sum("ca")) }}</b>
+                                <b class="font-11 py-0 text-center">{{ $money->parseTo($historial->sum("ca")) }}</b>
                             </th>
                             <th class="py-0 text-center font-11">
-                                <b class="font-11 text-center py-0">{{ $money->parseTo($works->sum("prima_seg")) }}</b>
+                                <b class="font-11 text-center py-0">{{ $money->parseTo($historial->sum("prima_seg")) }}</b>
                             </th>
                             <th class="py-0 text-center font-11">
-                                <b class="font-11 py-0 text-center">{{ $money->parseTo($works->sum("total_dscto")) }}</b>
+                                <b class="font-11 py-0 text-center">{{ $money->parseTo($historial->sum("total_desct")) }}</b>
                             </th>
                         </tr>
                     </tbody>

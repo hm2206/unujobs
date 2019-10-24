@@ -17,6 +17,8 @@ use App\Collections\InfoCollection;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
 use App\Models\Remuneracion;
+use App\Models\Historial;
+use App\Collections\DescuentoCollection;
 
 /**
  * Procesa los descuentos de los trabajadores
@@ -27,8 +29,9 @@ class ProssingDescuento implements ShouldQueue
 
 
     private $cronograma;
-    private $infos;
+    private $historial;
     private $types;
+    private $infoIn = [];
 
     public $timeout = 0;
 
@@ -37,9 +40,10 @@ class ProssingDescuento implements ShouldQueue
      * @param object $jobs
      * @return void
      */
-    public function __construct($cronograma)
+    public function __construct($cronograma, $infoIn = [])
     {
         $this->cronograma = $cronograma;
+        $this->infoIn = $infoIn;
     }
 
 
@@ -55,12 +59,18 @@ class ProssingDescuento implements ShouldQueue
         // obtener tipos de descuentos
         $this->types = TypeDescuento::where("activo", 1)->get();
         // obtener a todos los trabajadores
-        $this->infos = $cronograma->infos;
+        $this->historial = Historial::where("cronograma_id", $cronograma->id);
+        // verificar si hay infos especificos
+        if (count($this->infoIn)) {
+            $this->historial = $this->historial->whereIn("info_id", $this->infoIn);
+        }
+        // obtener historial
+        $this->historial = $this->historial->get();
         // fecha anteriores
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         // obtenemos remuneraciones anteriores
-        $typeBefores = Descuento::whereIn("info_id", $this->infos->pluck(['id']))
+        $typeBefores = Descuento::whereIn("historial_id", $this->historial->pluck(['id']))
             ->whereIn("type_descuento_id", $this->types->pluck(['id']))
             ->where("adicional", $cronograma->adicional)
             ->where("mes", $mes)
@@ -68,19 +78,19 @@ class ProssingDescuento implements ShouldQueue
             ->get();
 
         // obtener a los trabajadores con los descuentos del mes anterior
-        $oldInfos = $this->infos->whereIn("id", $typeBefores->pluck(['info_id']));
+        $oldHistorial = $this->historial->whereIn("id", $typeBefores->pluck(['historial_id']));
         // obtener a los trabajadores recientemente agregados
-        $newInfos = $this->infos->whereNotIn("id", $oldInfos->pluck(['id']));
+        $newHistorial = $this->historial->whereNotIn("id", $oldHistorial->pluck(['id']));
 
 
         // configurar descuentos
-        if ($oldInfos->count() > 0) {
-            $this->configOldDescuento($cronograma, $oldInfos, $typeBefores);
+        if ($oldHistorial->count() > 0) {
+            $this->configOldDescuento($cronograma, $oldHistorial, $typeBefores);
         }
 
         //configurar descuentos nuevos
-        if ($newInfos->count() > 0) {
-            $this->configNewDescuento($cronograma, $newInfos);
+        if ($newHistorial->count() > 0) {
+            $this->configNewDescuento($cronograma, $newHistorial);
         }
 
         // habilitamos la planilla
@@ -99,60 +109,35 @@ class ProssingDescuento implements ShouldQueue
     }
 
 
-    private function configOldDescuento($cronograma, $infos, $befores) 
+    private function configOldDescuento($cronograma, $historial, $befores) 
     {
-
-        $payload = [];
-
-        foreach ($infos as $info) {
-
+        // creamos la collecion para procesar los descuentos
+        $config = new DescuentoCollection($cronograma, $this->types);
+        // recorremos los trabajadores
+        foreach ($historial as $history) {
+            // recorremos lso tipos de descuentos
             foreach ($this->types as $type) {
                 // obtenemos el registro anterior
-                $typeBefore = $befores->where('info_id', $info->id)
+                $typeBefore = $befores->where('historial_id', $info->id)
                     ->where("type_descuento_id", $type->id)
                     ->first();
                 // almacenamos el monto
                 $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
-
-                array_push($payload, [
-                    "work_id" => $info->work_id,
-                    "info_id" => $info->id,
-                    "planilla_id" => $info->planilla_id,
-                    "cargo_id" => $info->cargo_id,
-                    "categoria_id" => $info->categoria_id,
-                    "meta_id" => $info->meta_id,
-                    "cronograma_id" => $cronograma->id,
-                    "type_descuento_id" => $type->id,
-                    "base" => $type->base,
-                    "mes" => $cronograma->mes,
-                    "año" => $cronograma->año,
-                    "adicional" => $cronograma->adicional,
-                    "monto" => $monto
-                ]);
-
+                // preparamos los descuentos para calcular
+                $config->preparate($history, $cronograma, $type, $monto);
             }
-
         }
-
-        foreach (array_chunk($payload, 1000) as $insert) {
-            Descuento::insert($insert);
-        }
-
+        // insertamos masivamente los descuentos
+        $config->save();
     }
 
 
-    private function configNewDescuento($cronograma, $infos)
+    private function configNewDescuento($cronograma, $historial)
     {
-        $bases = Remuneracion::where("base", 0)
-            ->where("cronograma_id", $cronograma->id)
-            ->whereIn("info_id", $infos->pluck(['id']))
-            ->get();
-
-        foreach ($infos as $info) {
-            $collecion = new InfoCollection($info);
-            $collecion->updateOrCreateDescuento($cronograma, $this->types, $bases->where("info_id", $info->id));
-        }
-        
+        // creamos la collecion para procesar los descuentos
+        $config = new DescuentoCollection($cronograma, $this->types);
+        // insertamos masivamente los descuentos
+        $config->insert($historial);
     }
 
 

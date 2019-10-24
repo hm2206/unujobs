@@ -29,28 +29,30 @@
                                 </tr>
                              </thead>
                             <tbody v-if="!loader">
-                                <tr v-for="(cronograma, c) in cronograma.data" :key="c">
+                                <tr v-for="(history, c) in historial.data" :key="c">
                                     <td>
-                                        <input type="checkbox" :value="cronograma.id" name="cronogramas[]" 
+                                        <input type="checkbox" :value="history.id" name="historial[]" 
                                             v-on:change="validate"
                                             v-model="check_cronogramas"
                                         >
                                     </td>
-                                    <td>{{ cronograma.planilla ? cronograma.planilla.descripcion : '' }}</td>
-                                    <td>{{ cronograma.observacion }}</td>
+                                    <td>{{ history.planilla ? history.planilla.descripcion : '' }}</td>
+                                    <td>{{ history.observacion }}</td>
                                     <td class="text-center">
-                                        <span :class="`btn btn-sm btn-${cronograma.adicional ? 'primary' : 'danger'}`">
-                                            {{ cronograma.adicional ? cronograma.numero : 'No' }}
+                                        <span :class="`btn btn-sm btn-${history.cronograma.adicional ? 'primary' : 'danger'}`">
+                                            {{ history.cronograma && history.cronograma.adicional ? 
+                                                history.cronograma.numero : 'No' 
+                                            }}
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <span class="btn btn-sm btn-dark">
-                                            {{ cronograma.mes }}
+                                            {{ history.cronograma ? history.cronograma.mes : '' }}
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <span class="btn btn-sm btn-dark">
-                                            {{ cronograma['año'] }}
+                                            {{ history.cronograma ? history.cronograma.año : '' }}
                                         </span>
                                     </td>
                                 </tr>
@@ -61,7 +63,7 @@
                                         <span class="sr-only">Loading...</span>
                                     </div>
                                 </td>
-                                <td v-if="!loader && cronograma.total == 0" 
+                                <td v-if="!loader && historial.total == 0" 
                                     class="text-center" colspan="6"
                                 >
                                     <small>No hay registros disponibles, vuelva a recargar</small>
@@ -78,7 +80,7 @@
                                 
                         <button class="btn-fixed btn btn-success btn-circle btn-lg" 
                             :disabled="loader"
-                            v-if="cronograma.total > 0 && count > 0"
+                            v-if="historial.total > 0 && count > 0"
                         >
                             <i class="fa fa-download"></i>
                         </button>
@@ -87,7 +89,7 @@
                 </div>
                 <div class="card-footer" v-if="!loader">
                     <btn-more :config="['btn-block']" 
-                        :url="cronograma.next_page_url"   
+                        :url="historial.next_page_url"   
                         @get-data="getData"
                     >
                     </btn-more>
@@ -108,7 +110,7 @@ export default {
         return {
             show: false,
             loader: true,
-            cronograma: {},
+            historial: {},
             count: 0,
             check_cronogramas: []
         }
@@ -128,9 +130,9 @@ export default {
             }
 
             this.loader = true;
-            let api = unujobs("get", `/boleta/${this.param}`);
+            let api = unujobs("get", `/info/${this.param}/historial`);
             await api.then(res => {
-                this.cronograma = res.data;
+                this.historial = res.data;
             }).catch(err => {
                 console.log(err);
             })
@@ -142,10 +144,10 @@ export default {
             this.count = checked ? this.count + 1 : this.count - 1;
         },
         getData(e) {
-            this.cronograma.next_page_url = e.next;
-            this.cronograma.total = e.total;
-            this.cronograma.path = e.path;
-            this.cronograma.data = [...this.cronograma.data, ...e.data];
+            this.historial.next_page_url = e.next;
+            this.historial.total = e.total;
+            this.historial.path = e.path;
+            this.hsitorial.data = [...this.historial.data, ...e.data];
         },
         async generate(e) {
 

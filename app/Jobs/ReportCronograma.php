@@ -16,7 +16,7 @@ use App\Models\User;
 use App\Notifications\ReportNotification;
 use App\Models\Report;
 use \Carbon\Carbon;
-use App\Models\Info;
+use App\Models\Historial;
 
 /**
  * Genera Reportes
@@ -28,7 +28,6 @@ class ReportCronograma implements ShouldQueue
     private $cronograma;
     private $type_report;
     private $meta_id;
-    private $infoIn = [];
     public $timeout = 0;
 
     /**
@@ -36,11 +35,10 @@ class ReportCronograma implements ShouldQueue
      * @param string $year
      * @param string $adicional
      */
-    public function __construct($cronograma, $type_report, $infoIn, $meta_id)
+    public function __construct($cronograma, $type_report, $meta_id)
     {
         $this->cronograma = $cronograma;
         $this->type_report = $type_report;
-        $this->infoIn = $infoIn;
         $this->meta_id = $meta_id;
     }
 
@@ -52,31 +50,36 @@ class ReportCronograma implements ShouldQueue
     public function handle()
     {
         $cronograma = $this->cronograma;
-        $infos = Info::with("work")->whereIn("id", $this->infoIn)->get();
         $meta = Meta::findOrFail($this->meta_id);
-        $pagina = 1;
-
-        // configuracion
-        $remuneraciones = Remuneracion::with("typeRemuneracion")->where("cronograma_id", $cronograma->id)->get();
-        $all_retenciones = Descuento::with("typeDescuento")->where("cronograma_id", $cronograma->id)->get();
-        $descuentos = $all_retenciones->where("base", 0);
-        $aportaciones = $all_retenciones->where("base", 1);
-
-        //traemos trabajadores que pertenescan a la meta actual
         $meta->mes = $cronograma->mes;
         $meta->year = $cronograma->año;
+        $pagina = 1;
 
-        //obtener a los trabajadores que esten en esta meta
-        $tmp_infos = $infos->where("meta_id", $meta->id);
+        // obtener historial
+        $historial = Historial::where('cronograma_id', $cronograma->id)
+            ->where('meta_id', $meta->id)
+            ->get();
 
-        foreach ($tmp_infos as $info) {
-
+        // configuracion
+        $remuneraciones = Remuneracion::with("typeRemuneracion")->where("show" , 1)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get();
+        // obtener descuentos
+        $descuentos = Descuento::with("typeDescuento")->where("base", 0)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get();
+        // aportaciones
+        $aportaciones = Descuento::with("typeDescuento")->where("base", 1)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get();
+        //traemos trabajadores que pertenescan a la meta actual
+        foreach ($historial as $history) {
             // obtenemos las remuneraciones actuales del trabajador
-            $tmp_remuneraciones = $remuneraciones->where("info_id", $info->id);
+            $tmp_remuneraciones = $remuneraciones->where("historial_id", $history->id);
             // total de remuneraciones
-            $total = $tmp_remuneraciones->sum('monto');
+            $total = $history->total_bruto;
             // base imponible
-            $tmp_base = $tmp_remuneraciones->where("base", 0)->sum('monto');
+            $tmp_base = $history->base;
             // agregamos datos a las remuneraciones
             $tmp_remuneraciones->put(rand(1000, 9999), (Object)[
                 "nivel" => 1,
@@ -84,16 +87,16 @@ class ReportCronograma implements ShouldQueue
                 "monto" => $total
             ]);
                     
-            $info->remuneraciones = $tmp_remuneraciones->chunk(6);
+            $history->remuneraciones = $tmp_remuneraciones->chunk(6);
 
             //obtenemos los descuentos actuales del trabajador
-            $tmp_descuentos = $descuentos->where("info_id", $info->id);
-            $total_descto = $tmp_descuentos->sum('monto');
+            $tmp_descuentos = $descuentos->where("historial_id", $history->id);
+            $total_descto = $history->total_desct;
 
             //calcular base imponible
-            $info->base = $tmp_base;
+            $history->base = $tmp_base;
             //calcular total neto
-            $info->neto = $total - $total_descto;
+            $history->neto = $history->total_neto;
 
             // agregamos el total neto
             $tmp_descuentos->put(rand(1000, 9999), (Object)[
@@ -102,23 +105,23 @@ class ReportCronograma implements ShouldQueue
                 "monto" => $total_descto
             ]);
 
-            $info->descuentos = $tmp_descuentos->chunk(6);
+            $history->descuentos = $tmp_descuentos->chunk(6);
 
-            $tmp_aportaciones = $aportaciones->where("info_id", $info->id);
+            $tmp_aportaciones = $aportaciones->where("historial_id", $history->id);
             $total_aportaciones = $tmp_aportaciones->sum("monto");
 
             // total de las Aportaciones
             $tmp_aportaciones->put(rand(1000, 9999), (Object)[
                 "nivel" => 1,
-                "key" => "TOTAL",
+                "key" => "APORT",
                 "monto" => $total_aportaciones
             ]);
 
-            $info->aportaciones = $tmp_aportaciones;
+            $history->aportaciones = $tmp_aportaciones;
 
         }
 
-        $meta->infos = $tmp_infos->chunk(5);
+        $meta->historial = $historial->chunk(5);
 
         $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 

@@ -27,12 +27,24 @@ class TypeRemuneracion extends Model
 
     public function conceptos()
     {
-        return $this->belongsToMany(Concepto::class, 'concepto_type_remuneracion');
+        return $this->belongsToMany(Concepto::class, 'concepto_type_remuneracion')
+            ->as('config')
+            ->withPivot(['categoria_id', 'monto']);
     }
 
     public function remuneraciones()
     {
         return $this->hasMany(Remuneracion::class);
+    }
+
+    public function type_remuneraciones() 
+    {
+        return $this->hasMany(TypeRemuneracion::class);
+    }
+
+    public function type_remuneracion() 
+    {
+        return $this->belongsTo(TypeRemuneracion::class);
     }
 
     /**

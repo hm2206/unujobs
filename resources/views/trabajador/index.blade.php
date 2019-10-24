@@ -175,7 +175,6 @@
                                 <th>N° Documento</th>
                                 <th>Profesión</th>
                                 <th>teléfono</th>
-                                <th>Número de cuenta</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -183,13 +182,12 @@
                         <tbody>
                             @forelse ($jobs as $job)
                                 <tr>
-                                    <th class="capitalize" width="30%">{{ $job->nombre_completo }}</th>
-                                    <th>{{ $job->numero_de_documento }}</th>
+                                    <th class="capitalize" width="30%">{{ $job->work->nombre_completo }}</th>
+                                    <th>{{ $job->work->numero_de_documento }}</th>
                                     <th class="uppercase">{{ $job->profesion }}</th>
                                     <th>{{ $job->phone }}</th>
-                                    <th>{{ $job->numero_de_cuenta }}</th>
                                     <th>
-                                        @if ($job->activo)
+                                        @if ($job->active)
                                             <button class="btn-sm btn btn-success">
                                                 Activo
                                             </button>
@@ -204,7 +202,6 @@
                                             <btn-work-config theme="btn-warning btn-sm btn-circle"
                                                 param="{{ $job->id }}"
                                                 nombre_completo="{{ $job->nombre_completo }}"
-                                                :sindicatos="{{ $job->sindicatos }}"
                                             >
                                                 <i class="fas fa-cog"></i>
                                             </btn-work-config>

@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\Categoria;
 use App\Notifications\BasicNotification;
 use App\Models\Info;
+use App\Models\Historial;
 
 /**
  * modelo de importación de remuneraciones de los trabajadores
@@ -50,7 +51,7 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
         // obtenemos los tipo de remuneracion
         $types = TypeRemuneracion::where("activo", 1)->get();
         $categorias = Categoria::all();
-        $infos = $this->cronograma->infos;
+        $historial = $this->cronograma->historial;
 
         foreach ($collection as $row) {
 
@@ -59,50 +60,59 @@ class RemuneracionImport implements ToCollection, WithHeadingRow
             $categoria_id = isset($row["categoria"]) ? $row['categoria'] : '';
             $categoria = $categorias->where("key", $categoria_id)->first();
             // buscar al trabajador por numero de documento
-            $infos = $this->cronograma->infos;
-            // buscar al trabajador por numero de documento
             $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
             
             // verificar si el trabajador existe
             if ($work) {
                 // obtenemos la categoria
-                $info = Info::where("work_id", $work->id)
+                $history = Historial::where("work_id", $work->id)
+                    ->where('planilla_id', $this->cronograma->planilla_id)
+                    ->where("cronograma_id", $this->cronograma->id)
                     ->where("cargo_id", $cargo_id)
                     ->where("categoria_id", isset($categoria->id) ? $categoria->id : '')
                     ->first();
                 
-                if ($info) {
+                if ($history) {
 
 
                     foreach ($types as $type) {
                         
+                        // confgurar clave
+                        $key =  implode("", explode(".", $type->key));
+
                          // verificamos que el typeRemuneracion exísta
-                        $isType = isset($row[$type->key]);
+                        $isType = isset($row[$key]);
                         if ($isType) {
 
                             // obtenemos el monto de la remuneración
-                            $monto = $row[$type->key];
+                            $monto = $row[$key];
 
                             // obtener las remuneraciones
-                            $remuneracion = Remuneracion::where("info_id", $info->id)
-                                ->where("cronograma_id", $this->cronograma->id)
+                            $remuneracion = Remuneracion::where("historial_id", $history->id)
                                 ->where("type_remuneracion_id", $type->id)
                                 ->first();
                             
-                            // verificamos que el valor a guardar sea un numero
-                            if (\is_numeric($monto)) {
+                            if ($remuneracion) {
+                                // verificamos que el valor a guardar sea un numero
+                                if (\is_numeric($monto)) {
 
-                                $remuneracion->update([
-                                    "monto" => \round($monto, 2)
+                                    $remuneracion->update([
+                                        "monto" => \round((Double)$monto, 2)
+                                    ]);
+
+                                }
+                            } else {
+                                \Log::info([ 
+                                    "info" => $history->id, "estado" => false, 
+                                    "type_remuneracion", $type->key, "monto" => $monto
                                 ]);
-
                             }
 
                         }
                     }
                    
                 }else {
-                    \Log::info("persona => {$work->numero_de_documento}, cargo => {$cargo_id}, categoria => $categoria_id");
+                    \Log::info("info => {$work->numero_de_documento}, cargo => {$cargo_id}, categoria => $categoria_id");
                 }
             }else {
                 \Log::info("persona => {$row['numero_de_documento']}");

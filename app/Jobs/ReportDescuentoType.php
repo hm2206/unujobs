@@ -18,6 +18,7 @@ use App\Notifications\ReportNotification;
 use App\Models\TypeDescuento;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDetalle;
+use App\Models\Historial;
 
 class ReportDescuentoType implements ShouldQueue
 {
@@ -56,52 +57,56 @@ class ReportDescuentoType implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $infos = $cronograma->infos;
+        $historial = Historial::where('cronograma_id', $cronograma->id)->get();
         $count = 1;
 
         $type = TypeDescuento::findOrFail($this->type_descuento);
 
         // configuracion
-        $descuentos = Descuento::whereIn("info_id", $infos->pluck(['id']))
-            ->where("cronograma_id", $cronograma->id)
-            ->where("type_descuento_id", $this->type_descuento)
+        $descuentos = Descuento::whereIn("historial_id", $historial->pluck(['id']))
+            ->where("type_descuento_id", $type->id)
             ->get();
-
         // configurar
-        $bodies = $infos->chunk(50);
+        $bodies = $historial->chunk(52);
 
         // reconfigurar los descuentos y remuneraciones
         $tmp_total = 0;
-
-        foreach ($bodies as $infos) {
-            foreach ($infos as $info) {
-                $info->tmp_monto = $descuentos->where("info_id", $info->id)->sum("monto");
-                $info->count = $count;
+        foreach ($bodies as $historial) {
+            foreach ($historial as $history) {
+                $history->monto = $descuentos->where("historial_id", $history->id)->sum("monto");
+                $history->count = $count;
                 $count++;
-                $tmp_total += $info->tmp_monto;
             }
-
-            $infos->put(rand(10000, 99999), (Object)[
-                "nivel" => 1,
-                "total" => $tmp_total
-            ]);
         }
 
 
         // crear pdf
         $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'bodies', 'meses', 'type'));
-        $fecha = strtotime(Carbon::now());
-        $name = "descuento_{$fecha}.pdf";
+        $message = strtolower($type->key);
+        $name = "descuento_{$cronograma->mes}_{$cronograma->año}_{$message}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");
-
-        $archivo = Report::create([
-            "type" => "pdf",
-            "name" => "El Descuento {$type->descripcion} del {$cronograma->mes} del {$cronograma->año}",
-            "icono" => "fas fa-file-pdf",
-            "path" => "/storage/pdf/{$name}",
-            "cronograma_id" => $cronograma->id,
-            "type_report_id" => $this->type_report
-        ]);
+        // obtener reporte
+        $archivo = Report::where("path", "/storage/pdf/{$name}")
+            ->where("type_report_id", $this->type_report)
+            ->first();
+        // verificar si hay el reporte
+        if ($archivo) {
+            $archivo->update([
+                "name" => "El Descuento {$type->descripcion} del {$cronograma->mes} del {$cronograma->año}",
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/pdf/{$name}",
+                "read" => 0
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => "El Descuento {$type->descripcion} del {$cronograma->mes} del {$cronograma->año}",
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/pdf/{$name}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
 
         $users = User::all();

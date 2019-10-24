@@ -22,8 +22,8 @@ class Obligacion extends Model
      * @var array
      */
     protected $fillable = [
-        "beneficiario", "numero_de_documento", "numero_de_cuenta", 
-        "monto", "cronograma_id", "work_id", "info_id"
+        "work_id", "info_id", "historial_id", "cronograma_id", "type_descuento_id",
+        "beneficiario", "numero_de_documento", "numero_de_cuenta", "monto",
     ];
 
 }

@@ -24,6 +24,9 @@ use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Tools\Money;
+use App\Models\Historial;
+use App\Models\Aportacion;
+use App\Models\TypeAportacion;
 
 /**
  * Genera pdf de la planilla
@@ -62,13 +65,24 @@ class GeneratePlanillaPDF implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $workId = $cronograma->infos->pluck("work_id");
-        $works = Work::whereIn("id", $workId)->get(["id", "afp_id"]);
+        $historial = Historial::where('cronograma_id', $cronograma->id);
         $money = new Money;
 
-        $afps = Afp::orderBy("descripcion", "ASC")->where("activo", 1)->get();
-        $type_remuneraciones = TypeRemuneracion::where("activo", 1)->get();
-        $tmp_descuentos = TypeDescuento::where("activo", 1)->get();
+        $afps = Afp::orderBy("nombre", "ASC")->where('activo', 1)->get();
+        // obtenemos los id de los descuentos
+        $inTypeAFP = collect();
+        // obtenemos los type descuento de los afps
+        foreach ($afps as $afp) {
+            $inTypeAFP->push($afp->prima_descuento_id);
+            $inTypeAFP->push($afp->aporte_descuento_id);
+        }
+        // obtenemos los tipos de descuentos, remuneraciones y aportaciones
+        $type_remuneraciones = TypeRemuneracion::where("activo", 1)->where('report', 1)->get();
+        $type_descuentos = TypeDescuento::where("activo", 1)
+            ->whereNotIn("id", $inTypeAFP)
+            ->where('base', 0)
+            ->get();
+        $type_aportaciones = TypeAportacion::where('activo', 1)->get();
 
         // VERIFICAR CAS
         if ($cronograma->planilla_id == 5) {
@@ -77,8 +91,12 @@ class GeneratePlanillaPDF implements ShouldQueue
             $type_categorias = TypeCategoria::with('cargos')->whereNotIn("id", [3])->get();
         }
 
+        // obtener las remuneraciones
         $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
+        // obtener los descuentos
         $descuentos = Descuento::where('cronograma_id', $cronograma->id)->get();
+        // obtener las aportaciones 
+        $aportaciones = Aportacion::where('cronograma_id', $cronograma->id)->get();
 
 
         foreach ($type_remuneraciones as $type_remuneracion) {
@@ -88,40 +106,35 @@ class GeneratePlanillaPDF implements ShouldQueue
         }
 
         // configurar afps
-        $whereIn = $tmp_descuentos->whereNotIn("config_afp", [null, "[]", ""])->pluck(["id"]);
-        $afp_total = $descuentos->whereIn("type_descuento_id", $whereIn)->sum("monto");
         foreach($afps as $afp) {
-            $afpIn = $works->where("afp_id", $afp->id)->pluck("id");
-            $afp_monto = $descuentos->whereIn("work_id", $afpIn)
-                ->whereIn("type_descuento_id", $whereIn)
+            $pluck = [$afp->prima_descuento_id, $afp->aporte_descuento_id];
+            $afp_monto = $descuentos->whereIn("type_descuento_id", $pluck)
                 ->sum("monto");
-                
+            // almacenamos el monto del afp
             $afp->monto = $afp_monto;
         }
 
         // configuracion de los descuentos
-        $type_descuentos = $tmp_descuentos->whereNotIn("id", $whereIn)->where("base", 0);
         foreach ($type_descuentos as $desc) {
             $desc->monto = $descuentos->where("type_descuento_id", $desc->id)->sum('monto');
         }
 
-
-        // total de los descuentos
-        $total_descuentos = $descuentos->where("base", 0)->sum("monto");
-
         // configurar aportaciones
-        $type_aportaciones = $tmp_descuentos->where("base", 1);
-        $total_aportaciones = 0;
+        $total_aportaciones = $descuentos->where('base', 1)->sum('monto');
 
-
+        // configuramos las aportaciones
         foreach ($type_aportaciones as $aport) {
-            $aport->monto = $descuentos->where("type_descuento_id", $aport->id)->sum("monto");
-            $total_aportaciones += $aport->monto;
+            $aport->monto = $descuentos->where("type_descuento_id", $aport->type_descuento_id)->sum("monto");
         }
 
         // configuracion de los totales
-        $total_bruto = $remuneraciones->sum("monto");
-        $total_liquido = $total_bruto - $total_descuentos;
+        $total_bruto = $historial->sum("total_bruto");
+        // total de afps
+        $afp_total = $afps->sum('monto');
+        // total de los descuentos
+        $total_descuentos = $historial->sum('total_desct');
+        // obtenemos el total neto de la planilla
+        $total_liquido = $historial->sum('total_neto');
 
         $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
         $titulo = "";

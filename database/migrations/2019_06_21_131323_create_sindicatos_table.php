@@ -16,8 +16,8 @@ class CreateSindicatosTable extends Migration
         Schema::create('sindicatos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string("nombre");
-            $table->text("descripcion")->nullable();
             $table->double("porcentaje")->nullable();
+            $table->bigInteger('type_descuento_id');
             $table->timestamps();
         });
     }

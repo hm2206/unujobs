@@ -23,7 +23,8 @@ use App\Mail\SendBoleta;
 use App\Models\Meta;
 use App\Models\Report;
 use App\Notifications\ReportNotification;
-use App\Collections\CronogramaCollection;
+use App\Models\Historial;
+use App\Collections\BoletaCollection;
 
 /**
  * Generar Archivo PDF de las Boletas mesuales de un determinado cronograma
@@ -34,6 +35,7 @@ class ReportBoleta implements ShouldQueue
 
   
     public $timeout = 0;
+    // report 
     private $cronograma;
     private $type_report;
     private $meta_id;
@@ -58,34 +60,34 @@ class ReportBoleta implements ShouldQueue
     public function handle()
     {
         $cronograma = $this->cronograma;
-        // ids de los infos
-        $infoIn = DB::table('info_cronograma')
-            ->where("cronograma_id", $cronograma->id)
-            ->get("info_id")->pluck(["info_id"]);
         // metas
         $meta = Meta::findOrFail($this->meta_id);
-        // infos
-        $infos = Info::whereIn("id", $infoIn)->with(["work" => function($w) {
-            $w->orderBy("nombre_completo", 'ASC');
-        }, "cargo", "categoria", "meta"])
-        ->whereHas("meta", function($m) use($meta){
-            $m->where("id", $meta->id);
-        })->get();
+        // historial
+        $historial = Historial::with('work', 'cargo', 'categoria', 'meta')
+            ->where('cronograma_id', $cronograma->id)
+            ->where('meta_id', $meta->id)
+            ->get();
+        // obtener remuneraciones
+        $remuneraciones = Remuneracion::with("typeRemuneracion")
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->where("show", 1)
+            ->get();
 
-        $collect = new CronogramaCollection($cronograma);
-        $data = $collect->boleta($infos);
-
+        // obtenemos  descuentos
+        $descuentos = Descuento::with("typeDescuento")
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get(); 
 
         $path = "pdf/boletas_meta_{$meta->metaID}_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->id}.pdf";
         $nombre = "Boletas del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID}";
-        
-        //genera el pdf;
-        $pdf = PDF::loadView("pdf.boleta_auto", [
-            'infos' => $data['infos'], 
-            'cronograma' => $data['cronograma'], 
-            'count' => $data['count']
-        ]);
 
+        // generar configuracion para las boleta
+        $boleta = BoletaCollection::init();
+        $boleta->setRemuneraciones($remuneraciones);
+        $boleta->setDescuentos($descuentos->where('base', 0));
+        $boleta->setAportaciones($descuentos->where('base', 1));
+        $boleta->get($historial);
+        $pdf = $boleta->generate();
         $pdf->setPaper("a3", 'portrait')->setWarnings(false);
         $pdf->save(storage_path("app/public/{$path}"));
 

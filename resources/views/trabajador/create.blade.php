@@ -128,15 +128,6 @@
                     </div>
                 </div>
 
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Fecha de ingreso <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control" value="{{ old('fecha_de_ingreso') }}" name="fecha_de_ingreso">
-                        <b class="text-danger">{{ $errors->first('fecha_de_ingreso') }}</b>
-                    </div>
-                </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Sexo <span class="text-danger">*</span></label>
@@ -146,104 +137,6 @@
                             <option value="0" {!! old('sexo') == 0 ? 'selected' : '' !!}>Femenino</option>
                         </select>
                         <b class="text-danger">{{ $errors->first('sexo') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">N° Essalud Autogenerable</label>
-                        <input type="text" class="form-control" value="{{ old('numero_de_essalud') }}" name="numero_de_essalud">
-                        <b class="text-danger">{{ $errors->first('numero_de_essalud') }}</b>
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Banco</label>
-                        <select name="banco_id" class="form-control">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($bancos as $banco)
-                                <option value="{{ $banco->id }}" {!! old('banco_id') == $banco->id ? 'selected': '' !!}>{{ $banco->nombre }}</option>
-                            @endforeach
-                        </select>
-                        <b class="text-danger">{{ $errors->first('banco_id') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Número de Cuenta</label>
-                        <input type="text" class="form-control" value="{{ old('numero_de_cuenta') }}" name="numero_de_cuenta">
-                        <b class="text-danger">{{ $errors->first('numero_de_cuenta') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">AFP</label>
-                        <select class="form-control" name="afp_id">
-                            <option value="">Seleccionar...</option>
-                            @foreach ($afps as $afp)
-                                <option value="{{ $afp->id }}" {!! old('afp_id') == $afp->id ? 'selected': '' !!}>{{ $afp->nombre }}</option>
-                            @endforeach
-                        </select>
-                        <b class="text-danger">{{ $errors->first('afp_id') }}</b>
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Tipo de AFP</label>
-                        <select class="form-control" name="type_afp">
-                            <option value="">Seleccionar...</option>
-                            <option value="flujo" {!! old('type_afp') == 'flujo' ? 'selected' : null !!}>Flujo</option>
-                            <option value="mixta" {!! old('type_afp') == 'mixta' ? 'selected' : null !!}>Mixta</option>
-                        </select>
-                        <b class="text-danger">{{ $errors->first('type_afp') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Fecha de Afiliación</label>
-                        <input type="date" class="form-control" value="{{ old('fecha_de_afiliacion') }}" name="fecha_de_afiliacion">
-                        <b class="text-danger">{{ $errors->first('fecha_de_afiliacion') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Número de cussp</label>
-                        <input type="text" class="form-control" value="{{ old('numero_de_cussp') }}" name="numero_de_cussp">
-                        <b class="text-danger">{{ $errors->first('numero_de_cussp') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Accidentes de Trabajo <span class="text-danger">*</span></label>
-                        <select name="accidentes"class="form-control">
-                            <option value="">Seleccionar...</option>
-                            <option value="0" {!! old('accidentes') == 0 ? 'selected' : '' !!}>No Afecto</option>
-                            <option value="1" {!! old('accidentes') == 1 ? 'selected' : '' !!}>Afecto</option>
-                        </select>
-                        <b class="text-danger">{{ $errors->first('accidentes') }}</b>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Afectación</label> <br>
-                        <input type="checkbox" name="afecto" {!! old('afectacion') ? 'checked' : '' !!}>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Cheque</label> <br>
-                        <input type="checkbox" name="cheque" {!! old('cheque') ? 'checked' : '' !!}>
                     </div>
                 </div>
 

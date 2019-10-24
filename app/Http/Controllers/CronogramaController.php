@@ -28,6 +28,8 @@ use App\Models\TypeReport;
 use App\Http\Middleware\CronogramaMiddleware;
 use App\Jobs\DetachInfoJob;
 use App\Jobs\AddInfoCronograma;
+use App\Models\Historial;
+use App\Jobs\ProssingAportacion;
 
 /**
  * Class CronogramaController
@@ -99,12 +101,12 @@ class CronogramaController extends Controller
         $pendiente = 1;
         $current_mes = (int)date('m') + 1;
 
-        /*if ($mes > $current_mes || $mes < $current_mes - 1) {
+        if ($mes > $current_mes || $mes < $current_mes - 1) {
             return [
                 "status" => false,
                 "message" => "El mes no está permitido!"
             ];
-        }*/
+        }
 
         $year = date('Y');
         $adicional = $request->adicional ? 1 : 0;
@@ -147,6 +149,7 @@ class CronogramaController extends Controller
             AddInfoCronograma::withChain([
                 (new ProssingRemuneracion($cronograma))->onQueue('high'),
                 (new ProssingDescuento($cronograma))->onQueue('high'),
+                (new ProssingAportacion($cronograma))->onQueue('high'),
             ])->dispatch($cronograma)
                 ->onQueue('medium');
 
@@ -182,12 +185,12 @@ class CronogramaController extends Controller
      * @param  string  $slug
      * @return \Illuminate\View\View
      */
-    public function infos($id)
+    public function historial($id)
     {   
         $like = request()->query_search;
         $cronograma = Cronograma::findOrFail($id);
-        return Info::with('work', 'categoria')->where("active", 1)
-            ->whereIn("id", $cronograma->infos->pluck(['id']))
+        return Historial::with('work', 'categoria')
+            ->where("cronograma_id", $cronograma->id)
             ->whereHas("work", function($i) use($like) {
                 $i->where("nombre_completo", "like", "%{$like}%")
                     ->orWhere("numero_de_documento", "like", "%{$like}%");
@@ -244,18 +247,18 @@ class CronogramaController extends Controller
         $meta_id = request()->meta_id;
         $cargo_id = request()->cargo_id;
         $indices = [];
-        $infos = [];
+        $historial = [];
         $metas = [];
         $cargos = [];
 
-        $metaId = $cronograma->infos->pluck(["meta_id"]);
-        $cargoId = $cronograma->infos->pluck(["cargo_id"]);
+        $metaId = $cronograma->historial->pluck(["meta_id"]);
+        $cargoId = $cronograma->historial->pluck(["cargo_id"]);
 
 
         if ($meta_id) {
-            $indices = $cronograma->infos->where("meta_id", $meta_id);
+            $indices = $cronograma->historial->where("meta_id", $meta_id);
         }else {
-            $indices = $cronograma->infos;
+            $indices = $cronograma->historial;
         }
 
 
@@ -264,28 +267,28 @@ class CronogramaController extends Controller
         }
 
         $indices = $indices->pluck(["id"]);
-        $infos = Info::with("work")->whereIn("id", $indices);
+        $historial = Historial::with("work")->whereIn("id", $indices);
 
         if ($meta_id) {
-            $infos = $infos->where("meta_id", $meta_id);
+            $historial = $historial->where("meta_id", $meta_id);
         }
 
             
         if ($like) {
-            $infos = $infos->whereHas('work', function($w) use($like) {
+            $historial = $historial->whereHas('work', function($w) use($like) {
                 $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
                 $w->where($indice, "like", "%{$like}%");
             });
         }
 
 
-        $infos = $infos->paginate(20);
+        $historial = $historial->paginate(20);
         $metas = Meta::whereIn("id", $metaId)->get();
         $cargos = Cargo::whereIn("id", $cargoId)->get();
 
         return view('cronogramas.job', 
             compact(
-                'cronograma', 'cargos', 'cargo_id', 'infos', 'like', 
+                'cronograma', 'cargos', 'cargo_id', 'historial', 'like', 
                 'metas', 'typeReports', 'indices', 'meta_id'
             ));
     }
@@ -304,11 +307,12 @@ class CronogramaController extends Controller
             ->findOrFail($id);
 
         $like = request()->query_search;
-        $notIn = $cronograma->infos->pluck(["id"]);
+        $notIn = $cronograma->historial->pluck(['info_id']);
 
         $infos = Info::with(['work', 'cargo', 'categoria'])
             ->whereNotIn("id", $notIn)
-            ->where("planilla_id", $cronograma->planilla_id);
+            ->where("planilla_id", $cronograma->planilla_id)
+            ->where('active', 1);
 
         if($like) {
             $infos->wherehas('work', function($w) use($like) {
@@ -334,12 +338,13 @@ class CronogramaController extends Controller
                 ->where("estado", 1)
                 ->where("pendiente", 0)
                 ->findOrFail($id);
-            
+            // obtener infos
             $tmp_infos = $request->input('infos', []);
-
+            // processar información
             AddInfoCronograma::withChain([
-                (new ProssingRemuneracion($cronograma))->onQueue('high'),
-                (new ProssingDescuento($cronograma))->onQueue('high'),
+                (new ProssingRemuneracion($cronograma, $tmp_infos))->onQueue('high'),
+                (new ProssingDescuento($cronograma, $tmp_infos))->onQueue('high'),
+                (new ProssingAportacion($cronograma, $tmp_infos))->onQueue('high'),
             ])->dispatch($cronograma, $tmp_infos)
                 ->onQueue('medium');
 
@@ -388,18 +393,19 @@ class CronogramaController extends Controller
     }
 
 
-    public function destroyAllInfo(Request $request, $id) 
+    public function destroyHistorial(Request $request, $id) 
     {
+        $cronograma = Cronograma::where("estado", 1)->findOrFail($id);
+
         try {
-            $cronograma = Cronograma::where("estado", 1)->findOrFail($id);
-            $infos = $request->input('infos', []);
+            $historial = $request->input('historial', []);
 
             // eliminar remuneraciones
-            Remuneracion::whereIn("info_id", $infos)->where("cronograma_id", $cronograma->id)->delete();
+            Remuneracion::whereIn("historial_id", $historial)->delete();
             // eliminar descuentos 
-            Descuento::whereIn("info_id", $infos)->where("cronograma_id", $cronograma->id)->delete();
-            // eliminar infos
-            $cronograma->infos()->detach($infos);   
+            Descuento::whereIn("historial_id", $historial)->delete();
+            // eliminar historial
+            Historial::whereIn("id", $historial)->delete();
 
             return [
                 "status" => true,

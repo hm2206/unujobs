@@ -14,9 +14,9 @@ use App\Models\Descuento;
 use App\Models\TypeDescuento;
 use App\Models\User;
 use App\Models\Categoria;
-use App\Models\Info;
 use App\Models\Cargo;
 use App\Notifications\BasicNotification;
+use App\Models\Historial;
 
 /**
  * Modelo de importacion de descuentos en excel
@@ -50,7 +50,7 @@ class DescuentoImport implements ToCollection, WithHeadingRow
         // obtenemos los tipo de descuentos
         $types = TypeDescuento::where("activo", 1)->get();
         $categorias = Categoria::all();
-        $infos = $this->cronograma->infos;
+        $historial = $this->cronograma->historial;
         $testing = 0;
 
         foreach ($collection as $iter => $row) {
@@ -64,12 +64,14 @@ class DescuentoImport implements ToCollection, WithHeadingRow
             // verificar si el trabajador existe
             if ($work) {
                 // obtenemos la informacion detallada del trabajador
-                $info = Info::where("work_id", $work->id)
+                $history = Historial::where("work_id", $work->id)
+                    ->where("planilla_id", $this->cronograma->planilla_id)
+                    ->where("cronograma_id", $this->cronograma->id)
                     ->where("cargo_id", $cargo_id)
                     ->where("categoria_id", isset($categoria->id) ? $categoria->id : '')
                     ->first();
                 
-                if ($info) {
+                if ($history) {
 
                     foreach ($types as $type) {
                         
@@ -81,24 +83,30 @@ class DescuentoImport implements ToCollection, WithHeadingRow
                             $monto = $row[$type->key];
 
                             // actualizamos o creamos el descuento del trabajador
-                            $descuento = Descuento::where("info_id", $info->id)
+                            $descuento = Descuento::where("historial_id", $history->id)
                                 ->where("type_descuento_id", $type->id)
-                                ->where("cronograma_id", $this->cronograma->id)
                                 ->first();
     
-                            // verificamos que el valor a guardar sea un numero
-                            if (\is_numeric($monto)) {
+                            if ($descuento) {
+                                // verificamos que el valor a guardar sea un numero
+                                if (\is_numeric($monto)) {
 
-                                $descuento->update([
-                                    "monto" => \round($monto, 2)
+                                    $descuento->update([
+                                        "monto" => \round($monto, 2)
+                                    ]);
+
+                                }
+                            }else {
+                                \Log::info([ 
+                                    "info" => $history->id, "estado" => false, 
+                                    "type_descuento", $type->key, "monto" => $monto
                                 ]);
-
                             }
                         }
                         
                     }
                 }else {
-                    \Log::info("no existe => {$work->numero_de_documento}");
+                    \Log::info("el info no existe => {$work->numero_de_documento}");
                 }
 
             }else {

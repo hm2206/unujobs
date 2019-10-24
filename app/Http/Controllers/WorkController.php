@@ -7,7 +7,7 @@ use App\Models\Work;
 use App\Models\Info;
 use App\Models\Cronograma;
 use App\Jobs\ReportRenta;
-
+use App\Models\Historial;
 
 class WorkController extends Controller
 {
@@ -17,39 +17,19 @@ class WorkController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $query_search = request()->query_search;
-        $planilla_id = request()->planilla_id;
-        $infos = [];
-
-        if (strlen($query_search) > 2) {
-            $infos = Info::with(['work', 'categoria'])->where("planilla_id", $planilla_id)
-            ->whereHas("work",function($w) use($query_search) {
-                $w->where("nombre_completo", "like", "%{$query_search}%")
-                    ->orWhere("numero_de_documento", "like", "%{$query_search}%");
-            })->get();
+    {   
+        $like = request()->query_search;
+        $works =  Work::orderBy('nombre_completo', 'ASC');
+        
+        if ($like) {
+            $works = $works->where("nombre_completo", "like", "%{$like}%")
+                ->orWhere("numero_de_documento", "like", "%{$like}%");
         }
 
-        return $infos;
+        return $works->paginate(30);
     }
 
 
-    public function list() 
-    {
-        $query_search = request()->query_search;
-        $infos = Info::with(["work" => function($w) {
-            $w->orderBy("ape_paterno", "ASC");
-        }, "categoria"]);
-
-        if ($query_search) {
-            $infos = $infos->whereHas("work", function($w) use($query_search) {
-                $w->where("nombre_completo", "like", "%{$query_search}%")
-                ->orWhere("numero_de_documento", "like", "%{$query_search}%");
-            });
-        }
-
-        return $infos->paginate(30);
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -107,11 +87,8 @@ class WorkController extends Controller
         try {
             
             $work = Work::findOrFail($id);
-            $work->update($request->except('descanso', 'afecto', 'cheque'));
+            $work->update($request->all());
             $work->nombre_completo = "{$work->ape_paterno} {$work->ape_materno} {$work->nombres}";
-            $work->descanso = $request->input("descanso") ? 1 : 0;
-            $work->afecto = $request->afecto ? 1 : 0;
-            $work->cheque = $request->cheque ? 1 : 0;
             $work->save();
             return [
                 "status" => true,
@@ -141,21 +118,22 @@ class WorkController extends Controller
     }
 
 
+    public function historial($id)
+    {
+        return Historial::with('work', 'categoria', 'cronograma')
+            ->where('work_id', $id)->paginate(30);
+    }
+
+
     public function report(Request $request, $id) 
     {
 
-        $info = Info::findOrFail($id);
+        $work = Work::findOrFail($id);
 
         try {
 
-            $cronogramaID = $request->input("cronogramas", []);
-            $cronogramas = Cronograma::whereIn("id", $cronogramaID)->get();
-            
-            if ($cronogramas->count() <= 0) {
-                abort(404);
-            }
-
-            ReportRenta::dispatch($info, $cronogramas)->onQueue('medium');
+            $historial = $request->input("historial", []);
+            ReportRenta::dispatch($work, $historial)->onQueue('medium');
             
             return [
                 "status" => true,

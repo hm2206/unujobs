@@ -8,7 +8,22 @@
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
     <title>Reporte Planillas Meta x Metas </title>
 </head>
-@foreach ($meta->infos as $num => $item)
+
+<style>
+
+    html {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    body {
+        padding: 0px;
+        margin: 1.5em;
+    }
+
+</style>
+
+@foreach ($meta->historial as $num => $historial)
 
 <body class="bg-white text-negro" style="padding-top: 0px; margin-top: 0px;">
         <div>
@@ -76,35 +91,35 @@
                     $numero = 1;
                 @endphp
                     
-                @foreach ($item as $info)
+                @foreach ($historial as $history)
                     @php
-                        $work = $info->work;
+                        $work = $history->work;
                     @endphp
                     <table class="table-sm w-100 uppercase">
                         <thead class="bbt-1 bbb-1">
                             <tr>
-                                <th class="py-0 font-12" colspan="2">N° {{ $numero++ }} CODIGO {{ $info->work_id }} </th>
-                                <th class="py-0 font-12">PLAZA {{ $info->plaza }}</th>
+                                <th class="py-0 font-12" colspan="2">N° {{ $numero++ }} CODIGO {{ $history->info_id }} </th>
+                                <th class="py-0 font-12">PLAZA {{ $history->plaza }}</th>
                                 <th class="py-0 font-12">DEDICACION</th>
-                                <th class="py-0 font-12">AFP {{ $work->afp ? $work->afp->nombre : "" }}</th>
-                                <th class="py-0 font-12" colspan="2">N° CUSPP: {{ $work->numero_de_cuspp }}</th>
-                                <th class="py-0 font-12" colspan="2">N° ESSALUD: {{ $work->numero_de_essalud }}</th>
-                                <th class="py-0 font-12" colspan="3">OBS: {{ $info->observacion }}</th>
+                                <th class="py-0 font-12">AFP {{ $history->afp ? $history->afp->nombre : "" }}</th>
+                                <th class="py-0 font-12" colspan="2">N° CUSPP: {{ $history->numero_de_cuspp }}</th>
+                                <th class="py-0 font-12" colspan="2">N° ESSALUD: {{ $history->numero_de_essalud }}</th>
+                                <th class="py-0 font-12" colspan="3">OBS: {{ $history->observacion }}</th>
                             </tr>
                             <tr>
                                 <th class="py-0 font-12" colspan="5">
                                     APELLIDOS Y NOMBRES: {{ $work->profesion }} {{ $work->nombre_completo }}
                                 </th>
-                                <th class="py-0 font-12" colspan="3">
-                                    COND.LABORAL: {{ $info->cargo ? $info->cargo->descripcion : "" }} - {{ $info->pap == 1 ? "Contratado" : "" }} {{ $info->pap == 0 ? "Nombrado" : "" }}
+                                <th class="py-0 font-12" colspan="4">
+                                    COND.LABORAL: {{ $history->cargo ? $history->cargo->descripcion : "" }} - {{ $history->pap }} 
                                 </th>
-                                <th class="py-0 font-12" colspan="2">CARGO: {{ $info->perfil }}</th>
-                                <th class="py-0 font-12" colspan="2">DNI/LE: {{ $work->numero_de_documento }}</th>
+                                <th class="py-0 font-12" colspan="2">CARGO: {{ $history->perfil }}</th>
+                                <th class="py-0 font-12" colspan="1">DNI/LE: {{ $work->numero_de_documento }}</th>
                             </tr>
                         </thead>
                         <tbody class="bbb-1">
                             <tr>
-                                @foreach ($info->remuneraciones as $columna)
+                                @foreach ($history->remuneraciones as $columna)
                                     <td width="7%">
                                         @foreach ($columna as $remuneracion)
                                             <table class="w-100">
@@ -143,7 +158,7 @@
                                         @endforeach
                                     </td>
                                 @endforeach
-                                @foreach ($info->descuentos as $columna)
+                                @foreach ($history->descuentos as $columna)
                                     <td width="7%">
                                         @foreach ($columna as $descuento)
                                             <table class="w-100">
@@ -173,10 +188,10 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="py-0">
-                                                            <div class="font-12">TOTAL</div>
+                                                            <div class="font-12">NETO</div>
                                                         </th>
                                                         <th class="py-0 text-right">
-                                                            <div class="bbt-1 font-12">{{  $info->neto }}</div>      
+                                                            <div class="bbt-1 font-12">{{  $history->neto }}</div>      
                                                         </th>
                                                     </tr>
                                                     @for ($i = 0; $i < 5 - $columna->count(); $i++)
@@ -191,7 +206,7 @@
                                     </td>
                                 @endforeach
                                 <td width="7%">
-                                    @foreach ($info->aportaciones as $iter => $aport)
+                                    @foreach ($history->aportaciones as $iter => $aport)
                                         <table class="w-100">
                                             @if (!$aport->nivel)
                                                 <tr>
@@ -227,7 +242,7 @@
                                 </td>
                                 <td width="12%">
                                     <table class="w-100">
-                                        @for ($i = 0; $i < 4; $i++) 
+                                        @for ($i = 0; $i < 3; $i++) 
                                             <tr>
                                                 <th class="py-0" width="100%">
                                                     &nbsp;

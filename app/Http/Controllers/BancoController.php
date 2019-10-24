@@ -7,7 +7,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Banco;
+use App\Models\Banco;
 use Illuminate\Http\Request;
 
 /**
@@ -24,7 +24,7 @@ class BancoController extends Controller
      */
     public function index()
     {
-        //
+        return Banco::get();
     }
 
     /**

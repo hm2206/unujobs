@@ -20,7 +20,7 @@
         }
     </style>
 
-        @foreach ($pages as $boletas)
+        @foreach ($pages as $historial)
             <body class="bg-white text-negro" style="">
                         
                 <table class="text-dark">
@@ -67,26 +67,26 @@
                         @php
                             $iter = $last_page;
                         @endphp
-                        @foreach ($boletas as $boleta)
+                        @foreach ($historial as $history)
                             @php
-                                $work = $boleta->work;
-                                $categoria = $boleta->categoria;
+                                $work = $history->work;
+                                $categoria = $history->categoria;
                             @endphp
                             <tr>
                                 <td class="py-0 font-10 text-left pl-1">{{ $iter }}</td>
                                 <td class="py-0 font-10 text-left pl-1">{{ $work->nombre_completo }}</td>
                                 <td class="py-0 font-10 text-center pl-1 pr-1">{{ $categoria->descripcion }}</td>
                                 <td class="py-0 font-10 text-center pl-1 pr-1">{{ $categoria->dedicacion }}</td>
-                                <td class="py-0 font-10 text-center uppercase">{{ str_limit($boleta->perfil, 20) }}</td>
+                                <td class="py-0 font-10 text-center uppercase">{{ str_limit($history->perfil, 20) }}</td>
                                 <td class="py-0 font-10 text-center">{{ $work->numero_de_documento }}</td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($boleta->monto_bruto) }}
+                                        {{ $money->parseTo($history->total_bruto) }}
                                     </b>
                                 </td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
-                                        {{ $money->parseTo($boleta->neto_a_pagar) }}
+                                        {{ $money->parseTo($history->total_neto) }}
                                     </b>
                                 </td>
                             </tr>
@@ -99,8 +99,8 @@
                             <th class="py-0 text-right font-11" colspan="7">
                                 <b class="font-11 text-right py-0 pr-1">
                                     @php
-                                        $beforeBruto += $boletas->sum("monto_bruto");
-                                        $beforeNeto += $boletas->sum("neto_a_pagar");
+                                        $beforeBruto += $historial->sum("total_bruto");
+                                        $beforeNeto += $historial->sum("total_neto");
                                         $num_page++;
                                     @endphp
                                     Totales S/.&nbsp;&nbsp;&nbsp;&nbsp;{{ $money->parseTo($beforeBruto) }}

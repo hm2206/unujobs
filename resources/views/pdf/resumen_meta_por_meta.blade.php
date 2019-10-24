@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-    <title>Reporte Planilla </title>
+    <title>REPORTE PLANILLA META {{ $titulo }} </title>
 </head>
 <body class="bg-white text-negro mt-0 pt-0">
 
@@ -89,7 +89,7 @@
                                 </td>
                             @endforeach
                             <td class="text-center bbb-1 py-0">
-                                <b class="font-13">{{ $money->parseTo($remuneraciones->sum("monto")) }}</b>
+                                <b class="font-13">{{ $money->parseTo($total_bruto) }}</b>
                             </td>
                         </tr>
                         @foreach ($type_remuneraciones as $type)

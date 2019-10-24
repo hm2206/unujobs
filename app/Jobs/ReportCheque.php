@@ -7,7 +7,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Models\Work;
+use App\Models\Historial;
 use \PDF;
 use App\Models\User;
 use App\Notifications\ReportNotification;
@@ -59,36 +59,26 @@ class ReportCheque implements ShouldQueue
         $footer = \collect();
 
         $cronograma = $this->cronograma;
-        $infoIn = $cronograma->infos->pluck(['work_id']);
-        $works = Work::whereIn("id", $infoIn)
-            ->where("numero_de_cuenta", null)
-            ->orderBy("nombre_completo", "ASC")
-            ->get();
-            
-
-        // configuracion
-        $descuentos = Descuento::whereIn("work_id", $infoIn)
+        $historial = Historial::with(['work'])
             ->where("cronograma_id", $cronograma->id)
-            ->where("base", 0)
+            ->where("numero_de_cuenta", "")
+            ->orWhere("numero_de_cuenta", null)
             ->get();
-
-        $remuneraciones = Remuneracion::whereIn("work_id", $infoIn)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
+        // obtener tipo de bonificaciones
         $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
+        // obtener remuneraciones
+        $remuneraciones = Remuneracion::where("show", 1)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']))
+            ->get();
         
-        foreach ($works as $work) {
+        foreach ($historial as $history) {
             // guardar las bonificaciones
-            $work->bonificaciones = $remuneraciones->where("work_id", $work->id)
-                ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']));
-            // guardar el total neto
-            $work->total_neto =  $remuneraciones->where("work_id", $work->id)->sum("monto") - $descuentos->where("work_id", $work->id)->sum('monto');
-            
+            $history->bonificaciones = $remuneraciones->where("historial_id", $history->id);
         }
         
         $pdf = PDF::loadView("pdf.reporte_cheque", compact(
-            'cronograma', 'bonificaciones', 'works', 'meses', 'num_page', 'num_work',
+            'cronograma', 'bonificaciones', 'historial', 'meses', 'num_page', 'num_work',
             'beforeTotal', 'remuneraciones', 'beforeBon'
         ));
 

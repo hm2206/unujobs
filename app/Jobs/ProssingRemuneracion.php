@@ -8,12 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
 use \DB;
-use App\Collections\InfoCollection;
 use App\Models\User;
 use App\Notifications\BasicNotification;
 use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
 use App\Models\Info;
+use App\Models\Historial;
+use App\Collections\RemuneracionCollection;
 
 /**
  * Procesa las remuneraciones de los trabajadores
@@ -24,8 +25,9 @@ class ProssingRemuneracion implements ShouldQueue
 
     
     private $cronograma;
-    private $infos;
+    private $historial;
     private $types;
+    private $infoIn = [];
      
 
     public $timeout = 0;
@@ -36,9 +38,10 @@ class ProssingRemuneracion implements ShouldQueue
      * @param \App\Models\Work $jobs
      * @return void
      */
-    public function __construct($cronograma)
+    public function __construct($cronograma, $infoIn = [])
     {
         $this->cronograma = $cronograma;
+        $this->infoIn = $infoIn;
     }
 
     /**
@@ -49,86 +52,124 @@ class ProssingRemuneracion implements ShouldQueue
     public function handle()
     {
         // obtenemos los tipos de remuneracion
-        $this->types = TypeRemuneracion::where("activo", 1)->get();
+        $this->types = TypeRemuneracion::orderBy("orden", "ASC")->where("activo", 1)->get();
         // cronograma actual
         $cronograma = $this->cronograma;
 
         // infos associados al cronograma
-        $this->infos = $cronograma->infos;
+        $this->historial = Historial::with('categoria')->where("cronograma_id", $cronograma->id);
 
+        // verificar si hay infos especificos
+        if (count($this->infoIn)) {
+            $this->historial->whereIn("info_id", $this->infoIn);
+        }
+        // obtener historial
+        $this->historial = $this->historial->get();
         // fecha anteriores
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         // obtenemos remuneraciones anteriores
-        $typeBefores = Remuneracion::whereIn("info_id", $this->infos->pluck(['id']))
+        $typeBefores = Remuneracion::whereIn("historial_id", $this->historial->pluck(['id']))
             ->whereIn("type_remuneracion_id", $this->types->pluck(['id']))
             ->where("adicional", $cronograma->adicional)
             ->where("mes", $mes)
             ->where("año", $year)
             ->get();
+        // guardamos a los trabajadores del mes anterior
+        $historialOld = $this->historial->whereIn("id", $typeBefores->pluck('historial_id'));
+        // guardamos a los trabajadores nuevos
+        $historialNew = $this->historial->whereNotIn("id", $historialOld->pluck('id'));
 
-
-        $infoOld = $this->infos->whereIn("id", $typeBefores->pluck('info_id'));
-        $infoNew = $this->infos->whereNotIn("id", $infoOld->pluck('id'));
-
-        if ($infoNew->count() > 0) {
-            $this->configNewRemuneracion($cronograma, $infoNew);
+        if ($historialNew->count() > 0) {
+            $this->configNewRemuneracion($cronograma, $historialNew);
         }
 
-        if ($infoOld->count() > 0) {
-            $this->configOldRemuneracion($cronograma, $infoOld, $typeBefores);
+        if ($historialOld->count() > 0) {
+            $this->configOldRemuneracion($cronograma, $historialOld, $typeBefores);
         }
 
     }
 
 
-    private function configOldRemuneracion($cronograma, $infos, $befores) {
-
-        $payload = [];
-
-        foreach ($infos as $info) {
-
+    /**
+     * Clonar remuneracion del mes anterior
+     *
+     * @param [type] $cronograma
+     * @param [type] $historial
+     * @param [type] $befores
+     * @return void
+     */
+    private function configOldRemuneracion($cronograma, $historial, $befores) {
+        // creamos la colección para prosesar las remuneraciones
+        $config = new RemuneracionCollection($cronograma, $this->types);
+        // recorremos a cada trabajador
+        foreach ($historial as $history) {
+            // recorremos todas los tipos de remuneraciones disponibles
             foreach ($this->types as $type) {
                 // obtenermos el registro anterior
-                $typeBefore = $befores
-                    ->where("type_remuneracion_id", $type->id)
-                    ->where('info_id', $info->id)
+                $typeBefore = $befores->where('historial_id', $history->id)
+                    ->where("type_remuneracion_id", $type->id)    
                     ->first();
                 // almacenamos el monto anterior
                 $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
-
-                array_push($payload, [
-                    "work_id" => $info->work_id,
-                    "info_id" => $info->id,
-                    "planilla_id" => $info->planilla_id,
-                    "cargo_id" => $info->cargo_id,
-                    "categoria_id" => $info->categoria_id,
-                    "meta_id" => $info->meta_id,
-                    "cronograma_id" => $cronograma->id,
-                    "type_remuneracion_id" => $type->id,
-                    "base" => $type->base,
-                    "mes" => $cronograma->mes,
-                    "año" => $cronograma->año,
-                    "adicional" => $cronograma->adicional,
-                    "monto" => $monto
-                ]);
-
+                // preparamos las remuneraciones para insertalos masivamente
+                $config->preparate($history, $cronograma, $type, $monto);
             }
-
+            // obtener resultado del storage
+            $storage = $config->getStorage();
+            // guardar base imponible corriente
+            $base =  $storage->where('historial_id', $history->id)
+                        ->where('base', 0)
+                        ->where('show', 1)
+                        ->sum('monto');
+            // guardar el monto bruto actual
+            $bruto = $storage->where('historial_id', $history->id)
+                        ->where('show', 1)
+                        ->sum('monto');
+            // guardar base imponible para el plame
+            $base_enc = self::calc_enc($history, $base);
+            // actualizar los montos del trabajador
+            $history->update([
+                "total_bruto" => $bruto,
+                "base" => $base,
+                "base_enc" => $base_enc
+            ]);
         }
-
-        foreach (array_chunk($payload, 1000) as $insert) {
-            Remuneracion::insert($insert);
-        }
-
+        // insertamos las remuneraciones masivamente
+        $config->save();
     }
     
 
-    private function configNewRemuneracion($cronograma, $infos) {
-       foreach ($infos as $info) {
-            $collection = new InfoCollection($info);
-            $collection->createOrUpdateRemuneracion($cronograma, $this->types);
-       }
+    /**
+     * Crear las nuevas remuneraciones por cada trabajador
+     *
+     * @param [type] $cronograma
+     * @param [type] $historial
+     * @return void
+     */
+    private function configNewRemuneracion($cronograma, $historial) {
+       // creamos la colección para prosesar las remuneraciones
+       $config = new RemuneracionCollection($cronograma, $this->types);
+       // insertar masivamente las remuneraciones
+       $config->insert($historial);
+    }
+
+
+    private function calc_enc($history, $base)
+    {
+        // obtenemos la categoria del trabajador
+        $categoria = $history->categoria;
+        // verificamos si el trabajador solo tiene un solo concepto
+        if ($categoria->conceptos->count() == 1 ) {
+            // obtenemos los montos del los conceptos
+            $montos = $categoria->conceptos->map(function($con) {
+                return $con->config ? $con->config->monto : 0;
+            });
+            // sumamos los conceptos 
+            return $montos->sum();
+        }
+        // devolvemos la base por defecto
+        return $base;
     }
 
 

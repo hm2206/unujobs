@@ -65,30 +65,26 @@ class JobController extends Controller
         ];
 
         // ejecutar filtro
-        $jobs = Work::whereHas('infos', function($in) use($config) {
+        $jobs = Info::with('work')->whereHas('work', function($w) use($like) {
+            $w->where("nombre_completo", "like", "%{$like}%")
+                ->orWhere("numero_de_documento", "like", "%{$like}%")
+                ->orderBy('works.nombre_completo', 'DESC');
+        })->where('active', $estado);
+        
+        if ($config['planilla']) {
+            $jobs = $jobs->where("planilla_id", $config['planilla']);
+        }
 
-            if ($config['planilla']) {
-                $in->where("planilla_id", $config['planilla']);
-            }
+        if ($config['cargo']) {
+            $jobs = $jobs->where("cargo_id", $config['cargo']);
+        }
 
-            if ($config['cargo']) {
-                $in->where("cargo_id", $config['cargo']);
-            }
+        if ($config['categoria']) {
+            $jobs = $jobs->where("categoria_id", $config['categoria']);
+        }
 
-            if ($config['categoria']) {
-                $in->where("categoria_id", $config['categoria']);
-            }
-
-            if ($config['meta']) {
-                $in->where("meta_id", $config['meta']);
-            }
-
-        })->orderBy('nombre_completo', 'ASC')
-            ->where('activo', $estado);
-
-        // filtro por nombre_completo
-        if ($like) {
-            self::query($like, $jobs);
+        if ($config['meta']) {
+            $jobs = $jobs->where("meta_id", $config['meta']);
         }
 
         // obteneos los id de las personas
@@ -113,14 +109,6 @@ class JobController extends Controller
     {
         $documento = request()->input("documento", null);
         $result = (object)["success" => false, "message" => ""];
-        $sindicatos = Sindicato::get(["id", "nombre"]);
-        $bancos = Banco::get(["id", "nombre"]);
-        $afps = Afp::get(["id", "nombre"]);
-        $cargos = Cargo::with('categorias')->get(['id', 'descripcion']);
-        $metas = Meta::all();
-        $categorias = Categoria::whereHas('cargos', function($q) {
-            $q->where("cargos.id", old('cargo_id'));
-        })->get();
 
         if (!old('numero_de_documento')) {
             if($documento) {
@@ -129,7 +117,7 @@ class JobController extends Controller
             }
         }
 
-        return view('trabajador.create', compact('documento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
+        return view('trabajador.create', compact('documento', 'result'));
     }
 
 
@@ -141,11 +129,8 @@ class JobController extends Controller
      */
     public function store(JobRequest $request)
     {
-        $job = Work::create($request->except('descanso', 'afecto', 'cheque'));
+        $job = Work::create($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
-        $job->descanso = $request->input("descanso") ? 1 : 0;
-        $job->afecto = $request->afecto ? 1 : 0;
-        $job->cheque = $request->cheque ? 1 : 0;
         $job->save();
         return redirect()->route('job.show', $job->slug())->with(["success" => "El registro se guardo correctamente"]);
     }
@@ -212,19 +197,7 @@ class JobController extends Controller
         return back();
     }
 
-
-    /** 
-     * Realiza busqueda del trabajador
-     * @param  string  $like
-     * @param  \Illuminate\Database\Eloquent\Builder  $job
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function query($like, \Illuminate\Database\Eloquent\Builder $jobs) 
-    {
-        return $jobs->where("nombre_completo", "like", "%{$like}%")
-            ->orWhere("numero_de_documento", "like", "%{$like}%");
-    }
-
+    
 
     public function informacion($id) 
     {
@@ -306,12 +279,11 @@ class JobController extends Controller
     public function boletaStore(Request $request, $id)
     {
         $work = Work::findOrFail($id);
-        $whereIn = $request->input('cronogramas', []);
+        $inHistorial = $request->input('historial', []);
 
-        ReportBoletaWork::dispatch($work, $whereIn)
-            ->onQueue('medium');
+        ReportBoletaWork::dispatch($inHistorial, $work)->onQueue('medium');
 
-        return "";
+        return "generando boleta";
     }
 
 

@@ -11,7 +11,7 @@ use App\Models\Remuneracion;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
-use App\Models\Work;
+use App\Models\Historial;
 use App\Models\Report;
 use App\Notifications\ReportNotification;
 use App\Models\User;
@@ -61,43 +61,35 @@ class ReportAFP implements ShouldQueue
         ];
 
         $typeDescuentos = TypeDescuento::whereIn("key", ["32", "34", "35"])->get();
-        $works = Work::whereHas("infos", function($i) use($cronograma) {
-            $i->whereHas("cronogramas", function($cro) use($cronograma) {
-                $cro->where("cronogramas.id", $cronograma->id);
-            });
-        })->where("afp_id", $afp->id)->get();
-
+        $historial = Historial::with('afp', 'work')->where("afp_id", $afp->id)
+            ->where('cronograma_id', $cronograma->id)->get();
+        // obtener los descuentos
         $descuentos = Descuento::whereIn("type_descuento_id", $typeDescuentos->pluck(['id']))
-            ->where("cronograma_id", $this->cronograma->id)
-            ->whereIn("work_id", $works->pluck(['id']))
+            ->whereIn("historial_id", $historial->pluck(['id']))
             ->get();
 
-        $remuneraciones = Remuneracion::where("cronograma_id", $this->cronograma->id)
-            ->whereIn("work_id", $works->pluck(['id']))
+        $remuneraciones = Remuneracion::where("show", 1)->where("cronograma_id", $this->cronograma->id)
+            ->whereIn("work_id", $historial->pluck(['id']))
             ->get();
 
-        foreach ($works as $work) {
+        foreach ($historial as $history) {
             
-            // monto bruto
-            $work->bruta = $remuneraciones->where("work_id", $work->id)->sum('monto');
             // monto del aporte afp
-            $work->pension = $descuentos->where("work_id", $work->id)
+            $history->pension = $descuentos->where("historial_id", $history->id)
                 ->where('type_descuento_id', $typeDescuentos->where('key', '32')->first()->id)
                 ->sum('monto');
             // monto comision variable
-            $work->ca = $descuentos->where("work_id", $work->id)
+            $history->ca = $descuentos->where("historial_id", $history->id)
                 ->where('type_descuento_id', $typeDescuentos->where('key', '34')->first()->id)
                 ->sum('monto');
             // monto del prima de seguro
-            $work->prima_seg = $descuentos->where("work_id", $work->id)
+            $history->prima_seg = $descuentos->where("historial_id", $history->id)
                 ->where('type_descuento_id', $typeDescuentos->where('key', '35')->first()->id)
                 ->sum('monto');
-            // monto total de descuentos
-            $work->total_dscto = $descuentos->where("work_id", $work->id)->sum('monto');
 
         }
 
-        $pages = $works->chunk(52);
+        $pages = $historial->chunk(52);
 
         $path = "pdf/report_afp_{$afp->nombre}_{$cronograma->id}.pdf";
         $nombre = "Reporte AFP {$afp->nombre}";

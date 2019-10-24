@@ -111,7 +111,6 @@ class CategoriaController extends Controller
     {
         $payload = $this->validate(request(), [
             "nombre" => "required",
-            "key" => "required"
         ]); 
 
         try {
@@ -199,7 +198,7 @@ class CategoriaController extends Controller
         $categoria = Categoria::with(['conceptos' => function($c) {
             $c->orderBy('conceptos.key', 'ASC');
         }])->findOrFail($id);
-        $types = TypeRemuneracion::all();
+        $types = TypeRemuneracion::where("show", 1)->get();
         $tmpType = DB::table('concepto_type_remuneracion')->where('categoria_id', $id)->get();
         $checked = \collect();
 

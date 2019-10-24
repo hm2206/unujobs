@@ -15,21 +15,31 @@ class CreateInfosTable extends Migration
     {
         Schema::create('infos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('work_id');
-            $table->integer('cargo_id');
-            $table->integer('categoria_id');
-            $table->integer('meta_id');
-            $table->integer('fuente_id')->nullable();
-            $table->string('fuente')->nullable();
-            $table->bigInteger('planilla_id')->nullable();
+            $table->bigInteger('work_id');
+            $table->bigInteger('planilla_id');
+            $table->bigInteger('cargo_id');
+            $table->bigInteger('categoria_id');
+            $table->bigInteger('meta_id');
+            $table->bigInteger('fuente_id')->nullable();
             $table->bigInteger('sindicato_id')->nullable();
+            $table->bigInteger('afp_id')->nullable();
+            $table->bigInteger('type_afp_id')->nullable();
+            $table->string('numero_de_cussp')->nullable();
+            $table->date("fecha_de_afiliacion")->nullable();
+            $table->bigInteger('banco_id')->nullable();
+            $table->string('numero_de_cuenta')->nullable();
+            $table->string('numero_de_essalud')->nullable();
+            $table->string('fuente')->nullable();
             $table->string('plaza')->nullable();
             $table->string('perfil')->nullable();
             $table->string('escuela')->nullable();
-            $table->integer('active')->default(1);
-            $table->text('observacion')->nullable();
             $table->string('ruc')->nullable();
-            $table->int("pap")->nullable();
+            $table->string("pap")->nullable();
+            $table->date("fecha_de_ingreso");
+            $table->date("fecha_de_cese")->nullable();
+            $table->tinyInteger("afecto")->default(1);
+            $table->tinyInteger("especial")->default(0);
+            $table->tinyInteger('active')->default(1);
             $table->timestamps();
         });
     }

@@ -10,9 +10,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use \PDF;
 use App\Models\User;
-use App\Models\Info;
+use App\Models\Historial;
 use App\Models\Work;
-use App\Models\Boleta;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Report;
@@ -65,25 +64,15 @@ class ReportPersonalCronograma implements ShouldQueue
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
-        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
+        $remuneraciones = Remuneracion::where("show", 1)->where("cronograma_id", $cronograma->id)->get();
         $typeDescuento = TypeDescuento::where("key", "43")->get();
         // obtener los descuentos necesarios
         $descuentos = Descuento::whereIn("type_descuento_id", $typeDescuento->pluck(['id']))
             ->where('cronograma_id', $cronograma->id)
             ->get();
         // obtener lista de los trabajadores
-        $boletas = Boleta::with('work', 'categoria')->where('cronograma_id', $cronograma->id)->get();
-
-        foreach ($boletas as $boleta) {
-            // guardar el monto bruto
-            $boleta->monto_bruto = $remuneraciones->where('info_id', $boleta->info_id)->sum('monto');
-            // obtener el total de descuentos
-            $total_dscto = $descuentos->where('info_id', $boleta->info_id)->sum('monto');
-            // guardar el total neto
-            $boleta->neto_a_pagar = $boleta->monto_bruto - $total_dscto;
-        }
-
-        $pages = $condicion ? $boletas->where('neto_a_pagar', '<=', 0)->chunk(48) : $boletas->chunk(48);
+        $historial = Historial::with('work', 'categoria')->where('cronograma_id', $cronograma->id)->get();
+        $pages = $condicion ? $historial->where('total_neto', '<=', 0)->chunk(48) : $historial->chunk(48);
 
         $message = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
         $isCondicion = $condicion ? 'saldo Negativos' : 'todos los saldos';

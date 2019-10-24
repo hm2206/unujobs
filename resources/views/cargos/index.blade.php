@@ -72,10 +72,6 @@
                                         >
                                             <i class="fas fa-pencil-alt"></i>
                                         </btn-cargo>
-
-                                        <a href="{{ route('cargo.config', $cargo->slug()) }}" class="btn btn-sm btn-dark">
-                                            <i class="fas fa-cog"></i>
-                                        </a>
                                     </div>
                                 </th>
                             </tr>

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateInfoCronogramaTable extends Migration
+class CreateTypeAfpIdTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class CreateInfoCronogramaTable extends Migration
      */
     public function up()
     {
-        Schema::create('info_cronograma', function (Blueprint $table) {
+        Schema::create('type_afps', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger("cronograma_id");
-            $table->bigInteger("info_id");
-            $table->string("observacion")->nullable();
-            $table->string("pap")->nullable();
-            $table->string("ext_pptto")->nullable();
+            $table->string('descripcion');
+            $table->bigInteger('type_remuneracion_id')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ class CreateInfoCronogramaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('info_cronograma');
+        Schema::dropIfExists('type_afps');
     }
 }

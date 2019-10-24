@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Notifications\ReportNotification;
 use \PDF;
 use \Carbon\Carbon;
+use App\Models\Historial;
 
 class ReportRenta implements ShouldQueue
 {
@@ -23,18 +24,18 @@ class ReportRenta implements ShouldQueue
 
     public $timeout = 0;
 
-    private $info;
-    private $cronogramas;
+    private $work;
+    private $historialID;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($info, $cronogramas)
+    public function __construct($work, $historialID)
     {
-        $this->info = $info;
-        $this->cronogramas = $cronogramas;
+        $this->work = $work;
+        $this->historialID = $historialID;
     }
 
     /**
@@ -52,14 +53,16 @@ class ReportRenta implements ShouldQueue
             'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
         ];
         
+        // obtener a la persona
+        $work = $this->work;
         // agregar atributos a variables locales
-        $cronogramas = $this->cronogramas;
-        $info = $this->info;
+        $historial = Historial::with('categoria', 'cronograma')->whereIn('id', $this->historialID)->get();
         
         // configuración
-        $work = $info->work;
-        $typeRemuneraciones = TypeRemuneracion::get(['id', 'key', 'descripcion']);
-        $remuneraciones =  Remuneracion::where("info_id", $info->id)->whereIn("cronograma_id", $cronogramas->pluck(['id']))->get();
+        $typeRemuneraciones = TypeRemuneracion::where("report", 1)->get(['id', 'key', 'descripcion']);
+        $remuneraciones =  Remuneracion::whereIn("historial_id", $historial->pluck(['id']))
+            ->whereIn("type_remuneracion_id", $typeRemuneraciones->pluck(['id']))
+            ->get();
 
         // parsear descuentos
         $typeDescuento = TypeDescuento::get(["id", "key", "descripcion", "base"]); 
@@ -68,7 +71,7 @@ class ReportRenta implements ShouldQueue
         $typeDscto2 = TypeDescuento::where("base", 0)->whereNotIn("id", $typeDscto1->pluck(['id']))->take(25)
             ->get(["id", "key", "descripcion", "base"]);
         // obtener descuentos
-        $descuentos =  Descuento::where("info_id", $info->id)->whereIn("cronograma_id", $cronogramas->pluck(['id']))->get();
+        $descuentos =  Descuento::whereIn("historial_id", $historial->pluck(['id']))->get();
 
         // storages
         $pages = [];
@@ -128,12 +131,12 @@ class ReportRenta implements ShouldQueue
             $sub_total = 0;
             $child = 0;
 
-            // configurar detalles x cronograma
-            foreach ($cronogramas as $cro) {
+            // configurar historial
+            foreach ($historial as $history) {
 
-                $mes = $meses[$cro->mes - 1];
-                $year = $cro->año;
-                $categoria = $info->categoria ? $info->categoria->nombre : '';
+                $mes = $meses[$history->cronograma->mes - 1];
+                $year = $history->cronograma->año;
+                $categoria = $history->categoria ? $history->categoria->nombre : '';
 
                 // almacenar el total x cronograma
                 $total = 0;
@@ -146,7 +149,7 @@ class ReportRenta implements ShouldQueue
 
                 // configurar montos
                 foreach ($store['type'] as $type) {
-                    $monto = $store['body']->where("cronograma_id", $cro->id)
+                    $monto = $store['body']->where("historial_id", $history->id)
                         ->where($store['key'], $type->id)
                         ->sum("monto");
 
@@ -163,8 +166,8 @@ class ReportRenta implements ShouldQueue
 
                 // verificar si soporta neto
                 if ($store['neto']) {
-                    $bruto = $remuneraciones->where("cronograma_id", $cro->id)->sum('monto');
-                    $total_dsctos = $descuentos->where("cronograma_id", $cro->id)->where('base', 0)->sum('monto');
+                    $bruto = $remuneraciones->where("historial_id", $history->id)->sum('monto');
+                    $total_dsctos = $descuentos->where("historial_id", $history->id)->where('base', 0)->sum('monto');
                     $tmp_neto = $bruto - $total_dsctos;
                     $neto += $tmp_neto;
                     array_push($montos, $tmp_neto);
@@ -175,7 +178,7 @@ class ReportRenta implements ShouldQueue
                     $local_child = 0;
                     // configurar child
                     foreach ($store['children']['resource'] as $res) {
-                        $tmp_monto = $store['body']->where("cronograma_id", $cro->id)
+                        $tmp_monto = $store['body']->where("historial_id", $history->id)
                             ->where($store['key'], $res->id)
                             ->sum("monto");
     
@@ -257,7 +260,7 @@ class ReportRenta implements ShouldQueue
         $name = "pdf/report_renta_{$work->numero_de_documento}_{$fecha}.pdf";
         
         // configurar pdf
-        $pdf = PDF::loadView("pdf.report_renta", compact('info', 'work', 'pages'));
+        $pdf = PDF::loadView("pdf.report_renta", compact('work', 'pages'));
         $pdf->setPaper('a3', 'landspace');
         $pdf->save(storage_path("app/public") . "/{$name}");
 

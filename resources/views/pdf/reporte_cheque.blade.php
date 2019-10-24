@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
         <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-        <title>Reporte de cheques {{ $cronograma->año }} - {{ $cronograma->mes }}</title>
+        <title>REPORTE CHEQUE {{ $cronograma->año }} - {{ $cronograma->mes }}</title>
     </head>
 
     <style>
@@ -22,7 +22,7 @@
     
     </style>
 
-    @foreach ($works->chunk(23) as $works)
+    @foreach ($historial->chunk(23) as $historial)
 
             <body class="bg-white text-negro">
                         
@@ -66,21 +66,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($works as $work)
+                        @foreach ($historial as $history)
                             <tr>
                                 <td class="py-0 pl-1"><small class="font-10 text-center">{{ $num_work }}</small></td>
-                                <td class="py-0 pl-1"><small class="font-10">{{ $work->nombre_completo }}</small></td>
-                                @foreach ($work->bonificaciones as $bonificacion)
+                                <td class="py-0 pl-1"><small class="font-10">{{ $history->work ? $history->work->nombre_completo : '' }}</small></td>
+                                @foreach ($history->bonificaciones as $bonificacion)
                                     <td class="py-0 text-center pt-0">
                                         <small class="font-10 text-center">
                                             {{ $bonificacion->monto }}
                                         </small>
                                     </td>
                                 @endforeach
-                                <td class="py-0 text-center"><small class="font-10 text-center">{{ $work->total_neto }}</small></td>
+                                <td class="py-0 text-center"><small class="font-10 text-center">{{ $history->total_neto }}</small></td>
                                 <td class="py-0 text-center pt-1">
                                     <small class="font-10 text-center">
-                                        {{ $work->numero_de_documento }}
+                                        {{ $history->work ? $history->work->numero_de_documento : '' }}
                                     </small>
                                 </td>
                             </tr>
@@ -96,7 +96,7 @@
                                 @php
 
                                     $monto = $remuneraciones->where("type_remuneracion_id", $bon->id)
-                                        ->whereIn("work_id", $works->pluck(['id']))
+                                        ->whereIn("historial_id", $historial->pluck(['id']))
                                         ->sum('monto');
 
                                     if (isset($beforeBon[$bon->key])) {
@@ -112,7 +112,7 @@
                             @endforeach
                             <th class="py-1 text-center font-11" colspan="2">
                                 @php
-                                    $beforeTotal += $works->sum('total_neto');
+                                    $beforeTotal += $historial->sum('total_neto');
                                 @endphp
                                 <b class="font-11 text-center">Total S/. {{ $beforeTotal }}</b>
                             </th>

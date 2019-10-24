@@ -50,9 +50,7 @@ class JobRequest extends FormRequest
             "nombres" => "required",
             "numero_de_documento" => "required",
             "fecha_de_nacimiento" => "date",
-            "fecha_de_ingreso" => "required",
             "sexo" => "required",
-            "accidentes" => "required",
             "phone" => "required",
             "direccion" => "required",
             "profesion" => "required"

@@ -16,7 +16,7 @@ use App\Models\Cronograma;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Afp;
-use App\Models\Work;
+use App\Models\Historial;
 use App\Models\Info;
 use App\Notifications\ReportNotification;
 use \PDF;
@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Models\Meta;
 use App\Tools\Money;
+use App\Models\TypeAportacion;
 
 /**
  * Genera pdf de la planilla
@@ -68,24 +69,24 @@ class ReportGeneralMeta implements ShouldQueue
         $cronograma = $this->cronograma;
         $meta = Meta::findOrFail($this->meta_id);
         $money = new Money;
+        $historial = Historial::where('cronograma_id', $cronograma->id);
 
-        $type_remuneraciones = TypeRemuneracion::orderBy("id", "ASC")->where("activo", 1)->get();
-        $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where("activo", 1)->get();
-        $only_descuentos = $type_descuentos->where("base", 0);
-        $aportaciones = $type_descuentos->where("base", 1);
+        $type_remuneraciones = TypeRemuneracion::where("report", 1)->orderBy("orden", "ASC")->where("activo", 1)->get();
+        $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where('base', 0)->where("activo", 1)->get();
+        $type_aportaciones = TypeAportacion::where('activo', 1)->get();
+        // contadores
         $first_descuento = $type_descuentos->first();
         $first_remuneracion = $type_remuneraciones->first();
 
-        // configuracion
-        $remuneraciones = Remuneracion::where("meta_id", $this->meta_id)
+         // obtener remuneraciones de la meta presupuestal actual
+        $remuneraciones = Remuneracion::where("meta_id", $meta->id)
+            ->whereIn("type_remuneracion_id", $type_remuneraciones->pluck(['id']))
             ->where("cronograma_id", $cronograma->id)
             ->get(["monto", "type_remuneracion_id", "meta_id"]);
-
+        // obtener descuentos de la meta presupuestal
         $descuentos = Descuento::where("meta_id", $this->meta_id)
             ->where("cronograma_id", $cronograma->id)
             ->get(["monto", "type_descuento_id", "meta_id"]);
-
-
 
         $espacios = 0;
             
@@ -93,23 +94,23 @@ class ReportGeneralMeta implements ShouldQueue
             $type_rem->monto = $remuneraciones->where("type_remuneracion_id", $type_rem->id)->sum("monto");
         }
     
-        foreach($only_descuentos as $type_desc) {
+        foreach($type_descuentos as $type_desc) {
             $type_desc->monto = $descuentos->where("type_descuento_id", $type_desc->id)->sum("monto");
         }
     
-        foreach($aportaciones as $aport) {
+        foreach($type_aportaciones as $aport) {
             $aport->monto = $descuentos->where("type_descuento_id", $aport->id)->sum("monto");
         }
     
-        $total_remuneracion = $type_remuneraciones->sum('monto');
-        $total_descuento = $only_descuentos->sum("monto");
-        $total_aportacion = $aportaciones->sum("monto");
-        $neto_remuneracion = $type_remuneraciones->sum("monto") - $total_descuento;
+        $total_remuneracion = $historial->sum('total_bruto');
+        $total_descuento = $historial->sum('total_desct');
+        $total_aportacion = $type_aportaciones->sum("monto");
+        $neto_remuneracion = $historial->sum('total_neto');
     
         // contar filas
         $num_remuneraciones = $type_remuneraciones->count();
-        $num_aportaciones = $aportaciones->count();
-        $num_descuentos = $only_descuentos->count() - $num_remuneraciones;
+        $num_aportaciones = $type_aportaciones->count();
+        $num_descuentos = $type_descuentos->count() - $num_remuneraciones;
         $espacios = $num_remuneraciones - ($num_aportaciones + $num_descuentos + 2);
     
         $sub_titulo = "RESUMEN GENERAL DE LA META {$meta->id} DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
@@ -118,8 +119,8 @@ class ReportGeneralMeta implements ShouldQueue
         $pdf = PDF::loadView('pdf.resumen_general_metas', \compact(
             'type_remuneraciones', 'sub_titulo', 'cronograma', 'meses',
             'type_descuentos', 'first_descuento', 'first_remuneracion',
-            'only_descuentos', 'total_descuento', 'neto_remuneracion',
-            'aportaciones', 'total_aportacion', 'espacios', 'titulo',
+            'type_aportaciones', 'total_descuento', 'neto_remuneracion',
+            'total_aportacion', 'espacios', 'titulo',
             "total_remuneracion", "money"
         ));
 

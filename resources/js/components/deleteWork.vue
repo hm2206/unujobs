@@ -42,21 +42,21 @@
                                 </tr>
                             </thead>
                             <tbody v-if="!loader">
-                                <tr v-for="(info, w) in info.data" :key="`info-delete-${w}`">
+                                <tr v-for="(history, w) in historial.data" :key="`history-delete-${w}`">
                                     <td>{{ w + 1 }}</td>
                                     <td>
-                                        <input type="checkbox" name="infos[]" 
+                                        <input type="checkbox" name="historial[]" 
                                             v-on:change="validate"
                                             v-model="check_works"
-                                            :value="info.id"
+                                            :value="history.id"
                                         >
                                     </td>
-                                    <td class="uppercase">{{ info.work ? info.work.nombre_completo : '' }}</td>
-                                    <td>{{ info.work ? info.work.numero_de_documento : '' }}</td>
+                                    <td class="uppercase">{{ history.work ? history.work.nombre_completo : '' }}</td>
+                                    <td>{{ history.work ? history.work.numero_de_documento : '' }}</td>
                                     <td>
                                         <div class="row">
                                             <div class="btn btn-sm btn-block btn-danger">
-                                                <span v-text="info.categoria ? info.categoria.nombre : '' "></span>
+                                                <span v-text="history.categoria ? history.categoria.nombre : '' "></span>
                                             </div>
                                         </div>
                                     </td>
@@ -67,7 +67,7 @@
                                     <small class="spinner-border text-primary"></small>
                                 </td>
                             </tr>
-                            <tr v-if="!loader && info.total == 0">
+                            <tr v-if="!loader && historial.total == 0">
                                 <td colspan="5" class="text-center">
                                     <small>No hay registros disponibles, vuelva a recargar</small>
                                     <div>
@@ -91,7 +91,7 @@
 
                 <div class="card-footer text-center" v-if="!loader">
                     <btn-more :config="['btn-block']" 
-                        :url="info.next_page_url"   
+                        :url="historial.next_page_url"   
                         @get-data="getData"
                     >
                     </btn-more>
@@ -113,7 +113,7 @@ export default {
         return {
             show: false,
             loader: false,
-            info: {
+            historial: {
                 data: []
             },
             count: 0,
@@ -140,10 +140,10 @@ export default {
 
             this.loader = true;
             
-            let api = unujobs("get", `/cronograma/${this.cronograma.id}/infos?query_search=${this.like}`);
+            let api = unujobs("get", `/cronograma/${this.cronograma.id}/historial?query_search=${this.like}`);
             
             await api.then(res => {
-                this.info = res.data;
+                this.historial = res.data;
             }).catch(err => {
 
             });
@@ -155,10 +155,10 @@ export default {
             this.count = checked ? this.count + 1 : this.count - 1;
         },
         getData(e) {
-            this.info.next_page_url = e.next;
-            this.info.total = e.total;
-            this.info.path = e.path;
-            this.info.data = [...this.info.data, ...e.data];
+            this.historial.next_page_url = e.next;
+            this.historial.total = e.total;
+            this.historial.path = e.path;
+            this.historial.data = [...this.historial.data, ...e.data];
         },
         async add(e) {
 
@@ -170,7 +170,7 @@ export default {
 
             const form = new FormData(document.getElementById(`delete-works-${this.count}`));
 
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/destroy-all-info`, form);
+            let api = unujobs("post", `/cronograma/${this.cronograma.id}/destroy-historial`, form);
 
             await api.then(async res => {
 

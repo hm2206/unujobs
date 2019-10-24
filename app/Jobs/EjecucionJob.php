@@ -17,6 +17,7 @@ use App\Tools\Money;
 use App\Models\Report;
 use \PDF;
 use App\Models\User;
+use App\Models\Historial;
 use App\Notifications\ReportNotification;
 
 class EjecucionJob implements ShouldQueue
@@ -57,7 +58,7 @@ class EjecucionJob implements ShouldQueue
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
-        $allRemuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get();
+        $allRemuneraciones = Remuneracion::where("show", 1)->where("cronograma_id", $cronograma->id)->get();
         $typeBonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         $descuentos = [];
 

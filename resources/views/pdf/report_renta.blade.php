@@ -51,7 +51,7 @@
                             <table class="table-boleta table-sm w-100 py-0">
                                 <thead class="py-0"> 
                                     <tr>
-                                        <th class="py-0 font-10 pl-2">{{ $info->id }}</th>
+                                        <th class="py-0 font-10 pl-2">00000</th>
                                         <th class="py-0 font-10">A.F.P:</th>
                                         <th class="py-0 font-10">{{ $work->afp ? $work->afp->nombre: null }}</th>
                                         <th class="py-0 font-10" width="10%">N° CUSSP</th>
@@ -65,10 +65,10 @@
                                     <tr>
                                         <th colspan="2" class="py-0 pl-2 pb-1 font-10">Nombres y Apellidos</th>
                                         <th colspan="3" class="uppercase py-0 pb-1 font-10">{{ $work->profesion }} {{ $work->nombre_completo }}</th>
-                                        <th class="py-0 pl-3 font-10">Condición Laboral</th>
-                                        <th colspan="2" class="uppercase py-0 pb-1 font-10">{{ $info->cargo ? $info->cargo->descripcion : null }} - {{ $info->cargo ? $info->cargo->tag : '' }}</th>
-                                        <th class="py-0 font-10 pl-3">Cargo</th>
-                                        <th colspan="2" class="uppercase py-0 pb-1 font-10">{{ $info->perfil }}</th>
+                                        <th class="py-0 pl-3 font-10"></th>
+                                        <th colspan="2" class="uppercase py-0 pb-1 font-10"></th>
+                                        <th class="py-0 font-10 pl-3"></th>
+                                        <th colspan="2" class="uppercase py-0 pb-1 font-10"></th>
                                     </tr>
                                 </thead>
                             </table>

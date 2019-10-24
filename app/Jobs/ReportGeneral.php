@@ -24,6 +24,8 @@ use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
 use App\Tools\Money;
+use App\Models\TypeAportacion;
+use App\Models\Historial;
 
 /**
  * Genera pdf de la planilla
@@ -63,16 +65,20 @@ class ReportGeneral implements ShouldQueue
 
         $cronograma = $this->cronograma;
         $money = new Money;
+        $historial = Historial::where('cronograma_id', $cronograma->id);
 
-        $type_remuneraciones = TypeRemuneracion::orderBy("id", "ASC")->where("activo", 1)->get();
-        $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where("activo", 1)->get();
-        $only_descuentos = $type_descuentos->where("base", 0);
-        $aportaciones = $type_descuentos->where("base", 1);
+        $type_remuneraciones = TypeRemuneracion::where("report", 1)->orderBy("orden", "ASC")->where("activo", 1)->get();
+        $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where('base', 0)->where("activo", 1)->get();
+        $type_aportaciones = TypeAportacion::where('activo', 1)->get();
+        // contadores
         $first_descuento = $type_descuentos->first();
         $first_remuneracion = $type_remuneraciones->first();
 
-        // configuracion
-        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)->get(["monto", "type_remuneracion_id"]);
+        // obtener remuneraciones
+        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
+            ->whereIn("type_remuneracion_id", $type_remuneraciones->pluck(['id']))
+            ->get(["monto", "type_remuneracion_id"]);
+        // obtener descuentos
         $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get(["monto", "type_descuento_id"]);
         $espacios = 0;
 
@@ -80,23 +86,23 @@ class ReportGeneral implements ShouldQueue
             $type_rem->monto = $remuneraciones->where("type_remuneracion_id", $type_rem->id)->sum("monto");
         }
 
-        foreach($only_descuentos as $type_desc) {
+        foreach($type_descuentos as $type_desc) {
             $type_desc->monto = $descuentos->where("type_descuento_id", $type_desc->id)->sum("monto");
         }
 
-        foreach($aportaciones as $aport) {
+        foreach($type_aportaciones as $aport) {
             $aport->monto = $descuentos->where("type_descuento_id", $aport->id)->sum("monto");
         }
 
-        $total_remuneracion = $type_remuneraciones->sum("monto");
-        $total_descuento = $only_descuentos->sum("monto");
-        $total_aportacion = $aportaciones->sum("monto");
-        $neto_remuneracion = $type_remuneraciones->sum("monto") - $total_descuento;
+        $total_remuneracion = $historial->sum('total_bruto');
+        $total_descuento = $historial->sum('total_desct');
+        $total_aportacion = $type_aportaciones->sum("monto");
+        $neto_remuneracion = $historial->sum('total_neto');
 
         // contar filas
         $num_remuneraciones = $type_remuneraciones->count();
-        $num_aportaciones = $aportaciones->count();
-        $num_descuentos = $only_descuentos->count() - $num_remuneraciones;
+        $num_aportaciones = $type_aportaciones->count();
+        $num_descuentos = $type_descuentos->count() - $num_remuneraciones;
         $espacios = $num_remuneraciones - ($num_aportaciones + $num_descuentos + 2);
 
         $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
@@ -105,8 +111,8 @@ class ReportGeneral implements ShouldQueue
         $pdf = PDF::loadView('pdf.resumen_general_metas', \compact(
             'type_remuneraciones', 'sub_titulo', 'cronograma', 'meses',
             'type_descuentos', 'first_descuento', 'first_remuneracion',
-            'only_descuentos', 'total_descuento', 'neto_remuneracion',
-            'aportaciones', 'total_aportacion', 'espacios', 'titulo',
+            'type_aportaciones', 'total_descuento', 'neto_remuneracion',
+            'total_aportacion', 'espacios', 'titulo',
             "total_remuneracion", 'money'
         ));
 

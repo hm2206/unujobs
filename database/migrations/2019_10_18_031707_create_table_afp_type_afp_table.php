@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateHistoryDescuentoTable extends Migration
+class CreateTableAfpTypeAfpTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateHistoryDescuentoTable extends Migration
      */
     public function up()
     {
-        Schema::create('history_descuento', function (Blueprint $table) {
+        Schema::create('afp_type_afp', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger("history_id");
-            $table->bigInteger("descuento_id");
+            $table->bigInteger('afp_id');
+            $table->bigInteger('type_afp_id');
+            $table->double('porcentaje');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateHistoryDescuentoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('history_descuento');
+        Schema::dropIfExists('afp_type_afp');
     }
 }

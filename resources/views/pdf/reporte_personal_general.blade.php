@@ -39,7 +39,7 @@
                 </table>
 
                 <div class="ml-1 font-11 text-negro text-center mt-2 uppercase">
-                    <h5><b>RELACIÓN GENERAL TRABAJADORES MES {{ $meses[$mes - 1] }} - {{ $year }}</b></h5>
+                    <h6><b>RELACIÓN GENERAL TRABAJADORES MES {{ $meses[$mes - 1] }} - {{ $year }}</b></h6>
                 </div>
 
                 <h5 class="font-11">
@@ -51,8 +51,8 @@
                 <table class="table mt-2 table-bordered">
                     <thead>
                         <tr>
-                            <th class="py-0 text-center font-10"><b>N°</b></th>
-                            <th class="py-0 text-center font-10" width="35%"><b>Apellidos y Nombres</b></th>
+                            <th class="py-0 text-center font-10" width="5%"><b>N°</b></th>
+                            <th class="py-0 text-center font-10"><b>Apellidos y Nombres</b></th>
                             <th class="py-0 font-10 text-center" width="7%"><b>Condición Lab</b></th>
                             <th class="py-0 font-10 text-center pl-1 pr-1" width="7%"><b>Base Bruto</b></th>
                             <th class="py-0 font-10 text-center" width="7%"><b>X43</b></th>
@@ -74,7 +74,7 @@
                             @endphp
                             <tr>
                                 <td class="py-0 font-10 text-left pl-1">{{ $iter }}</td>
-                                <td class="py-0 font-10 text-left pl-1">{{ $work->nombre_completo }}</td>
+                                <td class="py-0 font-10 text-left pl-1">{{ str_limit($work->nombre_completo, 31) }}</td>
                                 <td class="py-0 font-10 text-center pl-1 pr-1">{{ str_limit($cargo->descripcion, 20) }}</td>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">

@@ -8,6 +8,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('cargo/{id}', 'ApiRest@cargoShow');
     Route::get('meta', 'ApiRest@meta');
     
+
+    Route::resource('banco', 'BancoController');
     
     //Recursos para generar boletas
     Route::get("/boleta/{id}", "JobController@boleta");
@@ -27,9 +29,9 @@ Route::group(["prefix" => 'v1'], function() {
     // cambiar estado de la planilla
     Route::post("/cronograma/{id}/estado", "CronogramaController@estado");
     // obtener informacion de los infos
-    Route::get('/cronograma/{id}/infos', 'CronogramaController@infos');
+    Route::get('/cronograma/{id}/historial', 'CronogramaController@historial');
     // eliminar informacion de los infos
-    Route::post('/cronograma/{id}/destroy-all-info', 'CronogramaController@destroyAllInfo');
+    Route::post('/cronograma/{id}/destroy-historial', 'CronogramaController@destroyHistorial');
     
 
     // registrar un nuevo cargo
@@ -76,9 +78,9 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/export/alta-baja/{year}/{mes}", "ExportController@altaBaja");
     Route::post("/export/resumen/{year}/{mes}", "ExportController@resumen");
 
-    // Remuneracion de los trabajadores y otros
+    // Works
     Route::resource("work", 'WorkController');
-    Route::get('listar/work', 'WorkController@list');
+    Route::get("work/{id}/historial", 'WorkController@historial');
     Route::post('work/{id}/report', 'WorkController@report');
 
     Route::get('work/{id}/obligacion', 'JobController@obligacion');
@@ -93,13 +95,15 @@ Route::group(["prefix" => 'v1'], function() {
 
     // informacion de los trabajadores
     Route::resource("info", "InfoController")->except(["create", "edit"]);
-    Route::get("info/{id}/remuneracion", "InfoController@remuneracion");
-    Route::put("info/{id}/remuneracion", "InfoController@remuneracionUpdate");
-    Route::get("info/{id}/descuento", "InfoController@descuento");
-    Route::put("info/{id}/descuento", "InfoController@descuentoUpdate");
-    Route::get("info/{id}/observacion", "InfoController@observacion");
-    Route::get("info/{id}/obligacion", "InfoController@obligacion");
+    Route::get('info/{id}/historial', 'InfoController@historial');
+    Route::post('info/{id}/type_aportacion', 'InfoController@type_aportacion');
+    Route::delete('info/{id}/delete_aportacion', 'InfoController@delete_aportacion');
 
+    // tipo de aportacion
+    Route::resource('type_aportacion', 'TypeAportacionController');
+
+    // aportaciones
+    Route::resource('aportacion', 'AportacionController');
 
     // afps
     Route::get('afp', 'AfpController@index');
@@ -157,5 +161,26 @@ Route::group(["prefix" => 'v1'], function() {
     Route::resource("file", "FileController");
     Route::get("file/judicial/{id}", "FileController@judicial");
     Route::get("file/enc/{year}/{mes}", "FileController@txtEnc");
+
+
+    // api para obtener el historial
+    Route::resource('historial', 'HistorialController')->except(['create', 'edit']);
+    Route::get('historial/{id}/remuneracion', 'HistorialController@remuneracion');
+    Route::get('historial/{id}/descuento', 'HistorialController@descuento');
+    Route::get('historial/{id}/obligacion', 'HistorialController@obligacion');
+    Route::get('historial/{id}/educacional', 'HistorialController@educacional');
+
+
+    // api para procesar las remuneraciones
+    Route::put('/type_remuneracion/{history}/all', 'RemuneracionController@updateAll');
+    // api para procesar los descuentos
+    Route::put('/type_descuento/{history}/all', 'TypeDescuentoController@updateAll');
+
+    // api de typeEducacional
+    Route::resource('/type_educacional', 'TypeEducacionalController')->except(['create', 'edit']);
+
+    // api de  educacional
+    Route::resource('/educacional', 'EducacionalController')->except(['create', 'edit']);
+    Route::put('/educacional/{history}/historial', 'EducacionalController@historial');
 
 });

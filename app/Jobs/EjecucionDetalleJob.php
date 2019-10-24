@@ -18,7 +18,7 @@ use App\Tools\Money;
 use App\Models\Report;
 use App\Models\Cargo;
 use \PDF;
-use App\Models\Info;
+use App\Models\Historial;
 use App\Models\User;
 use App\Notifications\ReportNotification;
 
@@ -65,20 +65,17 @@ class EjecucionDetalleJob implements ShouldQueue
         $typeBonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         $descuentos = [];
 
-        $cuentas = Info::whereHas('cronogramas', function($c) use($cronograma) {
-                            $c->where("cronogramas.id", $cronograma->id);
-                        })->whereHas('work', function($w) {
-                            $w->where('works.numero_de_cuenta', "<>", null);
-                        })->get();
+        $cuentas = Historial::where("cronograma_id", $cronograma->id)
+            ->where("numero_de_cuenta", "<>", "")
+            ->orWhere("numero_de_cuenta", "<>", null)
+            ->get();
 
-        $cheques = Info::whereHas('cronogramas', function($c) use($cronograma) {
-                            $c->where("cronogramas.id", $cronograma->id);
-                        })->whereHas('work', function($w) {
-                            $w->where('works.numero_de_cuenta', null);
-                        })->get();
+        $cheques = Historial::where('cronograma_id', $cronograma->id)
+            ->whereIn("numero_de_cuenta", [ "", null ])
+            ->get();
 
 
-        $infos = [
+        $historial = [
             "cuentas" => $cuentas,
             "cheques" => $cheques
         ];
@@ -103,7 +100,7 @@ class EjecucionDetalleJob implements ShouldQueue
         // recorrer los montos por cargo
         foreach ($cargos as $cargo) {
                 
-            foreach ($infos as $name => $config) {
+            foreach ($historial as $name => $config) {
 
                 $payload = [];
                 $total = 0;
@@ -112,13 +109,13 @@ class EjecucionDetalleJob implements ShouldQueue
                 foreach ($metas as $meta) {
 
                     $monto = $remuneraciones->where("cargo_id", $cargo->id)
-                        ->whereIn("info_id", $config->pluck(['id']))
+                        ->whereIn("historial_id", $config->pluck(['id']))
                         ->where("meta_id", $meta->id)
                         ->sum("monto");
     
                     if ($this->neto) {
                         $monto = $monto - $descuentos->where("base", 0)
-                            ->whereIn("info_id", $config->pluck(['id']))
+                            ->whereIn("historial_id", $config->pluck(['id']))
                             ->where("cargo_id", $cargo->id)
                             ->where("meta_id", $meta->id)
                             ->sum("monto");
@@ -139,7 +136,7 @@ class EjecucionDetalleJob implements ShouldQueue
         // recorrer las bonificaciones
         foreach ($typeBonificaciones as $bonificacion) {
             
-            foreach ($infos as $name => $config) {
+            foreach ($historial as $name => $config) {
 
                 $payload = [];
                 $total = 0;
@@ -148,7 +145,7 @@ class EjecucionDetalleJob implements ShouldQueue
                 foreach ($metas as $meta) {
 
                     $monto = $bonificaciones->where("meta_id", $meta->id)
-                        ->whereIn("info_id", $config->pluck(['id']))
+                        ->whereIn("historial_id", $config->pluck(['id']))
                         ->sum("monto");
                         
                     $total += $monto;

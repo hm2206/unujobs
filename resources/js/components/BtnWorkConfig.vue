@@ -29,9 +29,7 @@
                         :param="param"
                         :send="send"
                         :infos="infos"
-                        @get-cronograma="getCronograma"
                         @ready="setLoader"
-                        :sindicatos="sindicatos"
                     >
                     </component>
 
@@ -73,15 +71,15 @@ export default {
         'work-config': ConfigWork,
         'work-config-mas': ConfigWorkMas
     },
-    props: ["theme", 'param', "nombre_completo", "sindicatos"],
+    props: ["theme", 'param', "nombre_completo"],
     data() {
         return {
             show: false,
             loader: false,
             current: 'work-config',
             items: [
-                {id: 1, text: "Configuración", active: true, component: 'work-config', btn: true},
-                {id: 2, text: "Más...", active: false, component: 'work-config-mas', btn: false},
+                {id: 1, text: "Configurar Afectaciones", active: true, component: 'work-config', btn: true},
+                {id: 2, text: "Configurar Aportaciones", active: false, component: 'work-config-mas', btn: false},
             ],
             infos: [],
             dias: 30,
@@ -155,6 +153,7 @@ export default {
         },
         setLoader(e) {
             this.send = false;
+            console.log('loader');
         },
         getCronograma(e) {
 

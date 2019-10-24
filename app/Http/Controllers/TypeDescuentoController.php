@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TypeDescuento;
+use App\Models\Historial;
+use App\Models\Descuento;
+use App\Models\Remuneracion;
 
 class TypeDescuentoController extends Controller
 {
@@ -17,69 +20,61 @@ class TypeDescuentoController extends Controller
         return TypeDescuento::where('activo', 1)->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    
+    public function updateAll(Request $request, $id)
     {
-        //
+        $historial = Historial::findOrFail($id);
+        // obtenemos los nuevos montos de los descuentos
+        $descuentos = \json_decode($request->input('descuentos'));
+        // obtenemos los descuentos de la base de datos solo las editables
+        $db_descuentos = Descuento::where('historial_id', $historial->id)
+            ->where('edit', 1)->get();
+
+        try {
+            
+            foreach ($descuentos as $descuento) {
+                $current_descuento = $db_descuentos->find($descuento->id);
+                if ($current_descuento) {
+                    $monto = $descuento->monto ? $descuento->monto : 0;
+                    $current_descuento->update([ "monto" => round($monto, 2) ]);
+                }
+            }
+
+            // obtener el total bruto
+            $total_bruto = Remuneracion::where('historial_id', $historial->id)
+                ->where('show', 1)
+                ->sum('monto');
+            // obtener el total de descuento
+            $total_desct = Descuento::where('historial_id', $historial->id)
+                ->where('base', 0)
+                ->sum('monto');
+            // guardar el total neto
+            $total_neto = $total_bruto - $total_desct;
+            // actualizar estado del historial
+            $historial->update([
+                "total_neto" => round($total_neto, 2),
+                "total_desct" => round($total_desct, 2)
+            ]);
+
+            return [
+                "status" => true,
+                "message" => "Las remuneraciones se registrarón correctamente!",
+                "total_bruto" => round($total_bruto, 2),
+                "total_desct"  => round($total_desct, 2),
+                "total_neto" => round($total_neto, 2)
+            ];
+
+        } catch (\Throwable $th) {
+
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Algo salió mal!"
+            ];
+
+        }
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

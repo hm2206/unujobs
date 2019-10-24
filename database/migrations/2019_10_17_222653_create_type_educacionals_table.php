@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCargoTypeRemuneracionTable extends Migration
+class CreateTypeEducacionalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateCargoTypeRemuneracionTable extends Migration
      */
     public function up()
     {
-        Schema::create('cargo_type_remuneracion', function (Blueprint $table) {
+        Schema::create('type_educacionals', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('cargo_id');
-            $table->integer('type_remuneracion_id');
-            $table->text("observacion")->nullable();
+            $table->string('key')->unique();
+            $table->string('descripcion');
+            $table->bigInteger('type_descuento_id');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateCargoTypeRemuneracionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cargo_type_remuneracion');
+        Schema::dropIfExists('type_educacionals');
     }
 }

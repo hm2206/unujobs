@@ -11,6 +11,21 @@
         {{ $titulo }}
     </title>
 </head>
+
+<style>
+
+    html {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    body {
+        padding: 0px;
+        margin: 2em 1.5em;
+    }
+
+</style>
+
 <body class="bg-white text-negro h-100">
 
     <div class="text-center"></div>
@@ -97,7 +112,7 @@
                         </tbody>
                     </table>
                 </th>
-                @foreach ($only_descuentos->chunk($type_remuneraciones->count() + 1) as $count => $body)
+                @foreach ($type_descuentos->chunk($type_remuneraciones->count() + 1) as $count => $body)
                     <th width="20%">
                         <table width="100%">
                             <thead>
@@ -111,7 +126,7 @@
                                 @endforeach
                             </thead>
                             <tbody>
-                                @if ($only_descuentos->chunk($type_remuneraciones->count())->count() == $count + 1)
+                                @if ($type_descuentos->chunk($type_remuneraciones->count())->count() == $count + 1)
                                     <tr>
                                         <th width="80%" class="py-0 font-13">
                                             <div class="bbt-1">TOTAL DESCUENTOS</div>
@@ -132,7 +147,7 @@
                                             </div>
                                         </th>
                                     </tr>
-                                    @foreach ($aportaciones as $aport)
+                                    @foreach ($type_aportaciones as $aport)
                                         <tr>
                                             <th width="80%" class="py-0 font-13">
                                                 <b>{{ $aport->key }}.-{{ $aport->descripcion }}</b>
@@ -150,7 +165,7 @@
                                             <div class="bbt-1"><b>{{ $money->parseTo($total_aportacion) }}</b></div>
                                         </th>
                                     </tr>
-                                    @for ($i = 0; $i <= $espacios + 2 ;$i++)
+                                    @for ($i = 0; $i <= $espacios + 1 ;$i++)
                                         <tr>
                                             <td width="80%" class="py-0 font-11">&nbsp;</td>
                                             <td width="20%" class="py-0 font-11">&nbsp;</td>

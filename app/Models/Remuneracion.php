@@ -22,10 +22,9 @@ class Remuneracion extends Model
      * @var array
      */
     protected $fillable = [
-        "work_id", "info_id", "categoria_id", "dias", "cronograma_id",
-        "observaciones", "sede_id", "mes", "año", "monto", "adicional",
-        "horas", "type_remuneracion_id", 'cargo_id', 'base', 'planilla_id',
-        "meta_id"
+        "work_id", "info_id", "historial_id", "categoria_id", "dias", "cronograma_id",
+        "sede_id", "mes", "año", "monto", "adicional", "type_remuneracion_id", 
+        'cargo_id', 'base', 'planilla_id', "meta_id", "show", "edit"
     ];
     
 

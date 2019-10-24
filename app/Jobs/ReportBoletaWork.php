@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use App\Notifications\ReportNotification;
 use \PDF;
-use App\Models\Work;
+use App\Models\Historial;
 use App\Models\Cronograma;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
@@ -19,6 +19,8 @@ use App\Models\Descuento;
 use App\Models\User;
 use App\Models\Report;
 use \Carbon\Carbon;
+use App\Models\Work;
+use App\Collections\BoletaCollection;
 use \DB;
 
 class ReportBoletaWork implements ShouldQueue
@@ -26,8 +28,8 @@ class ReportBoletaWork implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
+    private $inHistorial = [];
     private $work;
-    private $whereIn;
     public $timeout = 0;
 
     /**
@@ -35,10 +37,10 @@ class ReportBoletaWork implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($work, $whereIn)
+    public function __construct($inHistorial = [], Work $work)
     {
+        $this->inHistorial = $inHistorial;
         $this->work = $work;
-        $this->whereIn = $whereIn;
     }
 
     /**
@@ -48,55 +50,23 @@ class ReportBoletaWork implements ShouldQueue
      */
     public function handle()
     {
+        $historial = Historial::whereIn("id", $this->inHistorial)->get();
         $work = $this->work;
-        $cronogramas = Cronograma::whereIn("id", $this->whereIn)->get();
-        $infos = $work->infos->whereIn("planilla_id", $cronogramas->pluck("planilla_id"));
-        $count = 1;
-
-        foreach ($infos as $info) {
-            
-            $info->cronogramas = $cronogramas;
-            
-            foreach ($info->cronogramas as $cro) {
-                $tmp_remuneraciones = Remuneracion::where("work_id", $work->id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("cronograma_id", $cro->id)
-                    ->get();
-    
-                $tmp_descuentos = Descuento::with('typeDescuento')
-                    ->where('work_id', $work->id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("cronograma_id", $cro->id)
-                    ->get();
-
-                $cro->tmp_remuneraciones = $tmp_remuneraciones; 
-                $cro->tmp_descuentos = $tmp_descuentos->where('base', 0);
-
-                
-                $cro->total_descuento = $cro->tmp_descuentos->where("base", 0)->sum("monto");
-                $cro->total_remuneracion = $cro->tmp_remuneraciones->sum("monto");
-    
-    
-                //base imponible
-                $cro->base = $cro->tmp_remuneraciones->where('base', 0)->sum('monto');
-                
-                //aportes
-                $cro->aportaciones = $tmp_descuentos->where("base", 1);
-                
-                //total neto
-                $cro->neto = $cro->total_remuneracion - $cro->total_descuento;
-                
-            }
-        }
-
-        $pdf = PDF::loadView("pdf.boleta", compact('work', 'infos', 'count'));
+        // obtener remuneraciones
+        $remuneraciones = Remuneracion::whereIn("historial_id", $historial->pluck(['id']))
+            ->where('show', 1)
+            ->get();
+        // obtener descuentos y aportaciones
+        $descuentos = Descuento::whereIn("historial_id", $historial->pluck(['id']))->get();
+        // generar configuracion para las boleta
+        $boleta = BoletaCollection::init();
+        $boleta->setRemuneraciones($remuneraciones);
+        $boleta->setDescuentos($descuentos->where('base', 0));
+        $boleta->setAportaciones($descuentos->where('base', 1));
+        $boleta->get($historial);
+        $pdf = $boleta->generate();
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $work_name = strtoupper($work->numero_de_documento);
-        $nombre = "boletas_" . date('Y-m-d') . "_{$work_name}.pdf";
+        $nombre = "boletas_" . $work->nombre_completo . date('Y-m-d') . ".pdf";
 
         $pdf->save(storage_path("app/public/pdf/{$nombre}"));
 

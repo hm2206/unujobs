@@ -9,7 +9,7 @@
             <template slot="header">
                 Situación laboral
                 <i class="fas fa-arrow-right text-danger"></i> 
-                <span v-text="fullname" class="uppercase"></span>
+                <span v-text="history.work ? history.work.nombre_completo : ''" class="uppercase"></span>
             </template>
             <template slot="content">
                 <div class="card-body p-relative scroll-y">
@@ -18,43 +18,42 @@
                         <div class="row align-items-center">
 
                             <div class="col-md-2">
-                                <input type="text" :disabled="true" v-model="categoria.nombre" class="form-control">
+                                <div class="form-control">
+                                    {{ history.categoria ? history.categoria.nombre : '' }}
+                                </div>
                             </div>
 
                             <div class="col-md-2">
                                 <input type="number" 
                                     :disabled="loader" name="mes" 
-                                    v-model="mes" min="1" max="12" 
+                                    v-model="tmp_cronograma.mes" min="1" max="12" 
                                     class="form-control"
-                                    v-on:change="cambio"
                                 >
                             </div>
 
                             <div class="col-md-2">
                                 <input type="number" 
                                     :disabled="loader" 
-                                    v-model="year" name="year" 
-                                    min="1999" 
+                                    v-model="tmp_cronograma.año" name="year" 
+                                    min="2019" 
                                     class="form-control"
-                                    v-on:change="cambio"
                                 >
                             </div>
 
                             <div class="col-md-2">
                                 Adicional
                                 <input type="checkbox" 
-                                    v-model="adicional"
-                                    v-on:change="cambio"
-                                    :disabled="true"
+                                    v-model="tmp_cronograma.adicional"
+                                    :disabled="loader"
                                 >
                             </div>
 
                             <div class="col-md-2">
-                                <input type="number" name="dias" v-model="dias" disabled class="form-control">
+                                <input type="number" name="dias" disabled class="form-control">
                             </div>
                             
-                            <div class="col-md-2" v-if="numero">
-                                <input type="text" class="form-control" v-model="numero" :disabled="true">
+                            <div class="col-md-2" v-if="false">
+                                <input type="text" class="form-control" :disabled="true">
                             </div>
 
                         </div>
@@ -72,21 +71,12 @@
                             </a>
                         </li>
                     </ul>
-
-                    <component :is="current" v-if="!loader" 
-                        :categoria="categoria_id"
+                    
+                    <component :is="current" v-if="!loader"
                         :param="job_current"
-                        :mes="mes"
-                        :year="year"
-                        :adicional="adicional"
-                        :numero="numero"
                         :send="send"
-                        :info="info"
-                        :work="work"
-                        :objetos="objetos"
-                        :tmp_cronograma="tmp_cronograma"
-                        @get-cronograma="getCronograma"
-                        @get-numeros="getNumeros"
+                        :history="history"
+                        :cronograma="tmp_cronograma"
                         @ready="setLoader"
                     >
                     </component>
@@ -103,7 +93,7 @@
                     <div class="row justify-content-between">
                         <div class="col-md-6">
                             <buscar-info theme="btn-info" :leave="clear" @find="getFind"
-                                :planilla_id="planilla_id"
+                                :planilla_id="tmp_cronograma.planilla_id"
                             >
                                 <i class="fas fa-search"></i> Buscar
                             </buscar-info>
@@ -170,8 +160,8 @@ export default {
         'buscar-info': BuscarInfo
     },
     props: [
-        "theme", 'param', "tmp_info", "nombre_completo", 
-        "paginate", 'planilla_id', 'tmp_adicional', 'tmp_numero', "cronograma"
+        "theme", 'param', "historial", "nombre_completo", 
+        "paginate", "cronograma"
     ],
     data() {
         return {
@@ -180,31 +170,21 @@ export default {
             current: 'work-general',
             job_current: '',
             fullname: '',
-            isCategoria: false,
-            categoria: {},
-            work: {},
-            objetos: {
-                bancos: [],
-                afps: []
-            },
             block: false,
             items: [
                 {id: 1, text: "Datos Generales", active: true, component: 'work-general', btn: true},
                 {id: 2, text: "Afectación Presupuestal", active: false, component: 'work-afectacion', btn: true},
                 {id: 3, text: "Remuneraciones", active: false, component: 'work-remuneracion', btn: true},
                 {id: 4, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
+                {id: 6, text: "Tasa Educacionales", active: false,  component: 'work-detalle', btn: true},
                 {id: 5, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
-                {id: 6, text: "Más...", active: false,  component: 'work-detalle', btn: false}
             ],
-            info: {},
-            dias: 30,
-            year: '',
-            mes: '',
-            numeros: [],
-            numero: 1,
-            categoria_id: '',
-            adicional: false,
-            tmp_cronograma: {},
+            history: {},
+            tmp_cronograma: {
+                dias: 30,
+                numero: 1,
+                adicional: 0
+            },
             send: false,
             btn: true,
             search: false,
@@ -213,26 +193,17 @@ export default {
     },
     mounted() {
         this.tmp_cronograma = this.cronograma;
-        this.info = this.tmp_info; 
-        this.categoria = this.info.categoria;  
+        this.history = this.historial; 
         this.job_current = this.param;
         this.fullname = this.nombre_completo;
-        this.adicional = this.tmp_adicional == 1 ? true : false;
-        this.isCategoria = this.categoria ? true : false;
-        this.numero = this.tmp_numero;
-        this.mes = this.cronograma.mes;
-        this.year = this.cronograma.año;
-        this.dias = this.cronograma.dias;
     },
     watch: {
         show() {
-            if (this.categoria) {
-                this.categoria_id = this.categoria;
-                this.job_current = this.param;
-                this.getCargos();
-            }
+            this.job_current = this.history.id;
+            this.history = this.historial;
         },
     },
+
     methods: {
         async seleccionar(e, item) {
             e.preventDefault();
@@ -254,50 +225,19 @@ export default {
         async cambio(e) {
 
             this.loader = true;
-            let api = unujobs("get", 
-                `/info/${this.job_current}?mes=${this.mes}&year=${this.year}&adicional=${this.adicional}&numero=${this.numero}`)
-
-            await api.then(res => {
-                let { cronograma } = res.data;
-                this.tmp_cronograma = cronograma;
-            }).catch(err => {
-                console.log(err);
-            })
-
             this.loader = false;
 
         },
-        async getCargos() {
-
+        async getHistory() {
             this.loader = true;
-            let api = unujobs("get", `/work/${this.job_current}/info`);
-
-            await api.then(res => {
-                let { info , work, bancos, afps } = res.data;
-                this.info = info;
-                this.work = work;
-                this.objetos.bancos = bancos;
-                this.objetos.afps = afps;
-                this.fullname = work.nombre_completo;
-
-                if (!this.isCategoria) {
-                        
-                    this.categoria_id = info.categoria_id;
-                    this.info = info;
-                    this.categoria = info.categoria;
-
-                }else if(this.categoria_id == info.categoria_id) {
-                    this.info = info;
-                    this.categoria = info.categoria;
-                }
-
+            let api = unujobs('get', `/historial/${this.job_current}`);
+            api.then(res => {
+                this.history = res.data;
             }).catch(err => {
-                console.log("algo salió mal  al obtener la informacion del trabajador");
+                notify({icon: 'error', text: 'Algo salió mal'});
             });
-
-            this.loader = false;
             this.block = false;
-
+            this.loader = false;
         },
         btnPress(e) {
             this.send = true;
@@ -305,48 +245,34 @@ export default {
         setLoader(e) {
             this.send = false;
         },
-        getCronograma(e) {
-
-            this.tmp_cronograma = e;
-            this.dias = e.dias;
-            this.block = false;
-
-        },
-        getNumeros(e) {
-            this.numeros = e;
-        },
         async getFind(e) {
-            this.isCategoria = false;
             this.block = true;
             this.job_current = e;
             this.search = true;
-            await this.getCargos();
+            // await this.getCargos();
             this.block = true;
         },
         limpiarBusqueda(e) {
             this.block = true;
             this.search = false;
             this.clear = true;
-            this.categoria_id = this.categoria;
             this.job_current = this.param;
-            this.getCargos();
+            // this.getCargos();
         },
         next(e) {
             if (this.paginate.length > this.findCurrent + 1) {
-                this.isCategoria = false;   
                 this.block = true;
                 this.job_current = this.paginate[this.findCurrent + 1];
-                this.getCargos();
+                this.getHistory();
             }else {
                 alert("No hay mas trabajadores");
             }
         },
         prev(e) {
-            if (this.findCurrent >= 1) {
-                this.isCategoria = false;   
+            if (this.findCurrent >= 1) { 
                 this.block = true;
                 this.job_current = this.paginate[this.findCurrent - 1];
-                this.getCargos();
+                this.getHistory();
             }else {
                 alert("No hay mas trabajadores");
             }

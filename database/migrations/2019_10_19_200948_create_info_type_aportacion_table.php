@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWorkTypeDescuentoTable extends Migration
+class CreateInfoTypeAportacionTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateWorkTypeDescuentoTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_type_descuento', function (Blueprint $table) {
-            $table->bigInteger("work_id");
-            $table->bigInteger("type_descuento_id");
+        Schema::create('info_type_aportacion', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->bigInteger('info_id');
+            $table->bigInteger('type_aportacion_id');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateWorkTypeDescuentoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('work_type_descuento');
+        Schema::dropIfExists('info_type_aportacion');
     }
 }

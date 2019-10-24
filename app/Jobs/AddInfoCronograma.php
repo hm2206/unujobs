@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Models\Info;
-use App\Models\Boleta;
+use App\Models\Historial;
 
 class AddInfoCronograma implements ShouldQueue
 {
@@ -54,30 +54,40 @@ class AddInfoCronograma implements ShouldQueue
         // canfigurar infos para realizar la guardar en la base de datos
         foreach ($this->infos as $info) {
             array_push($payload, [
-                "cronograma_id" => $this->cronograma->id,
+                "work_id" => $info->work_id,
                 "info_id" => $info->id,
-                "observacion" => $info->observacion,
-                "meta_id" => $info->meta_id,
-                "pap" => $info->pap,
-                "ext_pptto" => $info->cargo->ext_pptto,
-                "afp_id" => $info->work->afp_id,
-                "perfil" => $info->perfil,
                 "planilla_id" => $info->planilla_id,
                 "cargo_id" => $info->cargo_id,
                 "categoria_id" => $info->categoria_id,
-                "numero_de_cussp" => $info->work->numero_de_cussp,
-                "numero_de_essalud" => $info->work->numero_de_essalud,
                 "meta_id" => $info->meta_id,
-                "work_id" => $info->work_id,
+                "cronograma_id" => $this->cronograma->id,
+                "fuente_id" => $info->fuente_id,
+                "sindicato_id" => $info->sindicato_id,
+                "afp_id" => $info->afp_id,
+                "type_afp_id" => $info->type_afp_id,
+                "numero_de_cussp" => $info->numero_de_cussp,
+                "fecha_de_afiliacion" => $info->fecha_de_afiliacion,
+                "banco_id" => $info->banco_id,
+                "numero_de_cuenta" => $info->numero_de_cuenta,
+                "numero_de_essalud" => $info->numero_de_essalud,
                 "plaza" => $info->plaza,
+                "perfil" => $info->perfil,
                 "escuela" => $info->escuela,
-                "sindicato_id" => $info->sindicato_id
+                "pap" => $info->pap,
+                "ext_pptto" => $info->cargo->ext_pptto,
+                "observacion" => "---",
+                "base" => 0,
+                "base_enc" => 0,
+                "total_bruto" => 0,
+                "total_neto" => 0,
+                "total_desct" => 0,
+                "afecto" => $info->afecto,
             ]);
         }
 
 
         foreach (array_chunk($payload, 1000) as $body) {
-            Boleta::insert($body);
+            Historial::insert($body);
         }
 
     }

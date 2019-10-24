@@ -268,12 +268,12 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        if ($cronograma->estado > 0) {
+        /*if ($cronograma->estado > 0) {
             return [
                 "status" => false,
                 "message" => "La planilla aún está en curso, espere el cierre!"
             ];
-        }
+        }*/
 
         try {
             
@@ -281,8 +281,7 @@ class ExportCronogramaController extends Controller
             $meta_id = $request->meta_id;
 
             if ($meta_id) {
-                $infoIn = $cronograma->infos->where("meta_id", $meta_id)->pluck(["id"]);
-                ReportCronograma::dispatch($cronograma, $type, $infoIn, $meta_id)->onQueue('medium');
+                ReportCronograma::dispatch($cronograma, $type, $meta_id)->onQueue('medium');
             }else {
                 abort(401);
             }
@@ -294,6 +293,8 @@ class ExportCronogramaController extends Controller
 
         } catch (\Throwable $th) {
            
+            \Log::info($th);
+
             return [
                 "status" => false,
                 "message" => "Ocurrió un error al procesar la operación"

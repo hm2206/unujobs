@@ -29,22 +29,11 @@ class TypeDescuento extends Model
     /**
      * Relacion de muchos a muchos con la tabla sindicatos
      *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function sindicatos()
+    public function sindicato()
     {
-        return $this->belongsToMany(Sindicato::class, 'descuento_sindicato');
-    }
-
-
-    /**
-     * Relacion de muchos a muchos con la tabla afps
-     *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function seguros()
-    {
-        return $this->belongsToMany(Afp::class, 'descuento_afp');
+        return $this->hasOne(Sindicato::class);
     }
 
 
@@ -57,6 +46,36 @@ class TypeDescuento extends Model
     public function descuentos()
     {
         return $this->hasMany(TypeDescuento::class);
+    }
+
+
+    public function afp_primas()
+    {
+        return $this->hasMany(Afp::class, 'prima_descuento_id');
+    }
+
+
+    public function afp_aportes()
+    {
+        return $this->hasMany(Afp::class, 'aporte_descuento_id');
+    }
+
+
+    public function type_afp()
+    {
+        return $this->hasOne(TypeAfp::class);
+    }
+
+    
+    public function type_aportacion()
+    {
+        return $this->hasOne(TypeAportacion::class);
+    }
+
+
+    public function type_educacionales() 
+    {
+        return $this->hasMany(TypeEducacional::class);
     }
 
     /**

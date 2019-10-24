@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Notifications\ReportNotification;
 use App\Models\TypeDescuento;
 use App\Models\TypeRemuneracion;
+use App\Models\Historial;
 
 class ReportDescuento implements ShouldQueue
 {
@@ -52,44 +53,33 @@ class ReportDescuento implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $infos = $cronograma->infos;
+        $historial = Historial::where('cronograma_id', $cronograma->id)->get();
         $count = 1;
 
-        // configuracion
-        $descuentos = Descuento::whereIn("info_id", $infos->pluck(['id']))
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
-        $remuneraciones = Remuneracion::whereIn("info_id", $infos->pluck(['id']))
-            ->where("cronograma_id", $cronograma->id)
+        // Obtener los descuentos
+        $descuentos = Descuento::whereIn("historial_id", $historial->pluck(['id']))->get();
+        // obtener las remuneraciones
+        $remuneraciones = Remuneracion::where("show", 1)
+            ->whereIn("historial_id", $historial->pluck(['id']))
             ->get(); 
 
         // configurar
-        $bodies = $infos->chunk(25);
+        $bodies = $historial->chunk(25);
 
         // reconfigurar los descuentos y remuneraciones
         $tmp_total = 0;
-        foreach ($bodies as $infos) {
-            foreach ($infos as $info) {
-                $info->descuentos = $descuentos->where("info_id", $info->id)->where("base", 0);
-                $info->aportaciones = $descuentos->where("info_id", $info->id)->where("base", 1);
-                $info->total_descuentos = $descuentos->where("info_id", $info->id)->where("base", 0)->sum('monto');
-                $info->total_bruto = $remuneraciones->where("info_id", $info->id)->sum('monto');
-                $info->base_imponible = $remuneraciones->where("info_id", $info->id)->where("base", 0)->sum("monto");
-                $info->total_neto = $info->total_bruto - $info->total_descuentos;
-                $info->count = $count;
+        foreach ($bodies as $historial) {
+            foreach ($historial as $history) {
+                $history->descuentos = $descuentos->where("historial_id", $history->id)->where("base", 0);
+                $history->aportaciones = $descuentos->where("historial_id", $history->id)->where("base", 1);
+                $history->count = $count;
                 $count++;
-                $tmp_total += $info->total_neto;
+                $tmp_total = $history->total_neto;
             }
-
-            $infos->put(rand(10000, 99999), (Object)[
-                "nivel" => 1,
-                "total" => $tmp_total
-            ]);
         }
 
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento", compact('cronograma', 'bodies', 'meses'));
+        $pdf = PDF::loadView("pdf.descuento", compact('cronograma', 'bodies', 'meses', 'tmp_total'));
         $pdf->setPaper('a4', 'landscape')->setWarnings(false);
 
         $fecha = strtotime(Carbon::now());

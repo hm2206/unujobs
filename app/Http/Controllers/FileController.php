@@ -13,6 +13,10 @@ use App\Models\Planilla;
 use App\Models\Work;
 use App\Tools\FormatTXT;
 use App\Models\Obligacion;
+use App\Models\TypeRemuneracion;
+use App\Models\TypeDescuento;
+use App\Models\Historial;
+use App\Models\Cargo;
 
 class FileController extends Controller
 {
@@ -69,37 +73,24 @@ class FileController extends Controller
         $cronograma = Cronograma::findOrFail($id);
         $planilla = Planilla::findOrFail($cronograma->planilla_id);
         // obtener las boletas de los trabajadores
-        $works = Work::whereHas("boletas", function($b) use($cronograma) {
-            $b->where("cronograma_id", $cronograma->id);
-            $b->whereHas("work", function($w) {
-                $w->where("numero_de_cuenta", "<>", "");
-            });
-        })->select(['id', 'numero_de_cuenta', 'numero_de_documento', 'especial'])->get();
-        // remuneraciones
-        $remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
-            ->whereIn("work_id", $works->pluck(['id']))->get();
-        // descuentos
-        $descuentos = Descuento::where("base", 0)->where("cronograma_id", $cronograma->id)
-            ->whereIn("work_id", $works->pluck(['id']))->get();
+        $historial = Historial::with('work')->where("numero_de_cuenta", "<>", "")
+            ->where("numero_de_cuenta", "<>", null)
+            ->where("cronograma_id", $cronograma->id)
+            ->whereHas("banco")
+            ->get();
 
         if ($planilla->especial) {
-            return $this->formatSpecial($works, $cronograma, $planilla, $remuneraciones, $descuentos);
+            return $this->formatSpecial($historial, $cronograma, $planilla);
         }else {
             
             $payload = [];
 
-            foreach ($works as $work) {
-                // obtener el neto
-                $bruto = $remuneraciones->where("work_id", $work->id)->sum('monto');
-                $dscto = $descuentos->where("work_id", $work->id)->sum('monto');
-                $monto = round($bruto, 2) - round($dscto, 2);
+            foreach ($historial as $history) {
                 // almacenar en el payload solo si el monto es mayor a cero
-                if ($monto > 0) {
-                    array_push($payload, [
-                        "numero_de_documento" => $work->numero_de_documento,
-                        "monto" => $monto
-                    ]);
-                }
+                array_push($payload, [
+                    "numero_de_documento" => $history->work->numero_de_documento,
+                    "monto" => $history->total_neto
+                ]);
             }
     
             // generar archivo de exportación para el siaf
@@ -114,47 +105,38 @@ class FileController extends Controller
     }
 
 
-    private function formatSpecial($works, $cronograma, $planilla, $remuneraciones, $descuentos) 
+    private function formatSpecial($historial, $cronograma) 
     {
-        $workSimple = $works->where("especial", 0);
-        $workSpecials = $works->where("especial", 1);
-
-        $config = [
-            ["body" => $workSimple, "activo" => 2, "key" => 7, 'titulo' => 'Pensionistas'],
-            ["body" => $workSpecials, "activo" => 3, "key" => 8, 'titulo' => 'Pensionistas - Sobrevivientes'],
-        ];
+        $historialSimple = $historial->where("especial", 0);
+        $historialSpecials = $historial->where("especial", 1);
+        $cargos = Cargo::whereIn("id", $historial->pluck(['cargo_id']))->get();
 
         $outputs = [];
         
-        foreach ($config as $conf) {
+        foreach ($cargos as $cargo) {
             
             $payload = [];
+            $newHistorial = $historial->where("cargo_id", $cargo->id);
 
-            foreach ($conf['body'] as $work) {
+            foreach ($newHistorial as $history) {
                 // obtener el neto
-                $bruto = $remuneraciones->where("work_id", $work->id)->sum('monto');
-                $dscto = $descuentos->where("work_id", $work->id)->sum('monto');
-                $monto = round($bruto, 2) - round($dscto, 2);
-                // almacenar en el payload solo si el monto es mayor a cero
-                if ($monto > 0) {
-                    array_push($payload, [
-                        "numero_de_documento" => $work->numero_de_documento,
-                        "monto" => $monto
-                    ]);
-                }
+                array_push($payload, [
+                    "numero_de_documento" => $history->work->numero_de_documento,
+                    "monto" => round($history->total_neto, 2)
+                ]);
             }
 
             // generar archivo de exportación para el siaf
             $file = FormatTXT::init();
-            $file->setActivo($conf['activo']);
-            $file->setPlanilla($conf['key']);
+            $file->setActivo($cargo->plame_activo);
+            $file->setPlanilla($cargo->plame_key);
             $file->setHeader($cronograma->año, $cronograma->mes);
             $file->setBody($payload);
             $file->generateFile("/txt");
             
             $file->save();
             array_push($outputs, [
-                "titulo" => $conf['titulo'],
+                "titulo" => $cargo->descripcion,
                 "file" => $file->getPath()
             ]);
 
@@ -233,7 +215,29 @@ class FileController extends Controller
         $cronogramas = Cronograma::where("año", $year)
             ->where("mes", $mes)
             ->get();
+        // tipo de remuneraciones
+        $typeRemuneraciones = TypeRemuneracion::where("enc", "<>", "")
+            ->where("enc", "<>", null)
+            ->get();
+        // tipo de descuentos
+        $typeDescuentos = TypeDescuento::where("enc", "<>", "")
+            ->where("enc", "<>", null)
+            ->get();
+        // obtener remuneraciones
+        $remuneraciones = Remuneracion::where("show", 1)
+            ->whereIn("type_remuneracion_id", $typeRemuneraciones->pluck(['id']))
+            ->whereIn("cronograma_id", $cronogramas->pluck(['id']))
+            ->get();
+        // obtener descuentos
+        $descuentos = Descuento::whereIn("cronograma_id", $cronogramas->pluck(['id']))
+            ->whereIn("type_descuento_id", $typeDescuentos->pluck(['id']))
+            ->get();
         // obtener boletas
+        $types = [
+            [ "type" =>  $typeRemuneraciones, "key" =>  "type_remuneracion_id", "body" => $remuneraciones],
+            [ "type" => $typeDescuentos, "key" => "type_descuento_id", "body" => $descuentos ],
+        ];
+
         $boletas = Boleta::with(['work' => function($w) {
                 $w->orderBy("nombre_completo", 'DESC')->select(["works.id", "works.numero_de_documento"]);
             }])
@@ -241,12 +245,6 @@ class FileController extends Controller
             ->get();
         // obtener planillas
         $planillas = Planilla::whereIn("id", $cronogramas->pluck(['planilla_id']))->get();
-        // obtener remuneraciones
-        $remuneraciones = Remuneracion::whereIn("cronograma_id", $cronogramas->pluck(['id']))
-            ->get();
-        // obtener descuentos
-        $descuentos = Descuento::whereIn("cronograma_id", $cronogramas->pluck(['id']))
-            ->get();
         // almacen de datos
         $format_1 = [];
         $format_2 = [];
@@ -259,12 +257,11 @@ class FileController extends Controller
             // obtener el total de descuentos
             $dscto_base = $descuentos->where("info_id", $boleta->info_id)->where("base", 0)->sum('monto');
             // almacenar la base imponible
-            $base = $bruto - $dscto_base;
+            $base = $remuneraciones->where('info_id');
             
             $codigos = [
                 ["key" => $planilla_enc, "monto" => $base],
             ];
-
 
             foreach ($codigos as $cod) {
                 $config = [
@@ -280,6 +277,21 @@ class FileController extends Controller
                 array_push($format_2, $formato_2);
             }
 
+            foreach ($types as $type) {
+                foreach ($type['type'] as $tipo) {
+                    // monto
+                    $monto = $type['body']->where($type['key'], $tipo->id)->sum('monto');
+                    // configuración
+                    $config = [
+                        "tipo_de_documento" => "01",
+                        "numero_de_documento" => $boleta->work ? $boleta->work->numero_de_documento : '',
+                        "codigo" => $tipo->enc,
+                        "n1" => $monto,
+                        "n2" => $monto
+                    ];
+                }
+            }
+
             $config = [
                 "tipo_de_documento" => "01",
                 "numero_de_documento" => $boleta->work ? $boleta->work->numero_de_documento : '',
@@ -292,7 +304,10 @@ class FileController extends Controller
             array_push($format_1, $formato_1);
         }
 
-        return implode("<br/>", $format_1);
+
+        return dd($format_2);
+
+        return implode("<br/>", $format_2);
     }
 
 
@@ -317,5 +332,92 @@ class FileController extends Controller
     public function destroy(File $file)
     {
         //
+    }
+
+
+    public function testing(Request $request, $id) {
+
+        $cronograma = Cronograma::findOrFail($id);
+        storage::disk('public')->putFileAs("/files", $request->file('file-test'), "file.txt");
+        $file = Storage::disk('public')->get('/files/file.txt');
+        $total = 0;
+
+        $payload = explode("\n", $file);
+        $success = collect();
+        $error = [];
+        $iter = 0;
+
+        foreach ($payload as $index => $load) {
+            
+            if ($index % 2 == 0) {
+                $tmp = explode(";", $load);
+            
+                $documento = isset($tmp[1]) ? $tmp[1] : null;
+                $monto = isset($tmp[6]) ? (double)$tmp[6] : 0;
+                $total += $monto;
+                
+                if ($documento != null) {
+                    $newFormat = collect([
+                        "numero_de_documento" => $documento,
+                        "monto" => $monto
+                    ]);
+    
+                    $success->push($newFormat);
+                }
+            }
+
+        }
+
+        /*
+        $works = Work::whereIn("numero_de_documento", $success->pluck(['numero_de_documento']))
+            ->select("id", "numero_de_documento")
+            ->get();
+        */
+
+        $works = Work::where("numero_de_cuenta", "<>", "")
+            ->where("numero_de_cuenta", "<>", null)
+            ->whereHas("banco")
+            ->whereHas("boletas", function($b) use($cronograma) {
+                $b->where("cronograma_id", $cronograma->id);
+            })->select(['id', 'numero_de_cuenta', 'numero_de_documento', 'especial'])
+            ->get();
+
+        $notExisten = $works->filter(function($arr) use($success) {
+            return $success->where("numero_de_documento", $arr->numero_de_documento)->count() == 0;
+        });
+
+        return $notExisten->count();
+
+        // configuración
+        /* $works = Work::where("numero_de_cuenta", "<>", "")
+            ->where("numero_de_cuenta", "<>", null)
+            ->whereHas("banco")
+            ->whereHas("boletas", function($b) use($cronograma) {
+                $b->where("cronograma_id", $cronograma->id);
+            })->select(['id', 'numero_de_cuenta', 'numero_de_documento', 'especial'])
+                ->get();
+        */
+
+        // remuneraciones
+        $remuneraciones = Remuneracion::where("show", 1)->where("cronograma_id", $cronograma->id)
+            ->whereIn("work_id", $works->pluck(['id']))
+            ->get();
+        // descuentos
+        $descuentos = Descuento::where("base", 0)->where("cronograma_id", $cronograma->id)
+            ->whereIn("work_id", $works->pluck(['id']))
+            ->get();
+
+        return $remuneraciones->sum("monto") - $descuentos->sum("monto");
+
+        // validar
+        foreach ($success as $res) {
+            
+            $oldDni = $res['documento'];
+            $oldMonto = $res['monto'];
+
+            $work = $works->where("numero_de_documento", $oldDni)->first();
+
+        }
+
     }
 }

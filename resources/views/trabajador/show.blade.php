@@ -16,7 +16,6 @@
     <btn-work-config theme="btn-dark"
         param="{{ $job->id }}"
         nombre_completo="{{ $job->nombre_completo }}"
-        :sindicatos="{{ $job->sindicatos }}"
     >
         <i class="fas fa-cog"></i> Configuración
     </btn-work-config>
@@ -105,96 +104,10 @@
                     </div>
                 </div>
 
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Fecha de ingreso</label>
-                        <span class="form-control">{{ $job->fecha_de_ingreso }}</span>
-                    </div>
-                </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="" class="form-control-label">Sexo</label>
                         <span class="form-control uppercase">{{ $job->sexo == 1 ? "Masculino": "Femenino" }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">N° Essalud Autogenerable</label>
-                        <span class="form-control">{{ $job->numero_de_essalud }}</span>
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Banco</label>
-                        <span class="form-control">{{ $job->banco ? $job->banco->nombre: '' }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Número de Cuenta</label>
-                        <span class="form-control">{{ $job->numero_de_cuenta }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">AFP</label>
-                        <span class="form-control">{{ $job->afp ? $job->afp->nombre : '' }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Tipo de AFP</label>
-                        <span class="form-control">{{ $job->type_afp }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Fecha de Afiliación</label>
-                        <span class="form-control">{{ $job->fecha_de_afiliacion }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Número de cussp</label>
-                        <span class="form-control">{{ $job->numero_de_cussp }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Accidentes de Trabajo</label>
-                        <span class="form-control uppercase">{{ $job->accidentes ? 'Afecto': 'No afecto' }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Descanso medico por Maternidad</label>
-                        <span class="form-control">{{ $job->descanso ? 'Si' : 'No' }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Afecto</label>
-                        <span class="form-control">{{ $job->afecto ? 'Si' : 'No' }}</span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="" class="form-control-label">Cheque</label>
-                        <span class="form-control">{{ $job->cheque ? 'Si' : 'No' }}</span>
                     </div>
                 </div>
 

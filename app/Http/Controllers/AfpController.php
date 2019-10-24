@@ -26,7 +26,7 @@ class AfpController extends Controller
      */
     public function index()
     {
-        $afps = Afp::all();
+        $afps = Afp::with('type_afps')->get();
 
         if (request()->ajax()) {
             return $afps;
@@ -57,8 +57,6 @@ class AfpController extends Controller
     {
         $this->validate(request(), [
             "nombre" => "required|unique:afps",
-            "flujo" => "required|numeric",
-            "mixta" => "required|numeric",
             "aporte" => "required|numeric",
             "prima" => "required|numeric"
         ]);
@@ -106,8 +104,6 @@ class AfpController extends Controller
     {
         $this->validate(request(), [
             "nombre" => "required",
-            "flujo" => "required|numeric",
-            "mixta" => "required|numeric",
             "aporte" => "required|numeric",
             "prima" => "required|numeric"
         ]);

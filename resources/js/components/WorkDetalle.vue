@@ -1,21 +1,19 @@
 <template>
     <div class="card-body">
 
-        <form class="row" id="form-detalle" v-on:submit="saveDetalle"
-            v-if="show"
-        >
+        <form class="row" id="form-detalle" v-on:submit="saveDetalle">
             <div class="col-md-4">
-                <select name="type_descuento_id" class="form-control">
+                <select name="type_educacional_id" class="form-control">
                     <option value="">Seleccionar...</option>
-                    <option :value="descuento.id"  v-for="(descuento, desc) in type_descuentos" :key="desc">
-                        {{ descuento.descripcion }}
+                    <option :value="educacional.id"  v-for="(educacional, educ) in type_educacionales" :key="educ">
+                        {{ educacional.descripcion }}
                     </option>
                 </select>
-                <small class="text-danger">{{ errors.type_descuento_id ? errors.type_descuento_id[0] : '' }}</small>
+                <small class="text-danger">{{ errors.type_educacional_id ? errors.type_educacional_id[0] : '' }}</small>
             </div>
             <div class="col-md-4">
-                <input type="text" name="descripcion" class="form-control" placeholder="Descripción">
-                <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
+                <input type="number" step="any" name="monto" class="form-control" placeholder="Monto">
+                <small class="text-danger">{{ errors.monto ? errors.monto[0] : '' }}</small>
             </div>
             <div class="col-md-2">
                 <button class="btn btn-success"
@@ -35,36 +33,35 @@
         <div class="mt-4 row justify-content-between" v-if="show">
             <div class="col-md-12">
                 <div class="row">
-                    <form :id="`form-detalles-${ty}`" class="col-md-6" v-for="(type, ty) in type_detalles" :key="ty"
-                        v-on:submit="submit($event, ty)"
-                    >
-                        <div class="row align-items-center mb-1">
-                            <div class="col-md-7 text-right">
-                                <span class="text-primary">{{ type.type_descuento ? type.type_descuento.descripcion : '' }}</span>
-                                <i class="fas fa-arrow-left text-danger"></i>
-                                <span class="text-dark">{{ type.descripcion }}</span>
-                                <input type="hidden" name="type_descuento_id" :value="type.type_descuento_id"/>
-                                <input type="hidden" name="type_detalle_id" :value="type.id"/>
-                                <input type="hidden" name="cronograma_id" :value="cronograma.id">
-                                <input type="hidden" name="categoria_id" :value="categoria.id">
-                                <input type="hidden" name="info_id" :value="param">
+                    <div class="col-md-4 mb-1" v-for="(educacional, edu) in educacionales" :key="`educacional-${edu}-${history.id}`">
+                        <div class="row align-items-center" v-if="!loader">
+                            <div class="col-md-5 text-right">
+                                <small class="text-danger">
+                                    {{ 
+                                        educacional.type_educacional ? 
+                                        educacional.type_educacional.key
+                                        : '' 
+                                    }}
+                                </small>
+                                    .
+                                <small class="text-primary">
+                                    <b>{{ 
+                                        educacional.type_educacional ? 
+                                        educacional.type_educacional.descripcion
+                                        : '' 
+                                    }}</b>
+                                </small>
                             </div>
-                            <div class="col-md-3">
-                                <input type="number" v-model="type.monto" step="any" 
+                            <div class="col-md-5">
+                                <input type="number" 
                                     class="form-control" 
-                                    name="monto"
-                                    :disabled="loader"
+                                    :disabled="loader" 
+                                    min="0"
+                                    v-model="educacional.monto" 
                                 >
-                            </div>
-                            <div class="col-md-2">
-                                <button class="btn-success btn btn-sm"
-                                    :disabled="loader"
-                                >
-                                    <div class="fas fa-save"></div>
-                                </button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -85,37 +82,32 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['categoria', 'mes', 'year', 'adicional', 'numero', 'param', 'send', 'info'],
+    props: ['cronograma', 'send', 'history'],
     data() {
         return {
-            type_descuentos: [],
-            type_detalles: [],
-            detalles: [],
+            type_educacionales: [],
+            educacionales: [],
+            tmp_educacional: [],
             loader: false,
             show: true,
-            cronograma: {},
             observacion: '',
             errors: {}
         };
     },
     mounted() {
-        this.getTypeDescuentos();
-        this.getTypeDetalles();
+        this.getTypeEducacional();
         this.getDetalles();
     },
+    watch: {
+        send(nuevo) {
+            this.updateTasa();
+        }
+    },
     methods: {
-        getTypeDetalles() {
-            let api = unujobs('get', '/type_detalle');
+        getTypeEducacional() {
+            let api = unujobs('get', '/type_educacional');
             api.then(res => {
-                this.type_detalles = res.data;
-            }).catch(err => {
-
-            });
-        },
-        getTypeDescuentos() {
-            let api = unujobs('get', '/type_descuento');
-            api.then(res => {
-                this.type_descuentos = res.data;
+                this.type_educacionales = res.data;
             }).catch(err => {
 
             });
@@ -124,16 +116,13 @@ export default {
             e.preventDefault();
             this.loader = true;
             const form = new FormData(document.getElementById('form-detalle'));
-            let api = unujobs('post', '/type_detalle', form);
+            form.append('historial_id', this.history.id);
+            let api = unujobs('post', '/educacional', form);
             await api.then(res => {
                 let { status, message, body } = res.data;
                 let icon = status ? 'success' : 'error';
                 notify({icon: icon, text: message});
-
-                if (body) {
-                    this.type_detalles.push(body);
-                }
-
+                this.getDetalles();
             }).catch(err => {
                 let { data } = err.response;
                 if (data.errors) {
@@ -145,39 +134,14 @@ export default {
             this.loader = false;
         },
         getDetalles() {
-
-            let adicional = this.adicional ? 1 : 0;
-
-            let  api = unujobs(
-                'get',
-                `/work/${this.param}/detalle?mes=${this.mes}&year=${this.year}&adicional=${adicional}&categoria_id=${this.categoria}&numero=${this.numero}`
-            );
-
+            let  api = unujobs('get', `/historial/${this.history.id}/educacional`);
+            this.tmp_educacional = [];
             api.then(res => {
-
-                let { detalles, cronograma, numeros } = res.data;
-                this.detalles = detalles;
-                this.cronograma = cronograma;
-                this.$emit('get-numeros', numeros);
-                this.$emit('get-cronograma', cronograma);
-                this.show = true;
-
-                for(let type of this.type_detalles) {
-                    for(let detalle of this.detalles) {
-                        if (detalle.type_detalle_id == type.id) {
-                            type.monto = detalle.monto;
-                            break;
-                        }else {
-                            type.monto = 0;
-                        }
-                    }
-                }
-
-
+                this.educacionales = res.data;
+                this.educacionales.filter(t => {
+                    this.tmp_educacional.push(t.monto);
+                });
             }).catch(err => {
-
-                console.log("algo salió mal");
-                this.show = false;
 
             });
 
@@ -196,19 +160,30 @@ export default {
             });
             this.loader = false;
         },
-        async saveObservacion() {
+        async updateTasa() {
             this.loader = true;
-            let api = unujobs('post', `/work/${this.param}/observacion`, {
-                cronograma_id: this.cronograma.id,
-                observacion: this.observacion
+            const form = new FormData;
+            let educacionales = [];
+            // preparamos los datos para enviar
+            await this.educacionales.filter((obj, i) => {
+                educacionales.push({
+                    id: obj.id,
+                    monto: obj.monto
+                });
             });
+            // agregamos al formdata
+            form.append('educacionales', JSON.stringify(educacionales));
+            form.append('_method', 'PUT');
+            let api = unujobs('post', `/educacional/${this.history.id}/historial`, form);
             await api.then(res => {
                 let { status, message } = res.data;
                 let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
+                notify({ icon, text: message });
             }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal :('});
+                notify({ icon: 'error', text: 'algo salió mal :C' });
             });
+            // actualizamos el boton
+            this.$emit('ready');
             this.loader = false;
         }
     }

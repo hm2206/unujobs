@@ -12,7 +12,7 @@ use \PDF;
 use App\Models\User;
 use App\Models\Info;
 use App\Models\Work;
-use App\Models\Boleta;
+use App\Models\Historial;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Report;
@@ -89,45 +89,42 @@ class ReportPersonal implements ShouldQueue
         // obtener remuneraciones
         $remuneraciones = Remuneracion::whereIn("cronograma_id", $cronogramas->pluck(['id']))->get();
         
-        // obtener boletas
-        $boletas = Boleta::with(['work' => function($w) {
-                $w->orderBy("nombre_completo", 'ASC');
-            }, 'cargo'])->whereIn("cronograma_id", $cronogramas->pluck(['id']))
-            ->get();
+        // obtener trabajadores
+        $historial = Historial::whereIn("cronograma_id", $cronogramas->pluck(['id']))->get();
 
-        foreach ($boletas as $boleta) {
-            $boleta->monto_bruto = $remuneraciones->where("info_id", $boleta->info_id)->sum('monto');
+        foreach ($historial as $history) {
+            $history->monto_bruto = $remuneraciones->where("historial_id", $history->id)->sum('monto');
             //obtener x43
-            $boleta->x43 = $descuentos->where("info_id", $boleta->info_id)
+            $history->x43 = $descuentos->where("historial", $history->id)
                 ->whereIn("type_descuento_id", $typeDescuentos->where('key', '43')->pluck(['id']))
                 ->sum('monto');
             // obtener snp
-            $boleta->snp = $descuentos->where("info_id", $boleta->info_id)
+            $history->snp = $descuentos->where("historial_id", $history->id)
                 ->whereIn("type_descuento_id", $typeDescuentos->where('key', '31')->pluck(['id']))
                 ->sum('monto');
             // obtener renta
-            $boleta->renta = $descuentos->where("info_id", $boleta->info_id)
+            $history->renta = $descuentos->where("historial_id", $history->id)
                 ->whereIn("type_descuento_id", $typeDescuentos->where('key', '49')->pluck(['id']))
                 ->sum('monto');
             // obtener essalud
-            $boleta->essalud = $descuentos->where("info_id", $boleta->info_id)
+            $history->essalud = $descuentos->where("historial_id", $history->id)
                 ->whereIn("type_descuento_id", $typeAportes->where('key', '80')->pluck(['id']))
                 ->sum('monto');
             // obtener i.e.s
-            $boleta->ies = $descuentos->where("info_id", $boleta->info_id)
+            $history->ies = $descuentos->where("historial_id", $history->id)
                 ->whereIn("type_descuento_id", $typeAportes->where('key', '81')->pluck(['id']))
                 ->sum('monto');
             // obtener dlfp
-            $boleta->dlfp = $descuentos->where("info_id", $boleta->info_id)
+            $history->dlfp = $descuentos->where("historial_id", $history->id)
                 ->whereIn("type_descuento_id", $typeAportes->where('key', '82')->pluck(['id']))
                 ->sum('monto');
             // obtener accidentes
-            $boleta->accidentes = $descuentos->where("info_id", $boleta->info_id)
+            $history->accidentes = $descuentos->where("historial_id", $history->id)
                 ->whereIn("type_descuento_id", $typeAportes->where('key', '83')->pluck(['id']))
                 ->sum('monto');
         }
         
-        $pages =  $boletas->chunk(48);
+        $pages =  $historial->chunk(48);
 
         $path = "pdf/report_personal_general_{$year}_{$mes}.pdf";
         $nombre = "Reporte de Relación General del {$mes} - {$year}";

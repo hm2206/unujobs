@@ -14,6 +14,7 @@ use \PDF;
 use App\Models\Report;
 use \Carbon\Carbon;
 use App\Models\User;
+use App\Models\Historial;
 use App\Notifications\ReportNotification;
 use App\Models\TypeDescuento;
 use App\Models\TypeRemuneracion;

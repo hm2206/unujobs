@@ -49,12 +49,11 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['categoria', 'mes', 'year', 'adicional', 'numero', 'param', 'send', 'info'],
+    props: ['cronograma', 'send', 'history'],
     data() {
         return {
             descuentos: [],
             loader: false,
-            cronograma: {},
             tmp_descuentos: [],
             total: 0,
             base: 0,
@@ -65,6 +64,9 @@ export default {
         this.getDescuentos();
     },
     watch: {
+        async history() {
+            await this.getDescuentos();
+        },
         send(nuevo) {
             if (nuevo) {
                 this.submit();
@@ -74,30 +76,22 @@ export default {
     methods: {
         async getDescuentos() {
 
-            let adicional = this.adicional ? 1 : 0;
+            let  api = unujobs('get', `/historial/${this.history.id}/descuento`);
+            this.tmp_descuentos = [];
 
-            let  api = unujobs(
-                'get',
-                `/info/${this.param}/descuento?mes=${this.mes}&year=${this.year}&adicional=${adicional}&numero=${this.numero}`
-            );
-
-            await api.then(res => {
-
-                let { descuentos, cronograma, base, total, total_neto } = res.data;
+            await api.then(async res => {
+                let { descuentos, total_neto, base, total_desct } = res.data;
                 this.descuentos = descuentos;
-                this.cronograma = cronograma;
+                this.total = total_desct;
                 this.base = base;
-                this.total = total;
                 this.total_neto = total_neto;
                 this.descuentos.filter(des => {
                     this.tmp_descuentos.push(des.monto);
                 });
 
             }).catch(err => {
-                this.cronograma = {};
+                console.log('algo salio mal al obtener los descuentos');
             });
-
-            this.$emit('get-cronograma', this.cronograma);
 
         },
         async submit(e) {
@@ -106,28 +100,25 @@ export default {
                 e.preventDefault();
             }
 
+            let payload = [];
             const form = new FormData;
             this.descuentos.filter((des, iter) => {
-                form.append(des.id, this.tmp_descuentos[iter]);
+                let monto = this.tmp_descuentos[iter];
+                payload.push({ id: des.id, monto });
             });
+
             this.loader = true;
             form.append("_method", "PUT");
-            form.append("cronograma_id", this.cronograma.id);
-            form.append("cargo_id", this.info.cargo_id);
-            form.append("categoria_id", this.info.categoria_id);
-            form.append("planilla_id", this.info.planilla_id);
+            form.append('descuentos', JSON.stringify(payload));
 
-            let api = unujobs("post", `/info/${this.param}/descuento`, form);
+            let api = unujobs("post", `/type_descuento/${this.history.id}/all`, form);
             await api.then(res => {
-                let { status, message, body } = res.data;
+                let { status, message, total_desct, total_neto } = res.data;
                 let icon = status ? 'success' : 'error';
                 notify({icon: icon, text: message});
 
-                if (body) {
-                    this.total = body.total;
-                    this.total_neto = body.total_neto;
-                    this.base = body.base;
-                }
+                this.total = total_desct
+                this.total_neto = total_neto;
 
             }).catch(err => {
                 notify({icon: 'danger', text: err.message});

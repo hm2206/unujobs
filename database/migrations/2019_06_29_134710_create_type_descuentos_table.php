@@ -17,18 +17,11 @@ class CreateTypeDescuentosTable extends Migration
             $table->bigIncrements('id');
             $table->string("key")->unique();
             $table->string("descripcion");
-            $table->double("monto")->default(0);
-            $table->doubel("minimo")->default(0);
-            $table->string('config_afp')->nullable();
-            $table->integer('ley')->default(0);
-            $table->integer('essalud')->default(0);
-            $table->double('essalud_porcentaje')->nullable();
-            $table->integer('obligatorio')->default(0);
-            $table->double('snp_porcentaje')->nullable();
             $table->integer("base")->default(0);
             $table->integer("retencion")->default(0);
             $table->integer("edit")->default(1);
             $table->string("enc")->nullable();
+            $table->tinyInteger('activo')->default(1);
             $table->timestamps();
         });
     }

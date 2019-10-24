@@ -58,7 +58,7 @@
     </h3>
     <h2 class="text-right">
         <i class="fas fa-users fa-sm text-primary"></i>
-        {!! isset($infos) == 1 ? $infos->total() : 0 !!}
+        {!! isset($historial) == 1 ? $historial->total() : 0 !!}
     </h2>
 </div>
 
@@ -101,8 +101,8 @@
 
 <div class="col-md-12">
 
-    @if ($infos)
-        {{ $infos->appends([
+    @if ($historial)
+        {{ $historial->appends([
             "meta_id" => $meta_id,
             "cargo_id" => $cargo_id
         ])->links() }}
@@ -139,7 +139,7 @@
                         </div>
         
                         <div class="col-md-1">
-                            <button class="btn btn-info">
+                            <button class="btn btn-history">
                                 <i class="fas fa-search"></i> 
                             </button>
                         </div>    
@@ -186,24 +186,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($infos as $info)
+                        @forelse ($historial as $history)
                             @php
-                                $job = $info->work;
+                                $job = $history->work;
                             @endphp
                             <tr>
-                                <th>{{ $info->id }}</th>
+                                <th>{{ $history->id }}</th>
                                 <th class="capitalize">{{ $job->nombre_completo }}</th>
                                 <th>{{ $job->numero_de_documento }}</th>
                                 <th class="uppercase">
                                     <div class="btn btn-sm btn-danger">
-                                        {{ $info->categoria ? $info->categoria->nombre : '' }}
+                                        {{ $history->categoria ? $history->categoria->nombre : '' }}
                                     </div>
                                 </th>
                                 <th>
                                     <div class="btn-group">
 
                                         <btn-boleta theme="btn-danger btn-sm"
-                                            param="{{ $job->id }}"
+                                            param="{{ $history->info_id }}"
                                             url="{{ route('job.boleta.store', $job->id) }}"
                                             nombre_completo="{{ $job->nombre_completo }}"
                                             token="{{ csrf_token() }}"
@@ -212,25 +212,20 @@
                                         </btn-boleta>
 
                                         <btn-detalle theme="btn-warning btn-sm"
-                                            param="{{ $info->id }}"
+                                            param="{{ $history->id }}"
                                             nombre_completo="{{ $job->nombre_completo }}"
-                                            categoria="{{ $info->categoria_id }}"
                                             :paginate="{{ $indices }}"
-                                            planilla_id="{{ $cronograma->planilla_id }}"
-                                            tmp_adicional="{{ $cronograma->adicional }}"
-                                            tmp_numero="{{ $cronograma->numero }}"
-                                            :tmp_info="{{ $info }}"
+                                            :historial="{{ $history }}"
                                             :cronograma="{{ $cronograma }}"
                                         >
                                             <i class="fas fa-wallet"></i>
                                         </btn-detalle>
 
                                         <btn-work-config theme="btn-dark btn-sm"
-                                                param="{{ $job->id }}"
-                                                nombre_completo="{{ $job->nombre_completo }}"
-                                                :sindicatos="{{ $job->sindicatos }}"
-                                            >
-                                                <i class="fas fa-cog"></i>
+                                            param="{{ $job->id }}"
+                                            nombre_completo="{{ $job->nombre_completo }}"
+                                        >
+                                            <i class="fas fa-cog"></i>
                                         </btn-work-config>
                                         
                                     </div>

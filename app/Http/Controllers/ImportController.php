@@ -21,6 +21,7 @@ use App\Imports\CategoriaImport;
 use App\Imports\CategoriaConceptoImport;
 use App\Imports\WorkConfigImport;
 use App\Models\Personal;
+use App\Jobs\CalcPlanilla;
 
 /**
  * Class ImportController
@@ -88,6 +89,7 @@ class ImportController extends Controller
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
             // Procesar importacion
             (new RemuneracionImport($cronograma, $name))->import("/imports/{$name}", "public");
+            CalcPlanilla::dispatch($cronograma)->onQueue('medium');
     
             return [
                 "status" => true,
@@ -128,6 +130,7 @@ class ImportController extends Controller
             $storage = Storage::disk("public")->putFileAs("/imports", $request->file('import'), $name);
             // Procesar importacion
             (new DescuentoImport($cronograma, $name))->import("/imports/{$name}", "public");
+            CalcPlanilla::dispatch($cronograma)->onQueue('medium');
     
             return [
                 "status" => true,

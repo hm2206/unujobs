@@ -10,6 +10,7 @@ use App\Models\Obligacion;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
 use App\Models\Cronograma;
+use App\Models\Historial;
 use Illuminate\Http\Request;
 
 /**
@@ -53,27 +54,48 @@ class ObligacionController extends Controller
             "numero_de_cuenta" => "required",
             "monto" => "required|numeric",
             "work_id" => "required",
-            "cronograma_id" => "required",
-            "info_id" => "required"
+            "info_id" => "required",
+            "historial_id" => "required",
+            "cronograma_id" => "required"
         ]);
 
         try {
             // verificamos que el cronograma este activo
-            $cronograma = Cronograma::where("estado", 1)->findOrFail($request->cronograma_id);
-            $obligacion = Obligacion::create($request->all());
-            $monto = Obligacion::where("info_id", $request->info_id)
-                ->where("cronograma_id", $request->cronograma_id)
+            $obligacion = Obligacion::create([
+                "work_id" => $request->work_id,
+                "info_id" => $request->info_id,
+                "historial_id" => $request->historial_id,
+                "cronograma_id" => $request->cronograma_id,
+                "type_descuento_id" => 8, 
+                "beneficiario" => $request->beneficiario,
+                "numero_de_documento" => $request->numero_de_documento,
+                "numero_de_cuenta" => $request->numero_de_cuenta,
+                "monto" => $request->monto
+            ]);
+            // obtener los montos de las obligaciones
+            $monto = Obligacion::where("historial_id", $request->historial_id)
+                ->where("type_descuento_id", 8)
                 ->sum("monto");
-
-            $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
-            $descuento = Descuento::where("cronograma_id", $request->cronograma_id)
-                    ->where("info_id", $request->work_id)
-                    ->whereIn("type_descuento_id", $type)
-                    ->update([
-                        "monto" => $monto,
-                        "edit" => 0
-                    ]);
-
+            // actualizar los descuentos
+            Descuento::where('historial_id', $request->historial_id)
+                ->where("type_descuento_id", 8)
+                ->update([ "monto" => $monto, "edit" => 0 ]);
+            // obtener historial
+            $history = Historial::findOrFail($obligacion->historial_id);
+            // obtener total bruto
+            $total_bruto = $history->total_bruto;
+            // obtener total de descuentos
+            $total_desct = Descuento::where('historial_id', $history->id)
+                ->where('type_descuento_id', $obligacion->type_descuento_id)
+                ->sum('monto');
+            // calculamos total neto
+            $total_neto = $total_bruto - $total_desct;
+            // actualizamos el historial
+            $history->update([
+                "total_desct" => round($total_desct, 2),
+                "total_neto" => round($total_neto, 2)
+            ]);
+            // devolver los datos necesarios
             return [
                 "status" => true,
                 "message" => "Los datos se guardarón correctamente!",
@@ -124,36 +146,42 @@ class ObligacionController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate(request(), [
-            "up_beneficiario" => "required",
-            "up_numero_de_documento" => "required",
-            "up_numero_de_cuenta" => "required",
             "up_monto" => "required|numeric",
         ]);
 
         try {
             
             $obligacion = Obligacion::findOrFail($id);
+            // actualizar el monto de obligacion actual
             $obligacion->update([
-                "beneficiario" => $request->input("up_beneficiario"),
-                "numero_de_documento" => $request->input("up_numero_de_documento"),
-                "numero_de_cuenta" => $request->input("up_numero_de_cuenta"),
-                "monto" => $request->input("up_monto"),
+                "monto" => $request->input("up_monto")
             ]);
-
-            $monto = Obligacion::where("work_id", $obligacion->work_id)
-                ->where("cronograma_id", $obligacion->cronograma_id)
-                ->where("categoria_id", $obligacion->categoria_id)
+            // obtener los monto de las obligaciones
+            $monto = Obligacion::where("historial_id", $obligacion->historial_id)
+                ->where('type_descuento_id', $obligacion->type_descuento_id)
                 ->sum("monto");
-
-            $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
-            $descuento = Descuento::where("cronograma_id", $obligacion->cronograma_id)
-                    ->where("work_id", $obligacion->work_id)
-                    ->where("categoria_id", $obligacion->categoria_id)
-                    ->whereIn("type_descuento_id", $type)
-                    ->update([
-                        "monto" => $monto,
-                        "edit" => 0
-                    ]);
+            // actualizar los descuentos
+            Descuento::where("historial_id", $obligacion->historial_id)
+                ->where("type_descuento_id", $obligacion->type_descuento_id)
+                ->update([
+                    "monto" => $monto,
+                    "edit" => 0
+                ]);
+            // obtenemos el historial
+            $history = Historial::findOrFail($obligacion->historial_id);
+            // obtener el total bruto
+            $total_bruto = $history->total_bruto;
+            // obtenemos el total de descuentos
+            $total_desct = Descuento::where('historial_id', $history->id)
+                ->where('base', 0)
+                ->sum('monto');
+            // cacular el total neto
+            $total_neto = $total_bruto - $total_desct;
+            // actualizar historial
+            $history->update([ 
+                "total_desct" => round($total_desct, 2),
+                "total_neto" => round($total_neto, 2)
+            ]);
 
             return [
                 "status" => true,
@@ -187,23 +215,35 @@ class ObligacionController extends Controller
         try {
 
             $obligacion = Obligacion::findOrFail($id);
+            // obtenemos el historial
+            $history = Historial::findOrFail($obligacion->historial_id);
+            // eliminar obligacion
             $obligacion->delete();
-
-            $monto = Obligacion::where("work_id", $obligacion->work_id)
-                ->where("cronograma_id", $obligacion->cronograma_id)
-                ->where("categoria_id", $obligacion->categoria_id)
+            // volvemos a calcular el monto
+            $monto = Obligacion::where("historial_id", $obligacion->historial_id)
+                ->where("type_descuento_id", $obligacion->type_descuento_id)
                 ->sum("monto");
+            // actualizar los descuentos
+            Descuento::where("historial_id", $obligacion->historial_id)
+                ->where("type_descuento_id", $obligacion->type_descuento_id)
+                ->update([
+                    "monto" => $monto,
+                    "edit" => 0
+                ]);
+            // obtener el total bruto
+            $total_bruto = $history->total_bruto;
+            // obtener total de descuentos
+            $total_desct = Descuento::where('historial_id', $history->id)
+                    ->where('type_descuento_id', $obligacion->id)
+                    ->sum('monto');
+            // calcular el total neto
+            $total_neto = $total_bruto - $total_desct;
+            // actutalizar historial
+            $history->update([
+                "total_desct" => round($total_desct, 2),
+                "total_neto" => round($total_neto, 2)
+            ]);
 
-            $type = TypeDescuento::where("obligatorio", 1)->get()->pluck(['id']);
-            $descuento = Descuento::where("cronograma_id", $obligacion->cronograma_id)
-                    ->where("work_id", $obligacion->work_id)
-                    ->where("categoria_id", $obligacion->categoria_id)
-                    ->whereIn("type_descuento_id", $type)
-                    ->update([
-                        "monto" => $monto,
-                        "edit" => 0
-                    ]);
-    
             return [
                 "status" => true,
                 "message" => "Los datos se eliminarón correctamente"

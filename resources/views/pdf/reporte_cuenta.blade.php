@@ -11,7 +11,7 @@
 
     @foreach ($bancos as $banco)
 
-        @foreach ($banco->works->chunk(23) as $works)
+        @foreach ($banco->historial->chunk(23) as $historial)
             <body class="bg-white text-negro">
                         
                 <table class="text-dark">
@@ -51,17 +51,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($works as $iter => $work)
+                        @foreach ($historial as $iter => $history)
                             <tr>
-                                <td class="py-2 font-10 text-center">{{ $num_work }}</td>
-                                <td class="py-2 font-10 text-center">{{ $work->nombre_completo }}</td>
-                                <td class="py-2 font-10 text-center">{{ $work->numero_de_cuenta }}</td>
-                                <td class="py-2 font-10 text-center">{{ $work->total_neto }}</td>
-                                <td class="py-2 font-10 text-center" style="padding-top: 1em;">
+                                <th class="py-2 font-10 text-center">{{ $num_work }}</th>
+                                <th class="py-2 font-10 text-center">{{ $history->work ? $history->work->nombre_completo : '' }}</th>
+                                <th class="py-2 font-10 text-center">{{ $history->numero_de_cuenta }}</th>
+                                <th class="py-2 font-10 text-center">{{ $history->total_neto }}</th>
+                                <th class="py-2 font-10 text-center" style="padding-top: 1em;">
                                     <b class="text-center" style="padding-top: 1em;">
-                                        {{ $work->numero_de_documento }}
+                                        {{ $history->work ? $history->work->numero_de_documento : '' }}
                                     </b>
-                                </td>
+                                </th>
                             </tr>
                             @php
                                 $num_work++;
@@ -69,7 +69,10 @@
                         @endforeach
                         <tr>
                             <th class="py-1 text-center font-10" colspan="5">
-                                <b class="font-12 text-center">Total S/. {{ $works->sum('total_neto') }}</b>
+                                @php
+                                    $totales += $historial->sum('total_neto');
+                                @endphp
+                                <b class="font-12 text-center">Total S/. {{ $totales }}</b>
                             </th>
                         </tr>
                     </tbody>

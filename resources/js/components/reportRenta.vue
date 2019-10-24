@@ -28,26 +28,20 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Nombre Completo</th>
+                                    <th>Teléfono</th>
                                     <th>N° Documento</th>
-                                    <th>Categorias</th>
                                     <th class="text-center">Seleccionar</th>
                                 </tr>
                             </thead>
                             <tbody v-if="!loader">
-                                <tr v-for="(info, w) in info.data" :key="`info-report-renta-${w}`">
+                                <tr v-for="(work, w) in works.data" :key="`work-report-renta-${w}`">
                                     <td>{{ w + 1 }}</td>
-                                    <td class="uppercase">{{ info.work ? info.work.nombre_completo : '' }}</td>
-                                    <td>{{ info.work ? info.work.numero_de_documento : '' }}</td>
-                                    <td>
-                                        <div class="row">
-                                            <div class="btn btn-sm btn-block btn-danger">
-                                                <span v-text="info.categoria ? info.categoria.nombre : '' "></span>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td class="uppercase">{{ work ? work.nombre_completo : '' }}</td>
+                                    <td>{{ work.numero_de_documento }}</td>
+                                    <td>{{ work.phone }}</td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success"
-                                            v-on:click="seleccion(info)"
+                                            v-on:click="seleccion(work)"
                                         >
                                             <i class="fas fa-plus"></i>
                                         </button>
@@ -59,8 +53,8 @@
                                     <small class="spinner-border text-primary"></small>
                                 </td>
                             </tr>
-                            <tr v-if="!loader && info.total == 0">
-                                <td colspan="4" class="text-center">
+                            <tr v-if="!loader && works.total == 0">
+                                <td colspan="5" class="text-center">
                                     <small>No hay registros disponibles, vuelva a recargar</small>
                                     <div>
                                         <button class="btn btn-sm btn-outline-dark"
@@ -77,14 +71,14 @@
 
                 <div class="card-footer text-center" v-if="!loader">
                     <btn-more :config="['btn-block']" 
-                        :url="info.next_page_url"   
+                        :url="works.next_page_url"   
                         @get-data="getData"
                     >
                     </btn-more>
                 </div>
 
                 <renta :vista="vista" 
-                    :info="param"
+                    :work="param"
                     @change-close="changeClose"
                 />
             </template>
@@ -110,7 +104,7 @@ export default {
             loader: false,
             vista: false,
             param: {},
-            info: {
+            works: {
                 data: []
             },
             like: "",
@@ -128,9 +122,9 @@ export default {
         changeClose(e) {
             this.vista = false;
         },
-        seleccion(info) {
+        seleccion(work) {
             this.vista = true;
-            this.param = info;
+            this.param = work;
         },
         async getWorks(e) {
 
@@ -140,10 +134,10 @@ export default {
 
             this.loader = true;
             
-            let api = unujobs("get", `/listar/work?query_search=${this.like}`);
+            let api = unujobs("get", `/work?query_search=${this.like}`);
             
             await api.then(res => {
-                this.info = res.data;
+                this.works = res.data;
             }).catch(err => {
 
             });
@@ -151,10 +145,10 @@ export default {
             this.loader = false;
         },
         getData(e) {
-            this.info.next_page_url = e.next;
-            this.info.total = e.total;
-            this.info.path = e.path;
-            this.info.data = [...this.info.data, ...e.data];
+            this.works.next_page_url = e.next;
+            this.works.total = e.total;
+            this.works.path = e.path;
+            this.works.data = [...this.works.data, ...e.data];
         },
     }
 }

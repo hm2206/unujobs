@@ -20,8 +20,10 @@ class CreateObligacionsTable extends Migration
             $table->string("numero_de_cuenta");
             $table->double("monto")->default(0);
             $table->bigInteger("work_id");
-            $table->bigInteger("cronograma_id");
             $table->bigInteger("info_id");
+            $table->bigInteger("historial_id");
+            $table->bigInteger("cronograma_id");
+            $table->bigInteger("type_descuento_id");
             $table->timestamps();
         });
     }

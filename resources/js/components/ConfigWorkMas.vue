@@ -1,38 +1,52 @@
 <template>
     <div class="card-body">
 
-        <form class="card mt-4" id="store-retencion" v-on:submit="storeRetencion">
+        <div class="card mb-2" v-for="(info, inf) in tmp_infos" :key="`info-${inf}`">
             <div class="card-header">
-                <small class="btn btn-sm btn-dark btn-circle">
-                    <i class="fas fa-cog"></i>    
-                </small> Configurar Retenciones y Aportes automáticos
+                Configurar Aportaciones de 
+                <span class="btn btn-sm btn-danger">
+                    {{ info.categoria ? info.categoria.nombre : '' }}
+                </span>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-2" v-for="(retencion, ret) in retenciones" :key="`retencion-${ret}`">
-                        <label :class="`btn btn-sm btn-${retencion.checked ? 'primary' : 'danger'}`" 
-                            :for="`ret-${ret}`"
+                <div class="row" :id="`type_aportacion_${info.id}`">
+                    <div class="col-md-5">
+                        <select name="type_aportacion_id" 
+                            class="form-control"
+                            v-model="type_aportacion_id"
                         >
-                           {{ retencion.base ? 'APORT' : 'RET' }}
-                            <input type="checkbox" :id="`ret-${ret}`" name="retenciones[]" 
-                                :value="retencion.id"
-                                :checked="retencion.checked"
-                                :disabled="loader"
-                            >
-                       </label>
-                       {{ retencion.descripcion }}
+                            <option value="">Seleccionar...</option>
+                            <option :value="type.id" v-for="(type, ty) in type_aportes" :key="`type_aporte_${ty}`">
+                                {{ type.descripcion }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <button class="btn btn-success" 
+                            :disabled="block"
+                            v-if="!loader"
+                            v-on:click="agregarAportacion(info)"
+                        >
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                        <div v-if="loader" class="spinner-border text-warning"></div>
                     </div>
                 </div>
             </div>
-            <div class="card-footer text-right">
-                <button class="btn btn-primary"
-                    :disabled="loader"
-                    v-on:click="storeRetencion"
-                >
-                    <i class="fas fa-sync"></i> Actualizar
-                </button>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-xs mr-1" 
+                        v-for="(aporte, aport) in info.type_aportaciones" 
+                        :key="`aportacion-${aport}`"
+                    >
+                        <button class="btn btn-sm btn-dark" v-on:click="deleteAportacion(info, aporte.id)">
+                            {{ aporte.descripcion }} <i class="fas fa-times text-danger"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
+        
     </div>
 </template>
 
@@ -42,91 +56,74 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['sindicatos', 'param'],
+    props: ['infos'],
     data() {
         return {
-            tmp_sindicatos: [],
-            retenciones: [],
-            loader: false
+            block: true,
+            loader: false,
+            type_aportes: [],
+            tmp_infos: [],
+            type_aportacion_id: ''
         };
     },
-    watch: {
-        tmp_sindicatos(nuevo) {
-            for(let sin of this.sindicatos) {
-                for(let tmp_sin of nuevo) {
-                    if (sin.id == tmp_sin.id) {
-                        tmp_sin.checked = true;
-                        break;
-                    }else {
-                        tmp_sin.checked = false;
-                    }
-                }
-            }
-        }
-    },
     mounted() {
-        this.getSindicatos();
-        this.getRentenciones();
+        this.tmp_infos = this.infos;
+        this.getTypeAportes();
+    },
+    watch: {
+        type_aportacion_id(nuevo) {
+            this.block = nuevo ? false : true;
+        }
     },
     methods: {
-        getSindicatos() {
-
-            let api = unujobs("get", "/sindicato");
-            api.then(res => {
-                this.tmp_sindicatos = res.data; 
-            }).catch(err => {
-                notify({icon: 'error', text: err.message});
-            });
-
-        },
-        storeSindicato(e) {
-            if (e) {
-                e.preventDefault();
-            }
-
-            const form = new FormData(document.getElementById('data-sindicatos'));
-            let api = unujobs("post", `/work/${this.param}/sindicato`, form);
-            api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
-
-        },
-        getRentenciones(e) {
-
-            let api = unujobs("get", `/work/${this.param}/retencion`);
-            api.then(res => {
-                this.retenciones = res.data;
-            }).catch(err => {
-                console.log("algo salió mal en al traer las retenciones");
-            });
-
-        },
-        async storeRetencion(e) {
-
-            if (e) {
-                e.preventDefault();
-            }
-            
+        async getTypeAportes() {
+            let api = unujobs('get', '/type_aportacion');
             this.loader = true;
-            const form = new FormData(document.getElementById('store-retencion'));
-            let api = unujobs("post", `/work/${this.param}/retencion`, form);
             await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-                console.log(res.data);
-                this.getRentenciones();
+                this.type_aportes = res.data;
             }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
+                console.log('algo salió mal al obtener los tipos de aportaciones');
+            });
+            this.loader = false;
+        },
+        async agregarAportacion(info) {
+            this.loader = true;
+            this.block = true;
+            let api = unujobs('post', `/info/${info.id}/type_aportacion`, {
+                type_aportacion_id: this.type_aportacion_id
+            });
+            await api.then(async res => {
+                let { aportaciones, status, message } = res.data;
+                let icon = status ? 'success' : 'error';
+                notify({ icon, text: message });
+                this.type_aportacion_id = '';
+                // actualizamos los infos
+                this.tmp_infos = await this.infos.filter( obj => {
+                    obj.type_aportaciones = aportaciones;
+                    return obj;
+                });
+            }).catch(err => {
+                notify({ icon: 'error', text: 'Algo salió mal' });
+            });
+            this.loader = false;
+        },
+        async deleteAportacion(info, id) {
+            this.loader = true;
+            let api = unujobs('post', `/info/${info.id}/delete_aportacion`, {
+                type_aportacion_id: id,
+                _method: 'DELETE'
             });
 
+            await api.then(res => {
+                let { status, message, aportaciones } = res.data;
+                let icon = status ? 'success' : 'error';
+                notify({ icon, text: message });
+                info.type_aportaciones = aportaciones;
+            }).catch(err => {
+                notify({ icon: 'error', text: 'Algo salió mal' });
+            });
             this.loader = false;
-
-        }
-    }
+        } 
+    }   
 }
 </script>

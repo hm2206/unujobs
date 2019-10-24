@@ -28,46 +28,11 @@ class Work extends Model
      * @var array
      */
     protected $fillable = [
-        "ape_paterno", "ape_materno", "nombres","numero_de_documento",
-        "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso", "cheque",
-        "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta", "descanso",
-        "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
-        "nombre_completo", "direccion", "total", "profesion", "email", "jefe", "afecto",
+        "ape_paterno", "ape_materno", "nombres", "nombre_completo",
+        "direccion", "tipo_de_documento", "numero_de_documento", 
+        "fecha_de_nacimiento", "profesion", "email", "phone", "sexo", 
         "activo"
     ];
-
-
-    /**
-     * Relacion de uno a muchos con la tabla bancos
-     *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function banco()
-    {
-        return $this->belongsTo(Banco::class);
-    }
-
-
-    /**
-     * Relacion de muchos a muchos con la tabla sindicatos
-     *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function sindicatos()
-    {
-        return $this->belongsToMany(Sindicato::class, 'sindicato_work');
-    }
-
-
-    /**
-     * Relacion de uno a muchos con la tabla afps
-     *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function afp()
-    {
-        return $this->belongsTo(Afp::class);
-    }
 
 
     /**
@@ -78,6 +43,17 @@ class Work extends Model
     public function infos()
     {
         return $this->hasMany(Info::class);
+    }
+
+
+    /**
+     * Relacion de muchos a uno con la tabla infos
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function historial()
+    {
+        return $this->hasMany(Historial::class);
     }
 
 
@@ -100,30 +76,6 @@ class Work extends Model
     public function slug()
     {
         return base64_encode($this->id);
-    }
-
-
-    public function remuneraciones()
-    {
-        return $this->hasMany(Remuneracion::class);
-    }
-
-    public function cronogramas()
-    {
-        return $this->belongsToMany(Work::class, "work_cronograma")
-            ->withPivot(['observacion']);
-    }
-
-
-    public function typeDescuentos()
-    {
-        return $this->belongsToMany(TypeDescuento::class, 'work_type_descuento');
-    }
-
-
-    public function boletas()
-    {
-        return $this->hasMany(Boleta::class);
     }
 
 }

@@ -23,9 +23,12 @@ class Info extends Model
      * @var array
      */
     protected $fillable = [
-        "categoria_id", "cargo_id", "work_id", "active", "observacion", 
-        'meta_id', 'plaza', 'perfil', 'planilla_id', 'fuente_id', 'fuente', 
-        'escuela', 'observacion', 'ruc', 'pap', 'sindicato_id'
+        "work_id", "planilla_id", "cargo_id", "categoria_id",
+        "meta_id", "fuente_id", "sindicato_id", "afp_id",
+        "type_afp_id", "numero_de_cussp", "fecha_de_afiliacion",
+        "banco_id", "numero_de_cuenta", "numero_de_essalud",
+        "fuente", "plaza", "perfil", "escuela", "ruc", "pap",
+        "fecha_de_ingreso", "fecha_de_cese", "afecto", "active"
     ];
 
     /**
@@ -128,12 +131,29 @@ class Info extends Model
     *
     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
     */
-   public function obligaciones()
-   {
-       return $this->hasMany(Obligacion::class);
-   }
+    public function obligaciones()
+    {
+        return $this->hasMany(Obligacion::class);
+    }
 
     
+    /**
+     * Relacion de muchos a muchos con la tabla type_aportacions
+     *
+     * @return void
+     */
+    public function type_aportaciones()
+    {
+        return $this->belongsToMany(TypeAportacion::class);
+    }
+
+
+    public function historial()
+    {
+        return $this->hasMany(Historial::class);
+    }
+
+
     /**
      * Slug para proteger los id en las urls
      *

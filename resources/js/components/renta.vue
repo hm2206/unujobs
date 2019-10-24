@@ -2,7 +2,7 @@
     <span>
         <modal :show="show" @close="show = false" col="col-md-7" height="90vh">
             <template slot="header">
-                REPORTE DE RENTA <i class="fas fa-arrow-right text-danger"></i> <b class="text-primary">{{ info.work ? info.work.nombre_completo : '' }}</b>
+                REPORTE DE RENTA <i class="fas fa-arrow-right text-danger"></i> <b class="text-primary">{{ work.nombre_completo }}</b>
             </template>
             <template slot="content">
                 <div class="card-body p-relative scroll-y">
@@ -12,24 +12,28 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Seleccionar</th>
+                                    <th>Categoria</th>
                                     <th>Año</th>
                                     <th>Mes</th>
                                 </tr>
                             </thead>
                             <tbody v-if="!loader">
-                                <tr v-for="(cro, w) in cronograma.data" :key="`cronograma-add-${w}`">
+                                <tr v-for="(history, w) in historial.data" :key="`historial-add-${w}`">
                                     <td>{{ w + 1 }}</td>
                                     <td>
-                                        <input type="checkbox" name="cronogramas[]" 
+                                        <input type="checkbox" name="historial[]" 
                                             v-on:change="validate"
                                             v-model="check_works"
-                                            :value="cro.id"
+                                            :value="history.id"
                                         >
                                     </td>
                                     <td class="uppercase">
-                                        <span class="btn btn-dark">{{ cro.año }}</span>
+                                        <span class="btn btn-sm btn-danger">{{ history.categoria ? history.categoria.nombre : '' }}</span>
                                     </td>
-                                    <td><span class="btn btn-dark">{{ cro.mes }}</span></td>
+                                    <td class="uppercase">
+                                        <span class="btn btn-sm btn-dark">{{ history.cronograma ? history.cronograma.año : '' }}</span>
+                                    </td>
+                                    <td><span class="btn btn-sm btn-dark">{{ history.cronograma ? history.cronograma.mes : '' }}</span></td>
                                 </tr>
                             </tbody>
                             <tr v-if="loader">
@@ -37,8 +41,8 @@
                                     <small class="spinner-border text-primary"></small>
                                 </td>
                             </tr>
-                            <tr v-if="!loader && info.total == 0">
-                                <td colspan="4" class="text-center">
+                            <tr v-if="!loader && historial.total == 0">
+                                <td colspan="5" class="text-center">
                                     <small>No hay registros disponibles, vuelva a recargar</small>
                                     <div>
                                         <button class="btn btn-sm btn-outline-dark"
@@ -61,7 +65,7 @@
 
                 <div class="card-footer text-center" v-if="!loader">
                     <btn-more :config="['btn-block']" 
-                        :url="info.next_page_url"   
+                        :url="historial.next_page_url"   
                         @get-data="getData"
                     >
                     </btn-more>
@@ -78,12 +82,12 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['theme', 'info', 'vista'],
+    props: ['theme', 'work', 'vista'],
     data() {
         return {
             show: false,
             loader: false,
-            cronograma: {
+            historial: {
                 data: []
             },
             count: 0,
@@ -117,10 +121,10 @@ export default {
 
             this.loader = true;
             
-            let api = unujobs("get", `/work/${this.info.id}`);
+            let api = unujobs("get", `/work/${this.work.id}/historial`);
             
             await api.then(res => {
-                this.cronograma = res.data;
+                this.historial = res.data;
             }).catch(err => {
 
             });
@@ -132,10 +136,10 @@ export default {
             this.count = checked ? this.count + 1 : this.count - 1;
         },
         getData(e) {
-            this.cronograma.next_page_url = e.next;
-            this.cronograma.total = e.total;
-            this.cronograma.path = e.path;
-            this.cronograma.data = [...this.info.data, ...e.data];
+            this.historial.next_page_url = e.next;
+            this.historial.total = e.total;
+            this.historial.path = e.path;
+            this.historial.data = [...this.info.data, ...e.data];
         },
         async add(e) {
 
@@ -147,7 +151,7 @@ export default {
 
             const form = new FormData(document.getElementById(`add-cronogramas-${this.count}`));
 
-            let api = unujobs("post", `/work/${this.info.id}/report`, form);
+            let api = unujobs("post", `/work/${this.work.id}/report`, form);
 
             await api.then(async res => {
 

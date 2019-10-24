@@ -3,6 +3,8 @@
 use Illuminate\Database\Seeder;
 use App\Models\Cronograma;
 use App\Models\Boleta;
+use App\Models\TypeRemuneracion;
+use App\Models\Remuneracion;
 
 class DebbugCronograma extends Seeder
 {
@@ -13,7 +15,11 @@ class DebbugCronograma extends Seeder
      */
     public function run()
     {
-        
+        $this->recrearRemuneraciones();
+    }
+
+
+    public function boletas () {
         $cronogramas = Cronograma::where("mes", '8')->get();
 
         foreach ($cronogramas as $cronograma) {
@@ -41,6 +47,43 @@ class DebbugCronograma extends Seeder
                     ]);
             }
         }
+    }
+
+    public function recrearRemuneraciones() {
+
+        $boletas = Boleta::get();
+        $payload = [];
+
+        $types = TypeRemuneracion::whereHas('type_remuneracion')->get();
+
+        \Log::info($types);
+
+        foreach ($boletas as $boleta) {
+            foreach ($types as $type) {
+                array_push($payload, [
+                    "work_id" => $boleta->work_id,
+                    "categoria_id" => $boleta->categoria_id,
+                    "cargo_id" => $boleta->cargo_id,
+                    "dias" => "30",
+                    "cronograma_id" => $boleta->cronograma_id,
+                    "observaciones" => "",
+                    "sede_id" => '1',
+                    "type_remuneracion_id" => $type->id,
+                    "mes" => '8',
+                    'año' => '2019',
+                    'monto' => 0,
+                    'adicional' => 0,
+                    'horas' => '8',
+                    'base' => $type->base,
+                    'planilla_id' => $type->planilla_id,
+                    'meta_id' => $boleta->meta_id,
+                    'info_id' => $boleta->info_id,
+                    'show' => $type->show
+                ]);
+            }
+        }
+
+        Remuneracion::insert($payload);
 
     }
 }

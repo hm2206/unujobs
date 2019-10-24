@@ -62,20 +62,9 @@ class Cronograma extends Model
      *
      * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function works()
+    public function historial()
     {
-        return $this->belongsToMany(Work::class, "work_cronograma");
-    }
-
-
-    /**
-     * Relacion de muchos a muchos con la tabla infos
-     *
-     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function infos()
-    {
-        return $this->belongsToMany(Info::class, "info_cronograma");
+        return $this->hasMany(Historial::class);
     }
 
     /**

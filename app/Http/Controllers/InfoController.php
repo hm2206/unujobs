@@ -16,6 +16,7 @@ use App\Models\TypeRemuneracion;
 use App\Models\TypeDescuento;
 use App\Collections\InfoCollection;
 use App\Models\Obligacion;
+use App\Models\Historial;
 
 /**
  * Class InfoController
@@ -37,7 +38,8 @@ class InfoController extends Controller
                 'planilla', 
                 'categoria', 
                 'meta', 
-                'sindicato'
+                'sindicato',
+                'type_aportaciones'
             )->where("work_id", request()->work_id)
             ->get();
         }
@@ -53,7 +55,38 @@ class InfoController extends Controller
      */
     public function store(Request $request)
     {
-        return back();
+        $this->validate(request(), [
+            "work_id" => "required",
+            "planilla_id" => "required",
+            "cargo_id" => "required",
+            "categoria_id" => "required",
+            "meta_id" => "required",
+            "perfil" => "required",
+            "pap" => "required",
+            "fecha_de_ingreso" => "required",
+            "afecto" => "required",
+            "active" => "required"
+        ]);
+
+        try {
+
+            $info = Info::create($request->all());
+            $info->active = $request->active ? 1 : 0;
+            $info->afecto = $request->afecto ? 1 : 0;
+            $info->especial = $request->afecto ? 1 : 0;
+            $info->save();
+
+            return [
+                "status" => true,
+                "message" => "registro exitoso!",
+                "body" => $info
+            ];
+        } catch (\Throwable $th) {
+            return [
+                "status" => false,
+                "message" => "No se pudó guardar el registro!"
+            ];
+        }
     }
 
     /**
@@ -64,22 +97,8 @@ class InfoController extends Controller
      */
     public function show($id)
     {
-        $info = info::findOrFail($id);
-        $mes = request()->mes;
-        $year = request()->year;
-        $adicional = request()->adicional;
-        $numero = request()->numero;
-
-        $cronograma = Cronograma::where("año", $year)
-            ->where("mes", $mes)
-            ->where("adicional", $adicional)
-            ->where("numero", $numero)
-            ->first();
-
-        return [
-            "info" => $info,
-            "cronograma" => $cronograma
-        ];
+        $info = info::with(['type_aportaciones'])->findOrFail($id);
+        return $info;
     }
 
 
@@ -94,26 +113,25 @@ class InfoController extends Controller
     {
 
         $this->validate(request(), [
-            "planilla_id" => "required|max:20",
-            "cargo_id" => "required|max:20",
-            "categoria_id" => "required|max:20",
-            "meta_id" => "required|max:20",
-            "pap" => "required|max:2",
-            "perfil" => "required|max:200",
+            "work_id" => "required",
+            "planilla_id" => "required",
+            "cargo_id" => "required",
+            "categoria_id" => "required",
+            "meta_id" => "required",
+            "perfil" => "required",
+            "pap" => "required",
+            "fecha_de_ingreso" => "required",
+            "afecto" => "required",
+            "active" => "required"
         ]);
 
         try {
 
             $info = Info::findOrFail($id);
-            $info->update($request->all());
-
-            $cronograma_id = $request->cronograma_id;
-
-            if ($cronograma_id) {
-                $create = DB::table("info_cronograma")->where("cronograma_id", $cronograma_id)
-                    ->where("info_id", $info->id)
-                    ->update(["observacion" => $request->observacion]);
-            }
+            $info->active = $request->active ? 1 : 0;
+            $info->afecto = $request->afecto ? 1 : 0;
+            $info->especial = $request->afecto ? 1 : 0;
+            $info->save();
 
             return [
                 "status" => true,
@@ -143,322 +161,69 @@ class InfoController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Info  $info
-     * @return \Illuminate\Http\Response
-     */
-    public function remuneracion($id)
+    public function type_aportacion(Request $request, $id)
     {
         $info = Info::findOrFail($id);
-        
-        // configuración
-        $year = request()->input('year', date('Y'));
-        $mes = request()->input('mes', date('m'));
-        $adicional = request()->adicional ? 1 : 0;
-        $numero = request()->numero ? request()->numero : 1;
-        
-        // almacenar
-        $total = 0;
-        $dias = 30;
-        $seleccionar = [];
-        $cronograma = Cronograma::where('planilla_id', $info->planilla_id)
-            ->where('mes', $mes)
-            ->where('año', $year)
-            ->where("adicional", $adicional);
-
-        if($adicional) {
-
-            $seleccionar = $cronograma->get();
-            $cronograma = $cronograma->where("numero", $numero);
-
-        }
-
-        $cronograma = $cronograma->firstOrFail();
-
-        // preguntamos si estamos agregados a la planilla
-        $isWork = $cronograma->infos->find($id);
-
-        if (!$isWork) {
-            abort(404);
-        }
-
-        $remuneraciones = Remuneracion::with('typeRemuneracion')
-            ->where("info_id", $id)
-            ->where("mes", $mes)
-            ->where("año", $year)
-            ->where("adicional", $adicional)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
-        $dias = $cronograma->dias;
-        $total = round($remuneraciones->sum('monto'), 2);
-
-        return [
-            "cronograma" => $cronograma,
-            "numeros" => $seleccionar,
-            "remuneraciones" => $remuneraciones,
-            "seleccionar" => $seleccionar,
-            "dias" => $dias,
-            "total" => $total,
-            "adicional" => $adicional,
-            "year" => $year,
-            "mes" => $mes
-        ];
-    }
-
-
-    public function remuneracionUpdate(Request $request, $id)
-    {
-
         $this->validate(request(), [
-            "cronograma_id" => "required",
-            "cargo_id" => "required",
-            "categoria_id" => "required",
-            "planilla_id" => "required"
+            "type_aportacion_id" => "required"
         ]);
-
-        try {
         
-            $info = Info::where("active", 1)->findOrFail($id);
-            $cronograma = Cronograma::findOrFail($request->cronograma_id);
-
-            if ($cronograma->estado == 0) {
-                return [
-                    "status" => false,
-                    "message" => "La planilla está desactivada",
-                    "body" => ""
-                ];
-            }
-
-            $remuneraciones = $info->remuneraciones->where("cronograma_id", $cronograma->id);
-            $total = 0;
-
-            foreach ($remuneraciones as $remuneracion) {
-                $tmp_remuneracion = $request->input($remuneracion->id);
-                if (is_numeric($tmp_remuneracion)) {
-                    $remuneracion->monto = round($tmp_remuneracion, 2);
-                    $remuneracion->save();
-                    $total += $tmp_remuneracion;
-                }
-            }
-
-            // preguntamos si estamos agregados a la planilla
-            $isWork = $cronograma->infos->find($id);
-
-            if (!$isWork) {
-                abort(404);
-            }
-
-
-            // configuracion para actualizar los descuentos
-            $type_descuentos = TypeDescuento::where("activo", 1)->get();
-            $remuneraciones_base = $remuneraciones->where("base", 0);
-
-
-            // procesar los descuentos
-            $collection = new InfoCollection($info);
-            $collection->updateOrCreateDescuento($cronograma, $type_descuentos, $remuneraciones_base);
-            
-
-            // guardar monto total actual
-            $info->update(["total" => round($total, 2)]);
-
+        try {
+            // agregar aportaciones
+            $info->type_aportaciones()
+                ->syncWithoutDetaching($request->type_aportacion_id);
+            // responder al clente
             return [
                 "status" => true,
-                "message" => "Los datos se actualizarón correctamente!",
-                "body" => round($total, 2)
+                "message" => "La aportación se agrego correctamente!",
+                "aportaciones" => $info->type_aportaciones
             ];
         } catch (\Throwable $th) {
-
             \Log::info($th);
             return [
                 "status" => false,
-                "message" => "Ocurrió un error al procesar la operación",
-                "total" => 0
+                "message" => "Ocurrió un error al agregar la aportación",
+                "aportaciones" => []
             ];
         }
-
     }
 
 
-    public function descuento($id) 
+    public function delete_aportacion(Request $request, $id)
     {
-
         $info = Info::findOrFail($id);
-
-        // configuración
-        $year = request()->input('year', date('Y'));
-        $mes = request()->input('mes', date('m'));
-        $adicional = request()->adicional ? 1 : 0;
-        $numero = request()->numero ? request()->numero : 1;
-
-        // almacenar
-        $total = 0;
-        $dias = 30;
-        $base = 0;
-        $seleccionar = [];
-        $types = [];
-        $cronograma = Cronograma::where("planilla_id", $info->planilla_id)
-                ->where('mes', $mes)
-                ->where('año', $year)
-                ->where("adicional", $adicional);
-
-
-        if($adicional) {
-
-            $seleccionar = $cronograma->get();
-            $cronograma = $cronograma->where("numero", $numero);
-        
-        }
-        
-        $cronograma = $cronograma->firstOrFail();
-
-        $descuentos = Descuento::with(['typeDescuento' => function($q){
-                $q->orderBy("key", "ASC");
-        }])->where("info_id", $id)
-            ->where("mes", $mes)
-            ->where("año", $year)
-            ->where("adicional", $adicional)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
-        $remuneraciones = Remuneracion::where("info_id", $id)
-            ->where("mes", $mes)
-            ->where("año", $year)
-            ->where("adicional", $adicional)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
-        $base = round($remuneraciones->where("base", 0)->sum('monto'), 2);
-        $total = round($descuentos->where("base", 0)->sum('monto'), 2);
-        $dias = $cronograma->dias;
-
-        $total_neto =  round($remuneraciones->sum('monto') - $total, 2);
-
-        $aportaciones = $descuentos->where("base", 1);
-
-        return [
-            "cronograma" => $cronograma,
-            "numeros" => $seleccionar,
-            "descuentos" => $descuentos,
-            "aportaciones" => $aportaciones,
-            "dias" => $dias,
-            "total" => $total,
-            "adicional" => $adicional,
-            "year" => $year,
-            "mes" => $mes,
-            "base" => $base,
-            "total_neto" => $total_neto
-        ];
-    }
-
-
-    public function descuentoUpdate(Request $request, $id)
-    {
         $this->validate(request(), [
-            "cronograma_id" => "required",
-            "categoria_id" => "required",
-            "categoria_id" => "required",
-            "planilla_id" => "required"
+            "type_aportacion_id" => "required"
         ]);
         
         try {
-            
-            $info = Info::findOrFail($id);
-            $cronograma = Cronograma::findOrFail($request->cronograma_id);
-
-            if ($cronograma->estado == 0) {
-                return [
-                    "status" => false,
-                    "message" => "La planilla está desactivada",
-                    "body" => ""
-                ];
-            }
-
-            $remuneraciones = $info->remuneraciones->where("cronograma_id", $cronograma->id);
-
-            $descuentos = Descuento::where("info_id", $info->id)
-                ->where("cronograma_id", $cronograma->id)
-                ->get();
-
-            foreach ($descuentos as $descuento) {
-                $tmp_descuento = $request->input($descuento->id);
-                if (is_numeric($tmp_descuento) && $descuento->edit) {
-                        $descuento->monto = round($tmp_descuento, 2);
-                        $descuento->save();
-                }
-            }
-
-            $total = round($descuentos->where('base', 0)->sum('monto'), 2);
-            $base = round($remuneraciones->where('base', 0)->sum('monto'), 2);
-            $total_neto = round($remuneraciones->sum('monto') - $total, 2);
-
+            // agregar aportaciones
+            $info->type_aportaciones()
+                ->detach($request->type_aportacion_id);
+            // responder al clente
             return [
                 "status" => true,
-                "message" => "Los datos se actualizarón correctamente!",
-                "body" => [
-                    "total" => $total,
-                    "total_neto" => $total_neto,
-                    "base" => $base
-                ]
+                "message" => "La aportación se elimino correctamente!",
+                "aportaciones" => $info->type_aportaciones
             ];
         } catch (\Throwable $th) {
+            \Log::info($th);
             return [
                 "status" => false,
-                "message" => "Ocurrió un error al procesar la operación",
-                "body" => ""
+                "message" => "Ocurrió un error al eliminar la aportación",
+                "aportaciones" => []
             ];
         }
     }
 
 
-    public function observacion($id) 
+    public function historial($id)
     {
-        $mes = request()->mes ? request()->mes : date('mes');
-        $year = request()->year ? request()->year : date('Y');
-        $adicional = request()->adicional ? 1 : 0;
-        $numero = request()->numero ? request()->numero : 1;
-        $seleccionar = [];
-
-        $cronograma = Cronograma::where("mes", $mes)
-            ->where("año", $year)
-            ->where("adicional", $adicional);
-            
-        if ($adicional) {
-            $seleccionar = $cronograma->get();
-            $cronograma = $cronograma->where("numero", $numero);
-        }
-
-        $cronograma = $cronograma->firstOrFail();
-
-        $observacion = DB::table("info_cronograma")
-            ->where("cronograma_id", $cronograma->id)
-            ->where("info_id", $id)
-            ->select("observacion")
-            ->first();
-
-        $obs = isset($observacion->observacion) ? $observacion->observacion : '';
-
-        return $obs;
-    }   
-
-
-    public function obligacion($id) 
-    {
-        $cronograma_id = request()->cronograma_id;
         $info = Info::findOrFail($id);
-        $obligaciones = Obligacion::where("cronograma_id", $cronograma_id)
-            ->where("info_id", $info->id)
-            ->get();
-
-        return $obligaciones;
-    }
-
-    public function storeObligacion()
-    {
-        
+        return Historial::where('info_id', $info->id)
+            ->orderBy('cronograma_id', 'DESC')
+            ->with('categoria', 'work', 'cronograma', 'planilla')
+            ->paginate();
     }
 
 }
