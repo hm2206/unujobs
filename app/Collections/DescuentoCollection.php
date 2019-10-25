@@ -155,7 +155,7 @@ class DescuentoCollection
 
     public function save()
     {
-        foreach ($this->storage->chunk(1000) as $insert) {
+        foreach ($this->storage->chunk(1000)->toArray() as $insert) {
             Descuento::insert($insert);
         }
     }

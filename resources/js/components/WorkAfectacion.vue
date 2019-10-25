@@ -1,6 +1,6 @@
 <template>
     <div class="card-body">
-        <form class="row" id="form-config-work" v-on:submit="submit">
+        <form class="row" id="form-config-historial" v-on:submit="submit">
 
             <div class="col-md-4">
                 <div class="form-group">
@@ -95,7 +95,11 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Planilla <span class="text-danger">*</span></label>
-                    <select name="planilla_id" v-model="form.planilla_id" v-on:change="changeSelect($event, 'changePlanilla')" class="form-control">
+                    <select name="planilla_id" v-model="form.planilla_id" 
+                        v-on:change="changeSelect($event, 'changePlanilla')" 
+                        class="form-control"
+                        disabled="true"
+                    >
                         <option value="">Seleccionar...</option>
                         <option :value="planilla.id" v-for="(planilla, pla) in planillas" :key="`planilla-${pla}`"
                             v-text="planilla.descripcion"
@@ -116,7 +120,7 @@
                     >
                         <option value="">Seleccionar...</option>
                         <option :value="cargo.id" v-for="(cargo, car) in cargos" :key="`cargo-${car}`"
-                            v-text="cargo.descripcion"
+                            v-text="`${cargo.descripcion} | ${cargo.ext_pptto}`"
                         >
                         </option>
                     </select>
@@ -198,11 +202,19 @@
                     <input type="text" v-model="form.escuela" class="form-control" name="escuela" :disabled="loading">
                 </div>
             </div>
+            
 
             <div class="col-md-8">
                 <div class="form-group">
                     <label for="">Observación</label>
                     <textarea name="observacion" v-model="form.observacion" :disabled="loading" class="form-control"></textarea>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">ext Pptto </label>
+                    <input type="text" v-model="ext_pptto" class="form-control" :disabled="true">
                 </div>
             </div>
 
@@ -256,7 +268,8 @@ export default {
             errors: {},
             tmp_infos: [],
             sindicatos: [],
-            form: {}
+            form: {},
+            ext_pptto: ''
         }
     },
     async mounted() {
@@ -320,23 +333,28 @@ export default {
         getPlanillaID(id) {
             let api = axios.get(`/api/v1/planilla/${id}`);
             this.loading = true;
-            api.then(res => {
+            api.then(async res => {
                 this.loading = false;
                 let { data } = res;
                 this.cargos = data.cargos;
+                // recuperar ext_pptto
+                await this.cargos.filter(car => {
+                    if (car.id == id) this.ext_pptto = car.ext_pptto;
+                });
                 this.loading = false;
             }).catch(err => {
 
             });
         },
-        changeCargo() {
+        async changeCargo() {
             this.loading = true;
             this.categorias = [];
             if (this.form.cargo_id) {
                 this.getCargoID(this.form.cargo_id);
             }
         },
-        getCargoID(id) {
+        async getCargoID(id) {
+            // realizar peticion a la api
             let api = axios.get(`/api/v1/cargo/${id}`);
             this.loading = true;
             api.then(res => {
@@ -399,18 +417,22 @@ export default {
                 e.preventDefault();
             }
 
-            const form = new FormData(document.getElementById('form-config-work'));
-            form.append('work_id', this.param);
+            const form = new FormData(document.getElementById('form-config-historial'));
             form.append('_method', 'PUT');
             
             this.loading = true;
             this.errors = {};
-            let api = unujobs("post", `/info/${this.info.id}`, form);
+            let api = unujobs("post", `/historial/${this.history.id}`, form);
 
             await api.then(res => {
 
                 let { status, message, body } = res.data;
                 let icon = status ? 'success' : 'error';
+
+                if (body) {
+                    this.$emit('updateHistory', body);
+                }
+
                 notify({icon: icon, text: message});
             }).catch(err => {
 

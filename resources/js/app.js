@@ -66,6 +66,8 @@ Vue.component('edit-concepto', require('./components/EditConcepto.vue').default)
 Vue.component('select-filtro', require('./components/SelectFiltro.vue').default);
 Vue.component('pdf', require('./components/pdf.vue').default);
 Vue.component('switch-planilla', require('./components/SwitchPlanilla.vue').default);
+Vue.component('active-info', require('./components/ActiveInfo.vue').default);
+Vue.component('config-boleta', require('./components/configBoleta.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

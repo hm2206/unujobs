@@ -226,4 +226,18 @@ class InfoController extends Controller
             ->paginate();
     }
 
+
+    public function active(Request $request, $id)
+    {
+        $info = Info::findOrFail($id);
+        $this->validate(request(), [
+            "active" => "required"
+        ]);
+
+        $active = $request->active ? 1 : 0;
+        $info->update([ "active" => $active ]);
+
+        return $info->active;
+    }
+
 }

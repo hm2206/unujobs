@@ -139,7 +139,7 @@
                         </div>
         
                         <div class="col-md-1">
-                            <button class="btn btn-history">
+                            <button class="btn btn-info">
                                 <i class="fas fa-search"></i> 
                             </button>
                         </div>    

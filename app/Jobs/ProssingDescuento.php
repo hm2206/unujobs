@@ -70,7 +70,7 @@ class ProssingDescuento implements ShouldQueue
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         // obtenemos remuneraciones anteriores
-        $typeBefores = Descuento::whereIn("historial_id", $this->historial->pluck(['id']))
+        $typeBefores = Descuento::whereIn("info_id", $this->historial->pluck(['info_id']))
             ->whereIn("type_descuento_id", $this->types->pluck(['id']))
             ->where("adicional", $cronograma->adicional)
             ->where("mes", $mes)
@@ -78,7 +78,7 @@ class ProssingDescuento implements ShouldQueue
             ->get();
 
         // obtener a los trabajadores con los descuentos del mes anterior
-        $oldHistorial = $this->historial->whereIn("id", $typeBefores->pluck(['historial_id']));
+        $oldHistorial = $this->historial->whereIn("info_id", $typeBefores->pluck(['info_id']));
         // obtener a los trabajadores recientemente agregados
         $newHistorial = $this->historial->whereNotIn("id", $oldHistorial->pluck(['id']));
 
@@ -94,7 +94,10 @@ class ProssingDescuento implements ShouldQueue
         }
 
         // habilitamos la planilla
-        $cronograma->update(["pendiente" => 0]);
+        $cronograma->update([
+            "pendiente" => 0,
+            "estado" => 1
+        ]);
 
         $users = User::all();
         $link = "/planilla/cronograma/{$cronograma->slug()}/job";
@@ -118,7 +121,7 @@ class ProssingDescuento implements ShouldQueue
             // recorremos lso tipos de descuentos
             foreach ($this->types as $type) {
                 // obtenemos el registro anterior
-                $typeBefore = $befores->where('historial_id', $info->id)
+                $typeBefore = $befores->where('info_id', $history->info_id)
                     ->where("type_descuento_id", $type->id)
                     ->first();
                 // almacenamos el monto
@@ -126,6 +129,15 @@ class ProssingDescuento implements ShouldQueue
                 // preparamos los descuentos para calcular
                 $config->preparate($history, $cronograma, $type, $monto);
             }
+            // obtenemos el total de descuentos
+            $total_desct = $befores->where('info_id', $history->info_id)->sum('monto');
+            // obtener total neto
+            $total_neto = $history->total_bruto - $total_desct;
+            // actualizar historial
+            $history->update([
+                "total_desct" => round($total_desct, 2),
+                "total_neto" => round($total_neto, 2)
+            ]);
         }
         // insertamos masivamente los descuentos
         $config->save();

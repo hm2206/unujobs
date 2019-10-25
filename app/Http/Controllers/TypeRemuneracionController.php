@@ -26,6 +26,10 @@ class TypeRemuneracionController extends Controller
     {
         $remuneraciones = TypeRemuneracion::all();
 
+        if (request()->ajax()) {
+            return $remuneraciones;
+        }
+
         return view('remuneraciones.index', compact('remuneraciones'));
     }
 

@@ -9,6 +9,10 @@ use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Models\Obligacion;
 use App\Models\Educacional;
+use App\Models\Planilla;
+use App\Models\Cargo;
+use App\Models\Categoria;
+use App\Models\Cronograma;
 
 class HistorialController extends Controller
 {
@@ -117,9 +121,51 @@ class HistorialController extends Controller
      * @param  \App\Historial  $historial
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Historial $historial)
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate(request(), [
+            "cargo_id" => "required",
+            "categoria_id" => "required",
+            "meta_id" => "required",
+            "perfil" => "required",
+            "pap" => "required",
+        ]);
+
+        $history = Historial::findOrFail($id);
+        $cronograma = Cronograma::where('estado', 1)->findOrFail($history->cronograma_id);
+        $planilla = Planilla::findOrFail($history->planilla_id);
+        $cargos = Cargo::whereHas('categorias', function($car) use($request) {
+            $car->where('categorias.id', $request->categoria_id);
+        })->with('categorias')->where('planilla_id', $planilla->id)->get();
+
+        try {
+            // verificar si el cargo existe en la planilla
+            $isValido = $cargos->where("id", $request->cargo_id)->count() ? true : false;
+            
+            if ($isValido) {
+
+                $history->update($request->except(['planilla_id']));
+
+                return [
+                    "status" => true,
+                    "message" => "Los datos se actualizarón",
+                    "body" => $history
+                ];
+            }
+
+            throw new \Exception("El cargo o la categoria no son válidos", 1);
+
+        } catch (\Throwable $th) {
+
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "algo salió mal",
+                "body" => null
+            ];  
+        }
+
     }
 
     /**

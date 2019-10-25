@@ -78,6 +78,7 @@
                         :history="history"
                         :cronograma="tmp_cronograma"
                         @ready="setLoader"
+                        @updateHistory="updateHistory"
                     >
                     </component>
 
@@ -167,6 +168,7 @@ export default {
         return {
             show: false,
             loader: false,
+            cache: false,
             current: 'work-general',
             job_current: '',
             fullname: '',
@@ -200,7 +202,9 @@ export default {
     watch: {
         show() {
             this.job_current = this.history.id;
-            this.history = this.historial;
+            if (!this.cache) {
+                this.history = this.historial;
+            }
         },
     },
 
@@ -238,6 +242,9 @@ export default {
             });
             this.block = false;
             this.loader = false;
+        },
+        async updateHistory(e) {
+            this.history = e;
         },
         btnPress(e) {
             this.send = true;

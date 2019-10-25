@@ -173,8 +173,8 @@
                             <tr>
                                 <th>Nombre Completo</th>
                                 <th>N° Documento</th>
-                                <th>Profesión</th>
-                                <th>teléfono</th>
+                                <th>Cargo</th>
+                                <th>Categoria</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -184,8 +184,16 @@
                                 <tr>
                                     <th class="capitalize" width="30%">{{ $job->work->nombre_completo }}</th>
                                     <th>{{ $job->work->numero_de_documento }}</th>
-                                    <th class="uppercase">{{ $job->profesion }}</th>
-                                    <th>{{ $job->phone }}</th>
+                                    <th class="uppercase">
+                                        <span class="btn btn-sm btn-dark">
+                                            {{ $job->cargo ? $job->cargo->descripcion : '' }}
+                                        </span>
+                                    </th>
+                                    <th class="uppercase">
+                                        <span class="btn btn-sm btn-dark">
+                                            {{ $job->categoria ? $job->categoria->nombre : '' }}
+                                        </span>
+                                    </th>
                                     <th>
                                         @if ($job->active)
                                             <button class="btn-sm btn btn-success">
@@ -218,15 +226,10 @@
                                                 <i class="fas fa-file-alt"></i>
                                             </btn-boleta>
 
-                                            <btn-liquidar theme="btn-danger btn-sm btn-circle"
-                                                nombre_completo="{{ $job->nombre_completo }}"
-                                                fecha_de_inicio="{{ $job->fecha_de_ingreso }}"
-                                                redirect="{{ route('job.index') }}"
-                                                nombre_completo="{{ $job->nombre_completo }}"
-                                                id="{{ $job->id }}"
-                                            >
-                                                <i class="fas fa-trash"></i>
-                                            </btn-liquidar>
+                                            <active-info 
+                                                :active="{{ $job->active }}"
+                                                param="{{ $job->id }}"
+                                            />
 
                                         </div>
                                     </th>

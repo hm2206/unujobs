@@ -11,6 +11,11 @@ Route::group(["prefix" => 'v1'], function() {
 
     Route::resource('banco', 'BancoController');
     
+    // api de cargos
+    Route::get('/cargo/{id}/type_remuneracion', 'CargoController@type_remuneracion');
+    Route::post('/cargo/{id}/type_remuneracion', 'CargoController@assignTypeRemuneracion');
+    Route::delete('/cargo/{id}/type_remuneracion', 'CargoController@detachTypeRemuneracion');
+    
     //Recursos para generar boletas
     Route::get("/boleta/{id}", "JobController@boleta");
     // Generar boletas de un trabajador en pdf
@@ -59,6 +64,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::post("/remuneracion", "TypeRemuneracionController@store");
     // actualizar una remuneración determinada
     Route::put("/remuneracion/{id}", "TypeRemuneracionController@update");
+    // 
+    Route::get('/type_remuneracion', 'TypeRemuneracionController@index');
 
     // Recursos de modulos
     Route::resource("modulo", "ModuloController");
@@ -97,6 +104,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::resource("info", "InfoController")->except(["create", "edit"]);
     Route::get('info/{id}/historial', 'InfoController@historial');
     Route::post('info/{id}/type_aportacion', 'InfoController@type_aportacion');
+    Route::post('info/{id}/active', 'InfoController@active');
     Route::delete('info/{id}/delete_aportacion', 'InfoController@delete_aportacion');
 
     // tipo de aportacion

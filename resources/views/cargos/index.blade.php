@@ -72,6 +72,12 @@
                                         >
                                             <i class="fas fa-pencil-alt"></i>
                                         </btn-cargo>
+                                        <config-boleta
+                                            theme="btn-sm btn-dark"
+                                            :cargo="{{ $cargo }}"
+                                        >
+                                            <i class="fas fa-cogs"></i>
+                                        </config-boleta>
                                     </div>
                                 </th>
                             </tr>

@@ -69,14 +69,14 @@ class ProssingRemuneracion implements ShouldQueue
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         // obtenemos remuneraciones anteriores
-        $typeBefores = Remuneracion::whereIn("historial_id", $this->historial->pluck(['id']))
+        $typeBefores = Remuneracion::whereIn("info_id", $this->historial->pluck(['info_id']))
             ->whereIn("type_remuneracion_id", $this->types->pluck(['id']))
             ->where("adicional", $cronograma->adicional)
             ->where("mes", $mes)
             ->where("año", $year)
             ->get();
         // guardamos a los trabajadores del mes anterior
-        $historialOld = $this->historial->whereIn("id", $typeBefores->pluck('historial_id'));
+        $historialOld = $this->historial->whereIn("info_id", $typeBefores->pluck('info_id'));
         // guardamos a los trabajadores nuevos
         $historialNew = $this->historial->whereNotIn("id", $historialOld->pluck('id'));
 
@@ -107,7 +107,7 @@ class ProssingRemuneracion implements ShouldQueue
             // recorremos todas los tipos de remuneraciones disponibles
             foreach ($this->types as $type) {
                 // obtenermos el registro anterior
-                $typeBefore = $befores->where('historial_id', $history->id)
+                $typeBefore = $befores->where('info_id', $history->info_id)
                     ->where("type_remuneracion_id", $type->id)    
                     ->first();
                 // almacenamos el monto anterior
@@ -130,9 +130,9 @@ class ProssingRemuneracion implements ShouldQueue
             $base_enc = self::calc_enc($history, $base);
             // actualizar los montos del trabajador
             $history->update([
-                "total_bruto" => $bruto,
-                "base" => $base,
-                "base_enc" => $base_enc
+                "total_bruto" => round($bruto, 2),
+                "base" => round($base, 2),
+                "base_enc" => round($base_enc, 2)
             ]);
         }
         // insertamos las remuneraciones masivamente
