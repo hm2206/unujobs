@@ -444,6 +444,8 @@ class CronogramaController extends Controller
             Remuneracion::whereIn("historial_id", $historial)->delete();
             // eliminar descuentos 
             Descuento::whereIn("historial_id", $historial)->delete();
+            // eliminar aportaciones
+            Aportacion::whereIn("historial", $historial)->delete();
             // eliminar historial
             Historial::whereIn("id", $historial)->delete();
 

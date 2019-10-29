@@ -20,6 +20,14 @@ class RptController extends Controller
 
         try {
             $cronograma = Cronograma::findOrFail($id);
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla ya está cerrada"
+                ];
+            }
+
             $type = $request->type_report_id;
             EjecucionJob::dispatch($cronograma, $type, 0)->onQueue("medium");
             
@@ -46,6 +54,14 @@ class RptController extends Controller
 
         try {
             $cronograma = Cronograma::findOrFail($id);
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla ya está cerrada"
+                ];
+            }
+
             $type = $request->type_report_id;
             EjecucionDetalleJob::dispatch($cronograma, $type, 0)->onQueue("medium");
             
@@ -72,6 +88,14 @@ class RptController extends Controller
 
         try {
             $cronograma = Cronograma::findOrFail($id);
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla ya está cerrada"
+                ];
+            }
+
             $type = $request->type_report_id;
             EjecucionJob::dispatch($cronograma, $type, 1)->onQueue("medium");
             
@@ -98,6 +122,14 @@ class RptController extends Controller
 
         try {
             $cronograma = Cronograma::findOrFail($id);
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla ya está cerrada"
+                ];
+            }
+            
             $type = $request->type_report_id;
             EjecucionDetalleJob::dispatch($cronograma, $type, 1)->onQueue("medium");
             
