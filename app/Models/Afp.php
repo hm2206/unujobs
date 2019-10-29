@@ -21,7 +21,8 @@ class Afp extends Model
      * @var array
      */
     protected $fillable = [
-        "nombre", "aporte", "prima", "aporte_descuento_id", "prima_descuento_id"
+        "nombre", "aporte", "prima", "aporte_descuento_id", "prima_descuento_id",
+        "prima_limite"
     ];
 
 

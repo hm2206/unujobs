@@ -53,7 +53,8 @@ class ReportDescuento implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $historial = Historial::where('cronograma_id', $cronograma->id)->get();
+        $historial = Historial::where('cronograma_id', $cronograma->id)
+            ->orderBy('orden', 'ASC')->get();
         $count = 1;
 
         // Obtener los descuentos

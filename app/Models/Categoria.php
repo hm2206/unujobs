@@ -44,6 +44,12 @@ class Categoria extends Model
         return $this->belongsToMany(Concepto::class, 'categoria_concepto')->withPivot('monto');
     }
 
+
+    public function type_remuneraciones()
+    {
+        return $this->belongsToMany(TypeRemuneracion::class, 'categoria_type_remuneracion');
+    }
+
     
     /**
      * Slug para proteger los id en las urls

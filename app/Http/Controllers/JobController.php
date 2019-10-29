@@ -54,6 +54,7 @@ class JobController extends Controller
         $cargo_id = request()->input("cargo_id", "");
         $categoria_id = request()->input("categoria_id", "");
         $meta_id = request()->input("meta_id", "");
+        $plaza = request()->plaza ? 1 : 0;
 
         // filtros
         $config = [
@@ -61,15 +62,12 @@ class JobController extends Controller
             "cargo" => $cargo_id,
             "categoria" => $categoria_id,
             "meta" => $meta_id,
+            "plaza" => $plaza,
             "total" => 0
         ];
 
         // ejecutar filtro
-        $jobs = Info::with('work')->whereHas('work', function($w) use($like) {
-            $w->where("nombre_completo", "like", "%{$like}%")
-                ->orWhere("numero_de_documento", "like", "%{$like}%")
-                ->orderBy('works.nombre_completo', 'DESC');
-        })->where('active', $estado);
+        $jobs = Info::with('work')->where('active', $estado);
         
         if ($config['planilla']) {
             $jobs = $jobs->where("planilla_id", $config['planilla']);
@@ -87,6 +85,16 @@ class JobController extends Controller
             $jobs = $jobs->where("meta_id", $config['meta']);
         }
 
+        if ($config['plaza']) {
+            $jobs = $jobs->where("plaza","like", $like);
+        }else {
+            $jobs = $jobs->whereHas('work', function($w) use($like) {
+                $w->where("nombre_completo", "like", "%{$like}%")
+                    ->orWhere("numero_de_documento", "like", "%{$like}%")
+                    ->orderBy('works.nombre_completo', 'DESC');
+            });
+        }
+
         // obteneos los id de las personas
         $index = $jobs->get(["id"]);
         $count = $index->count();
@@ -96,7 +104,7 @@ class JobController extends Controller
 
         return view('trabajador.index', \compact(
             'jobs', 'estado', 'planilla_id', 'cargo_id', 'categoria_id', 'meta_id',
-            'count'
+            'count', "plaza"
         ));
     }
 
@@ -177,11 +185,8 @@ class JobController extends Controller
      */
     public function update(JobRequest $request, Work $job)
     {
-        $job->update($request->except('descanso', 'afecto', 'cheque'));
+        $job->update($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
-        $job->descanso = $request->input("descanso") ? 1 : 0;
-        $job->afecto = $request->afecto ? 1 : 0;
-        $job->cheque = $request->cheque ? 1 : 0;
         $job->save();
         return back()->with(["success" => "El registro se actualizo correctamente"]);
     }

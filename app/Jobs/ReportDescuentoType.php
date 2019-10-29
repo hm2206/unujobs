@@ -57,7 +57,8 @@ class ReportDescuentoType implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $historial = Historial::where('cronograma_id', $cronograma->id)->get();
+        $historial = Historial::where('cronograma_id', $cronograma->id)
+            ->orderBy('orden', 'ASC')->get();
         $count = 1;
 
         $type = TypeDescuento::findOrFail($this->type_descuento);

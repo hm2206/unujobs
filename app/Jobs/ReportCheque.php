@@ -59,11 +59,11 @@ class ReportCheque implements ShouldQueue
         $footer = \collect();
 
         $cronograma = $this->cronograma;
-        $historial = Historial::with(['work'])
+        $historial = Historial::with(['work:works.id,nombre_completo,numero_de_documento'])
             ->where("cronograma_id", $cronograma->id)
-            ->where("numero_de_cuenta", "")
-            ->orWhere("numero_de_cuenta", null)
-            ->get();
+            ->where("numero_de_cuenta", null)
+            ->orderBy('orden', 'ASC')
+            ->get(["work_id", "id", "total_neto", "total_bruto"]);
         // obtener tipo de bonificaciones
         $bonificaciones = TypeRemuneracion::where("bonificacion", 1)->get();
         // obtener remuneraciones
@@ -71,11 +71,6 @@ class ReportCheque implements ShouldQueue
             ->whereIn("historial_id", $historial->pluck(['id']))
             ->whereIn("type_remuneracion_id", $bonificaciones->pluck(['id']))
             ->get();
-        
-        foreach ($historial as $history) {
-            // guardar las bonificaciones
-            $history->bonificaciones = $remuneraciones->where("historial_id", $history->id);
-        }
         
         $pdf = PDF::loadView("pdf.reporte_cheque", compact(
             'cronograma', 'bonificaciones', 'historial', 'meses', 'num_page', 'num_work',
@@ -89,6 +84,7 @@ class ReportCheque implements ShouldQueue
         // obtenemos el reporte
         $archivo = Report::where("cronograma_id", $cronograma->id)
             ->where("type_report_id", $this->type_report)
+            ->where("path", "/storage/pdf/{$name}")
             ->first();
 
         if ($archivo) {

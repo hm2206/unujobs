@@ -90,7 +90,8 @@ class ReportPersonal implements ShouldQueue
         $remuneraciones = Remuneracion::whereIn("cronograma_id", $cronogramas->pluck(['id']))->get();
         
         // obtener trabajadores
-        $historial = Historial::whereIn("cronograma_id", $cronogramas->pluck(['id']))->get();
+        $historial = Historial::whereIn("cronograma_id", $cronogramas->pluck(['id']))
+            ->orderBy('orden', 'ASC')->get();
 
         foreach ($historial as $history) {
             $history->monto_bruto = $remuneraciones->where("historial_id", $history->id)->sum('monto');

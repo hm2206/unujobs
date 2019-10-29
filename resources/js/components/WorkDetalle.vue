@@ -100,7 +100,9 @@ export default {
     },
     watch: {
         send(nuevo) {
-            this.updateTasa();
+            if (nuevo) {
+                this.updateTasa();
+            }
         }
     },
     methods: {

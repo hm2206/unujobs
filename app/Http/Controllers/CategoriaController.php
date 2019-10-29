@@ -198,7 +198,11 @@ class CategoriaController extends Controller
         $categoria = Categoria::with(['conceptos' => function($c) {
             $c->orderBy('conceptos.key', 'ASC');
         }])->findOrFail($id);
-        $types = TypeRemuneracion::where("show", 1)->get();
+        $types = TypeRemuneracion::where("show", 1)
+            ->whereHas('categorias', function($c) use($categoria) {
+                $c->where('categorias.id', $categoria->id);
+            })->get();
+
         $tmpType = DB::table('concepto_type_remuneracion')->where('categoria_id', $id)->get();
         $checked = \collect();
 
@@ -310,4 +314,83 @@ class CategoriaController extends Controller
         
     }
 
+
+    public function deleteConcepto(Request $request, $id) 
+    {
+        $categoria = Categoria::findOrFail($id);
+
+        try {
+
+            $conceptos = $request->input('conceptos', []);
+            $categoria->conceptos()->detach($conceptos);
+
+            return [
+                "status" => true,
+                "message" => "Los conceptos fuerón eliminado correctamente!"
+            ];
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al eliminar el concepto"
+            ];
+        }
+    }
+
+
+
+    public function type_remuneracion($id)
+    {
+        $categoria = Categoria::findOrFail($id);
+        return TypeRemuneracion::whereHas('categorias', function($car) use($categoria) {
+            $car->where('categoria_id', $categoria->id);
+        })->orderBy('orden', 'ASC')
+            ->get();
+    }
+
+
+    public function assignTypeRemuneracion(Request $request, $id) 
+    {
+        $categoria = Categoria::findOrFail($id);
+        try {
+
+            $type_remuneraciones = $request->input('type_remuneraciones', []);
+            $categoria->type_remuneraciones()->syncWithoutDetaching($type_remuneraciones);
+
+            return [
+                "status" => true,
+                "message" => "Los cargos se agregarón correctamente!"
+            ];
+        } catch (\Throwable $th) {
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la información"
+            ];
+        }
+    }
+
+
+    public function detachTypeRemuneracion(Request $request, $id) 
+    {
+        $categoria = Categoria::findOrFail($id);
+        $this->validate(request(), [
+            "type_remuneracion_id" => "required"
+        ]);
+
+        try {
+
+            $type_remuneracion = $request->input('type_remuneracion_id', null);
+            $categoria->type_remuneraciones()->detach($type_remuneracion);
+
+            return [
+                "status" => true,
+                "message" => "Los cargos se agregarón correctamente!"
+            ];
+        } catch (\Throwable $th) {
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la información"
+            ];
+        }
+    }
 }

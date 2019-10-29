@@ -11,10 +11,10 @@ Route::group(["prefix" => 'v1'], function() {
 
     Route::resource('banco', 'BancoController');
     
-    // api de cargos
-    Route::get('/cargo/{id}/type_remuneracion', 'CargoController@type_remuneracion');
-    Route::post('/cargo/{id}/type_remuneracion', 'CargoController@assignTypeRemuneracion');
-    Route::delete('/cargo/{id}/type_remuneracion', 'CargoController@detachTypeRemuneracion');
+    // api de categoria
+    Route::get('/categoria/{id}/type_remuneracion', 'CategoriaController@type_remuneracion');
+    Route::post('/categoria/{id}/type_remuneracion', 'CategoriaController@assignTypeRemuneracion');
+    Route::delete('/categoria/{id}/type_remuneracion', 'CategoriaController@detachTypeRemuneracion');
     
     //Recursos para generar boletas
     Route::get("/boleta/{id}", "JobController@boleta");
@@ -44,11 +44,14 @@ Route::group(["prefix" => 'v1'], function() {
     // actualizar un cargo determinado
     Route::put("/cargo/{id}", "CargoController@update");
 
+
     // registrar una nueva categoria
     Route::post("/categoria", "CategoriaController@store");
     // actualizar una categoria determinada
     Route::put("/categoria/{id}", "CategoriaController@update");
     Route::put("/categoria/{id}/concepto", "CategoriaController@updateConcepto");
+    // quitar conceptos
+    Route::delete("/categoria/{id}/concepto", "CategoriaController@deleteConcepto");
 
     // registrar un nuevo concepto
     Route::post("/concepto", "ConceptoController@store");
@@ -177,6 +180,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('historial/{id}/descuento', 'HistorialController@descuento');
     Route::get('historial/{id}/obligacion', 'HistorialController@obligacion');
     Route::get('historial/{id}/educacional', 'HistorialController@educacional');
+    Route::get('historial/{id}/aportacion', 'HistorialController@aportacion');
 
 
     // api para procesar las remuneraciones

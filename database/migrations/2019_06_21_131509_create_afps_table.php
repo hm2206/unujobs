@@ -20,6 +20,7 @@ class CreateAfpsTable extends Migration
             $table->double('aporte')->nullable();
             $table->bigInteger('prima_descuento_id')->nullable();
             $table->bigInteger('aporte_descuento_id')->nullable();
+            $table->double('prima_limite')->default(0);
             $table->tinyInteger('activo')->default(1);
             $table->timestamps();
         });

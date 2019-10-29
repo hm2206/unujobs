@@ -45,23 +45,23 @@
             <table class="table mt-2 table-bordered table-sm">
                 <thead>
                     <tr>
-                        <th class="py-0 font-10"><small class="font-10 pl-1">N°</small></th>
-                        <th class="py-0 font-10"><small class="font-10 pl-1">Nombre Completo</small></th>
-                        <th class="py-0 font-10"><small class="font-10 pl-1">N° de Documento</small></th>
-                        <th class="py-0 font-10 text-right"><small class="font-10 pr-1">{{ $type->descripcion }}</small></th>
+                        <th class="py-0 font-10 pl-1 text-center"><small class="font-10">N°</small></th>
+                        <th class="py-0 font-10 pl-1"><small class="font-10">Nombre Completo</small></th>
+                        <th class="py-0 font-10 pl-1 text-center"><small class="font-10">N° de Documento</small></th>
+                        <th class="py-0 font-10 text-right pr-1"><small class="font-10">{{ $type->descripcion }}</small></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($historial as $history)
                         <tr>
-                            <td class="py-0"><small class="font-9 pl-1">{{ $history->count }}</small></td>
-                            <td class="py-0"><small class="font-9 pl-1">{{ $history->work ? $history->work->nombre_completo : '' }}</small></td>
-                            <td class="py-0 text-center"><small class="font-9 pl-1">{{ $history->work ? $history->work->numero_de_documento : '' }}</small></td>
-                            <td class="py-0 text-right"><small class="font-9 pr-1">{{ $history->monto }}</small></td>
+                            <td class="py-0 text-center"><small class="font-9">{{ $history->count }}</small></td>
+                            <td class="py-0 pl-1"><small class="font-9">{{ $history->work ? $history->work->nombre_completo : '' }}</small></td>
+                            <td class="py-0 text-center"><small class="font-9">{{ $history->work ? $history->work->numero_de_documento : '' }}</small></td>
+                            <td class="py-0 text-right pr-1"><small class="font-9">{{ $history->monto }}</small></td>
                         </tr> 
                     @endforeach
                     <tr>
-                        <th class="py-0 text-right" colspan="4"><b class="font-10 pr-1">Total: S/. {{ $historial->sum('monto') }}</b></th>
+                        <th class="py-0 text-right pr-1" colspan="4"><b class="font-10 pr-1">Total: S/. {{ $historial->sum('monto') }}</b></th>
                     </tr>
                 </tbody>
             </table>

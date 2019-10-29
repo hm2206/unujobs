@@ -59,8 +59,8 @@ class ReportCuenta implements ShouldQueue
         $cronograma = $this->cronograma;
         $historial = Historial::with(['work'])
             ->where("cronograma_id", $cronograma->id)
-            ->where("numero_de_cuenta", "<>", "")
-            ->orWhere("numero_de_cuenta", "<>", null)
+            ->where("numero_de_cuenta", "<>", null)
+            ->orderBy('orden', 'ASC')
             ->get();
 
         // obtener tipo de bonificaciones
@@ -81,16 +81,19 @@ class ReportCuenta implements ShouldQueue
                 // obtenemos las remuneraciones por trabajador
                 $history->remuneraciones = $remuneraciones->where("historial_id", $history->id);
             }
+            // chunk
+            $banco->historial = $banco->historial->chunk(23);
         }  
         
         $pdf = PDF::loadView("pdf.reporte_cuenta", compact('cronograma', 'bancos', 'meses', 'totales', 'num_work', 'num_page'));
 
         $fecha = strtotime(Carbon::now());
-        $name = "reporte_cuenta_{$fecha}.pdf";
+        $name = "reporte_cuenta_{$this->cronograma->id}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");
 
         $archivo = Report::where("cronograma_id", $this->cronograma->id)
             ->where("type_report_id", $this->type_report)
+            ->where("path", "/storage/pdf/{$name}")
             ->first();
             
         if ($archivo) {

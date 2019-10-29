@@ -8,6 +8,20 @@
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
     <title>REPORTE PLANILLA META {{ $titulo }} </title>
 </head>
+
+<style>
+
+    html {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    body {
+        padding: 1.5em;
+    }
+
+</style>
+
 <body class="bg-white text-negro mt-0 pt-0">
 
     <div class="text-center">{{ $titulo }}</div>
@@ -96,7 +110,7 @@
                             <tr class="table-height">
 
                                 <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-11">
-                                    <b class="font-11">{{ $type->key }}. {{ $type->descripcion }}</b>
+                                    <b class="font-12">{{ $type->key }}.-{{ $type->descripcion }}</b>
                                 </th>
 
                                 @foreach ($type->type_categorias as $type_categoria)
@@ -190,7 +204,7 @@
                         </tr>
                         <tr>
                             <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
-                                TOTAL LICUADO PERCIBIDO
+                                TOTAL LIQUIDO PERCIBIDO
                             </th>
                             <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:1px solid black;"
                                 class="font-13 text-right"

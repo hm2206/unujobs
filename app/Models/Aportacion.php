@@ -11,7 +11,7 @@ class Aportacion extends Model
     protected $fillable = [
         'work_id', 'info_id', 'historial_id', 'type_descuento_id',
         'type_aportacion_id', 'porcentaje', 'minimo', 'default',
-        'monto'
+        'monto', "cronograma_id"
     ];
 
 

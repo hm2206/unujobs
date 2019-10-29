@@ -65,6 +65,7 @@ class ReportBoleta implements ShouldQueue
         // historial
         $historial = Historial::with('work', 'cargo', 'categoria', 'meta')
             ->where('cronograma_id', $cronograma->id)
+            ->orderBy('orden', 'ASC')
             ->where('meta_id', $meta->id)
             ->get();
         // obtener remuneraciones

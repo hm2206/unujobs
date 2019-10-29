@@ -25,7 +25,7 @@
 
 @foreach ($meta->historial as $num => $historial)
 
-<body class="bg-white text-negro" style="padding-top: 0px; margin-top: 0px;">
+<body class="bg-white text-negro" style="padding-top: 1em; margin-top: 0px;">
         <div>
             <div>
                 <table>
@@ -76,7 +76,7 @@
                 <table class="w-100 table-sm uppercase">
                     <tr>
                         <td class="py-0 font-12">OBS:</td>
-                        <th class="font-10"><h5><b>MES DE {{ $meses[$meta->mes - 1] }}-{{ $meta->year }} </h5></b></th>
+                        <th class="font-12"><b>MES DE {{ $meses[$meta->mes - 1] }}-{{ $meta->year }}</b></th>
                         <td class="font-12">META SIAF: {{ $meta->metaID }}</td>
                         <td class="font-12"></td>
                         <td class="font-12"></td>
@@ -124,27 +124,32 @@
                                         @foreach ($columna as $remuneracion)
                                             <table class="w-100">
                                                 @if (!$remuneracion->nivel)
-                                                    <tr>
-                                                        <th class="py-0 font-12">
-                                                            {{   
-                                                                $remuneracion->typeRemuneracion ?
-                                                                    $remuneracion->typeRemuneracion->key
-                                                                    : null
-                                                            }}.-   
-                                                        </th>
-                                                        <th class="py-0 text-right font-12">
-                                                            {{   
-                                                                $remuneracion->monto
-                                                            }}         
-                                                        </th>
-                                                    </tr>
+                                                    @if ($remuneracion->empty)
+                                                        <tr>
+                                                            <th class="py-0 font-12">&nbsp;</th>
+                                                            <th class="py-0 text-right font-12">&nbsp;</th>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <th class="py-0 font-12">
+                                                                {{   
+                                                                    $remuneracion->typeRemuneracion ?
+                                                                        $remuneracion->typeRemuneracion->key
+                                                                        : ""
+                                                                }}.-   
+                                                            </th>
+                                                            <th class="py-0 text-right font-12">
+                                                                {{ $money->parseTo($remuneracion->monto) }}         
+                                                            </th>
+                                                        </tr>
+                                                    @endif
                                                 @else
                                                     <tr>
                                                         <th class="py-0">
                                                             <div class="font-12">{{ $remuneracion->key }}</div>
                                                         </th>
                                                         <th class="py-0 text-right">
-                                                            <div class="bbt-1 font-12">{{  $remuneracion->monto }}</div>      
+                                                            <div class="bbt-1 font-12">{{ $money->parseTo($remuneracion->monto) }}</div>      
                                                         </th>
                                                     </tr>
                                                     @for ($i = 0; $i < 6 - $columna->count(); $i++)
@@ -168,13 +173,11 @@
                                                             {{   
                                                                 $descuento->typeDescuento ?
                                                                     $descuento->typeDescuento->key
-                                                                    : null
+                                                                    : ""
                                                             }}.-   
                                                         </th>
                                                         <th class="py-0 text-right font-12">
-                                                            {{   
-                                                                $descuento->monto
-                                                            }}         
+                                                            {{ $money->parseTo($descuento->monto) }}         
                                                         </th>
                                                     </tr>
                                                 @else
@@ -183,7 +186,9 @@
                                                             <div class="font-12">{{ $descuento->key }}</div>
                                                         </th>
                                                         <th class="py-0 text-right">
-                                                            <div class="bbt-1 font-12">{{  $descuento->monto }}</div>      
+                                                            <div class="bbt-1 font-12">
+                                                                {{ $money->parseTo($descuento->monto) }}
+                                                            </div>      
                                                         </th>
                                                     </tr>
                                                     <tr>
@@ -191,7 +196,9 @@
                                                             <div class="font-12">NETO</div>
                                                         </th>
                                                         <th class="py-0 text-right">
-                                                            <div class="bbt-1 font-12">{{  $history->neto }}</div>      
+                                                            <div class="bbt-1 font-12">
+                                                                {{ $money->parseTo($history->neto) }}
+                                                            </div>      
                                                         </th>
                                                     </tr>
                                                     @for ($i = 0; $i < 5 - $columna->count(); $i++)
@@ -214,13 +221,11 @@
                                                         {{   
                                                             $aport->typeDescuento ?
                                                                 $aport->typeDescuento->key
-                                                                : null
+                                                                : ""
                                                         }}.-   
                                                     </th>
                                                     <th class="py-0 text-right font-13">
-                                                        {{   
-                                                            $aport->monto
-                                                        }}         
+                                                        {{ $money->parseTo($aport->monto) }}         
                                                     </th>
                                                 </tr>
                                             @else
@@ -229,7 +234,9 @@
                                                         <div class="font-12">{{ $aport->key }}</div>
                                                     </th>
                                                     <th class="py-0 text-right">
-                                                        <div class="bbt-1 font-12">{{ $aport->monto }}</div>      
+                                                        <div class="bbt-1 font-12">
+                                                            {{ $money->parseTo($aport->monto) }}
+                                                        </div>      
                                                     </th>
                                                 </tr>
                                                 <tr>

@@ -3,7 +3,8 @@
 // authenticacion de perdida de sesion
 Route::post('current', 'UserController@current');
 
-/*\DB::listen(function($query) {
+/*
+\DB::listen(function($query) {
     echo "<pre>{$query->sql}</pre>";
 });
 */

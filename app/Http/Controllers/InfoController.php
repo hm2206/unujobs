@@ -41,9 +41,10 @@ class InfoController extends Controller
                 'sindicato',
                 'type_aportaciones'
             )->where("work_id", request()->work_id)
+            ->where('active', 1)
             ->get();
         }
-        return Info::paginate(10);
+        return Info::paginate(30);
     }
 
 
@@ -75,6 +76,8 @@ class InfoController extends Controller
             $info->afecto = $request->afecto ? 1 : 0;
             $info->especial = $request->afecto ? 1 : 0;
             $info->save();
+
+            $info->type_aportaciones()->sync([1]);
 
             return [
                 "status" => true,
@@ -120,14 +123,13 @@ class InfoController extends Controller
             "meta_id" => "required",
             "perfil" => "required",
             "pap" => "required",
-            "fecha_de_ingreso" => "required",
-            "afecto" => "required",
-            "active" => "required"
+            "fecha_de_ingreso" => "required"
         ]);
 
         try {
 
             $info = Info::findOrFail($id);
+            $info->update($request->except(['afecto', 'active']));
             $info->active = $request->active ? 1 : 0;
             $info->afecto = $request->afecto ? 1 : 0;
             $info->especial = $request->afecto ? 1 : 0;

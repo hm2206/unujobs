@@ -157,6 +157,13 @@
                                         <a href="{{ route('categoria.config', [$categoria->slug(), "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>
+
+                                        <config-boleta
+                                            theme="btn-sm btn-danger"
+                                            :cargo="{{ $categoria }}"
+                                        >
+                                            <i class="fas fa-file-pdf"></i>
+                                        </config-boleta>
                                     </div>
                                 </th>
                             </tr>

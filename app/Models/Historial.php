@@ -15,7 +15,7 @@ class Historial extends Model
         "banco_id", "numero_de_cuenta", "numero_de_essalud",
         "plaza", "perfil", "escuela", "pap", "ext_pptto",
         "observacion", "base", "base_enc", "total_bruto",
-        "total_neto", "total_desct", "pdf", "afecto"
+        "total_neto", "total_desct", "pdf", "afecto", "orden"
     ];
 
 

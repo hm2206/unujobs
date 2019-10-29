@@ -10,6 +10,19 @@
         @yield('titulo')
     </title>
 </head>
+
+<style>
+    html {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    body {
+        padding: 1.5em;
+    }
+    
+</style>
+
 <body class="bg-white text-negro h-100">
 
     <div class="text-center"></div>

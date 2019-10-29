@@ -134,6 +134,10 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-1">
+                            Plaza
+                            <input type="checkbox"  {!! request()->plaza ? 'checked' : null !!} name="plaza">
+                        </div>
                         <div class="col-md-3">
                             <input type="text" class="form-control" name="query_search" value="{{ $like }}">
                         </div>
@@ -144,7 +148,7 @@
                             </button>
                         </div>    
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
 
                             <div class="row">
 
@@ -155,7 +159,7 @@
                                     formulario="form-import-remuneracion"
                                     param="{{ auth()->user()->id }}"
                                 >
-                                    <i class="fas fa-file-excel"></i> Imp. Remuneraciones
+                                    <i class="fas fa-file-excel"></i> Imp. Rem
                                 </import>
 
                                 <import id="import-descuento"
@@ -165,7 +169,7 @@
                                     formulario="form-import-descuento"
                                     param="{{ auth()->user()->id }}"
                                 >
-                                    <i class="fas fa-file-excel"></i> Imp. Descuentos
+                                    <i class="fas fa-file-excel"></i> Imp. Desc
                                 </import>
 
                             </div>
@@ -192,7 +196,7 @@
                             @endphp
                             <tr>
                                 <th>{{ $history->id }}</th>
-                                <th class="capitalize">{{ $job->nombre_completo }}</th>
+                                <th class="uppercase">{{ $job->nombre_completo }}</th>
                                 <th>{{ $job->numero_de_documento }}</th>
                                 <th class="uppercase">
                                     <div class="btn btn-sm btn-danger">

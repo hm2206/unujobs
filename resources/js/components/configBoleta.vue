@@ -130,7 +130,7 @@ export default {
             });
         },
         async getTypeCargos() {
-            let api = unujobs('get', `/cargo/${this.cargo.id}/type_remuneracion`);
+            let api = unujobs('get', `/categoria/${this.cargo.id}/type_remuneracion`);
             await api.then(async res => {
                 this.designs = await res.data;
                 // quitamos los types que ya fuerón agregados
@@ -150,7 +150,7 @@ export default {
             if (answer) {
                 this.loader = true;
                 const form = new FormData(document.getElementById('form-add'));
-                let api = unujobs('post', `/cargo/${this.cargo.id}/type_remuneracion`, form);
+                let api = unujobs('post', `/categoria/${this.cargo.id}/type_remuneracion`, form);
                 await api.then(res => {
                     let { status, message } = res.data;
                     let icon = status ? 'success' : 'error';
@@ -166,7 +166,7 @@ export default {
             let answer = await confirm('¿ Está seguro en continuar ?');
             if (answer) {
                 this.loader = true;
-                let api = unujobs('post', `/cargo/${this.cargo.id}/type_remuneracion`, { 
+                let api = unujobs('post', `/categoria/${this.cargo.id}/type_remuneracion`, { 
                     _method: 'DELETE',
                     type_remuneracion_id: id
                 });

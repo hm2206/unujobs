@@ -214,7 +214,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">ext Pptto </label>
-                    <input type="text" v-model="ext_pptto" class="form-control" :disabled="true">
+                    <input type="text" v-model="form.ext_pptto" class="form-control" :disabled="true">
                 </div>
             </div>
 
@@ -430,19 +430,15 @@ export default {
                 let icon = status ? 'success' : 'error';
 
                 if (body) {
+                    console.log(body);
                     this.$emit('updateHistory', body);
                 }
 
                 notify({icon: icon, text: message});
             }).catch(err => {
-
                 let { data } = err.response;
                 this.errors = data.errors;
-
-                if (!data.message) {
-                    notify({icon: 'error', text: 'Algo salió mal'});
-                }
-
+                notify({icon: 'error', text: 'Algo salió mal'});
             });
 
             this.loading = false;

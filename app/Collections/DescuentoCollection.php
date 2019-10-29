@@ -8,6 +8,8 @@ use App\Models\TypeDescuento;
 use App\Models\Descuento;
 use App\Models\Remuneracion;
 use App\Models\Historial;
+use App\Models\Aportacion;
+
 
 class DescuentoCollection 
 {
@@ -39,7 +41,107 @@ class DescuentoCollection
     }
 
 
-    public function update(Cronograma $cronograma, Historial $history, TypeDescuento $type)
+    /**
+     * Actualizar afp de un trabajador especifico
+     *
+     * @param Historial $history
+     * @return void
+     */
+    public static function updateAFP(Historial $history)
+    {
+        // obtenemos los tipos de descuentos asociados a las afps
+        $types = TypeDescuento::whereHas('type_afp')
+            ->orWhereHas('afp_primas')
+            ->orWhereHas('afp_aportes')
+            ->get();
+        // recorremos los tipos de descuentos
+        foreach ($types as $type) {
+            $monto = 0;
+            // verificamos aporte del 10%
+            $monto = $type->afp_aportes->count() > 0 ? self::calc_afp_aporte($history, $type) : $monto;
+            // verificamos si el type tiene configuracion de afp prima
+            $monto = $type->afp_primas->count() > 0 ? self::calc_afp_prima($history, $type) : $monto;
+            // verificamos si el type tiene configuracion de type_afp
+            $monto = $type->type_afp ? self::calc_type_afp($history, $type) : $monto;
+            // actualizamos la afp
+            Descuento::where('historial_id', $history->id)
+                ->where('type_descuento_id', $type->id)
+                ->update([
+                    'monto' => round($monto, 2), 
+                    "edit" => 0
+                ]);
+        }
+
+        return $history;
+    }
+
+
+    /**
+     * actualizar aportaciones
+     *
+     * @param Historial $history
+     * @return void
+     */
+    public static function updateAportaciones(Historial $history)
+    {
+        $aportaciones = Aportacion::where('historial_id', $history->id)->get();
+        foreach ($aportaciones as $aportacion) {
+            $monto = $history->base >= $aportacion->minimo 
+                ? ($history->base * $aportacion->porcentaje) / 100
+                : $aportacion->minimo;
+            $aportacion->monto = round($monto, 2);
+            $aportacion->save();
+            $aportacion->type_descuento()->update(["monto" => round($monto, 2)]);
+            // actualizar descuentos
+            Descuento::where('historial_id', $history->id)
+                ->where('type_descuento_id', $aportacion->type_descuento_id)
+                ->update(["monto" => round($monto, 2)]);
+        }
+    }
+
+
+
+    public static function updateNeto(Historial $history)
+    {
+        // obtenemos el total de descuento
+        $total_desct = Descuento::where('historial_id', $history->id)->where('base', 0)->sum('monto');
+        // calculamos el total neto
+        $total_neto = $history->total_bruto - $total_desct;
+        // actualizamos el total de descuento y el neto
+        $history->total_desct = round($total_desct, 2);
+        $history->total_neto = round($total_neto, 2);
+        // retornamos el historial
+        return $history;
+    } 
+
+    /**
+     * Actualizar el sindicato de un sindicato
+     *
+     * @param Historial $history
+     * @return void
+     */
+    public static function updateSindicato(Historial $history)
+    {
+        $types = TypeDescuento::whereHas('sindicato')->get();
+        foreach ($types as $type) {
+            $monto = 0;
+            // verificamos que el trabajador este asociado a un sindicato
+            $monto = $type->sindicato ? self::calc_sindicato($history, $type) : $monto;
+            // actualizamos el descuneto
+            Descuento::where('historial_id', $history->id)
+                ->where("type_descuento_id", $type->id)
+                ->update(["monto" => $monto]);
+        }
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param Historial $history
+     * @param [type] $types
+     * @return void
+     */
+    public function update(Historial $history, $types)
     {
         $store = self::config($cronograma, $history, $history);
         $history->update($store->getStore());
@@ -176,8 +278,15 @@ class DescuentoCollection
     private static function calc_afp_prima($history, $type)
     {   
         $afp = $type->afp_primas->find($history->afp_id);
+        $monto = 0;
         // verificamo si el apf no sea null
         if ($afp) {
+            // verificar si la base imponible supero el limite prima
+            if ($history->base > $afp->prima_limite) {
+                // devolver caso especial
+                return round(($afp->prima_limite * $afp->prima) / 100, 2);
+            }
+            // devolver configuración predeterminada
             return round(($history->base * $afp->prima) / 100, 2);
         }
 

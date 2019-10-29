@@ -13,6 +13,9 @@ use App\Models\Planilla;
 use App\Models\Cargo;
 use App\Models\Categoria;
 use App\Models\Cronograma;
+use App\Collections\DescuentoCollection;
+use App\Collections\RemuneracionCollection;
+use App\Models\Aportacion;
 
 class HistorialController extends Controller
 {
@@ -114,6 +117,12 @@ class HistorialController extends Controller
         return Educacional::with('type_educacional')->where('historial_id', $id)->get();
     }
 
+
+    public function aportacion($id) 
+    {
+        return Aportacion::with('type_aportacion')->where('historial_id', $id)->get(); 
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -131,7 +140,7 @@ class HistorialController extends Controller
             "pap" => "required",
         ]);
 
-        $history = Historial::findOrFail($id);
+        $history = Historial::with('work', 'categoria')->findOrFail($id);
         $cronograma = Cronograma::where('estado', 1)->findOrFail($history->cronograma_id);
         $planilla = Planilla::findOrFail($history->planilla_id);
         $cargos = Cargo::whereHas('categorias', function($car) use($request) {
@@ -140,11 +149,20 @@ class HistorialController extends Controller
 
         try {
             // verificar si el cargo existe en la planilla
-            $isValido = $cargos->where("id", $request->cargo_id)->count() ? true : false;
+            $isValido = $cargos->where("id", $request->cargo_id)->first();
             
             if ($isValido) {
 
                 $history->update($request->except(['planilla_id']));
+                $history->ext_pptto = $isValido->ext_pptto;
+                $history->save();
+                // actualizar afp
+                DescuentoCollection::updateAFP($history);
+                // actualizar sindicato
+                DescuentoCollection::updateSindicato($history);
+                // actualizar historial
+                $history = DescuentoCollection::updateNeto($history);
+                $history->save();
 
                 return [
                     "status" => true,

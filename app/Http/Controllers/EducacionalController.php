@@ -125,8 +125,8 @@ class EducacionalController extends Controller
             foreach ($educacionales as $educacional) {
                 $db_current = $db_educacionales->find($educacional->id);
                 if ($db_current) {
-                    $monto = round((double) $educacional->monto, 2 );
-                    $db_current->update([ "monto",  $monto ]);
+                    $monto = round($educacional->monto, 2 );
+                    $db_current->update([ "monto" =>  $monto ]);
                     $monto_total += $monto;
                 }
             }

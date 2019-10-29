@@ -7,7 +7,11 @@
     <div class="text-md uppercase">
         <b class="font-13"> 
             RESUMEN DE EJECUCION DE TODAS LAS METAS DEL PERSONAL : 
-            {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}
+            @if ($cronograma->adicional)
+                ADICIONAL >> {{ $cronograma->numero }}
+            @else
+                {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}
+            @endif
 
             <div class="text-center">
                 <span style="padding-right: 2em;">MONTO {{ $neto ? 'NETO' : 'BRUTO' }}</span> <br>
@@ -17,7 +21,14 @@
     </div>
 
     <h5 style="font-size: 14px; margin-top: 0.5em;" class="uppercase">
-        <b>PLANILLA {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}</b>
+        <b>
+            PLANILLA 
+            @if ($cronograma->adicional)
+                ADICIONAL >> {{ $cronograma->numero }}
+            @else
+                {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}
+            @endif
+        </b>
     </h5>
 
     <table class="table-sm w-100">

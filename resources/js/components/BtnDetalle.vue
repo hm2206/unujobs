@@ -5,7 +5,7 @@
         </button>
 
         
-        <modal @close="show = false" col="col-md-10" :show="show" height="95vh" style="padding-top: 10px;">
+        <modal @close="show = false" col="col-md-11" :show="show" height="95vh" style="padding-top: 10px;">
             <template slot="header">
                 Situación laboral
                 <i class="fas fa-arrow-right text-danger"></i> 
@@ -94,7 +94,7 @@
                     <div class="row justify-content-between">
                         <div class="col-md-6">
                             <buscar-info theme="btn-info" :leave="clear" @find="getFind"
-                                :planilla_id="tmp_cronograma.planilla_id"
+                                :cronograma="tmp_cronograma"
                             >
                                 <i class="fas fa-search"></i> Buscar
                             </buscar-info>
@@ -147,6 +147,7 @@ import WorkDescuento from './WorkDescuento';
 import WorkObligacion from './WorkObligacion';
 import WorkDetalle from './WorkDetalle';
 import WorkAfectacion from './WorkAfectacion';
+import WorkAportacion from './WorkAportacion';
 import BuscarInfo from './BuscarInfo';
 import { setTimeout } from 'timers';
 
@@ -158,7 +159,8 @@ export default {
         'work-descuento': WorkDescuento,
         'work-obligacion': WorkObligacion,
         'work-detalle': WorkDetalle,
-        'buscar-info': BuscarInfo
+        'work-aportacion': WorkAportacion,
+        'buscar-info': BuscarInfo,
     },
     props: [
         "theme", 'param', "historial", "nombre_completo", 
@@ -178,8 +180,9 @@ export default {
                 {id: 2, text: "Afectación Presupuestal", active: false, component: 'work-afectacion', btn: true},
                 {id: 3, text: "Remuneraciones", active: false, component: 'work-remuneracion', btn: true},
                 {id: 4, text: "Descuentos", active: false, component: 'work-descuento', btn: true},
-                {id: 6, text: "Tasa Educacionales", active: false,  component: 'work-detalle', btn: true},
-                {id: 5, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
+                {id: 5, text: "Tasa Educacionales", active: false,  component: 'work-detalle', btn: true},
+                {id: 6, text: "Aportación Empleador", active: false,  component: 'work-aportacion', btn: false},
+                {id: 7, text: "Obligaciones Judiciales", active: false,  component: 'work-obligacion', btn: false},
             ],
             history: {},
             tmp_cronograma: {
@@ -256,7 +259,7 @@ export default {
             this.block = true;
             this.job_current = e;
             this.search = true;
-            // await this.getCargos();
+            this.getHistory();
             this.block = true;
         },
         limpiarBusqueda(e) {

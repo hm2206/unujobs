@@ -41,6 +41,7 @@
                             <th>Aporte</th>
                             <th>Prima</th>
                             <th>Porcentajes Dinamicos</th>
+                            <th>Prima Limite</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -65,6 +66,7 @@
                                         @endforeach
                                     </table>
                                 </th>
+                                <th>{{ $afp->prima_limite }}</th>
                                 <th>
                                     <div class="btn-group">
                                         <a href="{{ route('afp.edit', $afp->slug()) }}" class="btn btn-sm btn-warning">

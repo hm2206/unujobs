@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCargoTypeRemuneracionTable extends Migration
+class CreateCategoriaTypeRemuneracionTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateCargoTypeRemuneracionTable extends Migration
      */
     public function up()
     {
-        Schema::create('cargo_type_remuneracion', function (Blueprint $table) {
+        Schema::create('categoria_type_remuneracion', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('cargo_id');
+            $table->bigInteger('categoria_id');
             $table->bigInteger('type_remuneracion_id');
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ class CreateCargoTypeRemuneracionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cargo_type_remuneracion');
+        Schema::dropIfExists('categoria_type_remuneracion');
     }
 }

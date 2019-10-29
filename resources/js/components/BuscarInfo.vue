@@ -27,17 +27,17 @@
                             </div>
                             <hr>
                         </div>
-                        <div class="col-md-12" v-for="(result, res) in resultados" :key="`rest-${res}`">
+                        <div class="col-md-12" v-for="(history, res) in historial.data" :key="`rest-${res}`">
                             <div class="row">
-                                <div class="col-md-6">{{ result.work ? result.work.nombre_completo : '' }}</div>
-                                <div class="col-md-2">{{ result.work ? result.work.numero_de_documento : '' }}</div>
+                                <div class="col-md-6">{{ history.work ? history.work.nombre_completo : '' }}</div>
+                                <div class="col-md-2">{{ history.work ? history.work.numero_de_documento : '' }}</div>
                                 <div class="col-md-2">
                                     <button class="btn btn-sm btn-danger">
-                                        {{ result.categoria ? result.categoria.nombre : '' }}
+                                        {{ history.categoria ? history.categoria.nombre : '' }}
                                     </button>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="#" v-on:click="seleccionar($event, result.id)" class="btn btn-sm btn-success">
+                                    <a href="#" v-on:click="seleccionar($event, history.id)" class="btn btn-sm btn-success">
                                         <i class="fas fa-check"></i> Seleccionar
                                     </a>
                                 </div>
@@ -60,12 +60,12 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ["leave", "theme", "planilla_id"],
+    props: ["leave", "theme", "cronograma"],
     data() {
         return {
             show: false,
             search: '',
-            resultados: [],
+            historial: [],
             loader: false,
         }
     },
@@ -81,9 +81,9 @@ export default {
         async buscar(e) {
             e.preventDefault();
             this.loader = true;
-            let api = unujobs("get", `/work?query_search=${this.search}&planilla_id=${this.planilla_id}`);
+            let api = unujobs("get", `/cronograma/${this.cronograma.id}/historial?query_search=${this.search}`);
             await api.then(res => {
-                this.resultados = res.data;
+                this.historial = res.data;
             }).catch(err => {
                 notify({icon: 'error', text: 'Algo salió mal :('});
             }); 

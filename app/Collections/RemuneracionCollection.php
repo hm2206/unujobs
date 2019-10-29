@@ -24,6 +24,51 @@ class RemuneracionCollection {
     }
 
 
+    public static function updateRelations(Historial $history) 
+    {
+        $types = TypeRemuneracion::whereHas('type_remuneraciones')->get();
+        // recorremons a los padres
+        foreach ($types as $type) {
+            // obtener a los hijos
+            $children = $type->type_remuneraciones->pluck(['id']);
+            $monto = Remuneracion::where('historial_id', $history->id)
+                ->whereIn('type_remuneracion_id', $children)
+                ->sum('monto');
+            // actualizamos la remuneracion padre
+            Remuneracion::where('historial_id', $history->id)
+                ->where('type_remuneracion_id', $type->id)
+                ->update([
+                    "monto" => $monto,
+                    "edit" => 0
+                ]);
+        }
+        // devolvemos el historial
+        return $history;
+    }
+
+    /**
+     * actualizamos total bruto, base imponible de un trabajador
+     *
+     * @param History $history
+     * @return void
+     */
+    public  static function updateNeto(Historial $history)
+    {
+        // obtenemos el total bruto
+        $total_bruto = Remuneracion::where('historial_id', $history->id)->where('show', 1)->sum('monto');
+        // calulamos la base imponible
+        $base = Remuneracion::where('historial_id', $history->id)->where('base', 0)->sum('monto');
+        // calculamos el total neto
+        $total_neto = $total_bruto - $history->total_desct;
+        // preparar la actualización
+        $history->total_bruto = round($total_bruto, 2);
+        $history->base = round($base, 2);
+        $history->base_enc = self::calc_enc($history, $base);
+        $history->total_neto =round( $total_neto, 2);
+        return $history;
+    }
+
+
     public function preparate(Historial $history, Cronograma $cronograma, TypeRemuneracion $type, $monto)
     {
         $this->storage->push([
@@ -63,38 +108,43 @@ class RemuneracionCollection {
             foreach ($historial as $history) {
                 // crear remuneraciones
                 foreach ($this->types as $index => $type) {
-                    // obtener los conceptos por ley
-                    $conceptos = $type->conceptos()
-                        ->wherePivot('categoria_id', $history->categoria_id)
-                        ->get();
-                    // obtener los montos de los conceptos
-                    $montos = $conceptos->map(function($con) {
-                        return $con->config ? $con->config->monto : 0;
-                    });
-                    // sumamos los conceptos 
-                    $suma = $montos->sum();
-                    // guardamos el monto actual
-                    $current_monto = $history->afecto ? \round(($suma * $this->cronograma->dias) / 30, 2) : 0;
-                    // verificar el calculo de tipo de remuneracion relacionado
-                    $current_monto = self::calc_type_remuneracion($history, $type, $payload, $current_monto);
-                    // almacenamos los resultados
-                    $payload->push([
-                        "work_id" => $history->work_id,
-                        "info_id" => $history->info_id,
-                        "historial_id" => $history->id,
-                        "planilla_id" => $history->planilla_id,
-                        "cargo_id" => $history->cargo_id,
-                        "categoria_id" => $history->categoria_id,
-                        "meta_id" => $history->meta_id,
-                        "cronograma_id" => $this->cronograma->id,
-                        "type_remuneracion_id" => $type->id,
-                        "mes" => $this->cronograma->mes,
-                        "año" => $this->cronograma->año,
-                        "adicional" => $this->cronograma->adicional,
-                        "base" => $type->base,
-                        "show" => $type->show,
-                        "monto" => round($current_monto, 2)
-                    ]);
+                    // preguntar si esta permitido
+                    $isPermissing = $type->categorias->where('id', $history->categoria_id)->count();
+                    // verificar si el type remuneracion está disponible en este trabajador
+                    if ($isPermissing) {
+                         // obtener los conceptos por ley
+                        $conceptos = $type->conceptos()
+                            ->wherePivot('categoria_id', $history->categoria_id)
+                            ->get();
+                        // obtener los montos de los conceptos
+                        $montos = $conceptos->map(function($con) {
+                            return $con->config ? $con->config->monto : 0;
+                        });
+                        // sumamos los conceptos 
+                        $suma = $montos->sum();
+                        // guardamos el monto actual
+                        $current_monto = $history->afecto ? \round(($suma * $this->cronograma->dias) / 30, 2) : 0;
+                        // verificar el calculo de tipo de remuneracion relacionado
+                        $current_monto = self::calc_type_remuneracion($history, $type, $payload, $current_monto);
+                        // almacenamos los resultados
+                        $payload->push([
+                            "work_id" => $history->work_id,
+                            "info_id" => $history->info_id,
+                            "historial_id" => $history->id,
+                            "planilla_id" => $history->planilla_id,
+                            "cargo_id" => $history->cargo_id,
+                            "categoria_id" => $history->categoria_id,
+                            "meta_id" => $history->meta_id,
+                            "cronograma_id" => $this->cronograma->id,
+                            "type_remuneracion_id" => $type->id,
+                            "mes" => $this->cronograma->mes,
+                            "año" => $this->cronograma->año,
+                            "adicional" => $this->cronograma->adicional,
+                            "base" => $type->base,
+                            "show" => $type->show,
+                            "monto" => round($current_monto, 2)
+                        ]);
+                    }
                 }
                 // obtenemos el monto bruto del trbajador
                 $bruto = $payload->where("historial_id", $history->id)
@@ -128,7 +178,7 @@ class RemuneracionCollection {
     }
 
 
-    private function calc_enc($history, $base)
+    private static function calc_enc($history, $base)
     {
         // obtenemos la categoria del trabajador
         $categoria = $history->categoria;
@@ -146,7 +196,7 @@ class RemuneracionCollection {
     }
 
 
-    private function calc_type_remuneracion($history, $type, $payload, $current)
+    private static function calc_type_remuneracion($history, $type, $payload, $current)
     {
         if ($type->type_remuneraciones->count() > 0) {
             // obtenemos los montos

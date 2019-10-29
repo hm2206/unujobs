@@ -157,6 +157,7 @@
                                 categoria_id="{{ $categoria_id }}"
                                 meta_id="{{ $meta_id }}"
                                 estado_id="{{ $estado }}"
+                                :plaza={{ $plaza }}
                             >
                             </select-filtro>
                         </div>
@@ -182,7 +183,7 @@
                         <tbody>
                             @forelse ($jobs as $job)
                                 <tr>
-                                    <th class="capitalize" width="30%">{{ $job->work->nombre_completo }}</th>
+                                    <th class="uppercase" width="30%">{{ $job->work->nombre_completo }}</th>
                                     <th>{{ $job->work->numero_de_documento }}</th>
                                     <th class="uppercase">
                                         <span class="btn btn-sm btn-dark">
@@ -208,19 +209,19 @@
                                     <th>
                                         <div class="row justify-content-around">
                                             <btn-work-config theme="btn-warning btn-sm btn-circle"
-                                                param="{{ $job->id }}"
-                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                param="{{ $job->work_id }}"
+                                                nombre_completo="{{ $job->work->nombre_completo }}"
                                             >
                                                 <i class="fas fa-cog"></i>
                                             </btn-work-config>
-                                            <a href="{{ route('job.show', $job->slug()) }}" class="btn btn-circle btn-sm btn-primary">
+                                            <a href="{{ route('job.show', $job->work->slug()) }}" class="btn btn-circle btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
                                             <btn-boleta theme="btn-dark btn-sm btn-circle"
                                                 param="{{ $job->id }}"
-                                                url="{{ route('job.boleta.store', $job->id) }}"
-                                                nombre_completo="{{ $job->nombre_completo }}"
+                                                url="{{ route('job.boleta.store', $job->work_id) }}"
+                                                nombre_completo="{{ $job->work->nombre_completo }}"
                                                 token="{{ csrf_token() }}"
                                             >
                                                 <i class="fas fa-file-alt"></i>

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Historial;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
+use App\Collections\RemuneracionCollection;
+use App\Collections\DescuentoCollection;
 
 class RemuneracionController extends Controller
 {
@@ -29,27 +31,23 @@ class RemuneracionController extends Controller
                 $current_remuneracion = $db_remuneraciones->find($remuneracion->id);
                 if ($current_remuneracion) {
                     $monto = $remuneracion->monto ? $remuneracion->monto : 0;
-                    $current_remuneracion->update(["monto" =>  \round($monto, 2) ]);
+                    $current_remuneracion->update([ "monto" =>  \round($monto, 2) ]);
                 }
             }
 
-
-            $total_bruto = Remuneracion::where("historial_id", $historial->id)->where('show', 1)->sum('monto');
-            $total_desct = Descuento::where('historial_id', $historial->id)->where('base', 0)->sum('monto');
-            $base = Remuneracion::where('historial_id', $historial->id)->where('base', 0)->sum('monto');
-            $total_neto = $total_bruto - $total_desct;
+            RemuneracionCollection::updateRelations($historial);
+            $historial = RemuneracionCollection::updateNeto($historial);
+            // actualizamos historial
+            $historial->save();
+            DescuentoCollection::updateAportaciones($historial);
+            $historial = DescuentoCollection::updateAFP($historial);
+            $historial = DescuentoCollection::updateNeto($historial);
             // actualizar el estado del historial
-            $historial->update([ 
-                "total_bruto" => round($total_bruto, 2),
-                "base" => round($base, 2),
-                "total_desct" => round($total_desct, 2),
-                "total_neto" => round($total_neto, 2)
-            ]);
-
+            $historial->save();
             return [
                 "status" => true,
                 "message" => "Los descuentos se registrarón correctamente!",
-                "total_bruto" => round($total_bruto, 2)
+                "total_bruto" => $historial->total_bruto
             ];
 
         } catch (\Throwable $th) {

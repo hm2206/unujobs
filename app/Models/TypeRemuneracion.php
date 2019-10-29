@@ -47,6 +47,12 @@ class TypeRemuneracion extends Model
         return $this->belongsTo(TypeRemuneracion::class);
     }
 
+
+    public function categorias() 
+    {
+        return $this->belongsToMany(Categoria::class, 'categoria_type_remuneracion');
+    }
+
     /**
      * Slug para proteger los id en las urls
      *

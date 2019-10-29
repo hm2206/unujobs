@@ -71,7 +71,10 @@ class ReportPersonalCronograma implements ShouldQueue
             ->where('cronograma_id', $cronograma->id)
             ->get();
         // obtener lista de los trabajadores
-        $historial = Historial::with('work', 'categoria')->where('cronograma_id', $cronograma->id)->get();
+        $historial = Historial::with('work', 'categoria')
+            ->where('cronograma_id', $cronograma->id)
+            ->orderBy('orden', 'ASC')
+            ->get();
         $pages = $condicion ? $historial->where('total_neto', '<=', 0)->chunk(48) : $historial->chunk(48);
 
         $message = $cronograma->planilla ? $cronograma->planilla->descripcion : '';

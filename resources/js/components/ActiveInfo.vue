@@ -18,9 +18,9 @@ export default {
         async switchState() {
             let newActive = this.active ? 0 : 1;
             let answer = await confirm(`Está seguro en continuar la operación (${this.active ? 'Desactivar' : 'Activar'})`);
-            let api = unujobs('post', `/info/${this.param}/active`, {active: newActive});
             // realizar petición
             if (answer) {
+                let api = unujobs('post', `/info/${this.param}/active`, {active: newActive});
                 await api.then(res => {
                     location.href = `/planilla/job?estado=${res.data}`;
                 }).catch(err => notify({ icon: 'error', text: 'Algo salió mal' }));

@@ -44,6 +44,7 @@ class CreateHistorialsTable extends Migration
             $table->double('total_desct')->default(0);
             $table->string('pdf')->nullable();
             $table->tinyInteger('afecto')->default(1);
+            $table->string('orden')->nullable();
             $table->timestamps();
         });
     }

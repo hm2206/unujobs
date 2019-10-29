@@ -10,6 +10,8 @@ use Illuminate\Contracts\View\View;
 use App\Models\Work;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
+use App\Models\Historial;
+use App\Models\Afp;
 
 class AfpNet implements FromView, ShouldQueue
 {
@@ -28,37 +30,20 @@ class AfpNet implements FromView, ShouldQueue
     {
 
         $cronograma = $this->cronograma;
-        $workIn = $cronograma->infos->pluck(["work_id"]);
-        $works = Work::whereIn("id", $workIn)
-            ->orderBy("nombre_completo", 'ASC')
-            ->where("afp_id", "<>", null)
+        // obtenemos las Afps Activadas
+        $afps = Afp::where('activo', 1)->get();
+        // obtenemos el historial de trabajadores
+        $historial = Historial::whereHas('afp', function($a) use($afps) {
+                $a->whereIn("afp_id", $afps->pluck(['id']));
+            })->with('work')
+            ->where('cronograma_id', $cronograma->id)
+            ->get();
+        // obtener los tipos de descuentos que se afectan en la afp
+        $types = TypeDescuento::whereHas('afp_primas')
+            ->orWhereHas('afp_aportes')
+            ->orWhereHas('type_afp')
             ->get();
 
-        $types = TypeDescuento::where("config_afp", "<>", null)->get();
-        $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get();
-        
-        foreach ($works as $work) {
-            
-            $whereIn = [];
-            
-            foreach ($types as $type) {
-                
-                $parse = json_decode($type->config_afp);
-                
-                if (is_array($parse) && count($parse) > 0) {
-
-                    array_push($whereIn, $type->id);
-
-                }
-
-            }
-
-            $work->tmp_afp = $descuentos->where("work_id")
-                ->whereIn("type_descuento_id", $cronograma->id)
-                ->sum("monto");
-
-        }
-
-        return view("exports.afpnet", \compact('works'));
+        return view("exports.afpnet", \compact('historial'));
     }
 }

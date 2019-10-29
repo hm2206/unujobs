@@ -65,14 +65,14 @@
                     <tbody>
                         @foreach ($historial as $iter => $history)
                             <tr>
-                                <td class="py-0 font-10 text-left pl-1">{{ $iter + 1 }}</td>
-                                <td class="py-0 font-10 text-left pl-1">{{ $history->work ? $history->work->nombre_completo : '' }}</td>
-                                <td class="py-0 font-10 text-center pl-1 pr-1">{{ $history->numero_de_cussp }}</td>
-                                <td class="py-0 font-10 text-center" style="padding-top: 1em;">
+                                <th class="py-0 font-10 text-left pl-1">{{ $iter + 1 }}</th>
+                                <th class="py-0 font-10 text-left pl-1 uppercase">{{ $history->work ? $history->work->nombre_completo : '' }}</th>
+                                <th class="py-0 font-10 text-center pl-1 pr-1">{{ $history->numero_de_cussp }}</th>
+                                <th class="py-0 font-10 text-center" style="padding-top: 1em;">
                                     <b class="text-center py-0">
                                         {{ $money->parseTo($history->total_bruto) }}
                                     </b>
-                                </td>
+                                </th>
                                 <td class="py-0 font-10 text-center">
                                     <b class="text-center py-0">
                                         {{ $money->parseTo($history->pension) }}

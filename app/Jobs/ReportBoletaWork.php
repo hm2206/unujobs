@@ -50,7 +50,9 @@ class ReportBoletaWork implements ShouldQueue
      */
     public function handle()
     {
-        $historial = Historial::whereIn("id", $this->inHistorial)->get();
+        $historial = Historial::whereIn("id", $this->inHistorial)
+            ->orderBy('orden', 'ASC')
+            ->get();
         $work = $this->work;
         // obtener remuneraciones
         $remuneraciones = Remuneracion::whereIn("historial_id", $historial->pluck(['id']))

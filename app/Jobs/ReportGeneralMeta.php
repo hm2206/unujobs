@@ -69,7 +69,7 @@ class ReportGeneralMeta implements ShouldQueue
         $cronograma = $this->cronograma;
         $meta = Meta::findOrFail($this->meta_id);
         $money = new Money;
-        $historial = Historial::where('cronograma_id', $cronograma->id);
+        $historial = Historial::where('cronograma_id', $cronograma->id)->orderBy('orden', 'ASC');
 
         $type_remuneraciones = TypeRemuneracion::where("report", 1)->orderBy("orden", "ASC")->where("activo", 1)->get();
         $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where('base', 0)->where("activo", 1)->get();

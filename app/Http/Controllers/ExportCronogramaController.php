@@ -49,12 +49,12 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        /*if ($cronograma->estado > 0) {
+        if ($cronograma->estado == 0) {
             return [
                 "status" => false,
-                "message" => "La planilla aún está en curso, espere el cierre!"
+                "message" => "La planilla está cerrada"
             ];
-        }*/
+        }
 
         try {
             
@@ -89,12 +89,12 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        /*if ($cronograma->estado > 0) {
+        if ($cronograma->estado == 0) {
             return [
                 "status" => false,
-                "message" => "La planilla aún está en curso, espere el cierre!"
+                "message" => "La planilla está cerrada"
             ];
-        }*/
+        }
 
         try {
             
@@ -132,10 +132,10 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        if ($cronograma->estado > 0) {
+        if ($cronograma->estado == 0) {
             return [
                 "status" => false,
-                "message" => "La planilla aún está en curso, espere el cierre!"
+                "message" => "La planilla está cerrada"
             ];
         }
 
@@ -176,6 +176,13 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada"
+            ];
+        }
+
         try {
             
             $type = $request->type_report_id;
@@ -210,12 +217,20 @@ class ExportCronogramaController extends Controller
     }
 
 
+
     public function afp(Request $request, $id)
     {
         try {
          
             $cronograma = Cronograma::findOrFail($id);
             $type_report = $request->type_report_id;
+
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla está cerrada"
+                ];
+            }
 
             //fecha
             $fecha = strtotime(Carbon::now());
@@ -268,12 +283,12 @@ class ExportCronogramaController extends Controller
     {
         $cronograma = Cronograma::findOrFail($id);
 
-        /*if ($cronograma->estado > 0) {
+        if ($cronograma->estado == 0) {
             return [
                 "status" => false,
-                "message" => "La planilla aún está en curso, espere el cierre!"
+                "message" => "La planilla está cerrada"
             ];
-        }*/
+        }
 
         try {
             
@@ -312,6 +327,14 @@ class ExportCronogramaController extends Controller
     public function descuento(Request $request, $id)
     {
         $cronograma = Cronograma::findOrFail($id);
+
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla ya está cerrada!"
+            ];
+        }
+
 
         try {
             
@@ -356,6 +379,13 @@ class ExportCronogramaController extends Controller
     public function personal(Request $request, $id)
     {
         $cronograma = Cronograma::findOrFail($id);
+
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada!"
+            ];
+        }
 
         try {
             

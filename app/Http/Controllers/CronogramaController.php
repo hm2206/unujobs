@@ -28,8 +28,8 @@ use App\Models\TypeReport;
 use App\Http\Middleware\CronogramaMiddleware;
 use App\Jobs\DetachInfoJob;
 use App\Jobs\AddInfoCronograma;
-use App\Models\Historial;
 use App\Jobs\ProssingAportacion;
+use App\Models\Historial;
 
 /**
  * Class CronogramaController
@@ -97,9 +97,10 @@ class CronogramaController extends Controller
             "dias" => "required",
         ]);
 
-        $mes = $request->mes < 13 && $request->mes > 0 ? (int)$request->mes : (int)date('m');
+        $mes = $request->mes <= 12 && $request->mes > 0 ? (int)$request->mes : (int)date('m');
         $pendiente = 1;
         $current_mes = (int)date('m') + 1;
+
 
         if ($mes > $current_mes || $mes < $current_mes - 1) {
             return [
@@ -155,7 +156,8 @@ class CronogramaController extends Controller
 
         }elseif($cronograma->adicional == 1) {
             $cronograma->update([
-                "numero" => $cronogramas->count()
+                "numero" => $cronogramas->count(),
+                "estado" => 1,
             ]);
         }
 
@@ -194,7 +196,8 @@ class CronogramaController extends Controller
             ->whereHas("work", function($i) use($like) {
                 $i->where("nombre_completo", "like", "%{$like}%")
                     ->orWhere("numero_de_documento", "like", "%{$like}%");
-            })->paginate(30);
+            })->orderBy('orden', 'DESC')
+                ->paginate(30);
     }
 
     
@@ -253,12 +256,13 @@ class CronogramaController extends Controller
 
         $metaId = $cronograma->historial->pluck(["meta_id"]);
         $cargoId = $cronograma->historial->pluck(["cargo_id"]);
+        $plaza = request()->plaza ? 1 : 0;
 
 
         if ($meta_id) {
-            $indices = $cronograma->historial->where("meta_id", $meta_id);
+            $indices = $cronograma->historial()->orderBy('orden', 'ASC')->where("meta_id", $meta_id)->get();
         }else {
-            $indices = $cronograma->historial;
+            $indices = $cronograma->historial()->orderBy('orden', 'ASC')->get();
         }
 
 
@@ -267,7 +271,7 @@ class CronogramaController extends Controller
         }
 
         $indices = $indices->pluck(["id"]);
-        $historial = Historial::with("work")->whereIn("id", $indices);
+        $historial = Historial::with("work")->orderBy('orden', 'ASC')->whereIn("id", $indices);
 
         if ($meta_id) {
             $historial = $historial->where("meta_id", $meta_id);
@@ -275,10 +279,16 @@ class CronogramaController extends Controller
 
             
         if ($like) {
-            $historial = $historial->whereHas('work', function($w) use($like) {
-                $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
-                $w->where($indice, "like", "%{$like}%");
-            });
+            if ($plaza) {
+                $historial = $historial->whereHas('work', function($w) use($like) {
+                    $w->where("plaza", "like", "%{$like}%");
+                });
+            }else {
+                $historial = $historial->whereHas('work', function($w) use($like) {
+                    $indice = is_numeric($like) ? 'numero_de_documento' : 'nombre_completo'; 
+                    $w->where($indice, "like", "%{$like}%");
+                });
+            }
         }
 
 
@@ -340,11 +350,41 @@ class CronogramaController extends Controller
                 ->findOrFail($id);
             // obtener infos
             $tmp_infos = $request->input('infos', []);
+            // obtener infos
+            $infos = Info::whereIn("id", $tmp_infos)->where('active', 1)->get();
+            // insertar historial
+            foreach ($infos as $info) {
+                Historial::create([  
+                    "work_id" => $info->work_id,
+                    "info_id" => $info->id,
+                    "planilla_id" => $info->planilla_id,
+                    "cargo_id" => $info->cargo_id,
+                    "categoria_id" => $info->categoria_id,
+                    "meta_id" => $info->meta_id,
+                    "fuente_id" => $info->fuente_id,
+                    "sindicato_id" => $info->sindicato_id,
+                    "afp_id" => $info->afp_id,
+                    "type_afp_id" => $info->type_afp_id,
+                    "numero_de_cussp" => $info->numero_de_cussp,
+                    "fecha_de_afiliacion" => $info->fecha_de_afiliacion,
+                    "banco_id" => $info->banco_id,
+                    "numero_de_cuenta" => $info->numero_de_cuenta,
+                    "numero_de_essalud" => $info->numero_de_essalud,
+                    "plaza" => $info->plaza,
+                    "perfil" => $info->perfil,
+                    "escuela" => $info->escuela,
+                    "pap" => $info->pap,
+                    "cronograma_id" => $cronograma->id,
+                    "afecto" => $info->afecto,
+                    "orden" => substr($info->work->nombre_completo, 0, 2),
+                    "ext_pptto" => $info->cargo->ext_pptto,
+                    "total_desct" => 0
+                ]);
+            }
             // processar información
-            AddInfoCronograma::withChain([
-                (new ProssingRemuneracion($cronograma, $tmp_infos))->onQueue('high'),
-                (new ProssingDescuento($cronograma, $tmp_infos))->onQueue('high'),
-                (new ProssingAportacion($cronograma, $tmp_infos))->onQueue('high'),
+            ProssingRemuneracion::withChain([
+                (new ProssingDescuento($cronograma, $tmp_infos))->onQueue('medium'),
+                (new ProssingAportacion($cronograma, $tmp_infos))->onQueue('medium'),
             ])->dispatch($cronograma, $tmp_infos)
                 ->onQueue('medium');
 
@@ -424,5 +464,6 @@ class CronogramaController extends Controller
         }
 
     }
+
 
 }

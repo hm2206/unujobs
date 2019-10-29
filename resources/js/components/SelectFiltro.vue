@@ -59,6 +59,11 @@
                     <option value="0">Inactivo</option>
                 </select>
             </div>
+
+            <div class="col-md-2">
+                Plaza
+                <input type="checkbox" name="plaza" v-model="isCheck"> 
+            </div>
         
     </div>
 </template>
@@ -69,7 +74,7 @@ import { unujobs } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['param', 'infos', 'send', 'planilla_id', 'cargo_id', 'categoria_id', 'meta_id', 'estado_id'],
+    props: ['param', 'infos', 'send', 'planilla_id', 'plaza', 'cargo_id', 'categoria_id', 'meta_id', 'estado_id'],
     data() {
         return {
             cas: false,
@@ -84,7 +89,6 @@ export default {
             form_categoria: '',
             form_meta: '',
             perfil: '',
-            plaza: '',
             escuela: '',
             observacion: '',
             fuente_id: '',
@@ -101,6 +105,11 @@ export default {
         this.estado = this.estado_id;
         this.getPlanillas();
         this.getMetas();
+    },
+    computed: {
+        isCheck() {
+            return this.plaza ? true : false;
+        }
     },
     watch: {
         form_planilla(nuevo) {

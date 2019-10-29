@@ -65,7 +65,7 @@ class ProssingAportacion implements ShouldQueue
                 // obtenemos la base imponible
                 $base = $history->base;
                 // calcular aportacion
-                $monto = $base >= $aportacion->minimo ? ($base * $aportacion->porcentaje) / 100 : 0;
+                $monto = $base >= $aportacion->minimo ? ($base * $aportacion->porcentaje) / 100 : $aportacion->minimo;
                 // almacenar en el payload
                 $this->payload->push([
                     "work_id" => $history->work_id,
@@ -79,35 +79,15 @@ class ProssingAportacion implements ShouldQueue
                     "default" => $aportacion->default,
                     "monto" => round($monto)
                 ]);
+                // actualizar aportaciones
+                Descuento::where('historial_id', $history->id)
+                    ->where('type_descuento_id', $aportacion->type_descuento_id)
+                    ->update(["monto" => round($monto, 2)]);
             }
         }   
         // realizamos la inserción masiva de las aportaciones
         foreach ($this->payload->chunk(1000)->toArray() as $insert) {
             Aportacion::insert($insert);
-        }
-        // actualizamos las aportaciones de los descuentos
-        self::updateDescuentos();
-    }
-
-
-
-    public function updateDescuentos() {
-        // obtenemos los descuentos para realizar las oportaciones
-        $descuentos = Descuento::whereIn('type_descuento_id', $this->payload->pluck(['type_descuento_id']))
-            ->whereIn('historial_id', $this->payload->pluck(['historial_id']))
-            ->get();
-        // actualizamos los descuentos
-        foreach ($descuentos as $descuento) {
-            // obtenemos la aportacion que pertenece al descuento
-            $aportacion = $this->payload->where("type_descuento_id", $descuento->id)->first();
-            // verificamos que la aportacion no sea null
-            if ($aportacion) {
-                // obtenemos el monto de la aportación
-                $monto = $aportacion['monto'];
-                // actualizmos la aportacion del descuento
-                $descuento->update([ "monto" => $monto ]);
-                continue;
-            }
         }
     }
 

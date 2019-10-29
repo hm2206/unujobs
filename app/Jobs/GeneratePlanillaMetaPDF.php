@@ -26,6 +26,7 @@ use \Carbon\Carbon;
 use App\Models\Meta;
 use App\Tools\Money;
 use App\Models\TypeAportacion;
+use App\Models\TypeAfp;
 
 /**
  * Genera pdf de la planilla
@@ -67,16 +68,21 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
 
         $meta = Meta::findOrFail($this->meta_id);
         $cronograma = $this->cronograma;
-        $historial = Historial::where("cronograma_id", $cronograma->id)->where('meta_id', $meta->id);
+        $historial = Historial::where("cronograma_id", $cronograma->id)->where('meta_id', $meta->id)->get();
         $money = new Money;
 
+        $inTypeAFP = collect();
         $afps = Afp::orderBy("nombre", "ASC")->where('activo', 1)->get();
         // obtenemos los id de los descuentos
-        $inTypeAFP = collect();
-        // obtenemos los type descuento de los afps
         foreach ($afps as $afp) {
             $inTypeAFP->push($afp->prima_descuento_id);
             $inTypeAFP->push($afp->aporte_descuento_id);
+        }
+        // obtenemos los type descuento de los afps
+        $afpTypes = TypeAfp::whereHas("type_descuento")->get();
+         // guardamos los type descuentos de los types afp
+         foreach ($afpTypes as $type) {
+            $inTypeAFP->push($type->type_descuento_id);
         }
         // obtenemos los tipos de descuentos, remuneraciones y aportaciones
         $type_remuneraciones = TypeRemuneracion::where("report", 1)->where("activo", 1)->get();
@@ -86,20 +92,20 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
             ->get();
         $type_aportaciones = TypeAportacion::where('activo', 1)->get();
 
-        // VERIFICAR CAS
-        if ($cronograma->planilla_id == 5) {
-            $type_categorias = TypeCategoria::with('cargos')->where("id", 3)->get();
-        }else {
-            $type_categorias = TypeCategoria::with('cargos')->whereNotIn("id", [3])->get();
-        }
-
+        // obtener tipos de categorias que pertenecen a la planilla
+        $type_categorias = TypeCategoria::with('cargos')
+            ->whereHas('cargos', function($car) use($cronograma) {
+                $car->where("planilla_id", $cronograma->planilla_id);
+            })->get();
         // obtener las remuneraciones por meta presupuestal
-        $remuneraciones = Remuneracion::where("meta_id", $meta->id)
+        $remuneraciones = Remuneracion::whereIn("historial_id", $historial->pluck(['id']))
             ->whereIn("type_remuneracion_id", $type_remuneraciones->pluck(['id']))
             ->where('cronograma_id', $cronograma->id)
             ->get();
         // obtener descuentos por la meta presupuestal
-        $descuentos = Descuento::where("meta_id", $meta->id)->where('cronograma_id', $cronograma->id)->get();
+        $descuentos = Descuento::whereIn("historial_id", $historial->pluck(['id']))
+            ->where('cronograma_id', $cronograma->id)
+            ->get();
 
         foreach ($type_remuneraciones as $type_remuneracion) {
             // obtenemos los tipos de categorias
@@ -109,11 +115,19 @@ class GeneratePlanillaMetaPDF implements ShouldQueue
 
         // configurar afps
         foreach($afps as $afp) {
+            $typesAFP = $afp->type_afps->pluck(['type_descuento_id']);
             $pluck = [$afp->prima_descuento_id, $afp->aporte_descuento_id];
+            $historialAFP = $historial->where('afp_id', $afp->id)->pluck('id');
+            // almacenamos el monto de afp
             $afp_monto = $descuentos->whereIn("type_descuento_id", $pluck)
+                ->whereIn('historial_id', $historialAFP)
                 ->sum("monto");
+            // almacenamos el monto del type afp
+            $type_afp_monto = $descuentos->whereIn("type_descuento_id", $typesAFP)
+                ->whereIn("historial_id", $historialAFP)
+                ->sum('monto');
             // almacenamos el monto del afp
-            $afp->monto = $afp_monto;
+            $afp->monto = round($afp_monto + $type_afp_monto, 2);
         }
 
         // configuracion de los descuentos

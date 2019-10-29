@@ -30,6 +30,11 @@ class Money {
         $entero = isset($separador[0]) ? $separador[0] : 0;
         $decimal = (string)isset($separador[1]) ? $separador[1] : "00";
 
+        // verificar si el numero es negativo
+        if ($numero < 0) {
+            return "{$entero}.{$decimal}";
+        }
+
         // configurar decimal
         $newDecimal = strlen($decimal) < 2 ? "{$decimal}0" : $decimal;
 

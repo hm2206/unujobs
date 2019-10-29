@@ -17,6 +17,7 @@ use App\Notifications\ReportNotification;
 use App\Models\Report;
 use \Carbon\Carbon;
 use App\Models\Historial;
+use App\Tools\Money;
 
 /**
  * Genera Reportes
@@ -54,14 +55,16 @@ class ReportCronograma implements ShouldQueue
         $meta->mes = $cronograma->mes;
         $meta->year = $cronograma->año;
         $pagina = 1;
+        $money = new Money;
 
         // obtener historial
         $historial = Historial::where('cronograma_id', $cronograma->id)
             ->where('meta_id', $meta->id)
+            ->orderBy('orden', 'ASC')
             ->get();
 
         // configuracion
-        $remuneraciones = Remuneracion::with("typeRemuneracion")->where("show" , 1)
+        $remuneraciones = Remuneracion::with("typeRemuneracion")->where('show', 1)
             ->whereIn("historial_id", $historial->pluck(['id']))
             ->get();
         // obtener descuentos
@@ -80,7 +83,19 @@ class ReportCronograma implements ShouldQueue
             $total = $history->total_bruto;
             // base imponible
             $tmp_base = $history->base;
-            // agregamos datos a las remuneraciones
+            // verificar que no tenga más de 23 
+            if ($tmp_remuneraciones->count() < 23) {
+                $limite = 23 - $tmp_remuneraciones->count();
+                for($i = 0; $limite > $i; $i++) {
+                    $tmp_remuneraciones->put(rand(1000, 9999), (Object)[
+                        "nivel" => 0,
+                        "empty" => true,
+                        "key" => "",
+                        "monto" => ""
+                    ]);
+                }
+            }
+            // agregamos el total bruto
             $tmp_remuneraciones->put(rand(1000, 9999), (Object)[
                 "nivel" => 1,
                 "key" => "TOTAL",
@@ -125,7 +140,7 @@ class ReportCronograma implements ShouldQueue
 
         $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
-        $pdf = PDF::loadView('pdf.planilla', compact('meses', 'meta', 'cronograma', 'pagina'));
+        $pdf = PDF::loadView('pdf.planilla', compact('meses', 'meta', 'cronograma', 'pagina', 'money'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
         $path = "pdf/planilla_meta_{$meta->metaID}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}.pdf";

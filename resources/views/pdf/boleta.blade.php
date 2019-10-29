@@ -120,7 +120,10 @@
                                                 <th class="py-0 font-11">
                                                     {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->key : null }}
                                                     <span>.-</span>
-                                                    {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : null }}
+                                                    {{ $remuneracion->typeRemuneracion ? 
+                                                        str_limit($remuneracion->typeRemuneracion->descripcion, 45) 
+                                                        : null 
+                                                    }}
                                                 </th>
                                                 <th class="py-0 text-right font-12" width="5%">
                                                     {{ $money->parseTo(round($remuneracion->monto, 2)) }}
@@ -128,7 +131,7 @@
                                             </tr>
                                         @endforeach
                                         <tr>
-                                            <th></th>
+                                            <th class="font-11 py-0 pl-1">TOTAL BRUTO</th>
                                             <th class="text-right bbt-1 font-12">
                                                 {{ $money->parseTo(round($store['history']->total_bruto, 2)) }}
                                             </th>
@@ -158,13 +161,13 @@
                                             <th colspan="3"></th>
                                         </tr>
                                         <tr>
-                                            <th class="py-0 font-10">TOTAL DSCTS.</th>
+                                            <th class="py-0 font-11 pl-1">TOTAL DSCTS.</th>
                                             <th class="py-0 bbt-1 text-center font-12" colspan="3">
-                                                {{ $money->parseTo(round($store['history']->total_bruto, 2)) }}
+                                                {{ $money->parseTo(round($store['history']->total_desct, 2)) }}
                                             </th>
                                         </tr>
                                         <tr>
-                                            <th class="py-0 font-10">NETO A PAGAR</th>
+                                            <th class="py-0 font-11 pl-1">NETO A PAGAR</th>
                                             <th class="py-0 bbt-1 text-center font-12" colspan="3">
                                                 {{ $money->parseTo(round($store['history']->total_neto, 2)) }}
                                             </th>
@@ -185,7 +188,7 @@
                                         </tr>
                                     @endforeach
                                     <tr>
-                                        <th class="py-0 font-10">TOTAL APORTE</th>
+                                        <th class="py-0 font-11">TOTAL APORTE</th>
                                         <th class="py-0 bbt-1 font-12 text-right">
                                             {{ $money->parseTo(round($store['aportaciones']->sum('monto'), 2)) }}
                                         </th>
@@ -197,7 +200,7 @@
                                     </tr>
 
                                     <tr>
-                                        <th class="py-0 font-10">BASE IMPONIBLE</th>
+                                        <th class="py-0 font-11">BASE IMPONIBLE</th>
                                         <th class="py-0 font-12 text-right">{{ round($store['history']->base, 2) }}</th>
                                     </tr>
                                     @for ($i = 0; $i < 15; $i++)

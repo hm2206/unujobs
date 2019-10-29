@@ -14,6 +14,7 @@ use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
 use App\Models\Info;
 use App\Models\Historial;
+use App\Models\Cargo;
 use App\Collections\RemuneracionCollection;
 
 /**
@@ -52,13 +53,11 @@ class ProssingRemuneracion implements ShouldQueue
     public function handle()
     {
         // obtenemos los tipos de remuneracion
-        $this->types = TypeRemuneracion::orderBy("orden", "ASC")->where("activo", 1)->get();
+        $this->types = TypeRemuneracion::with('categorias')->orderBy("orden", "ASC")->where("activo", 1)->get();
         // cronograma actual
         $cronograma = $this->cronograma;
-
         // infos associados al cronograma
         $this->historial = Historial::with('categoria')->where("cronograma_id", $cronograma->id);
-
         // verificar si hay infos especificos
         if (count($this->infoIn)) {
             $this->historial->whereIn("info_id", $this->infoIn);
@@ -106,14 +105,17 @@ class ProssingRemuneracion implements ShouldQueue
         foreach ($historial as $history) {
             // recorremos todas los tipos de remuneraciones disponibles
             foreach ($this->types as $type) {
-                // obtenermos el registro anterior
-                $typeBefore = $befores->where('info_id', $history->info_id)
-                    ->where("type_remuneracion_id", $type->id)    
-                    ->first();
-                // almacenamos el monto anterior
-                $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
-                // preparamos las remuneraciones para insertalos masivamente
-                $config->preparate($history, $cronograma, $type, $monto);
+                // verificamos si la configuración de la planilla es conforme
+                if ($type->categorias->where("id", $history->categoria_id)->count()) {
+                    // obtenermos el registro anterior
+                    $typeBefore = $befores->where('info_id', $history->info_id)
+                        ->where("type_remuneracion_id", $type->id)    
+                        ->first();
+                    // almacenamos el monto anterior
+                    $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
+                    // preparamos las remuneraciones para insertalos masivamente
+                    $config->preparate($history, $cronograma, $type, $monto);
+                }
             }
             // obtener resultado del storage
             $storage = $config->getStorage();

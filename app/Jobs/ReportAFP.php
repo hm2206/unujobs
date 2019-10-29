@@ -62,6 +62,7 @@ class ReportAFP implements ShouldQueue
 
         $typeDescuentos = TypeDescuento::whereIn("key", ["32", "34", "35"])->get();
         $historial = Historial::with('afp', 'work')->where("afp_id", $afp->id)
+            ->orderBy('orden', 'ASC')
             ->where('cronograma_id', $cronograma->id)->get();
         // obtener los descuentos
         $descuentos = Descuento::whereIn("type_descuento_id", $typeDescuentos->pluck(['id']))

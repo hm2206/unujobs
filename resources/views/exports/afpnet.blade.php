@@ -9,20 +9,20 @@
 <body>
     
     <table>
-        @foreach ($works as $iter => $work)
+        @foreach ($historial as $iter => $history)
             <tr>
                 <td>{{ $iter + 1 }}</td>
-                <td>{{ $work->numero_de_cussp }}</td>
-                <td>{{ $work->tipo_documento_id }}</td>
-                <td>{{ $work->numero_de_documento }}</td>
-                <td>{{ strtoupper($work->ape_paterno) }}</td>
-                <td>{{ strtoupper($work->ape_materno) }}</td>
-                <td>{{ strtoupper($work->nombres) }}</td>
+                <td>{{ $history->numero_de_cussp }}</td>
+                <td>{{ $history->tipo_documento_id }}</td>
+                <td>{{ $history->work ? $history->work->numero_de_documento : '' }}</td>
+                <td>{{ $history->work ? $history->work->ape_paterno : '' }}</td>
+                <td>{{ $history->work ? $history->work->ape_materno : '' }}</td>
+                <td>{{ $history->work ? $history->work->nombres : '' }}</td>
                 <td>S</td>
                 <td>N</td>
                 <td>N</td>
                 <td></td>
-                <td>{{ $work->tmp_afp }}</td>
+                <td>{{ $history->base }}</td>
                 <td>0</td>
                 <td>0</td>
                 <td>0</td>

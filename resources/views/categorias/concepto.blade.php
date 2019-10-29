@@ -57,19 +57,7 @@
     
     </div>
     
-    <div class="col-md-5">
-        <div class="card-body">
-            <div class="row justify-content-start">
-                @foreach ($categoria->conceptos as $concepto)
-                @php
-                    $concepto->pivot
-                @endphp
-                    {{ $concepto }}
-                    <edit-concepto :concepto="{{ $concepto }}"></edit-concepto>
-                @endforeach
-            </div>
-        </div>
-    </div>
+    <edit-concepto :conceptos="{{ $categoria->conceptos }}" param="{{ $categoria->id }}">
 
 </div>
 @endsection

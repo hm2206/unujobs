@@ -82,6 +82,7 @@ class AddInfoCronograma implements ShouldQueue
                 "total_neto" => 0,
                 "total_desct" => 0,
                 "afecto" => $info->afecto,
+                "orden" => $info->work ? substr($info->work->nombre_completo, 0, 2) : ""
             ]);
         }
 

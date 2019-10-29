@@ -56,7 +56,10 @@ class ReportRenta implements ShouldQueue
         // obtener a la persona
         $work = $this->work;
         // agregar atributos a variables locales
-        $historial = Historial::with('categoria', 'cronograma')->whereIn('id', $this->historialID)->get();
+        $historial = Historial::with('categoria', 'cronograma')
+            ->whereIn('id', $this->historialID)
+            ->orderBy('orden', 'ASC')
+            ->get();
         
         // configuración
         $typeRemuneraciones = TypeRemuneracion::where("report", 1)->get(['id', 'key', 'descripcion']);

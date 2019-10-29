@@ -71,7 +71,8 @@ class EjecucionDetalleJob implements ShouldQueue
             ->get();
 
         $cheques = Historial::where('cronograma_id', $cronograma->id)
-            ->whereIn("numero_de_cuenta", [ "", null ])
+            ->where("numero_de_cuenta", null)
+            ->orWhere("numero_de_cuenta", "")
             ->get();
 
 

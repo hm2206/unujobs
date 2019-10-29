@@ -26,7 +26,7 @@
     @foreach ($storage as $body)
         <body class="bg-white text-negro">
             @foreach ($body as $store)
-                <div>    
+                <div style="height: 48%" class="mb-3 mt-1">    
                     <table>
                         <thead>
                             <tr>
@@ -53,7 +53,7 @@
                         </b>
                     </div>
                             
-                    <div class="w-100 bbb-1" style="margin-bottom: 2em;">
+                    <div class="w-100" style="margin-bottom: 2em;">
                         <div class="boleta-header" style="width:100%;">
                             <table class="table-boleta table-sm" style="width:100%;">
                                 <thead> 
@@ -115,15 +115,18 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="bbr-1 p-relative">
-                                        <table class="w-100">
+                                    <td class="p-relative">
+                                        <table class="w-100 p-absolute top-0">
                                             <tbody>
                                                 @foreach ($store['remuneraciones'] as $remuneracion)
                                                     <tr>
                                                         <th class="py-0 font-11">
-                                                            {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->key : null }}
+                                                            {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->key  : null }}
                                                             <span>.-</span>
-                                                            {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->descripcion : null }}
+                                                            {{ $remuneracion->typeRemuneracion ? 
+                                                                str_limit($remuneracion->typeRemuneracion->descripcion, 45) 
+                                                                : null 
+                                                            }}
                                                         </th>
                                                         <th class="py-0 text-right font-12" width="5%">
                                                             {{ $money->parseTo(round($remuneracion->monto, 2)) }}
@@ -131,51 +134,57 @@
                                                     </tr>
                                                 @endforeach
                                                 <tr>
-                                                    <th></th>
-                                                    <th class="text-right bbt-1 font-12">
-                                                        {{ $money->parseTo(round($store['history']->total_bruto, 2)) }}
+                                                    <th class="font-11 py-0 pl-1">TOTAL BRUTO</th>
+                                                    <th class="text-right font-12">
+                                                        <div class="bbt-1">
+                                                            {{ $money->parseTo(round($store['history']->total_bruto, 2)) }}
+                                                        </div>
                                                     </th>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </td>
-                                    <td class="p-relative">
-                                        <table class="p-absolute top-0 w-100">
-                                            <tbody>
-                                                @foreach ($store['descuentos']->chunk(2) as $body)
+                                    <td class="py-0 bbr-1 bbl-1">
+                                            <table class="w-100">
+                                                <tbody>
+                                                    @foreach ($store['descuentos']->chunk(2) as $body)
+                                                        <tr>
+                                                            @foreach ($body as $descuento)
+                                                                <th class="py-0 font-11 ml-1" width="35%">
+                                                                    {{ $descuento->typeDescuento ? $descuento->typeDescuento->key : null }}
+                                                                    <span>.-</span>
+                                                                    {{ $descuento->typeDescuento ? $descuento->typeDescuento->descripcion : null }}
+                                                                </th>
+                                                                <th class="py-0 font-12 text-right" style="padding-right: 0.5em;">
+                                                                    {{ $money->parseTo(round($descuento->monto, 2)) }}
+                                                                </th>
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
                                                     <tr>
-                                                        @foreach ($body as $descuento)
-                                                            <th class="py-0 font-11" width="35%">
-                                                                {{ $descuento->typeDescuento ? $descuento->typeDescuento->key : null }}
-                                                                <span>.-</span>
-                                                                {{ $descuento->typeDescuento ? $descuento->typeDescuento->descripcion : null }}
-                                                            </th>
-                                                            <th class="py-0 font-12 text-right" style="padding-right: 0.5em;">
-                                                                {{ $money->parseTo(round($descuento->monto, 2)) }}
-                                                            </th>
-                                                        @endforeach
+                                                        <th></th>
+                                                        <th colspan="3"></th>
                                                     </tr>
-                                                @endforeach
-                                                <tr>
-                                                    <th></th>
-                                                    <th colspan="3"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th class="py-0 font-10">TOTAL DSCTS.</th>
-                                                    <th class="py-0 bbt-1 text-center font-12" colspan="3">
-                                                        {{ $money->parseTo(round($store['history']->total_bruto, 2)) }}
-                                                    </th>
-                                                </tr>
-                                                <tr>
-                                                    <th class="py-0 font-10">NETO A PAGAR</th>
-                                                    <th class="py-0 bbt-1 text-center font-12" colspan="3">
-                                                        {{ $money->parseTo(round($store['history']->total_neto, 2)) }}
-                                                    </th>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                    <tr>
+                                                        <th class="py-0 font-11 pl-1">TOTAL DSCTS.</th>
+                                                        <th class="py-0 font-12" colspan="3">
+                                                            <div class="bbt-1 text-center py-0">
+                                                                {{ $money->parseTo(round($store['history']->total_desct, 2)) }}
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="py-0 font-11 pl-1">NETO A PAGAR</th>
+                                                        <th class="py-0 font-12" colspan="3">
+                                                            <div class="bbt-1 text-center text-center">
+                                                                {{ $money->parseTo(round($store['history']->total_neto, 2)) }}
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                     </td>
-                                    <th class="bbl-1 p-relative">
+                                    <th class="p-relative">
                                         <table class="p-absolute top-0 w-100">
 
                                             @foreach ($store['aportaciones'] as $aport)
@@ -188,9 +197,11 @@
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <th class="py-0 font-10">TOTAL APORTE</th>
-                                                <th class="py-0 bbt-1 font-12 text-right">
-                                                    {{ $money->parseTo(round($store['aportaciones']->sum('monto'), 2)) }}
+                                                <th class="py-0 font-12">TOTAL APORTE</th>
+                                                <th class="py-0 font-12">
+                                                    <div class="py-0 bbt-1 text-right">
+                                                        {{ $money->parseTo(round($store['aportaciones']->sum('monto'), 2)) }}
+                                                    </div>
                                                 </th>
                                             </tr>
 
@@ -222,6 +233,7 @@
                         </table>
                     </div>
                 </div>
+                <div class="bbb-1"></div>
             @endforeach
         </body>
     @endforeach

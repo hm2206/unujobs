@@ -6,19 +6,32 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
         <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-        <title>Reporte de cuentas {{ $cronograma->año }} - {{ $cronograma->mes }}</title>
+        <title>REPORTE BANCOS {{ $cronograma->año }} - {{ $cronograma->mes }}</title>
     </head>
+
+    <style>
+    
+    html {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    body {
+        padding: 1.5em;
+    }
+    
+    </style>
 
     @foreach ($bancos as $banco)
 
-        @foreach ($banco->historial->chunk(23) as $historial)
+        @foreach ($banco->historial as $historial)
             <body class="bg-white text-negro">
                         
                 <table class="text-dark">
                     <thead>
                         <tr>
                             <th>
-                                <img src="{{ public_path() . "/img/logo.png" }}" width="50" alt="">
+                                <img src="{{ public_path() . "/img/logo.png" }}" width="40" alt="">
                             </th>
                             <th>
                                 <div><b class="font-12 text-negro">UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
