@@ -79,6 +79,19 @@ class FormatTXT
         return $this;
     }
 
+
+    /**
+     * Configurar normal
+     *
+     * @param integer $normal
+     * @return void
+     */
+    public function setNormal(int $normal)
+    {
+        self::$header['normal'] = "000{$normal}";
+        return $this;
+    }
+
     /**
      * configurar el prefijo del archivo
      *

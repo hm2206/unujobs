@@ -77,6 +77,7 @@ class FileController extends Controller
             ->where("numero_de_cuenta", "<>", null)
             ->where("cronograma_id", $cronograma->id)
             ->whereHas("banco")
+            ->orderBy('orden', 'ASC')
             ->get();
 
         if ($planilla->especial) {
@@ -97,6 +98,10 @@ class FileController extends Controller
             $file = FormatTXT::init();
             $file->setPlanilla($planilla->key);
             $file->setHeader($cronograma->año, $cronograma->mes);
+            // verificamos si es una planilla adicional
+            if ($cronograma->adicional) {
+                $file->setNormal((int)$cronograma->numero + 1);
+            }
             $file->setBody($payload);
             $file->generateFile("/txt");
             return $file->download();

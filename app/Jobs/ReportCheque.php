@@ -61,7 +61,7 @@ class ReportCheque implements ShouldQueue
         $cronograma = $this->cronograma;
         $historial = Historial::with(['work:works.id,nombre_completo,numero_de_documento'])
             ->where("cronograma_id", $cronograma->id)
-            ->where("numero_de_cuenta", '')
+            ->whereIn("numero_de_cuenta", ['', null])
             ->orderBy('orden', 'ASC')
             ->get(["work_id", "id", "total_neto", "total_bruto"]);
         // obtener tipo de bonificaciones

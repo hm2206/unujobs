@@ -22,16 +22,25 @@ class Helpers
         // obtener los cronogramas de ese {$mes} y {$year}
         $cronogramas = Cronograma::where('mes', $mes)->where('año', $year)->get(['id']);
         // realizar busqueda de la plaza
-        $historial = Historial::where("id", "<>", $id)
+        $history = Historial::with('work')->where("id", "<>", $id)
             ->whereIn('cronograma_id', $cronogramas->pluck(['id']))
-            ->count();
+            ->where('plaza', $plaza)
+            ->first();
         // verificar si está disponible
-        if ($historial) {
+        if ($history) {
+            // datos del ocupante de la plaza
+            $name = $history->work ? $history->work->nombre_completo : '';
             // plaza ocupada
-            return false;
+            return [
+                "success" => false,
+                "message" => "La plaza está ocupada por: {$name}"
+            ];
         }
         // retornar que la plaza está disponible
-        return true;
+        return [
+            "success" => true,
+            "message" => "plaza disponible!"
+        ];
     }
 
 

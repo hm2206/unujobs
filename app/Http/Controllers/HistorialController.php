@@ -159,20 +159,22 @@ class HistorialController extends Controller
             $isValido = $cargos->where("id", $request->cargo_id)->first();
             // almacenamos la plaza
             $plaza = $request->plaza;
-
+            // verificar plaza
+            $isPlaza = Helpers::historialPlazaDisponible($plaza, $history->id, $cronograma->mes, $cronograma->año);
             // verificamos que el usuario nos envia una plaza
-           /* if ($plaza && !Helpers::historialPlazaDisponible($plaza, $history->id, $cronograma->mes, $cronograma->año)) {
+            if ($plaza && !$isPlaza['success']) {
                 return [
                     "status" => false,
-                    "message" => "La plaza se encuentra ocupada!"
+                    "message" => $isPlaza['message']
                 ];
-            }*/
+            }
             
             if ($isValido) {
                 // verificar si se realizó el cambio de categoria
                 Helpers::changeCategoria($history, $cronograma, $request->categoria_id);
                 // actualizar campos
                 $history->update($request->except(['planilla_id']));
+                $history->numero_de_cuenta = $request->numero_de_cuenta ? $request->numero_de_cuenta  : '';
                 // actualizar afp
                 DescuentoCollection::updateAFP($history);
                 // actualizar sindicato
