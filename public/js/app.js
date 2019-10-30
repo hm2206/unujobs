@@ -17252,6 +17252,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -79781,7 +79783,11 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text", name: "numero_de_cussp" },
+              attrs: {
+                type: "text",
+                disabled: _vm.loading,
+                name: "numero_de_cussp"
+              },
               domProps: { value: _vm.form.numero_de_cussp },
               on: {
                 input: function($event) {
@@ -79822,7 +79828,11 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "date", name: "fecha_de_afiliacion" },
+              attrs: {
+                type: "date",
+                disabled: _vm.loading,
+                name: "fecha_de_afiliacion"
+              },
               domProps: { value: _vm.form.fecha_de_afiliacion },
               on: {
                 input: function($event) {
@@ -79863,7 +79873,7 @@ var render = function() {
                   }
                 ],
                 staticClass: "form-control",
-                attrs: { name: "banco_id" },
+                attrs: { name: "banco_id", disabled: _vm.loading },
                 on: {
                   change: function($event) {
                     var $$selectedVal = Array.prototype.filter
@@ -79925,7 +79935,11 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text", name: "numero_de_cuenta" },
+              attrs: {
+                type: "text",
+                disabled: _vm.loading,
+                name: "numero_de_cuenta"
+              },
               domProps: { value: _vm.form.numero_de_cuenta },
               on: {
                 input: function($event) {
@@ -79966,7 +79980,11 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "text", name: "numero_de_essalud" },
+              attrs: {
+                type: "text",
+                disabled: _vm.loading,
+                name: "numero_de_essalud"
+              },
               domProps: { value: _vm.form.numero_de_essalud },
               on: {
                 input: function($event) {
@@ -80005,7 +80023,11 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "date", name: "fecha_de_ingreso" },
+              attrs: {
+                type: "date",
+                disabled: _vm.loading,
+                name: "fecha_de_ingreso"
+              },
               domProps: { value: _vm.form.fecha_de_ingreso },
               on: {
                 input: function($event) {
@@ -80044,7 +80066,11 @@ var render = function() {
                 }
               ],
               staticClass: "form-control",
-              attrs: { type: "date", value: "numero_de_cese" },
+              attrs: {
+                type: "date",
+                disabled: _vm.loading,
+                value: "numero_de_cese"
+              },
               domProps: { value: _vm.form.numero_de_cese },
               on: {
                 input: function($event) {
@@ -80154,7 +80180,7 @@ var render = function() {
                   }
                 ],
                 staticClass: "form-control",
-                attrs: { name: "cargo_id" },
+                attrs: { name: "cargo_id", disabled: _vm.loading },
                 on: {
                   change: [
                     function($event) {
@@ -80477,7 +80503,7 @@ var render = function() {
         _vm._v(" "),
         _c("div", { staticClass: "col-md-4" }, [
           _c("div", { staticClass: "form-group" }, [
-            _c("label", { attrs: { for: "" } }, [_vm._v("Plaza")]),
+            _c("label", { attrs: { for: "" } }, [_vm._v("Plaza ")]),
             _vm._v(" "),
             _c("input", {
               directives: [
@@ -80533,7 +80559,7 @@ var render = function() {
         _vm._v(" "),
         _c("div", { staticClass: "col-md-8" }, [
           _c("div", { staticClass: "form-group" }, [
-            _c("label", { attrs: { for: "" } }, [_vm._v("Observación")]),
+            _vm._m(7),
             _vm._v(" "),
             _c("textarea", {
               directives: [
@@ -80554,6 +80580,15 @@ var render = function() {
                   }
                   _vm.$set(_vm.form, "observacion", $event.target.value)
                 }
+              }
+            }),
+            _vm._v(" "),
+            _c("small", {
+              staticClass: "text-danger",
+              domProps: {
+                textContent: _vm._s(
+                  _vm.errors.observacion ? _vm.errors.observacion[0] : ""
+                )
               }
             })
           ])
@@ -80628,7 +80663,7 @@ var render = function() {
         _vm._v(" "),
         _vm.cas
           ? _c("div", { staticClass: "row col-md-12" }, [
-              _vm._m(7),
+              _vm._m(8),
               _vm._v(" "),
               _c("div", { staticClass: "col-md-4" }, [
                 _c("div", { staticClass: "form-group" }, [
@@ -80758,6 +80793,15 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("label", { attrs: { for: "" } }, [
       _vm._v("P.A.P"),
+      _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("label", { attrs: { for: "" } }, [
+      _vm._v("Observación "),
       _c("span", { staticClass: "text-danger" }, [_vm._v("*")])
     ])
   },

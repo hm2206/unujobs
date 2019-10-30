@@ -59,7 +59,7 @@ class ReportCuenta implements ShouldQueue
         $cronograma = $this->cronograma;
         $historial = Historial::with(['work'])
             ->where("cronograma_id", $cronograma->id)
-            ->where("numero_de_cuenta", "<>", null)
+            ->where("numero_de_cuenta", "<>", '')
             ->orderBy('orden', 'ASC')
             ->get();
 

@@ -29,14 +29,17 @@ class CreateHistorialsTable extends Migration
             $table->string('numero_de_cussp')->nullable();
             $table->date("fecha_de_afiliacion")->nullable();
             $table->bigInteger('banco_id')->nullable();
-            $table->string('numero_de_cuenta')->nullable();
+            $table->string('numero_de_cuenta')->default('');
             $table->string('numero_de_essalud')->nullable();
             $table->string('plaza')->nullable();
             $table->string('perfil')->nullable();
             $table->string('escuela')->nullable();
+            $table->string('ruc')->nullable();
             $table->string("pap")->nullable();
             $table->string('ext_pptto')->nullable();
             $table->text('observacion')->nullable();
+            $table->date('fecha_de_ingreso')->nullable();
+            $table->date('fecha_de_cese')->nullable();
             $table->double('base')->default(0);
             $table->double('base_enc')->default(0);
             $table->double('total_bruto')->default(0);

@@ -33,7 +33,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Numero de Cussp</label>
-                    <input type="text" name="numero_de_cussp" v-model="form.numero_de_cussp" class="form-control">
+                    <input type="text" :disabled="loading" name="numero_de_cussp" v-model="form.numero_de_cussp" class="form-control">
                     <small class="text-danger" v-text="errors.numero_de_cussp ? errors.numero_de_cussp[0] : ''"></small>
                 </div>
             </div>
@@ -41,7 +41,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Fecha de Afiliación</label>
-                    <input type="date" class="form-control" name="fecha_de_afiliacion" v-model="form.fecha_de_afiliacion">
+                    <input type="date" class="form-control" :disabled="loading" name="fecha_de_afiliacion" v-model="form.fecha_de_afiliacion">
                     <small class="text-danger" v-text="errors.fecha_de_afiliacion ? errors.fecha_de_afiliacion[0] : ''"></small>
                 </div>
             </div>
@@ -49,7 +49,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Banco</label>
-                    <select name="banco_id" v-model="form.banco_id" class="form-control">
+                    <select name="banco_id" v-model="form.banco_id" class="form-control" :disabled="loading">
                         <option value="">Seleccionar...</option>
                         <option :value="banco.id" v-for="(banco, ban) in bancos" :key="`banco-${ban}`"
                             v-text="banco.nombre"
@@ -63,7 +63,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Número de Cuenta</label>
-                    <input type="text" class="form-control" v-model="form.numero_de_cuenta" name="numero_de_cuenta">
+                    <input type="text"  :disabled="loading" class="form-control" v-model="form.numero_de_cuenta" name="numero_de_cuenta">
                     <small class="text-danger" v-text="errors.numero_de_cuenta ? errors.numero_de_cuenta[0] : ''"></small>
                 </div>
             </div>
@@ -71,7 +71,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Número Autogenerado</label>
-                    <input type="text" class="form-control" name="numero_de_essalud" v-model="form.numero_de_essalud">
+                    <input type="text" :disabled="loading" class="form-control" name="numero_de_essalud" v-model="form.numero_de_essalud">
                     <small class="text-danger" v-text="errors.numero_de_essalud ? errors.numero_de_essalud[0] : ''"></small>
                 </div>
             </div>
@@ -79,7 +79,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Fecha de ingreso <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control" name="fecha_de_ingreso" v-model="form.fecha_de_ingreso">
+                    <input type="date" :disabled="loading" class="form-control" name="fecha_de_ingreso" v-model="form.fecha_de_ingreso">
                     <small class="text-danger" v-text="errors.fecha_de_ingreso ? errors.fecha_de_ingreso[0] : ''"></small>
                 </div>
             </div>
@@ -87,7 +87,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="">Fecha de cese</label>
-                    <input type="date" class="form-control" value="numero_de_cese" v-model="form.numero_de_cese">
+                    <input type="date" :disabled="loading" class="form-control" value="numero_de_cese" v-model="form.numero_de_cese">
                     <small class="text-danger" v-text="errors.numero_de_cese ? errors.numero_de_cese[0] : ''"></small>
                 </div>
             </div>
@@ -116,6 +116,7 @@
                     <select name="cargo_id" 
                         v-model="form.cargo_id" 
                         class="form-control" 
+                        :disabled="loading"
                         v-on:change="changeSelect($event, 'changeCargo')"
                     >
                         <option value="">Seleccionar...</option>
@@ -191,7 +192,7 @@
 
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="">Plaza</label>
+                    <label for="">Plaza </label>
                     <input type="text" v-model="form.plaza" class="form-control" name="plaza" :disabled="loading">
                 </div>
             </div>
@@ -206,8 +207,9 @@
 
             <div class="col-md-8">
                 <div class="form-group">
-                    <label for="">Observación</label>
+                    <label for="">Observación <span class="text-danger">*</span></label>
                     <textarea name="observacion" v-model="form.observacion" :disabled="loading" class="form-control"></textarea>
+                     <small class="text-danger" v-text="errors.observacion ? errors.observacion[0] : ''"></small>
                 </div>
             </div>
 

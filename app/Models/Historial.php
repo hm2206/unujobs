@@ -10,10 +10,10 @@ class Historial extends Model
     protected $fillable = [
         "work_id", "info_id", "planilla_id", "cargo_id",
         "categoria_id", "meta_id", "cronograma_id", "fuente_id",
-        "sindicato_id", "afp_id", "type_afp_id",
-        "numero_de_cussp", "fecha_de_afiliacion",
+        "sindicato_id", "afp_id", "type_afp_id", "numero_de_cussp", 
+        "fecha_de_afiliacion", "fecha_de_ingreso", "fecha_de_cese",
         "banco_id", "numero_de_cuenta", "numero_de_essalud",
-        "plaza", "perfil", "escuela", "pap", "ext_pptto",
+        "plaza", "perfil", "escuela", "pap", "ext_pptto", "ruc",
         "observacion", "base", "base_enc", "total_bruto",
         "total_neto", "total_desct", "pdf", "afecto", "orden"
     ];

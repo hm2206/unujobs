@@ -30,6 +30,8 @@ use App\Jobs\DetachInfoJob;
 use App\Jobs\AddInfoCronograma;
 use App\Jobs\ProssingAportacion;
 use App\Models\Historial;
+use App\Models\Educacional;
+use App\Models\Aportacion;
 
 /**
  * Class CronogramaController
@@ -445,7 +447,9 @@ class CronogramaController extends Controller
             // eliminar descuentos 
             Descuento::whereIn("historial_id", $historial)->delete();
             // eliminar aportaciones
-            Aportacion::whereIn("historial", $historial)->delete();
+            Aportacion::whereIn("historial_id", $historial)->delete();
+            // eliminar tasas educacionales
+            Educacional::whereIn("historial_id", $historial)->delete();
             // eliminar historial
             Historial::whereIn("id", $historial)->delete();
 

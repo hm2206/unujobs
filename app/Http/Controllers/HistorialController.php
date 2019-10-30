@@ -16,6 +16,8 @@ use App\Models\Cronograma;
 use App\Collections\DescuentoCollection;
 use App\Collections\RemuneracionCollection;
 use App\Models\Aportacion;
+use App\Tools\Helpers;
+use App\Models\Info;
 
 class HistorialController extends Controller
 {
@@ -103,6 +105,7 @@ class HistorialController extends Controller
      */
     public function obligacion($id)
     {
+        $history = Historial::findOrFail($id);
         return Obligacion::where('historial_id', $id)->get();
     }
 
@@ -114,12 +117,14 @@ class HistorialController extends Controller
      */
     public function educacional($id)
     {
+        $history = Historial::findOrFail($id);
         return Educacional::with('type_educacional')->where('historial_id', $id)->get();
     }
 
 
     public function aportacion($id) 
     {
+        $history = Historial::findOrFail($id);
         return Aportacion::with('type_aportacion')->where('historial_id', $id)->get(); 
     }
 
@@ -138,6 +143,8 @@ class HistorialController extends Controller
             "meta_id" => "required",
             "perfil" => "required",
             "pap" => "required",
+            "fecha_de_ingreso" => "required|date",
+            "observacion" => "required|max:200"
         ]);
 
         $history = Historial::with('work', 'categoria')->findOrFail($id);
@@ -150,12 +157,22 @@ class HistorialController extends Controller
         try {
             // verificar si el cargo existe en la planilla
             $isValido = $cargos->where("id", $request->cargo_id)->first();
+            // almacenamos la plaza
+            $plaza = $request->plaza;
+
+            // verificamos que el usuario nos envia una plaza
+           /* if ($plaza && !Helpers::historialPlazaDisponible($plaza, $history->id, $cronograma->mes, $cronograma->año)) {
+                return [
+                    "status" => false,
+                    "message" => "La plaza se encuentra ocupada!"
+                ];
+            }*/
             
             if ($isValido) {
-
+                // verificar si se realizó el cambio de categoria
+                Helpers::changeCategoria($history, $cronograma, $request->categoria_id);
+                // actualizar campos
                 $history->update($request->except(['planilla_id']));
-                $history->ext_pptto = $isValido->ext_pptto;
-                $history->save();
                 // actualizar afp
                 DescuentoCollection::updateAFP($history);
                 // actualizar sindicato
@@ -163,7 +180,9 @@ class HistorialController extends Controller
                 // actualizar historial
                 $history = DescuentoCollection::updateNeto($history);
                 $history->save();
-
+                // actualizar info actual
+                Info::where('id', $history->info_id)->update($request->except(['planilla_id', 'observacion', '_method']));
+                // responder al cliente
                 return [
                     "status" => true,
                     "message" => "Los datos se actualizarón",

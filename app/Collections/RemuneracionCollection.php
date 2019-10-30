@@ -6,7 +6,7 @@ use App\Models\Remuneracion;
 use App\Models\TypeRemuneracion;
 use App\Models\Historial;
 use App\Models\Cronograma;
-
+use App\Models\Descuento;
 
 class RemuneracionCollection {
 
@@ -175,6 +175,83 @@ class RemuneracionCollection {
 
         }
 
+    }
+
+
+    /**
+     * crear y asignar remuneraciones del historial
+     *
+     * @param Historial $history
+     * @param Cronograma $cronograma
+     * @param [type] $types
+     * @return void
+     */
+    public static function create(Historial $history, Cronograma $cronograma, $types)
+    {
+        $payload = collect();
+        // recorremos todas las remuneraciones
+        foreach ($types as $index => $type) {
+            // preguntar si esta permitido
+            $isPermissing = $type->categorias->where('id', $history->categoria_id)->count();
+            // verificar si el type remuneracion está disponible en este trabajador
+            if ($isPermissing) {
+                // obtener los conceptos por ley
+                $conceptos = $type->conceptos()
+                    ->wherePivot('categoria_id', $history->categoria_id)
+                    ->get();
+                // obtener los montos de los conceptos
+                $montos = $conceptos->map(function($con) {
+                    return $con->config ? $con->config->monto : 0;
+                });
+                // sumamos los conceptos 
+                $suma = $montos->sum();
+                // guardamos el monto actual
+                $current_monto = $history->afecto ? \round(($suma * $cronograma->dias) / 30, 2) : 0;
+                // verificar el calculo de tipo de remuneracion relacionado
+                $current_monto = self::calc_type_remuneracion($history, $type, $payload, $current_monto);
+                // almacenamos los resultados
+                $payload->push([
+                    "work_id" => $history->work_id,
+                    "info_id" => $history->info_id,
+                    "historial_id" => $history->id,
+                    "planilla_id" => $history->planilla_id,
+                    "cargo_id" => $history->cargo_id,
+                    "categoria_id" => $history->categoria_id,
+                    "meta_id" => $history->meta_id,
+                    "cronograma_id" => $cronograma->id,
+                    "type_remuneracion_id" => $type->id,
+                    "mes" => $cronograma->mes,
+                    "año" => $cronograma->año,
+                    "adicional" => $cronograma->adicional,
+                    "base" => $type->base,
+                    "show" => $type->show,
+                    "monto" => round($current_monto, 2)
+                ]);
+            }
+        }
+        // obtenemos el monto bruto del trbajador
+        $bruto = $payload->where("historial_id", $history->id)
+            ->where('show', 1)
+            ->sum('monto');
+        // obtenemos la base imponible
+        $base = $payload->where("historial_id", $history->id)
+            ->where('show', 1)
+            ->where('base', 0)
+            ->sum('monto');
+        // base enc
+        $base_enc = self::calc_enc($history, $base);
+        // total de descuentos
+        $total_desct = Descuento::where('historial_id', $history->id)->where('base', 0)->sum('monto');
+        // actualizar el monto
+        $history->update([
+            "total_bruto" => round($bruto, 2),
+            "base_enc" => round($base_enc, 2),
+            "base" => round($base, 2),
+            "total_desct" => round($total_desct, 2),
+            "total_neto" => round($bruto - $total_desct, 2)
+        ]);
+        // insertamos masivamente las remuneraciones
+        Remuneracion::insert($payload->toArray());
     }
 
 

@@ -27,7 +27,7 @@ class CreateInfosTable extends Migration
             $table->string('numero_de_cussp')->nullable();
             $table->date("fecha_de_afiliacion")->nullable();
             $table->bigInteger('banco_id')->nullable();
-            $table->string('numero_de_cuenta')->nullable();
+            $table->string('numero_de_cuenta')->default('');
             $table->string('numero_de_essalud')->nullable();
             $table->string('fuente')->nullable();
             $table->string('plaza')->nullable();

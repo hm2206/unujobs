@@ -81,7 +81,7 @@
                     </thead>
                     <tbody  class="bbl-1">
                         <tr>
-                            <td width="25%" class="py-0 font-11 bbb-1 bbr-1"><b>2.1 PERSONAL Y OBLIGACIONES SOCIALES</b></td>
+                            <td width="25%" class="py-0 font-11 bbb-1 bbr-1 pl-1"><b>2.1 PERSONAL Y OBLIGACIONES SOCIALES</b></td>
                             @foreach ($type_categorias as $type_categoria)
                                 <td class="py-0 bbb-1">
                                     <table width="100%">
@@ -199,7 +199,7 @@
                                 TOTAL DESCUENTOS
                             </th>
                             <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
-                                <div class="bbb-1">{{ $money->parseTo($total_descuentos) }}</div>
+                                <div class="bbb-1 pr-1">{{ $money->parseTo($total_descuentos) }}</div>
                             </th>
                         </tr>
                         <tr>
@@ -235,7 +235,7 @@
                                 <div class="bbb-1 font-12">84.-TOTAL APORTACIONES</div>
                             </th>
                             <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                <div class="bbb-1 font-13 bbt-1">{{ $money->parseTo($total_aportaciones) }}</div>
+                                <div class="bbb-1 font-13 bbt-1 pr-1">{{ $money->parseTo($total_aportaciones) }}</div>
                             </th>
                         </tr>
                     </tbody>
