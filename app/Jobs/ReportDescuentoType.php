@@ -19,6 +19,7 @@ use App\Models\TypeDescuento;
 use App\Models\TypeRemuneracion;
 use App\Models\TypeDetalle;
 use App\Models\Historial;
+use App\Tools\Money;
 
 class ReportDescuentoType implements ShouldQueue
 {
@@ -60,6 +61,7 @@ class ReportDescuentoType implements ShouldQueue
         $historial = Historial::where('cronograma_id', $cronograma->id)
             ->orderBy('orden', 'ASC')->get();
         $count = 1;
+        $money = new Money;
 
         $type = TypeDescuento::findOrFail($this->type_descuento);
 
@@ -82,7 +84,12 @@ class ReportDescuentoType implements ShouldQueue
 
 
         // crear pdf
-        $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'bodies', 'meses', 'type'));
+        if ($type->base) {
+            $pdf = PDF::loadView("pdf.aporte_detalle", compact('cronograma', 'bodies', 'meses', 'type', 'money'));
+        }else {
+            $pdf = PDF::loadView("pdf.descuento_type", compact('cronograma', 'bodies', 'meses', 'type', 'money'));
+        }
+
         $message = strtolower($type->key);
         $name = "descuento_{$cronograma->mes}_{$cronograma->año}_{$message}.pdf";
         $pdf->save(storage_path("app/public") . "/pdf/{$name}");

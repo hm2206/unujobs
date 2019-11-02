@@ -12,6 +12,7 @@ use App\Models\Descuento;
 use App\Models\Cronograma;
 use App\Models\Historial;
 use Illuminate\Http\Request;
+use App\Collections\DescuentoCollection;
 
 /**
  * Class ObligacionController
@@ -59,6 +60,18 @@ class ObligacionController extends Controller
             "cronograma_id" => "required"
         ]);
 
+
+        // obtener historial
+        $history = Historial::findOrFail($request->historial_id);
+        $cronograma = Cronograma::findOrFail($history->cronograma_id);
+        // verificar que el cronograma esta cerrado
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada!"
+            ];
+        }
+
         try {
             // verificamos que el cronograma este activo
             $obligacion = Obligacion::create([
@@ -80,21 +93,8 @@ class ObligacionController extends Controller
             Descuento::where('historial_id', $request->historial_id)
                 ->where("type_descuento_id", 8)
                 ->update([ "monto" => $monto, "edit" => 0 ]);
-            // obtener historial
-            $history = Historial::findOrFail($obligacion->historial_id);
-            // obtener total bruto
-            $total_bruto = $history->total_bruto;
-            // obtener total de descuentos
-            $total_desct = Descuento::where('historial_id', $history->id)
-                ->where('type_descuento_id', $obligacion->type_descuento_id)
-                ->sum('monto');
-            // calculamos total neto
-            $total_neto = $total_bruto - $total_desct;
-            // actualizamos el historial
-            $history->update([
-                "total_desct" => round($total_desct, 2),
-                "total_neto" => round($total_neto, 2)
-            ]);
+            // actualizar historial
+            DescuentoCollection::updateNeto($history);
             // devolver los datos necesarios
             return [
                 "status" => true,
@@ -152,6 +152,15 @@ class ObligacionController extends Controller
         try {
             
             $obligacion = Obligacion::findOrFail($id);
+            $cronograma = Cronograma::findOrFail($obligacion->cronograma_id);
+            // verificar que el cronograma esta cerrado
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla está cerrada!"
+                ];
+            }
+        
             // actualizar el monto de obligacion actual
             $obligacion->update([
                 "monto" => $request->input("up_monto")
@@ -169,20 +178,9 @@ class ObligacionController extends Controller
                 ]);
             // obtenemos el historial
             $history = Historial::findOrFail($obligacion->historial_id);
-            // obtener el total bruto
-            $total_bruto = $history->total_bruto;
-            // obtenemos el total de descuentos
-            $total_desct = Descuento::where('historial_id', $history->id)
-                ->where('base', 0)
-                ->sum('monto');
-            // cacular el total neto
-            $total_neto = $total_bruto - $total_desct;
             // actualizar historial
-            $history->update([ 
-                "total_desct" => round($total_desct, 2),
-                "total_neto" => round($total_neto, 2)
-            ]);
-
+            DescuentoCollection::updateNeto($history);
+        
             return [
                 "status" => true,
                 "message" => "Los datos se guardarón correctamente!",
@@ -215,6 +213,14 @@ class ObligacionController extends Controller
         try {
 
             $obligacion = Obligacion::findOrFail($id);
+            $cronograma = Cronograma::findOrFail($obligacion->cronograma_id);
+            // verificar que el cronograma esta cerrado
+            if ($cronograma->estado == 0) {
+                return [
+                    "status" => false,
+                    "message" => "La planilla está cerrada!"
+                ];
+            }
             // obtenemos el historial
             $history = Historial::findOrFail($obligacion->historial_id);
             // eliminar obligacion

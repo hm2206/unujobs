@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\Cronograma;
-use App\Models\Boleta;
+use App\Models\Historial;
 use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
 
@@ -15,7 +15,8 @@ class DebbugCronograma extends Seeder
      */
     public function run()
     {
-        $this->recrearRemuneraciones();
+        // $this->ordenarHistorial();
+        $this->eliminarHistorialDuplicado();
     }
 
 
@@ -86,4 +87,32 @@ class DebbugCronograma extends Seeder
         Remuneracion::insert($payload);
 
     }
+
+    public function ordenarHistorial()
+    {
+        $historial = Historial::with('work')->get();
+        foreach ($historial as $history) {
+            $work = $history->work;
+            $history->update(["orden" => $work ? substr($work->nombre_completo, 0, 3) : '']);
+        }   
+    }
+
+
+    public function eliminarHistorialDuplicado()
+    {
+        $cronograma = Cronograma::with('historial')->findOrFail(35);
+        foreach ($cronograma->historial as $history) {
+            foreach ($cronograma->historial->where('historial_id', '<>', $history->id) as $other) {
+                if ($history->info_id == $other->info_id) {
+                    // eliminar datos dependiente
+                    $other->descuentos()->delete();
+                    $other->remuneraciones()->delete();
+                    $other->aportaciones()->delete();
+                    $other->delete();
+                    break;
+                }
+            }
+        }
+    }
+
 }

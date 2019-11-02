@@ -58,13 +58,17 @@ class RemuneracionCollection {
         $total_bruto = Remuneracion::where('historial_id', $history->id)->where('show', 1)->sum('monto');
         // calulamos la base imponible
         $base = Remuneracion::where('historial_id', $history->id)->where('base', 0)->sum('monto');
+        // obtenemos el total bruto
+        $total_desct = Descuento::where('historial_id', $history->id)->where('base', 0)->sum('monto');
         // calculamos el total neto
-        $total_neto = $total_bruto - $history->total_desct;
+        $total_neto = $total_bruto - $total_desct;
         // preparar la actualización
         $history->total_bruto = round($total_bruto, 2);
+        $history->total_desct = round($total_desct, 2);
         $history->base = round($base, 2);
         $history->base_enc = self::calc_enc($history, $base);
-        $history->total_neto =round( $total_neto, 2);
+        $history->total_neto = round( $total_neto, 2);
+        $history->save();
         return $history;
     }
 

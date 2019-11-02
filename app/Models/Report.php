@@ -8,8 +8,8 @@ class Report extends Model
 {
     
     protected $fillable = [
-        "type", "name", "cronograma_id", "icono", "type_report_id", 
-        "path", "read"
+        "type", "key", "name", "cronograma_id", "icono", 
+        "type_report_id", "path", "read", "pendiente"
     ];
 
 }

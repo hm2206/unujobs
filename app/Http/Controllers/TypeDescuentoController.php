@@ -7,6 +7,7 @@ use App\Models\TypeDescuento;
 use App\Models\Historial;
 use App\Models\Descuento;
 use App\Models\Remuneracion;
+use App\Models\Cronograma;
 
 class TypeDescuentoController extends Controller
 {
@@ -25,6 +26,15 @@ class TypeDescuentoController extends Controller
     {
         $historial = Historial::findOrFail($id);
         // obtenemos los nuevos montos de los descuentos
+        $cronograma = Cronograma::findOrFail($historial->cronograma_id);
+        // verificar si la planilla esta cerrada
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla se encuentra cerrada!"
+            ];
+        }
+        // obtenemos los descuentos enviados desde el cliente
         $descuentos = \json_decode($request->input('descuentos'));
         // obtenemos los descuentos de la base de datos solo las editables
         $db_descuentos = Descuento::where('historial_id', $historial->id)

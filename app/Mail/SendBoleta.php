@@ -15,11 +15,10 @@ class SendBoleta extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $info;
     public $cronograma;
-    public $pdf;
-    public $jefe;
+    public $history;
     public $work;
+    public $pdf;
 
     /**
      * @param \App\Models\Work $work
@@ -28,22 +27,21 @@ class SendBoleta extends Mailable
      * @param string $adicional
      * @param \PDF $pdf
      */
-    public function __construct($info, $work, $cronograma, $pdf)
+    public function __construct($history, $work, $cronograma, $pdf)
     {
-        $this->info = $info;
+        $this->history = $history;
         $this->work = $work;
         $this->cronograma = $cronograma;
         $this->pdf = $pdf;
-        $this->jefe = Work::where("jefe", 1)->first();
     }
 
 
     public function build()
     {
         return $this
-            ->subject("Hola " . strtoupper($this->work->nombres) . ", tu boleta {$this->cronograma->mes} de {$this->cronograma->year} ya está lista.")
+            ->subject("Hola " . strtoupper($this->work->nombres) . ", tu boleta {$this->cronograma->mes} del {$this->cronograma->año} ya está lista.")
             ->view('mails.send_boleta')
-            ->attachData($this->pdf->output(), 'boleta', [
+            ->attachData($this->pdf, 'boleta_informativa', [
                 'mime' => 'application/pdf'
             ]);
     }

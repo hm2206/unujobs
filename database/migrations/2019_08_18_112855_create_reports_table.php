@@ -15,6 +15,7 @@ class CreateReportsTable extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('key')->nullable();
             $table->string("type");
             $table->string("name");
             $table->string("icono")->nullable();
@@ -22,6 +23,7 @@ class CreateReportsTable extends Migration
             $table->bigInteger('cronograma_id');
             $table->bigInteger('type_report_id');
             $table->tinyInteger('read')->default(0);
+            $table->tinyInteger('pendiente')->default(0);
             $table->timestamps();
         });
     }

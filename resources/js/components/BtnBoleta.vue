@@ -5,7 +5,7 @@
         </button>
 
         
-        <modal @close="show = false" col="col-md-10" :show="show" height="90vh">
+        <modal @close="show = false" col="col-md-12" :show="show" height="90vh">
             <template slot="header">
                 Lista de boletas de 
                 <i class="fas fa-arrow-right text-danger"></i> 
@@ -21,11 +21,13 @@
                             <thead class="text-primary">
                                 <tr>
                                     <th>Seleccionar</th>
-                                    <th>Planilla</th>
+                                    <th>Cargo</th>
+                                    <th>Categoria</th>
                                     <th>Observación</th>
                                     <th class="text-center">Adicional</th>
                                     <th class="text-center">Mes</th>
                                     <th class="text-center">Año</th>
+                                    <th class="text-center">Boleta</th>
                                 </tr>
                              </thead>
                             <tbody v-if="!loader">
@@ -36,7 +38,16 @@
                                             v-model="check_cronogramas"
                                         >
                                     </td>
-                                    <td>{{ history.planilla ? history.planilla.descripcion : '' }}</td>
+                                    <td>
+                                        <span class="btn btn-sm btn-primary">
+                                            {{ history.cargo ? history.cargo.descripcion : '' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="btn btn-sm btn-primary">
+                                            {{ history.categoria ? history.categoria.descripcion : '' }}
+                                        </span>
+                                    </td>
                                     <td>{{ history.observacion }}</td>
                                     <td class="text-center">
                                         <span :class="`btn btn-sm btn-${history.cronograma.adicional ? 'primary' : 'danger'}`">
@@ -54,6 +65,19 @@
                                         <span class="btn btn-sm btn-dark">
                                             {{ history.cronograma ? history.cronograma.año : '' }}
                                         </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a :href="history.pdf" 
+                                            v-if="history.pdf"
+                                            class="btn btn-sm btn-success" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            >
+                                                <i class="fas fa-download"></i>
+                                        </a>
+                                        <button v-else class="btn btn-danger btn-sm">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -130,7 +154,7 @@ export default {
             }
 
             this.loader = true;
-            let api = unujobs("get", `/info/${this.param}/historial`);
+            let api = unujobs("get", `/work/${this.param}/historial`);
             await api.then(res => {
                 this.historial = res.data;
             }).catch(err => {

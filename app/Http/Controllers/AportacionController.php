@@ -8,6 +8,7 @@ use App\Collections\DescuentoCollection;
 use App\Models\TypeAportacion;
 use Illuminate\Http\Request;
 use App\Models\Descuento;
+use App\Models\Cronograma;
 
 class AportacionController extends Controller
 {
@@ -46,6 +47,15 @@ class AportacionController extends Controller
 
         $type = TypeAportacion::findOrFail($request->type_aportacion_id);
         $history = Historial::findOrFail($request->historial_id);
+        $cronograma = Cronograma::findOrFail($history->cronograma_id);
+        // verificar que el cronograma esta cerrado
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada!"
+            ];
+        }
+        
         // cargar payload
         $payload = [
             "work_id" => $history->work_id,
@@ -133,6 +143,15 @@ class AportacionController extends Controller
     public function destroy($id)
     {
         $aportacion = Aportacion::findOrFail($id);
+        $cronograma = Cronograma::findOrFail($aportacion->cronograma_id);
+        // verificar que el cronograma esta cerrado
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada!"
+            ];
+        }
+        
         try {
             Descuento::where('historial_id', $aportacion->historial_id)
                 ->where('type_descuento_id', $aportacion->type_descuento_id)

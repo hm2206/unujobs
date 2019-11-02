@@ -10,13 +10,15 @@
     
     
     Hola {{ strtoupper($work->nombre_completo) }}, La boleta electrónica {{ $cronograma->mes }} del {{ $cronograma->año }} ya está lista. <br> <br>
-    Esta boleta es solo informátiva. <br><br>
+    Esta boleta es solo informátiva. <br>
+    Para que la boleta tenga valides, debe tener la firma del Jefe(a) de la Oficina Ejecutiva de Remuneraciones y Pensiones
 
-    @if ($jefe)
-    
-        Atte. Oficina Ejecutiva de Remuneraciones y Pensiones
-        
-    @endif
+    <br>
+    <br>
+    <br>
+
+    <b>Atte. Oficina Ejecutiva de Remuneraciones y Pensiones - UNU</b>
+   
   
 
 </body>

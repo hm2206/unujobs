@@ -9,6 +9,7 @@ use App\Models\Remuneracion;
 use App\Models\Descuento;
 use App\Collections\RemuneracionCollection;
 use App\Collections\DescuentoCollection;
+use App\Models\Cronograma;
 
 class RemuneracionController extends Controller
 {
@@ -17,6 +18,15 @@ class RemuneracionController extends Controller
     public function updateAll(Request $request, $id)
     {
         $historial = Historial::findOrFail($id);
+        // verificamos si se puede modificar
+        $cronograma = Cronograma::findOrFail($historial->cronograma_id);
+        // verificar si la planilla esta cerrada
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla se encuentra cerrada!"
+            ];
+        }
         // obtenemos imformación de los nuevos montos
         $remuneraciones = \json_decode($request->input('remuneraciones'));
         // obtenemos las remuneraciones de la base de datos pero solo las editables

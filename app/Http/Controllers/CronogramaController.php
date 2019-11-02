@@ -32,6 +32,8 @@ use App\Jobs\ProssingAportacion;
 use App\Models\Historial;
 use App\Models\Educacional;
 use App\Models\Aportacion;
+use App\Jobs\TurnOffPlanilla;
+use App\Jobs\SendMailBoletas;
 
 /**
  * Class CronogramaController
@@ -117,6 +119,7 @@ class CronogramaController extends Controller
 
         $cronogramas = Cronograma::where('año', $year)
             ->where('planilla_id', $request->planilla_id)
+            ->where('adicional', $adicional)
             ->where('mes', $mes)->get();
 
         if ($adicional == 0 && $cronogramas->count() > 0) {
@@ -411,12 +414,17 @@ class CronogramaController extends Controller
 
     public function estado(Request $request, $id) 
     {
-        $cronograma = Cronograma::findOrFail($id);
+        $cronograma = Cronograma::where("estado", 1)->findOrFail($id);
         try {
             
             $cronograma->estado = $cronograma->estado ? 0 : 1;
             $cronograma->save();
             $message = $cronograma->estado ? 'activada' : 'desactivada';
+            
+            TurnOffPlanilla::withChain([
+                (new SendMailBoletas($cronograma))->onQueue('high'),
+            ])->dispatch($cronograma)
+                ->onQueue('high');
 
             return [
                 "status" => true,

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,8 +17,12 @@
         }
 
         body {
-            margin: 1.5em;
-            padding: 0px;
+            margin: 0em;
+            padding: 0.5em;
+            padding-top: 0px;
+            padding-left: 0px;
+            width: 100%;
+            height: 100%;
         }
 
     </style>
@@ -26,12 +30,12 @@
     @foreach ($storage as $body)
         <body class="bg-white text-negro">
             @foreach ($body as $store)
-                <div style="height: 48%" class="mb-3 mt-1">    
+                <div style="height: 40%; width: 65%">    
                     <table>
                         <thead>
                             <tr>
                                 <th>
-                                    <img src="{{ public_path() . "/img/logo.png" }}" width="50" alt="">
+                                    <img src="{{ public_path() . "/img/logo.png" }}" width="35" alt="">
                                 </th>
                                 <th>
                                     <div><b>UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
@@ -53,61 +57,61 @@
                         </b>
                     </div>
                             
-                    <div class="w-100" style="margin-bottom: 2em;">
+                    <div class="w-100">
                         <div class="boleta-header" style="width:100%;">
                             <table class="table-boleta table-sm" style="width:100%;">
                                 <thead> 
                                     <tr>
-                                        <th class="py-0 pl-3 font-10 pt-1">Boleta de Pago N°:</th>
-                                        <th class="py-0 pt-1 font-10">{{ $store['history']->id }}</th>
-                                        <th class="py-0 pt-1 font-10">Fecha de Ingreso:</th>
-                                        <th class="py-0 pt-1 font-10">{{ $store['history']->fecha_de_ingreso }}</th>
-                                        <th class="py-0 pt-1 font-10" width="10%">D.N.I.</th>
-                                        <th class="py-0 pt-1 font-10">{{ $store['work']->numero_de_documento }}</th>
+                                        <td class="py-0 pl-2 font-10" style="padding-top: 0.5em;">Boleta de Pago N°:</td>
+                                        <td class="py-0 font-10" style="padding-top: 0.5em;">{{ $store['history']->id }}</td>
+                                        <td class="py-0 font-10" style="padding-top: 0.5em;">Fecha de Ingreso:</td>
+                                        <td class="py-0 font-10" style="padding-top: 0.5em;">{{ $store['history']->fecha_de_ingreso }}</td>
+                                        <td class="py-0 font-10" style="padding-top: 0.5em;" width="10%">D.N.I.</td>
+                                        <td class="py-0 font-10" style="padding-top: 0.5em;">{{ $store['work']->numero_de_documento }}</td>
                                     </tr>
                                     <tr>
-                                        <th class="py-0 pl-3 font-10">A.F.P:</th>
-                                        <th class="py-0 font-10" colspan="3">{{ $store['afp'] ? $store['afp']->nombre : null }}</th>
-                                        <th class="py-0 font-10" width="10%">N° CUSSP</th>
-                                        <th class="py-0 font-10">{{ $store['history']->numero_de_cussp }}</th>
+                                        <td class="py-0 pl-2 font-10">A.F.P:</td>
+                                        <td class="py-0 font-10" colspan="3">{{ $store['afp'] ? $store['afp']->nombre : null }}</td>
+                                        <td class="py-0 font-10" widtd="10%">N° CUSSP</td>
+                                        <td class="py-0 font-10">{{ $store['history']->numero_de_cussp }}</td>
                                     </tr>
                                     <tr>
-                                        <th class="py-0 pl-3 font-10">Nombres y Apellidos</th>
-                                        <th colspan="3" class="uppercase py-0 font-10">{{ $store['work']->profesion }} {{ $store['work']->nombre_completo }}</th>
-                                        <th class="py-0 font-10" width="10%">N° ESSALUD</th>
-                                        <th class="py-0 font-10">{{ $store['history']->numero_de_essalud }}</th>
+                                        <td class="py-0 pl-2 font-10">Nombres y Apellidos</td>
+                                        <td colspan="3" class="uppercase py-0 font-10">{{ $store['work']->profesion }} {{ $store['work']->nombre_completo }}</td>
+                                        <td class="py-0 font-10" width="10%">N° ESSALUD</th>
+                                        <td class="py-0 font-10">{{ $store['history']->numero_de_essalud }}</td>
                                     </tr>
                                     <tr>
-                                        <th class="py-0 font-10 pl-3">Condición Laboral</th>
-                                        <th colspan="3" class="uppercase py-0 font-10">{{ $store['cargo']->descripcion }} - {{ $store['history']->pap }}</th>
-                                        <th class="py-0 font-10" width="10%">Meta Siaf:</th>
-                                        <th class="py-0 font-10">{{ $store['meta']->metaID }}</th>
+                                        <td class="py-0 font-10 pl-2">Condición Laboral</td>
+                                        <td colspan="3" class="uppercase py-0 font-10">{{ $store['cargo']->descripcion }} - {{ $store['history']->pap }}</td>
+                                        <td class="py-0 font-10" width="10%">Meta Siaf:</td>
+                                        <td class="py-0 font-10">{{ $store['meta']->metaID }}</td>
                                     </tr>
                                     <tr>
-                                        <th class="py-0 pl-3 pb-1 font-10">Cargo</th>
-                                        <th colspan="3" class="uppercase py-0 pb-1 font-10">{{ $store['history']->perfil }}</th>
-                                        <th class="py-0 pb-1 font-10" width="10%">Categoría</td>
-                                        <th class="uppercase py-0 pb-1 font-10">{{ $store['categoria'] ? $store['categoria']->nombre : null }}</th>
+                                        <td class="py-0 pl-2 pb-1 font-10">Cargo</td>
+                                        <td colspan="3" class="uppercase py-0 pb-1 font-10">{{ $store['history']->perfil }}</td>
+                                        <td class="py-0 pb-1 font-10" width="10%">Categoría</td>
+                                        <td class="uppercase py-0 pb-1 font-10">{{ $store['categoria'] ? $store['categoria']->nombre : null }}</td>
                                     </tr>
                                 </thead>
                             </table>
                         </div>
 
-                        <table class="table-sm mt-2" style="width:100%;">
+                        <table class="table-sm" style="width:100%;">
                             <thead class="py-0 bbt-1 bbl-1 bbb-1">
                                 <tr class="text-center py-0" width="35%">
                                     <th class="py-0">
-                                        <div class="py-0 font-10">
+                                        <div class="py-0 font-9">
                                             INGRESOS
                                         </div>
                                     </th>
-                                    <th class="py-0 bbl-1" width="45%">
-                                        <div class="py-0 font-10">
+                                    <th class="py-0 bbl-1" width="50%">
+                                        <div class="py-0 font-9">
                                             RETENCIONES
                                         </div>
                                     </th>
                                     <th class="py-0 bbr-1 bbl-1" width="20%">
-                                        <div class="py-0 font-10">
+                                        <div class="py-0 font-9">
                                             APORTES EMPLEADOR
                                         </div>
                                     </th>
@@ -120,22 +124,22 @@
                                             <tbody>
                                                 @foreach ($store['remuneraciones'] as $remuneracion)
                                                     <tr>
-                                                        <th class="py-0 font-11">
+                                                        <th class="py-0 font-9">
                                                             {{ $remuneracion->typeRemuneracion ? $remuneracion->typeRemuneracion->key  : null }}
                                                             <span>.-</span>
                                                             {{ $remuneracion->typeRemuneracion ? 
-                                                                str_limit($remuneracion->typeRemuneracion->descripcion, 45) 
+                                                                str_limit($remuneracion->typeRemuneracion->descripcion, 25) 
                                                                 : null 
                                                             }}
                                                         </th>
-                                                        <th class="py-0 text-right font-12" width="5%">
+                                                        <th class="py-0 text-right font-10" width="5%">
                                                             {{ $money->parseTo(round($remuneracion->monto, 2)) }}
                                                         </th>
                                                     </tr>
                                                 @endforeach
                                                 <tr>
-                                                    <th class="font-11 py-0 pl-1">TOTAL BRUTO</th>
-                                                    <th class="text-right font-12">
+                                                    <th class="font-10 py-0 pl-1">TOTAL BRUTO</th>
+                                                    <th class="text-right font-10">
                                                         <div class="bbt-1">
                                                             {{ $money->parseTo(round($store['history']->total_bruto, 2)) }}
                                                         </div>
@@ -150,12 +154,12 @@
                                                     @foreach ($store['descuentos']->chunk(2) as $body)
                                                         <tr>
                                                             @foreach ($body as $descuento)
-                                                                <th class="py-0 font-11 ml-1" width="35%">
+                                                                <th class="py-0 font-9 ml-1" width="40%">
                                                                     {{ $descuento->typeDescuento ? $descuento->typeDescuento->key : null }}
                                                                     <span>.-</span>
-                                                                    {{ $descuento->typeDescuento ? $descuento->typeDescuento->descripcion : null }}
+                                                                    {{ $descuento->typeDescuento ? str_limit($descuento->typeDescuento->descripcion, 20) : null }}
                                                                 </th>
-                                                                <th class="py-0 font-12 text-right" style="padding-right: 0.5em;">
+                                                                <th class="py-0 font-10 text-right" style="padding-right: 0.5em;">
                                                                     {{ $money->parseTo(round($descuento->monto, 2)) }}
                                                                 </th>
                                                             @endforeach
@@ -166,16 +170,16 @@
                                                         <th colspan="3"></th>
                                                     </tr>
                                                     <tr>
-                                                        <th class="py-0 font-11 pl-1">TOTAL DSCTS.</th>
-                                                        <th class="py-0 font-12" colspan="3">
+                                                        <th class="py-0 font-9 pl-1">TOTAL DSCTS.</th>
+                                                        <th class="py-0 font-10" colspan="3">
                                                             <div class="bbt-1 text-center py-0">
                                                                 {{ $money->parseTo(round($store['history']->total_desct, 2)) }}
                                                             </div>
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th class="py-0 font-11 pl-1">NETO A PAGAR</th>
-                                                        <th class="py-0 font-12" colspan="3">
+                                                        <th class="py-0 font-9 pl-1">NETO A PAGAR</th>
+                                                        <th class="py-0 font-10" colspan="3">
                                                             <div class="bbt-1 text-center text-center">
                                                                 {{ $money->parseTo(round($store['history']->total_neto, 2)) }}
                                                             </div>
@@ -189,16 +193,16 @@
 
                                             @foreach ($store['aportaciones'] as $aport)
                                                 <tr>
-                                                    <th class="py-0 font-11">
+                                                    <th class="py-0 font-9">
                                                         {{ $aport->typeDescuento ? $aport->typeDescuento->key : '' }}
                                                             .-
                                                         {{ $aport->typeDescuento ? $aport->typeDescuento->descripcion : '' }}</th>
-                                                    <th class="py-0 font-12 text-right" width="20%">{{ $money->parseTo(round($aport->monto, 2)) }}</th>
+                                                    <th class="py-0 font-10 text-right" width="20%">{{ $money->parseTo(round($aport->monto, 2)) }}</th>
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <th class="py-0 font-12">TOTAL APORTE</th>
-                                                <th class="py-0 font-12">
+                                                <th class="py-0 font-9">TOTAL APORTE</th>
+                                                <th class="py-0 font-10">
                                                     <div class="py-0 bbt-1 text-right">
                                                         {{ $money->parseTo(round($store['aportaciones']->sum('monto'), 2)) }}
                                                     </div>
@@ -211,8 +215,8 @@
                                             </tr>
 
                                             <tr>
-                                                <th class="py-0 font-10">BASE IMPONIBLE</th>
-                                                <th class="py-0 font-12 text-right">{{ round($store['history']->base, 2) }}</th>
+                                                <th class="py-0 font-9">BASE IMPONIBLE</th>
+                                                <th class="py-0 font-10 text-right">{{ round($store['history']->base, 2) }}</th>
                                             </tr>
                                             @for ($i = 0; $i < 15; $i++)
                                                 <tr>

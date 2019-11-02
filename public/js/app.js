@@ -8496,6 +8496,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8533,7 +8557,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 }
 
                 this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/info/".concat(this.param, "/historial"));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("get", "/work/".concat(this.param, "/historial"));
                 _context.next = 5;
                 return api.then(function (res) {
                   _this.historial = res.data;
@@ -70902,7 +70926,7 @@ var render = function() {
       _c(
         "modal",
         {
-          attrs: { col: "col-md-10", show: _vm.show, height: "90vh" },
+          attrs: { col: "col-md-12", show: _vm.show, height: "90vh" },
           on: {
             close: function($event) {
               _vm.show = false
@@ -70943,7 +70967,9 @@ var render = function() {
                       _c("tr", [
                         _c("th", [_vm._v("Seleccionar")]),
                         _vm._v(" "),
-                        _c("th", [_vm._v("Planilla")]),
+                        _c("th", [_vm._v("Cargo")]),
+                        _vm._v(" "),
+                        _c("th", [_vm._v("Categoria")]),
                         _vm._v(" "),
                         _c("th", [_vm._v("Observación")]),
                         _vm._v(" "),
@@ -70957,6 +70983,10 @@ var render = function() {
                         _vm._v(" "),
                         _c("th", { staticClass: "text-center" }, [
                           _vm._v("Año")
+                        ]),
+                        _vm._v(" "),
+                        _c("th", { staticClass: "text-center" }, [
+                          _vm._v("Boleta")
                         ])
                       ])
                     ]),
@@ -71022,12 +71052,38 @@ var render = function() {
                               ]),
                               _vm._v(" "),
                               _c("td", [
-                                _vm._v(
-                                  _vm._s(
-                                    history.planilla
-                                      ? history.planilla.descripcion
-                                      : ""
-                                  )
+                                _c(
+                                  "span",
+                                  { staticClass: "btn btn-sm btn-primary" },
+                                  [
+                                    _vm._v(
+                                      "\n                                        " +
+                                        _vm._s(
+                                          history.cargo
+                                            ? history.cargo.descripcion
+                                            : ""
+                                        ) +
+                                        "\n                                    "
+                                    )
+                                  ]
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c(
+                                  "span",
+                                  { staticClass: "btn btn-sm btn-primary" },
+                                  [
+                                    _vm._v(
+                                      "\n                                        " +
+                                        _vm._s(
+                                          history.categoria
+                                            ? history.categoria.descripcion
+                                            : ""
+                                        ) +
+                                        "\n                                    "
+                                    )
+                                  ]
                                 )
                               ]),
                               _vm._v(" "),
@@ -71092,6 +71148,31 @@ var render = function() {
                                     )
                                   ]
                                 )
+                              ]),
+                              _vm._v(" "),
+                              _c("td", { staticClass: "text-center" }, [
+                                history.pdf
+                                  ? _c(
+                                      "a",
+                                      {
+                                        staticClass: "btn btn-sm btn-success",
+                                        attrs: {
+                                          href: history.pdf,
+                                          target: "_blank",
+                                          rel: "noopener noreferrer"
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fas fa-download"
+                                        })
+                                      ]
+                                    )
+                                  : _c(
+                                      "button",
+                                      { staticClass: "btn btn-danger btn-sm" },
+                                      [_c("i", { staticClass: "fas fa-ban" })]
+                                    )
                               ])
                             ])
                           }),

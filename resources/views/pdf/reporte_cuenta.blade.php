@@ -67,7 +67,7 @@
                         @foreach ($historial as $iter => $history)
                             <tr>
                                 <th class="py-2 font-10 text-center">{{ $num_work }}</th>
-                                <th class="py-2 font-10 text-center">{{ $history->work ? $history->work->nombre_completo : '' }}</th>
+                                <th class="py-2 font-10 uppercase">{{ $history->work ? $history->work->nombre_completo : '' }}</th>
                                 <th class="py-2 font-10 text-center">{{ $history->numero_de_cuenta }}</th>
                                 <th class="py-2 font-10 text-center">{{ $history->total_neto }}</th>
                                 <th class="py-2 font-10 text-center" style="padding-top: 1em;">

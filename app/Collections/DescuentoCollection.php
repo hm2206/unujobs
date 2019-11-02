@@ -105,11 +105,15 @@ class DescuentoCollection
     {
         // obtenemos el total de descuento
         $total_desct = Descuento::where('historial_id', $history->id)->where('base', 0)->sum('monto');
+        // obtenemos el total bruto
+        $total_bruto = Remuneracion::where('historial_id', $history->id)->where('show', 1)->sum('monto');
         // calculamos el total neto
-        $total_neto = $history->total_bruto - $total_desct;
+        $total_neto = $total_bruto - $total_desct;
         // actualizamos el total de descuento y el neto
+        $history->total_bruto = round($total_bruto, 2);
         $history->total_desct = round($total_desct, 2);
         $history->total_neto = round($total_neto, 2);
+        $history->save();
         // retornamos el historial
         return $history;
     } 

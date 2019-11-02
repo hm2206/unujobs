@@ -32,6 +32,7 @@ use App\Exports\AfpNet;
 use \Carbon\Carbon;
 use App\Models\Report;
 use App\Jobs\ReportPersonalCronograma;
+use App\Tools\Helpers;
 
 /**
  * Class ExportCronogramaController
@@ -59,12 +60,21 @@ class ExportCronogramaController extends Controller
         try {
             
             $type = $request->type_report_id;
-            GeneratePlanillaPDF::dispatch($cronograma, $type)->onQueue("medium");
-            ReportGeneral::dispatch($cronograma, $type)->onQueue("medium");
+            // verificamos el estado del reporte
+            $isReport = Helpers::generateReport($type, $cronograma->id);
+            if ($isReport['success']) {
+                GeneratePlanillaPDF::dispatch($cronograma, $type)->onQueue("medium");
+                ReportGeneral::dispatch($cronograma, $type)->onQueue("medium");
+
+                return [
+                    "status" => true,
+                    "message" => "Este proceso durará unos minutos... Vuelva más tarde"
+                ];
+            }
 
             return [
-                "status" => true,
-                "message" => "Este proceso durará unos minutos... Vuelva más tarde"
+                "status" => $isReport['success'],
+                "message" => $isReport['message']
             ];
 
         } catch (\Throwable $th) {

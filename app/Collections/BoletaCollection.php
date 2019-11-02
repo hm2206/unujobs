@@ -63,6 +63,17 @@ class BoletaCollection
     }
 
 
+    public function setMes($newMes)
+    {
+        $this->mes = $newMes;
+    }
+
+
+    public function setYear($newYear)
+    {
+        $this->year = $newYear;
+    }
+
     public function setRows($newRow)
     {
         $this->rows = $newRow;

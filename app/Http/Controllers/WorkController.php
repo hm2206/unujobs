@@ -120,7 +120,7 @@ class WorkController extends Controller
 
     public function historial($id)
     {
-        return Historial::with('work', 'categoria', 'cronograma')
+        return Historial::with('work', 'categoria', 'cargo', 'cronograma')
             ->where('work_id', $id)->paginate(30);
     }
 

@@ -89,7 +89,7 @@ class ReportBoleta implements ShouldQueue
         $boleta->setAportaciones($descuentos->where('base', 1));
         $boleta->get($historial);
         $pdf = $boleta->generate();
-        $pdf->setPaper("a3", 'portrait')->setWarnings(false);
+        $pdf->setPaper('a3', 'portrait')->setWarnings(false);
         $pdf->save(storage_path("app/public/{$path}"));
 
         $archivo = Report::where("cronograma_id", $cronograma->id)

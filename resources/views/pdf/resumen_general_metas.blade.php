@@ -95,7 +95,7 @@
                                 <tr>
                                     <th width="80%" class="py-0 font-12">{{ $remuneracion->key }}.-{{ $remuneracion->descripcion }}</th>
                                     <th width="20%" class="py-0 text-right">
-                                        <div class="font-13">{{ $remuneracion->monto }}</div>
+                                        <div class="font-13">{{ $money->parseTo($remuneracion->monto) }}</div>
                                     </th>
                                 </tr>
                             @endforeach

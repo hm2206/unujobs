@@ -22,6 +22,7 @@ class WorkImport implements ToCollection, WithHeadingRow
 {
 
     use Importable;
+    private $errors = [];
 
     /**
      * Ejecuta el archivo de excel y almacena los datos de los nuevos trabajadores
@@ -32,40 +33,41 @@ class WorkImport implements ToCollection, WithHeadingRow
     public function collection(Collection $collection)
     {
 
+        $iter = 1;
         foreach ($collection as $row) {
 
-            $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
-            $fecha_de_ingreso = isset($row['fecha_de_ingreso']);
+            try {
 
-            if ($work) {
+                $work = Work::where("numero_de_documento", $row['numero_de_documento'])->first();
+                $fecha_de_ingreso = isset($row['fecha_de_ingreso']);
 
-                $ape_paterno = $row['ape_paterno'] ? $row['ape_paterno'] : $work->ape_paterno;
-                $ape_materno = $row['ape_materno'] ? $row['ape_materno'] : $work->ape_materno;
-                $nombres = $row['nombres'] ? $row['nombres'] : $work->nombres;
-                $nombre_completo = $ape_paterno . " " . $ape_materno . " " . $nombres;
+                if ($work) {
 
-                $work->update([
-                    "ape_paterno" => isset($row['ape_paterno']) ? $row['ape_paterno'] : $work->ape_paterno,
-                    "ape_materno" => isset($row['ape_materno']) ? $row['ape_materno'] : $work->ape_materno,
-                    "nombres" => isset($row['nombres']) ? $row['nombres'] : $work->nombres,
-                    "nombre_completo" => $nombre_completo,
-                    "direccion" => isset($row['direccion']) ? $row['direccion'] : $work->direccion,
-                    "tipo_documento_id" => isset($row['tipo_documento_id']) ? $row['tipo_documento_id'] : $work->numero_de_documento,
-                    "numero_de_documento" => isset($row['numero_de_documento']) ? $row['numero_de_documento'] : $work->numero_de_documento,
-                    "fecha_de_nacimiento" => isset($row['fecha_de_nacimiento']) ? date($row['fecha_de_nacimiento']) : $work->fecha_de_nacimiento,
-                    "profesion" => isset($row['profesion']) ? $row['profesion'] : $work->profesion,
-                    "email" => isset($row['email']) ? $row['email'] : $work->email, 
-                    "phone" => isset($row['phone']) ? $row['phone'] : $work->phone, 
-                    "fecha_de_ingreso" => $fecha_de_ingreso ? date('Y-m-d', \strtotime($row['fecha_de_ingreso'])) : $work->fecha_de_ingreso,
-                    "sexo" => isset($row['sexo']) ? (int)$row['sexo'] : $work->sexo,
-                    "activo" => isset($row['activo']) ? (int)$row['activo'] : $work->activo
-                ]);
+                    $ape_paterno = isset($row['ape_paterno']) ? $row['ape_paterno'] : $work->ape_paterno;
+                    $ape_materno = isset($row['ape_materno']) ? $row['ape_materno'] : $work->ape_materno;
+                    $nombres = isset($row['nombres']) ? $row['nombres'] : $work->nombres;
+                    $nombre_completo = $ape_paterno . " " . $ape_materno . " " . $nombres;
 
-            }else {
+                    $work->update([
+                        "ape_paterno" => isset($row['ape_paterno']) ? $row['ape_paterno'] : $work->ape_paterno,
+                        "ape_materno" => isset($row['ape_materno']) ? $row['ape_materno'] : $work->ape_materno,
+                        "nombres" => isset($row['nombres']) ? $row['nombres'] : $work->nombres,
+                        "nombre_completo" => $nombre_completo,
+                        "direccion" => isset($row['direccion']) ? $row['direccion'] : $work->direccion,
+                        "tipo_documento_id" => isset($row['tipo_documento_id']) ? $row['tipo_documento_id'] : $work->numero_de_documento,
+                        "numero_de_documento" => isset($row['numero_de_documento']) ? $row['numero_de_documento'] : $work->numero_de_documento,
+                        "fecha_de_nacimiento" => isset($row['fecha_de_nacimiento']) ? date($row['fecha_de_nacimiento']) : $work->fecha_de_nacimiento,
+                        "profesion" => isset($row['profesion']) ? $row['profesion'] : $work->profesion,
+                        "email" => isset($row['email']) ? $row['email'] : $work->email, 
+                        "phone" => isset($row['phone']) ? $row['phone'] : $work->phone, 
+                        "fecha_de_ingreso" => $fecha_de_ingreso ? date('Y-m-d', \strtotime($row['fecha_de_ingreso'])) : $work->fecha_de_ingreso,
+                        "sexo" => isset($row['sexo']) ? (int)$row['sexo'] : $work->sexo,
+                        "activo" => isset($row['activo']) ? (int)$row['activo'] : $work->activo
+                    ]);
 
-                $nombre_completo = $row['ape_paterno'] . " " . $row['ape_materno'] . " " . $row['nombres'];
+                }else {
 
-                try {
+                    $nombre_completo = $row['ape_paterno'] . " " . $row['ape_materno'] . " " . $row['nombres'];
 
                     Work::create([
                         "ape_paterno" => isset($row['ape_paterno']) ? $row['ape_paterno'] : '',
@@ -82,15 +84,15 @@ class WorkImport implements ToCollection, WithHeadingRow
                         "sexo" => isset($row['sexo']) ? (int)$row['sexo'] : 1,
                         "activo" => isset($row['activo']) ? (int)$row['activo'] : 1
                     ]);
-
-                } catch (\Throwable $th) {
-                    
-                    \Log::info($th);
-
                 }
+
+            } catch (\Throwable $th) {
+                array_push($this->errors, [
+                    "linea" => $iter + 1,
+                    "data" => json_encode($row)
+                ]);
             }
         }
-
     }
 
     /**

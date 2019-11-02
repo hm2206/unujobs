@@ -14,8 +14,8 @@ class Historial extends Model
         "fecha_de_afiliacion", "fecha_de_ingreso", "fecha_de_cese",
         "banco_id", "numero_de_cuenta", "numero_de_essalud",
         "plaza", "perfil", "escuela", "pap", "ext_pptto", "ruc",
-        "observacion", "base", "base_enc", "total_bruto",
-        "total_neto", "total_desct", "pdf", "afecto", "orden"
+        "observacion", "base", "base_enc", "total_bruto", "total_neto",
+        "total_desct", "pdf", "boleta", "afecto", "orden"
     ];
 
 
@@ -69,9 +69,21 @@ class Historial extends Model
         return $this->belongsTo(TypeAfp::class);
     }
 
+    public function remuneraciones()
+    {
+        return $this->hasMany(Remuneracion::class);
+    }
+
+
+    public function descuentos()
+    {
+        return $this->hasMany(Descuento::class);
+    }
+
+
     public function aportaciones()
     {
-        return $this->hasMany(Aportaciones::class);
+        return $this->hasMany(Aportacion::class);
     }
 
 

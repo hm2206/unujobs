@@ -54,7 +54,7 @@
                 <table class="table w-100 mt-2 table-bordered">
                     <thead>
                         <tr>
-                            <th class="py-0 pl-1 font-10"><small class="text-center font-10"><b>N°</b></small></th>
+                            <th class="py-0 pl-1 font-10" with="3%"><small class="text-center font-10"><b>N°</b></small></th>
                             <th class="py-0 font-10 text-center" width="37%"><small class="font-10"><b>Apellidos y Nombres</b></small></th>
                             @foreach ($bonificaciones as $bonificacion)
                                 <th class="py-0 font-10 text-center">
@@ -62,6 +62,7 @@
                                 </th>
                             @endforeach
                             <th class="py-0 font-10 text-center"><small class="font-10"><b>Neto a Pagar</b></small></th>
+                            <th class="py-0 font-10 text-center"><small class="font-10"><b>DNI</b></small></th>
                             <th class="py-0 font-10 text-center"><small class="font-10"><b>Firma</b></small></th>
                         </tr>
                     </thead>
@@ -69,7 +70,7 @@
                         @foreach ($historial as $history)
                             <tr>
                                 <th class="py-0 pl-1"><b class="font-10 text-center">{{ $num_work }}</b></th>
-                                <th class="py-0 pl-1"><b class="font-10">{{ $history->work ? $history->work->nombre_completo : '' }}</b></th>
+                                <th class="py-0 pl-1"><b class="font-10 uppercase">{{ $history->work ? $history->work->nombre_completo : '' }}</b></th>
                                 @foreach ($bonificaciones as $bonificacion)
                                     <th class="py-0 text-center pt-0">
                                         <b class="font-10 text-center">
@@ -88,6 +89,7 @@
                                         {{ $history->work ? $history->work->numero_de_documento : '' }}
                                     </small>
                                 </th>
+                                <th class="py-1 font-11 pt-1 text-center bbt-1 bbl-1 bbr-1"></th>
                             </tr>
                             @php
                                 $num_work++;
@@ -115,7 +117,7 @@
                                     <small><b>{{ $beforeBon[$bon->key] }}</b></small>
                                 </th>
                             @endforeach
-                            <th class="py-1 text-center font-11" colspan="2">
+                            <th class="py-1 text-center font-11 bbr-1" colspan="3">
                                 @php
                                     $beforeTotal += $historial->sum('total_neto');
                                 @endphp

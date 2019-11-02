@@ -83,7 +83,8 @@ class EjecucionDetalleJob implements ShouldQueue
         $remuneraciones = $allRemuneraciones->whereNotIn("type_remuneracion_id", $typeBonificaciones->pluck(['id']));
 
         if ($this->neto) {
-            $descuentos = Descuento::where("cronograma_id", $cronograma->id)->get();
+            $descuentos = Descuento::where('base', 0)->where('cronograma_id', $cronograma->id)->get();
+            \Log::info($descuentos->sum('monto'));
         }
 
         $metas = Meta::whereIn("id", $allRemuneraciones->pluck('meta_id'))->get();

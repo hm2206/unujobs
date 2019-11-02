@@ -173,3 +173,6 @@ Route::post("user/recovery", "UserController@recovery");
 
 });*/
 
+Route::get('consulta', 'ConsultaController@index');
+Route::post('consulta/validar', 'ConsultaController@validar')->name('consulta.validar');
+Route::get('consulta/work/{id}', 'ConsultaController@work')->name('consulta.work');

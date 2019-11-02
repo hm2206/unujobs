@@ -58,7 +58,7 @@ class ReportRenta implements ShouldQueue
         // agregar atributos a variables locales
         $historial = Historial::with('categoria', 'cronograma')
             ->whereIn('id', $this->historialID)
-            ->orderBy('orden', 'ASC')
+            ->orderBy('cronograma_id', 'ASC')
             ->get();
         
         // configuración
@@ -74,7 +74,8 @@ class ReportRenta implements ShouldQueue
         $typeDscto2 = TypeDescuento::where("base", 0)->whereNotIn("id", $typeDscto1->pluck(['id']))->take(25)
             ->get(["id", "key", "descripcion", "base"]);
         // obtener descuentos
-        $descuentos =  Descuento::whereIn("historial_id", $historial->pluck(['id']))->get();
+        $descuentos =  Descuento::whereIn("historial_id", $historial->pluck(['id']))
+            ->orderBy('mes', 'ASC')->get();
 
         // storages
         $pages = [];

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\TypeEducacional;
 use App\Models\Descuento;
 use App\Models\Historial;
+use App\Collections\RemuneracionCollection;
+use App\Collections\DescuentoCollection;
+use App\Models\Cronograma;
 
 class EducacionalController extends Controller
 {
@@ -36,6 +39,15 @@ class EducacionalController extends Controller
         
         $type = TypeEducacional::findOrFail($request->type_educacional_id);
         $history = Historial::findOrFail($request->historial_id);
+        $cronograma = Cronograma::findOrFail($history->cronograma_id);
+        // verificar que el cronograma esta cerrado
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada!"
+            ];
+        }
+        
         try {
             // actualizamos o creamos
             $educacional = Educacional::updateOrCreate([
@@ -56,6 +68,8 @@ class EducacionalController extends Controller
             Descuento::where("historial_id", $history->id)
                 ->where("type_descuento_id", $educacional->type_descuento_id)
                 ->update([ "monto" => $monto ]);
+            // actualizamos el total de descuentos
+            RemuneracionCollection::updateNeto($history);
             // devolvemos los datos
             return [
                 "status" => true,
@@ -116,6 +130,15 @@ class EducacionalController extends Controller
     public function historial(Request $request, $id)
     {
         $history = Historial::findOrFail($id);
+        $cronograma = Cronograma::findOrFail($history->cronograma_id);
+        // verificar que el cronograma esta cerrado
+        if ($cronograma->estado == 0) {
+            return [
+                "status" => false,
+                "message" => "La planilla está cerrada!"
+            ];
+        }
+
         try {
             // guardamos la petición
             $educacionales = json_decode($request->educacionales);
@@ -130,11 +153,12 @@ class EducacionalController extends Controller
                     $monto_total += $monto;
                 }
             }
-
+            // actualizar descuento
             Descuento::where('historial_id', $history->id)
                 ->whereIn('type_descuento_id', $db_educacionales->pluck(['type_descuento_id']))
                 ->update( [ "monto" => $monto_total ]);
-
+            // actualizar historial
+            RemuneracionCollection::updateNeto($history);
             return [
                 "status" => true,
                 "message" => "Se actualizó las tasa educacionales!"

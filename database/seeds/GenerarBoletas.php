@@ -1,46 +1,27 @@
 <?php
 
-namespace App\Jobs;
-
-use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Database\Seeder;
 
 use App\Models\Historial;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
-use App\Models\Cronograma;
 use App\Collections\BoletaCollection;
 use Illuminate\Support\Facades\Storage;
 
-class TurnOffPlanilla implements ShouldQueue
+class GenerarBoletas extends Seeder
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 0;
-    private $cronograma;
 
     /**
-     * Create a new job instance.
+     * Run the database seeds.
      *
      * @return void
      */
-    public function __construct($cronograma)
-    {
-        $this->cronograma = $cronograma;
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
+    public function run()
     {
         // historial
-        $historial = Historial::with('work')->where('cronograma_id', $this->cronograma->id)->get();
+        $historial = Historial::with('work', 'cronograma')->get();
         // obtener remuneraciones
         $remuneraciones = Remuneracion::whereIn('historial_id', $historial->pluck(['id']))
             ->where('show', 1)->get();
@@ -56,22 +37,17 @@ class TurnOffPlanilla implements ShouldQueue
             $boleta->setRemuneraciones($remuneraciones);
             $boleta->setDescuentos($descuentos);
             $boleta->setAportaciones($aportaciones);
-            $boleta->setYear($this->cronograma->año);
-            $boleta->setMes($this->cronograma->mes);
+            $boleta->setYear($history->cronograma->año);
+            $boleta->setMes($history->cronograma->mes);
             $boleta->find($history);
             $pdf = $boleta->pdf();
             $pdf->setPaper('a4', 'landscape');
             // ruta 
-            $path = "pdf/boletas/{$this->cronograma->año}_{$this->cronograma->mes}/{$nombre}";
-            // recurso para email
-            $output = $pdf->output();
+            $path = "pdf/boletas/{$history->cronograma->año}_{$history->cronograma->mes}/{$nombre}";
             // guardar boleta en larua
-            Storage::disk('public')->put($path, $output);
+            Storage::disk('public')->put($path, $pdf->output());
             // guardar boleta
-            $history->update([
-                "boleta" => $output, 
-                "pdf" => "/storage/{$path}" 
-            ]);
+            $history->update([ "pdf" => "/storage/{$path}" ]);
         }
     }
 }
