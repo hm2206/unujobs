@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="es_Es">
 <head>
+    @php
+        $config = App\Models\Config::first();
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>UNU | @yield('title', 'BOLSA DE TRABAJO')</title>
+    <title>{{ $config->alias }} | @yield('title', 'BOLSA DE TRABAJO')</title>
 
     <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
@@ -12,7 +15,7 @@
 <body>
 
         <nav class="navbar navbar-expand-sm navbar-dark bg-success">
-            <a class="navbar-brand" href="{{ route('login') }}">UNU</a>
+            <a class="navbar-brand" href="{{ route('login') }}">{{ $config->alias }}</a>
             <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
                 aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -50,7 +53,7 @@
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
             <div class="copyright text-center my-auto">
-                <span>Copyright &copy; Sistema de Recursos Humanos - UNU 2019</span>
+                <span>Copyright &copy; {{ $config->copyright }} - {{ $config->alias }} 2019</span>
             </div>
             </div>
         </footer>

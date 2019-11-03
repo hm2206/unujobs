@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="es_Es">
 <head>
+    @php
+        $config = App\Models\Config::first();
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Resultados de la convocatoria {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-UNU</title>
+    <title>Resultados de la convocatoria {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-{{ $config->alias }}</title>
 </head>
 
 <style>
@@ -69,10 +72,10 @@
         <table width="100%">
             <tr>
                 <th width="60px;">
-                    <img width="50px;" src="{{ public_path(). "/img/logo.png" }}" alt="">
+                    <img width="50px;" src="{{ public_path(). $config->logo }}" alt="">
                 </th>
                 <th>
-                    <h1 style="font-size: 1.7em;margin-left: 3.3em;">UNIVERSIDAD NACIONAL DE UCAYALI</h1>
+                    <h1 style="font-size: 1.7em;margin-left: 3.3em;">{{ $config->nombre }}</h1>
                 </th>
             </tr>
             <tr>
@@ -84,7 +87,7 @@
             
         
         <h2 class="text-center upper" style="font-size: 1.2em;">
-                ADMINISTRATIVAS – CAS N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-UNU
+                ADMINISTRATIVAS – CAS N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-{{ $config->alias }}
         </h2>
 
         <br>

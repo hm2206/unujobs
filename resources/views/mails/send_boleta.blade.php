@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="es_Es">
 <head>
+    @php
+        $config = App\Models\Config::first();
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -17,7 +20,7 @@
     <br>
     <br>
 
-    <b>Atte. Oficina Ejecutiva de Remuneraciones y Pensiones - UNU</b>
+    <b>Atte. Oficina Ejecutiva de Remuneraciones y Pensiones - {{ $config->alias }}</b>
    
   
 

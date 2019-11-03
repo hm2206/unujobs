@@ -23,7 +23,6 @@
           <meta name="description" content="">
           <meta name="author" content="">
         
-          <title>SB Admin 2 - Login</title>
         
           <!-- Custom fonts for this template-->
           <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css">

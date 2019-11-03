@@ -3,6 +3,10 @@
 
 <head>
 
+  @php
+      $config = App\Models\Config::first();
+  @endphp
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -141,7 +145,7 @@
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Sistema de Recursos Humanos - UNU 2019</span>
+            <span>Copyright &copy; {{ $config->copyright }} - {{ $config->alias }} 2019</span>
           </div>
         </div>
       </footer>

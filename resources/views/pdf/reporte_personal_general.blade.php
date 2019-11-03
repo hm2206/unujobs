@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        @php
+            $config = App\Models\Config::first();
+        @endphp
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -27,10 +30,10 @@
                     <thead>
                         <tr>
                             <th>
-                                <img src="{{ public_path() . "/img/logo.png" }}" width="50" alt="">
+                                <img src="{{ public_path() . $config->logo }}" width="50" alt="">
                             </th>
                             <th>
-                                <div><b class="font-12 text-negro">UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
+                                <div><b class="font-12 text-negro">{{ $config->nombre }}I</b></div>
                                 <div class="ml-1 font-11 text-negro">OFICINA GENERAL DE RECURSOS HUMANOS</div>
                                 <div class="ml-1 font-11 text-negro">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</div>
                             </th>
