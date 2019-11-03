@@ -26,6 +26,7 @@ use \Carbon\Carbon;
 use App\Tools\Money;
 use App\Models\TypeAportacion;
 use App\Models\Historial;
+use App\Tools\Helpers;
 
 /**
  * Genera pdf de la planilla
@@ -66,6 +67,20 @@ class ReportGeneral implements ShouldQueue
         $cronograma = $this->cronograma;
         $money = new Money;
         $historial = Historial::where('cronograma_id', $cronograma->id)->orderBy('orden', 'ASC');
+        // nombre del reporte
+        $nombre = "Resumen General del {$cronograma->mes} del {$cronograma->año} - v2";
+        // generamos ruta del reporte
+        $path = "planilla_general_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v2.pdf";
+        // crear y actualizar reporte
+        $archivo = Helpers::createOrUpdateReport($cronograma, $this->type_report, [
+            "type" => "pdf",
+            "icono" => "fas fa-file-pdf",
+            "key" => "report_general_{$cronograma->id}_v2",
+            "name" => $nombre,
+            "read" => 0,
+            "path" => "/storage/pdf/reports/{$path}",
+            "pendiente" => 1
+        ]);
 
         $type_remuneraciones = TypeRemuneracion::where("report", 1)->orderBy("orden", "ASC")->where("activo", 1)->get();
         $type_descuentos = TypeDescuento::orderBy("id", "ASC")->where('base', 0)->where("activo", 1)->get();
@@ -117,32 +132,11 @@ class ReportGeneral implements ShouldQueue
         ));
 
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
-        $path = "pdf/planilla_general_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v2.pdf";
-        $nombre = "Resumen general del {$cronograma->mes} del {$cronograma->año} - v2";
-
-        $pdf->save(storage_path("app/public") . "/{$path}");
-
-        $archivo = Report::where("cronograma_id", $cronograma->id)
-            ->where("type_report_id", $this->type_report)
-            ->where("name", $nombre)
-            ->first();
-
-        if ($archivo) {
-            $archivo->update([
-                "read" => 0,
-                "path" => "/storage/{$path}"
-            ]);
-        }else {
-            $archivo = Report::create([
-                "type" => "pdf",
-                "name" => $nombre,
-                "icono" => "fas fa-file-pdf",
-                "path" => "/storage/{$path}",
-                "cronograma_id" => $cronograma->id,
-                "type_report_id" => $this->type_report
-            ]);
-        }
-
+        $output = $pdf->output();
+        Storage::disk('public')->put("/pdf/reports/{$path}", $output);
+        // levantar el reporte de la cola
+        $archivo->update([ "pendiente" => 0 ]);
+        // notificar
         $users = User::all();
         $message = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
 

@@ -14,6 +14,9 @@ use App\Models\Descuento;
 use App\Models\Cronograma;
 use App\Collections\BoletaCollection;
 use Illuminate\Support\Facades\Storage;
+use \Mail;
+use App\Mail\SendBoleta;
+use App\Models\Config;
 
 class TurnOffPlanilla implements ShouldQueue
 {
@@ -39,8 +42,13 @@ class TurnOffPlanilla implements ShouldQueue
      */
     public function handle()
     {
+        // configuracion de la app
+        $config = Config::firstOrFail();
         // historial
-        $historial = Historial::with('work')->where('cronograma_id', $this->cronograma->id)->get();
+        $historial = Historial::with('work')
+            ->whereHas('work')
+            ->where('cronograma_id', $this->cronograma->id)
+            ->get();
         // obtener remuneraciones
         $remuneraciones = Remuneracion::whereIn('historial_id', $historial->pluck(['id']))
             ->where('show', 1)->get();
@@ -66,12 +74,21 @@ class TurnOffPlanilla implements ShouldQueue
             // recurso para email
             $output = $pdf->output();
             // guardar boleta en larua
-            Storage::disk('public')->put($path, $output);
+            $file = Storage::disk('public')->put($path, $output);
             // guardar boleta
-            $history->update([
-                "boleta" => $output, 
-                "pdf" => "/storage/{$path}" 
+            $history->update([ 
+                "pdf" => "/storage/{$path}",
+                "boleta" => $output
             ]);
+            // verificamos si se puede enviar a su email
+            if ($history->work->email) {
+                try {
+                    Mail::to($history->work->email)
+                        ->send(new SendBoleta($config, $history, $history->work, $this->cronograma, $history->boleta));
+                } catch (\Throwable $th) {
+                    \Log::info($th);
+                }
+            }
         }
     }
 }

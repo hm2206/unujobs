@@ -21,7 +21,7 @@
   {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css"> --}}
   <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
   <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
-  <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon">
+  <link rel="shortcut icon" href="{{ asset($config->logo) }}" type="image/x-icon">
 
   <!-- Custom styles for this template-->
 

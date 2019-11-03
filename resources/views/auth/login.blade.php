@@ -2,7 +2,10 @@
 
 
 @section('content')
-    
+  
+@php
+    $config = App\Models\Config::first();
+@endphp
 
 <div class="row justify-content-center">
         
@@ -22,7 +25,7 @@
           <!-- Nested Row within Card Body -->
           <div class="row">
             <div class="col-lg-6 d-none d-lg-block">
-              <img src="{{ asset('img/logo.png') }}" alt="" style="width:100%;height:100%;object-fit:contain;padding:5em;">
+              <img src="{{ asset($config->logo) }}" alt="" style="width:100%;height:100%;object-fit:contain;padding:5em;">
             </div>
             <div class="col-lg-6">
               <div class="p-5">

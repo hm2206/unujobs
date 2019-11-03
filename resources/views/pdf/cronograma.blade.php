@@ -32,8 +32,8 @@
     <table>
         <thead>
             <tr>
-                <th>
-                    <img src="{{ public_path() . $config->logo }}" width="50" alt="">
+                <th class="pt-1">
+                    <img src="{{ public_path() . $config->logo }}" width="45" alt="">
                 </th>
                 <th>
                     <div><b class="font-14">{{ $config->nombre }}</b></div>
