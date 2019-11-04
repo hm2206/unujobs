@@ -34,6 +34,7 @@ use App\Models\Educacional;
 use App\Models\Aportacion;
 use App\Jobs\TurnOffPlanilla;
 use App\Jobs\SendMailBoletas;
+use App\Collections\DescuentoCollection;
 
 /**
  * Class CronogramaController
@@ -474,6 +475,46 @@ class CronogramaController extends Controller
 
         }
 
+    }
+
+
+
+    public function vaciarDescuentos(Request $request, $id) 
+    {
+        $this->validate(request(), [
+            "type_descuento_id" => "required"
+        ]);
+
+        $cronograma = Cronograma::with('historial')->where('estado', 1)->findOrFail($id);
+        
+        try {
+            
+            $type = $request->type_descuento_id;
+            $isChange = Descuento::where('cronograma_id')
+                ->where('type_descuento_id', $type)
+                ->get();
+            // verificamos que se realizo los cambios
+            if ($isChange) {
+                $historial = $cronograma->historial;
+                foreach ($historial as $history) {
+                    DescuentoCollection::updateNeto($history);
+                }
+            }
+
+            return [
+                "status" => true,
+                "message" => "Se vació correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+        }
+        
     }
 
 

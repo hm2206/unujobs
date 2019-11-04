@@ -16,5 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TableModuleSeed::class);
         $this->call(ConfigAportes::class);
         $this->call(GenerarBoletas::class);
+        $this->call(ValidarDatosReniec::class);
     }
 }

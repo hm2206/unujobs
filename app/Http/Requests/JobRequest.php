@@ -48,7 +48,6 @@ class JobRequest extends FormRequest
             "ape_paterno" => "required",
             "ape_materno" => "required",
             "nombres" => "required",
-            "numero_de_documento" => "required|unique:works",
             "fecha_de_nacimiento" => "date",
             "sexo" => "required",
             "phone" => "required",

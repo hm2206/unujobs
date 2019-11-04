@@ -137,6 +137,9 @@ class JobController extends Controller
      */
     public function store(JobRequest $request)
     {
+        $this->validate(request(), [
+            "numero_de_documento" => "required|unique:works",
+        ]);
         $job = Work::create($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
         $job->save();

@@ -68,6 +68,7 @@ Vue.component('pdf', require('./components/pdf.vue').default);
 Vue.component('switch-planilla', require('./components/SwitchPlanilla.vue').default);
 Vue.component('active-info', require('./components/ActiveInfo.vue').default);
 Vue.component('config-boleta', require('./components/configBoleta.vue').default);
+Vue.component('assign-descuento-all', require('./components/AssignDescuentoAll.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

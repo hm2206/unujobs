@@ -110,7 +110,17 @@
 
     <div class="card">
         <div class="card-header card-header-danger">
-            <h4 class="card-title">Lista de Trabajadores</h4>
+            <h4 class="card-title">
+                Lista de Trabajadores 
+                <small>
+                    <assign-descuento-all 
+                        theme="btn-danger btn-sm"
+                        :cronograma="{{ $cronograma }}"
+                    >
+                        <i class="fas fa-trash"></i>
+                    </assign-descuento-all>
+                </small>
+            </h4>
             <p class="card-category">Que pertenecen a esta planilla</p>
         </div>
         <div class="card-body">

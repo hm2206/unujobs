@@ -22,10 +22,9 @@
         body {
             margin: 0em;
             padding: 0.5em;
-            padding-top: 0px;
-            padding-left: 0px;
             width: 100%;
             height: 100%;
+            padding-left: 1em;
         }
 
     </style>
@@ -33,15 +32,15 @@
     @foreach ($storage as $body)
         <body class="bg-white text-negro">
             @foreach ($body as $store)
-                <div style="height: 40%; width: 65%">    
+                <div style="height: 35%; width: 67%">    
                     <table>
                         <thead>
                             <tr>
                                 <th>
-                                    <img src="{{ public_path() . $config->alias }}" width="35" alt="">
+                                    <img src="{{ public_path() . $config->logo }}" width="35" alt="">
                                 </th>
                                 <th>
-                                    <div><b>{{ $config->nombre }}</b></div>
+                                    <div><b class="uppercase">{{ $config->nombre }}</b></div>
                                     <div class="ml-1 text-sm font-11"><b>OFICINA GENERAL DE RECURSOS HUMANOS</b></div>
                                     <div class="ml-1 text-sm font-11"><b>OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</b></div>
                                 </th>

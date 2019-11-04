@@ -68,7 +68,12 @@
                     <tr>
                         <th class="py-0 font-12" colspan="2">
                             <h5><b>
-                                PLANILLA UNICA DE PAGO: {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}
+                                PLANILLA UNICA DE PAGO: 
+                                @if ($cronograma->adicional)
+                                    ADICIONAL >> {{ $cronograma->numero }}
+                                @else 
+                                    {{ $cronograma->planilla ? $cronograma->planilla->descripcion : '' }}
+                                @endif
                             </b></h5>
                         </th>
                         <th class="py-0 font-12" width="10%">SUB PROGRAMA</th>

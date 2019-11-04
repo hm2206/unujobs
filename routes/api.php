@@ -37,6 +37,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('/cronograma/{id}/historial', 'CronogramaController@historial');
     // eliminar informacion de los infos
     Route::post('/cronograma/{id}/destroy-historial', 'CronogramaController@destroyHistorial');
+    // vaciar descuentos
+    Route::post('/cronograma/{id}/vaciar-descuentos', 'CronogramaController@vaciarDescuentos');
     
 
     // registrar un nuevo cargo

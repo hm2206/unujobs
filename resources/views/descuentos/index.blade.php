@@ -78,9 +78,6 @@
                                         >
                                             <i class="fas fa-pencil-alt"></i>
                                         </btn-descuento>
-                                        <a href="{{ route('descuento.config', $descuento->slug()) }}" class="btn btn-sm btn-success">
-                                            <i class="fas fa-cog"></i>
-                                        </a>
                                     </div>
                                 </th>
                             </tr>

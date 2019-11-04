@@ -104,7 +104,7 @@
         <div class="card-header">
             <div class="row">
                 <a href="{{ route('meta.edit', $meta->slug()) }}" class="btn btn-warning"><i class="fas fa-pencil-alt"></i> Editar</a>
-
+                <a href="{{ route('meta.edit', $meta->slug()) }}" class="ml-1 btn btn-danger"><i class="fas fa-trash-alt"></i> Eliminar</a>
                 <validacion 
                     btn_text="Exportar"
                     method="post"
