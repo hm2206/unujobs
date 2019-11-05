@@ -33,10 +33,7 @@
                                 <tr>
                                     <td>
                                         <a href="{{ route('convocatoria.edit', $convocatoria->slug()) }}">
-                                            @php
-                                                $year = explode("-", $convocatoria->fecha_final)[0];
-                                            @endphp
-                                            N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-UNU 
+                                            N° {{ $convocatoria->numero_de_convocatoria }}
                                         </a>
                                     </td>
                                     <td>
@@ -71,11 +68,11 @@
                                             @csrf
                                             @if ($convocatoria->aceptado)
                                                 <button class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-times"></i> Rechazar
+                                                    <i class="fas fa-times"></i> Quitar
                                                 </button>
                                             @else
                                                 <button class="btn btn-sm btn-success">
-                                                    <i class="fas fa-check"></i> Aceptar
+                                                    <i class="fas fa-check"></i> Publicar
                                                 </button>
                                             @endif
                                         </form>

@@ -22,6 +22,7 @@ class CreateTypeDescuentosTable extends Migration
             $table->integer("edit")->default(1);
             $table->string("enc")->nullable();
             $table->tinyInteger('activo')->default(1);
+            $table->string('orden')->default('01');
             $table->timestamps();
         });
     }

@@ -73,7 +73,7 @@
     <div class="container">
         <p class="text-center">
            <b class="upper">
-                CONVOCATORIA N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-{{ $config->alias }} <br><br>
+                CONVOCATORIA N° {{ $convocatoria->numero_de_convocatoria }} <br><br>
                 CONVOCATORIA PÚBLICA DE PERSONAL BAJO EL REGIMEN ESPECIAL DE CONTRATACION ADMINISTRATIVA DE SERVICIOS (CAS)
            </b>
         </p>

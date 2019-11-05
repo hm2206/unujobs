@@ -34,6 +34,7 @@ class CreateRemuneracionsTable extends Migration
             $table->integer('show')->default(1);
             $table->integer('activo')->default(1);
             $table->tinyInteger('edit')->default(1);
+            $table->string('orden')->default('01');
             $table->timestamps();
         });
     }

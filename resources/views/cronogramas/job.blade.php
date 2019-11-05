@@ -119,6 +119,12 @@
                     >
                         <i class="fas fa-trash"></i>
                     </assign-descuento-all>
+                    <crear-descuento-planilla
+                        theme="btn-primary btn-sm"
+                        :cronograma="{{ $cronograma }}"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </crear-descuento-planilla>
                 </small>
             </h4>
             <p class="card-category">Que pertenecen a esta planilla</p>

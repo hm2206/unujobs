@@ -30,30 +30,6 @@
                         <small class="text-danger">{{ errors.descripcion ? errors.descripcion[0] : '' }}</small>
                     </div>
 
-                    <hr>
-
-                    <div class="form-group" v-if="edit">
-                        <label for="">Configuración</label>
-                         <input type="checkbox" v-model="checked">
-                    </div>
-
-                    <div class="form-group" v-if="checked">
-                        <div class="row align-items-center">
-                            <label for="" class="col-md-3">Porcentaje%</label>
-                            <input type="number" class="form-control col-md-3" name="configs[0][0]" v-model="config.porcentaje">
-                        </div>
-
-                        <div class="row align-items-center mt-1">
-                            <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">Mínimo</label>
-                            <input type="number" class="form-control col-md-3" name="configs[0][1]" v-model="config.minimo">
-                        </div>
-
-                        <div class="row align-items-center mt-1">
-                            <label for="" class="col-md-3" title="Solo aplica cuando la base imponible es menor a RMV">Defecto</label>
-                            <input type="number" class="form-control col-md-3" name="configs[0][2]" v-model="config.monto">
-                        </div>
-                    </div>
-
                 </form>
                 <div class="card-footer text-right">
                     <button class="btn btn-success" :disabled="loader" v-on:click="submit">

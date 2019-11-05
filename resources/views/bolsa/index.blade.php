@@ -55,12 +55,7 @@
                         <a  aria-expanded="true" aria-controls="section{{ $iter }}ContentId"
                             data-toggle="collapse" data-parent="#accordianId" href="#section{{ $iter }}ContentId" 
                         >
-
-                            @php
-                                $tmp_year = isset(explode("-",$convocatoria->fecha_inicio)[0]) ? explode("-",$convocatoria->fecha_inicio)[0] : $year;
-                            @endphp
-
-                            Convocatoria N° {{ $convocatoria->numero_de_convocatoria }}-{{ $tmp_year }}-UNU 
+                            Convocatoria N° {{ $convocatoria->numero_de_convocatoria }}
                             <a target="__blank" href="{{ route('convocatoria.pdf', $convocatoria->slug()) }}" class="ml-3 btn btn-sm btn-danger">
                                 <i class="fas fa-file-pdf"></i> PDF
                             </a>

@@ -34,7 +34,7 @@ class DescuentoCollection
     }
 
 
-    public function create(Cronograma $cronograma, Historial $history, TypeDescuento $type)
+    public static function create(Cronograma $cronograma, Historial $history, TypeDescuento $type)
     {
         $store = self::config($cronograma, $history, $history);
         return Descuento::create($store->getStore());
@@ -171,7 +171,8 @@ class DescuentoCollection
             "adicional" => $cronograma->adicional,
             "base" => $type->base,
             "edit" => $type->edit,
-            "monto" => $monto
+            "monto" => $monto,
+            "orden" => $type->key,
         ]);
     }
 
@@ -204,7 +205,8 @@ class DescuentoCollection
             "adicional" => $cronograma->adicional,
             "base" => $type->base,
             "edit" => $type->edit,
-            "monto" => round($monto, 2)
+            "monto" => round($monto, 2),
+            "orden" => $type->key,
         ]);
 
         return new self($cronograma, self::$types, self::$store);
@@ -217,13 +219,15 @@ class DescuentoCollection
     }
 
 
-    public function insert($historial)
+    public function insert($historial, $isUpdate = true)
     {
         $payload = \collect();
 
         try {
             // obtener todas las remuneraciones de los trabajadores de la planilla actual
-            $remuneraciones = self::gettingRemuneracion($historial->pluck(['id']));
+            if ($isUpdate) {
+                $remuneraciones = self::gettingRemuneracion($historial->pluck(['id']));
+            }
             // recorremos a cada trabajador y configuramos sus descuentos
             foreach ($historial as $history) {
                 // crear remuneraciones
@@ -231,19 +235,22 @@ class DescuentoCollection
                     $store = self::config($this->cronograma, $history, $type);
                     $payload->push($store->getStore());
                 }
-                // obtenemos el total de descuentos
-                $total_desct = $payload->where('historial_id', $history->id)
-                    ->where('base', 0)
-                    ->sum('monto');
-                // obtenemos el total de remuneraciones
-                $total_bruto = $remuneraciones->where('historial_id', $history->id)->sum('monto');
-                // obtenemos el total neto
-                $total_neto = $total_bruto - $total_desct;
-                // actualizamos el total bruto y el neto
-                $history->update([
-                    "total_desct" => round($total_desct, 2),
-                    "total_neto" => round($total_neto, 2)
-                ]);
+                // verificamos que se puede actualizar
+                if ($isUpdate) {
+                    // obtenemos el total de descuentos
+                    $total_desct = $payload->where('historial_id', $history->id)
+                        ->where('base', 0)
+                        ->sum('monto');
+                    // obtenemos el total de remuneraciones
+                    $total_bruto = $remuneraciones->where('historial_id', $history->id)->sum('monto');
+                    // obtenemos el total neto
+                    $total_neto = $total_bruto - $total_desct;
+                    // actualizamos el total bruto y el neto
+                    $history->update([
+                        "total_desct" => round($total_desct, 2),
+                        "total_neto" => round($total_neto, 2)
+                    ]);
+                }
             }
             // realizamos una inserción masiva
             foreach ($payload->chunk(1000)->toArray() as $insert) {

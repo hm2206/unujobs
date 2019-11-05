@@ -9879,30 +9879,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -14223,6 +14199,164 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return deleteAportacion;
+    }()
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/api */ "./resources/js/services/api.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_2__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ["redirect", "theme", "cronograma"],
+  data: function data() {
+    return {
+      type_descuentos: [],
+      show: false,
+      errors: {},
+      loader: false,
+      edit: false,
+      checked: false
+    };
+  },
+  mounted: function mounted() {
+    this.getTypeDescuentos();
+  },
+  methods: {
+    getTypeDescuentos: function getTypeDescuentos() {
+      var _this = this;
+
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', '/type_descuento');
+      api.then(function (res) {
+        _this.type_descuentos = res.data.filter(function (obj) {
+          return obj.base == 0;
+        });
+      })["catch"](function (err) {
+        console.log(err.message);
+      });
+    },
+    send: function () {
+      var _send = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
+        var answer, form, api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                e.preventDefault();
+                this.loader = true;
+                _context.next = 4;
+                return confirm('¿Está seguro en continuar?');
+
+              case 4:
+                answer = _context.sent;
+
+                if (!answer) {
+                  _context.next = 10;
+                  break;
+                }
+
+                form = new FormData(document.getElementById('agregar-descuentos'));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('post', "/cronograma/".concat(this.cronograma.id, "/crear-descuentos"), form);
+                _context.next = 10;
+                return api.then(function (res) {
+                  var _res$data = res.data,
+                      status = _res$data.status,
+                      message = _res$data.message;
+                  var icon = status ? 'success' : 'error';
+                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+                    icon: icon,
+                    text: message
+                  });
+                })["catch"](function (err) {
+                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
+                    icon: 'error',
+                    text: 'Algo salió mal'
+                  });
+                });
+
+              case 10:
+                this.loader = false;
+
+              case 11:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function send(_x) {
+        return _send.apply(this, arguments);
+      }
+
+      return send;
     }()
   }
 });
@@ -72774,183 +72908,7 @@ var render = function() {
                       )
                     )
                   ])
-                ]),
-                _vm._v(" "),
-                _c("hr"),
-                _vm._v(" "),
-                _vm.edit
-                  ? _c("div", { staticClass: "form-group" }, [
-                      _c("label", { attrs: { for: "" } }, [
-                        _vm._v("Configuración")
-                      ]),
-                      _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.checked,
-                            expression: "checked"
-                          }
-                        ],
-                        attrs: { type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.checked)
-                            ? _vm._i(_vm.checked, null) > -1
-                            : _vm.checked
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.checked,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 && (_vm.checked = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.checked = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
-                              }
-                            } else {
-                              _vm.checked = $$c
-                            }
-                          }
-                        }
-                      })
-                    ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.checked
-                  ? _c("div", { staticClass: "form-group" }, [
-                      _c("div", { staticClass: "row align-items-center" }, [
-                        _c(
-                          "label",
-                          { staticClass: "col-md-3", attrs: { for: "" } },
-                          [_vm._v("Porcentaje%")]
-                        ),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.config.porcentaje,
-                              expression: "config.porcentaje"
-                            }
-                          ],
-                          staticClass: "form-control col-md-3",
-                          attrs: { type: "number", name: "configs[0][0]" },
-                          domProps: { value: _vm.config.porcentaje },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(
-                                _vm.config,
-                                "porcentaje",
-                                $event.target.value
-                              )
-                            }
-                          }
-                        })
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "row align-items-center mt-1" },
-                        [
-                          _c(
-                            "label",
-                            {
-                              staticClass: "col-md-3",
-                              attrs: {
-                                for: "",
-                                title:
-                                  "Solo aplica cuando la base imponible es menor a RMV"
-                              }
-                            },
-                            [_vm._v("Mínimo")]
-                          ),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.config.minimo,
-                                expression: "config.minimo"
-                              }
-                            ],
-                            staticClass: "form-control col-md-3",
-                            attrs: { type: "number", name: "configs[0][1]" },
-                            domProps: { value: _vm.config.minimo },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.config,
-                                  "minimo",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "row align-items-center mt-1" },
-                        [
-                          _c(
-                            "label",
-                            {
-                              staticClass: "col-md-3",
-                              attrs: {
-                                for: "",
-                                title:
-                                  "Solo aplica cuando la base imponible es menor a RMV"
-                              }
-                            },
-                            [_vm._v("Defecto")]
-                          ),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.config.monto,
-                                expression: "config.monto"
-                              }
-                            ],
-                            staticClass: "form-control col-md-3",
-                            attrs: { type: "number", name: "configs[0][2]" },
-                            domProps: { value: _vm.config.monto },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.config,
-                                  "monto",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ]
-                      )
-                    ])
-                  : _vm._e()
+                ])
               ]
             ),
             _vm._v(" "),
@@ -77419,6 +77377,153 @@ var render = function() {
       ])
     }),
     0
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=template&id=76251626&":
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=template&id=76251626& ***!
+  \*************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "span",
+    [
+      _c(
+        "button",
+        {
+          class: "btn " + _vm.theme,
+          on: {
+            click: function($event) {
+              _vm.show = true
+            }
+          }
+        },
+        [_vm._t("default")],
+        2
+      ),
+      _vm._v(" "),
+      _c(
+        "modal",
+        {
+          attrs: { show: _vm.show },
+          on: {
+            close: function($event) {
+              _vm.show = false
+            }
+          }
+        },
+        [
+          _c("template", { slot: "header" }, [
+            _vm._v("\n            Agregar Descuento\n        ")
+          ]),
+          _vm._v(" "),
+          _c("template", { slot: "content" }, [
+            _c(
+              "form",
+              {
+                staticClass: "card-body scroll-y",
+                staticStyle: { "font-size": "16px" },
+                attrs: { id: "agregar-descuentos" },
+                on: { submit: _vm.send }
+              },
+              [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "" } }, [
+                    _vm._v("Tipo Descuento "),
+                    _c("small", { staticClass: "text-danger" }, [_vm._v("*")])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "select",
+                    {
+                      staticClass: "form-control",
+                      attrs: { name: "type_descuento_id" }
+                    },
+                    [
+                      _c("option", { attrs: { value: "" } }, [
+                        _vm._v("Seleccionar")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.type_descuentos, function(type, ty) {
+                        return _c(
+                          "option",
+                          { key: ty, domProps: { value: type.id } },
+                          [
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(type.descripcion) +
+                                "\n                        "
+                            )
+                          ]
+                        )
+                      })
+                    ],
+                    2
+                  ),
+                  _vm._v(" "),
+                  _c("small", { staticClass: "text-danger" }, [
+                    _vm._v(_vm._s(_vm.errors.key ? _vm.errors.key[0] : ""))
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", { attrs: { for: "" } }, [
+                    _vm._v("Monto "),
+                    _c("small", { staticClass: "text-danger" }, [_vm._v("*")])
+                  ]),
+                  _vm._v(" "),
+                  _c("input", {
+                    staticClass: "form-control",
+                    attrs: { type: "number", name: "monto", value: "0" }
+                  }),
+                  _vm._v(" "),
+                  _c("small", { staticClass: "text-danger" }, [
+                    _vm._v(
+                      _vm._s(
+                        _vm.errors.descripcion ? _vm.errors.descripcion[0] : ""
+                      )
+                    )
+                  ])
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-footer text-right" }, [
+              !_vm.loader
+                ? _c(
+                    "button",
+                    { staticClass: "btn btn-success", on: { click: _vm.send } },
+                    [
+                      _c("i", { staticClass: "fas fa-save" }),
+                      _vm._v(" Guardar\n                ")
+                    ]
+                  )
+                : _c("div", { staticClass: "text-center" }, [
+                    _c("div", { staticClass: "spinner-border text-primary" })
+                  ])
+            ])
+          ])
+        ],
+        2
+      )
+    ],
+    1
   )
 }
 var staticRenderFns = []
@@ -96664,6 +96769,7 @@ Vue.component('switch-planilla', __webpack_require__(/*! ./components/SwitchPlan
 Vue.component('active-info', __webpack_require__(/*! ./components/ActiveInfo.vue */ "./resources/js/components/ActiveInfo.vue")["default"]);
 Vue.component('config-boleta', __webpack_require__(/*! ./components/configBoleta.vue */ "./resources/js/components/configBoleta.vue")["default"]);
 Vue.component('assign-descuento-all', __webpack_require__(/*! ./components/AssignDescuentoAll.vue */ "./resources/js/components/AssignDescuentoAll.vue")["default"]);
+Vue.component('crear-descuento-planilla', __webpack_require__(/*! ./components/CrearDescuentoPlanilla.vue */ "./resources/js/components/CrearDescuentoPlanilla.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -99340,6 +99446,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ConfigWorkMas_vue_vue_type_template_id_03e1cc91___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ConfigWorkMas_vue_vue_type_template_id_03e1cc91___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/CrearDescuentoPlanilla.vue":
+/*!************************************************************!*\
+  !*** ./resources/js/components/CrearDescuentoPlanilla.vue ***!
+  \************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CrearDescuentoPlanilla_vue_vue_type_template_id_76251626___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CrearDescuentoPlanilla.vue?vue&type=template&id=76251626& */ "./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=template&id=76251626&");
+/* harmony import */ var _CrearDescuentoPlanilla_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CrearDescuentoPlanilla.vue?vue&type=script&lang=js& */ "./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _CrearDescuentoPlanilla_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CrearDescuentoPlanilla_vue_vue_type_template_id_76251626___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CrearDescuentoPlanilla_vue_vue_type_template_id_76251626___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/CrearDescuentoPlanilla.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CrearDescuentoPlanilla_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./CrearDescuentoPlanilla.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CrearDescuentoPlanilla_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=template&id=76251626&":
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=template&id=76251626& ***!
+  \*******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CrearDescuentoPlanilla_vue_vue_type_template_id_76251626___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./CrearDescuentoPlanilla.vue?vue&type=template&id=76251626& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/CrearDescuentoPlanilla.vue?vue&type=template&id=76251626&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CrearDescuentoPlanilla_vue_vue_type_template_id_76251626___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CrearDescuentoPlanilla_vue_vue_type_template_id_76251626___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

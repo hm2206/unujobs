@@ -75,11 +75,11 @@
                     <img width="50px;" src="{{ public_path(). $config->logo }}" alt="">
                 </th>
                 <th>
-                    <h1 style="font-size: 1.7em;margin-left: 3.3em;">{{ $config->nombre }}</h1>
+                    <h1 style="font-size: 1.7em;margin-left: 3.3em;" class="upper">{{ $config->nombre }}</h1>
                 </th>
             </tr>
             <tr>
-                <th colspan="2" class="text-center">
+                <th colspan="2" class="text-center upper">
                     PROFESIONAL PARA {{ $current->deberes }} PARA {{ $current->dependencia_txt }}
                 </th>
             </tr>
@@ -87,7 +87,7 @@
             
         
         <h2 class="text-center upper" style="font-size: 1.2em;">
-                ADMINISTRATIVAS – CAS N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-{{ $config->alias }}
+                ADMINISTRATIVAS – CAS N° {{ $convocatoria->numero_de_convocatoria }}
         </h2>
 
         <br>
@@ -132,7 +132,7 @@
 
         <br>
 
-        <b>ESTADO: {{ $hasExpire ? "EN CURSO" : "CONCLUIDO"}}</b>
+        <b>ESTADO: {{ $hasExpire ? "CONCLUIDO" : "EN CONCURSO"}}</b>
         
     </div>
     

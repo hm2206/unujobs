@@ -18,7 +18,9 @@ class TypeDescuentoController extends Controller
      */
     public function index()
     {
-        return TypeDescuento::where('activo', 1)->get();
+        return TypeDescuento::where('activo', 1)
+            ->orderBy('key', 'ASC')
+            ->get();
     }
 
     

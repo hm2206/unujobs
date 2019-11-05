@@ -44,7 +44,7 @@
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="" class="form-control-label">Observación <span class="text-danger">*</span></label>
+                        <label for="" class="form-control-label">Nota <span class="text-danger">*</span></label>
                         <textarea name="observacion" class="form-control">{{ old('observacion') }}</textarea>
                         <b class="text-danger">{{ $errors->first('observacion') }}</b>
                     </div>

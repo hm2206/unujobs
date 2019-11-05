@@ -75,7 +75,7 @@
                     <img width="50px;" src="{{ public_path(). $config->logo }}" alt="">
                 </th>
                 <th>
-                    <h1 style="font-size: 1.7em;margin-left: 3.3em;">{{ $config->nombre }}</h1>
+                    <h1 class="upper" style="font-size: 1.7em;margin-left: 3.3em;">{{ strtoupper($config->nombre) }}</h1>
                 </th>
             </tr>
             <tr>
@@ -87,9 +87,9 @@
             
         
         <h2 class="text-center upper" style="font-size: 1.2em;">
-                REPORTE DE LA ETAPA DE {{ $etapa->descripcion }}
+                REPORTE DE LA ETAPA DE {{ strtoupper($etapa->descripcion) }}
                 <br> 
-                ADMINISTRATIVAS – CAS N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-{{ $config->alias }}
+                ADMINISTRATIVAS – CAS N° {{ strtoupper($convocatoria->numero_de_convocatoria) }}
         </h2>
 
         <br>

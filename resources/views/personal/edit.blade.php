@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo')
-    - Registro de Requerimiento de Personal
+    - Editar Requerimiento de Personal
 @endsection
 
 
@@ -22,7 +22,7 @@
     <form class="card" id="register" action="{{ route('personal.update', $personal->slug) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        <h4 class="card-header"><b>Registro de Requerimiento de Personal</b></h4>
+        <h4 class="card-header"><b>Editar Requerimiento de Personal</b></h4>
         <div class="card-body">
 
             <span>Campo obligatorio (<span class="text-danger">*</span>)</span>

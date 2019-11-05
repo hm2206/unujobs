@@ -18,6 +18,7 @@ use App\Models\Report;
 use \Carbon\Carbon;
 use App\Models\Historial;
 use App\Tools\Money;
+use App\Models\Cargo;
 
 /**
  * Genera Reportes
@@ -58,10 +59,14 @@ class ReportCronograma implements ShouldQueue
         $money = new Money;
 
         // obtener historial
-        $historial = Historial::where('cronograma_id', $cronograma->id)
+        $historial = Historial::with('work')->where('cronograma_id', $cronograma->id)
             ->where('meta_id', $meta->id)
             ->orderBy('orden', 'ASC')
             ->get();
+
+        // cargos
+        $cargos = Cargo::whereIn('id', $historial->pluck(['cargo_id']))->get();
+
 
         // configuracion
         $remuneraciones = Remuneracion::with("typeRemuneracion")->where('show', 1)
@@ -136,7 +141,12 @@ class ReportCronograma implements ShouldQueue
 
         }
 
-        $meta->historial = $historial->chunk(5);
+        // agrupar por cargos
+        foreach ($cargos as $cargo) {
+            $cargo->historial = $historial->where("cargo_id", $cargo->id)->chunk(5);   
+        }
+
+        $meta->cargos = $cargos;
 
         $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 

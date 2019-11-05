@@ -30,7 +30,7 @@
         
         <div class="card">
             <div class="card-header">
-                Convocatoria N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-UNU
+                Convocatoria N° {{ $convocatoria->numero_de_convocatoria }}
             </div>
             <div class="card-body">
                 <div class="row">

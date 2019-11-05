@@ -20,18 +20,19 @@ class ConfigSeed extends Seeder
     public function run()
     {
         
-        self::users();
+       /* self::users();
         self::roles();
         self::sedes();
         self::dependencias();
-        self::ubigeos();
-        self::typeEtapas();
         self::planillas();
         self::afps();
         self::bancos();
         self::sindicatos();
         self::type_categorias();
-
+        */
+        self::ubigeos();
+        self::typeEtapas();
+        
     }
 
     public function users()

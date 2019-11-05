@@ -118,32 +118,10 @@ class DescuentoController extends Controller
             $type = TypeDescuento::findOrFail($id);
             
             $monto = $request->input("monto", 0);
-            $obligatorio = $request->input("obligatorio", 0);
-            $configs = $request->input("configs", []);
             $activo = $request->activo ? 1 : 0;
-
-            ConfigDescuento::where("type_descuento_id", $type->id)->delete();
-
-            foreach ($configs as $config) {
-                $porcentaje = isset($config[0]) ? $config[0] : 0;
-                $minimo = isset($config[1]) ? $config[1] : 0;
-                $monto = isset($config[2]) ? $config[2] : 0;
-                
-                $current = ConfigDescuento::updateOrCreate([
-                    "type_descuento_id" => $type->id
-                ]);
-                
-                $current->update([
-                    "porcentaje" => $porcentaje,
-                    "minimo" => $minimo,
-                    "monto" => $monto
-                ]);
-
-            }
 
             $type->update([
                 "descripcion" => $request->descripcion,
-                "obligatorio" => $obligatorio,
                 "activo" => $activo
             ]);
 

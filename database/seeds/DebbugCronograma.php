@@ -5,6 +5,8 @@ use App\Models\Cronograma;
 use App\Models\Historial;
 use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
+use App\Models\TypeDescuento;
+use App\Models\Descuento;
 
 class DebbugCronograma extends Seeder
 {
@@ -16,39 +18,11 @@ class DebbugCronograma extends Seeder
     public function run()
     {
         // $this->ordenarHistorial();
-        $this->eliminarHistorialDuplicado();
+        // $this->eliminarHistorialDuplicado();
+        // $this->copiarCronograma();
+        $this->orderDescuentos();
     }
 
-
-    public function boletas () {
-        $cronogramas = Cronograma::where("mes", '8')->get();
-
-        foreach ($cronogramas as $cronograma) {
-            $infos = $cronograma->infos;
-            foreach ($infos as $info) {
-                Boleta::where("cronograma_id", $cronograma->id)
-                    ->where("info_id", $info->id)
-                    ->update([
-                        "observacion" => $info->observacion,
-                        "meta_id" => $info->meta_id,
-                        "pap" => $info->pap,
-                        "ext_pptto" => $info->cargo->ext_pptto,
-                        "afp_id" => $info->work->afp_id,
-                        "perfil" => $info->perfil,
-                        "planilla_id" => $info->planilla_id,
-                        "cargo_id" => $info->cargo_id,
-                        "categoria_id" => $info->categoria_id,
-                        "numero_de_cussp" => $info->work->numero_de_cussp,
-                        "numero_de_essalud" => $info->work->numero_de_essalud,
-                        "meta_id" => $info->meta_id,
-                        "work_id" => $info->work_id,
-                        "plaza" => $info->plaza,
-                        "escuela" => $info->escuela,
-                        "sindicato_id" => $info->sindicato_id
-                    ]);
-            }
-        }
-    }
 
     public function recrearRemuneraciones() {
 
@@ -112,6 +86,51 @@ class DebbugCronograma extends Seeder
                     break;
                 }
             }
+        }
+    }
+
+    public function copiarCronograma()
+    {
+        $cronograma = Cronograma::where("año", "2019")
+            ->where("mes", "10")
+            ->where('planilla_id', 4)
+            ->firstOrFail();
+        // historial a copiar
+        $cronogramaActual = Cronograma::with('historial')
+            ->where("año", "2019")
+            ->where("mes", "11")
+            ->where('planilla_id', 4)
+            ->firstOrFail();
+        //  remuneraciones
+        $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
+        foreach ($cronogramaActual->historial as $history) {
+            foreach ($history->remuneraciones as $rem) {
+                $newType = $remuneraciones->where('type_remuneracion_id', $rem->type_remuneracion_id)
+                    ->where('work_id', $history->work_id)
+                    ->first();
+                if ($newType) {
+                    // actualizar remuneración
+                    $rem->update(["monto" => $newType->monto ]);
+                }
+            }
+        }
+    }
+
+
+    public function orderDescuentos() 
+    {
+        $types = TypeDescuento::all();
+        foreach ($types as $type) {
+            Descuento::where('type_descuento_id', $type->id)->update([ "orden" => $type->orden ]);
+        }
+    }
+
+
+    public function orderRemuneraciones()
+    {
+        $types = TypeRemuneracion::all();
+        foreach ($types as $type) {
+            Remuneracion::where('type_remuneracion_id', $type->id)->update([ "orden" => $type->orden ]);
         }
     }
 

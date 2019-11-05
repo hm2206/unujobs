@@ -55,14 +55,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($historial as $history)
+                    @forelse ($historial as $history)
                         <tr>
                             <td class="py-0 text-center"><small class="font-9">{{ $history->count }}</small></td>
                             <td class="py-0 pl-1"><small class="font-9">{{ $history->work ? $history->work->nombre_completo : '' }}</small></td>
                             <td class="py-0 text-center"><small class="font-9">{{ $history->work ? $history->work->numero_de_documento : '' }}</small></td>
                             <td class="py-0 text-right pr-1"><small class="font-9">{{ $history->monto }}</small></td>
                         </tr> 
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="4">No hay Registros</td>
+                        </tr>
+                    @endforelse
                     <tr>
                         <th class="py-0 text-right pr-1" colspan="4"><b class="font-10 pr-1">Total: S/. {{ $historial->sum('monto') }}</b></th>
                     </tr>

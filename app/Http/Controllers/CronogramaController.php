@@ -482,7 +482,8 @@ class CronogramaController extends Controller
     public function vaciarDescuentos(Request $request, $id) 
     {
         $this->validate(request(), [
-            "type_descuento_id" => "required"
+            "type_descuento_id" => "required",
+            "monto" => "numeric"
         ]);
 
         $cronograma = Cronograma::with('historial')->where('estado', 1)->findOrFail($id);
@@ -490,9 +491,10 @@ class CronogramaController extends Controller
         try {
             
             $type = $request->type_descuento_id;
-            $isChange = Descuento::where('cronograma_id')
+            $monto = $request->monto;
+            $isChange = Descuento::where('cronograma_id', $id)
                 ->where('type_descuento_id', $type)
-                ->get();
+                ->update([ "monto" => $monto ]);
             // verificamos que se realizo los cambios
             if ($isChange) {
                 $historial = $cronograma->historial;
@@ -515,6 +517,54 @@ class CronogramaController extends Controller
             ];
         }
         
+    }
+
+
+    public function createDescuentos(Request $request, $id)
+    {
+        $this->validate(request(), [
+            "type_descuento_id" => "required",
+            "monto" => "numeric"
+        ]);
+
+        $cronograma = Cronograma::where('estado', 1)->findOrFail($id);
+
+        try {
+            
+            $type_id = $request->type_descuento_id;
+            $monto = $request->monto;
+            // verificamos si el type existe
+            $types = TypeDescuento::where("activo", 1)
+                ->where("id", $type_id)
+                ->get();
+            // obtenemos a todos los trabajadores que ya tiene el descuento agregado
+            $isDescuento = Descuento::where('type_descuento_id', $type_id)->get();
+            // agregar los descuentos a los trabajadores de la planilla
+            $historial = Historial::where('cronograma_id', $cronograma->id)
+                ->whereNotIn('historial_id', $isDescuento->pluck(['historial_id']))
+                ->get();
+            
+            // crear descuento
+            $collection = new DescuentoCollection($cronograma, $types);
+            $collection->insert($historial, false);
+            // actualizar nuevo historial
+            foreach ($historial as $history) {
+                DescuentoCollection::updateNeto($history);
+            }
+            
+            return [
+                "status" => true,
+                "message" => "El descuento se agrego correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación"
+            ];
+        }
     }
 
 

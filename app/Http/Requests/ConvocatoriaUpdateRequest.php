@@ -61,7 +61,7 @@ class ConvocatoriaUpdateRequest extends FormRequest
 
 
         if ($this->request->get('observacion', "")) {
-            $rules["observacion"] = "max:255";
+            $rules["observacion"] = "max:500";
         }
 
         return $rules;

@@ -22,8 +22,8 @@ class Descuento extends Model
      */
     protected $fillable = [
         "work_id", "info_id", "historial_id", "planilla_id", "categoria_id", 
-        "cargo_id", "cronograma_id", "dias", "sede_id", "meta_id", "mes",
-        "año", "monto", "adicional", "horas", "type_descuento_id", "base", "edit"
+        "cargo_id", "cronograma_id", "dias", "sede_id", "meta_id", "mes", "año",
+        "monto", "adicional", "horas", "type_descuento_id", "base", "edit", "orden"
     ];
 
 

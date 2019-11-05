@@ -32,6 +32,7 @@ class CreateDescuentosTable extends Migration
             $table->integer("adicional")->default(0);
             $table->integer("base")->default(0);
             $table->integer("edit")->default(1);
+            $table->string('orden')->default('01');
             $table->timestamps();
         });
     }

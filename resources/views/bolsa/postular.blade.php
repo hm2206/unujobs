@@ -20,7 +20,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    Postular a la convocatoria N° {{ $convocatoria->numero_de_convocatoria }}-{{ $year }}-UNU
+                    Postular a la convocatoria N° {{ $convocatoria->numero_de_convocatoria }}
                     <span class="ml-3 text-danger mr-3"><i class="fas fa-arrow-right"></i></span>
                     <b>{{ $personal->cargo_txt }}</b>
                 </div>

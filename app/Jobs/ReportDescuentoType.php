@@ -58,16 +58,24 @@ class ReportDescuentoType implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
-        $historial = Historial::where('cronograma_id', $cronograma->id)
-            ->orderBy('orden', 'ASC')->get();
+        $type = TypeDescuento::findOrFail($this->type_descuento);
+        // historial
+        $historial = Historial::whereHas('descuentos', function($des) use($type) {
+                $des->where('descuentos.type_descuento_id', $type->id)
+                    ->where('monto', '>', 0);
+            })->where('cronograma_id', $cronograma->id)
+            ->orderBy('orden', 'ASC')
+            ->get();
+            
         $count = 1;
         $money = new Money;
 
-        $type = TypeDescuento::findOrFail($this->type_descuento);
+        
 
         // configuracion
         $descuentos = Descuento::whereIn("historial_id", $historial->pluck(['id']))
             ->where("type_descuento_id", $type->id)
+            ->where('monto', '>', 0)
             ->get();
         // configurar
         $bodies = $historial->chunk(52);

@@ -87,7 +87,10 @@ class HistorialController extends Controller
     public function descuento($id)
     {
         $history = Historial::findOrFail($id);
-        $descuentos = Descuento::with('typeDescuento')->where('historial_id', $id)->get();
+        $descuentos = Descuento::with('typeDescuento')
+            ->where('historial_id', $id)
+            ->orderBy('orden', 'ASC')
+            ->get();
 
         return [
             "total_neto" => $history->total_neto,
