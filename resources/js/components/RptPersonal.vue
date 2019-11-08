@@ -25,7 +25,7 @@
 <script>
 
 import ReportHistorial from './ReportHistorial';
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -42,22 +42,7 @@ export default {
     methods: {
         async generatePDF(e) {
 
-            e.preventDefault();
-            this.loader = true;
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/personal`, {
-                type_report: this.report.id,
-                condicion: this.condicion
-            });
-            
-            await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
-
-            this.loader = false;
+            printReport(`pdf/relacion-personal/${this.cronograma.id}?negativo=${this.condicion}`, 'RELACION PERSONAL');
 
         }
     }

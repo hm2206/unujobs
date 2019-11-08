@@ -15463,38 +15463,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generateAfp = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 e.preventDefault();
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])('post', "/afp/".concat(this.afp_id, "/pdf"), {
-                  cronograma_id: this.cronograma.id,
-                  type_report: this.report.id
-                });
-                this.loader = true;
-                _context2.next = 5;
-                return api.then(function (res) {
-                  var _res$data2 = res.data,
-                      status = _res$data2.status,
-                      message = _res$data2.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal!'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/afp/".concat(this.cronograma.id, "/").concat(this.afp_id), 'AFP');
 
-              case 5:
-                this.loader = false;
-
-              case 6:
+              case 2:
               case "end":
                 return _context2.stop();
             }
@@ -15607,37 +15583,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/boleta"), {
-                  type_report_id: this.report.id,
-                  meta_id: this.meta_id
-                });
-                _context.next = 4;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/boleta/".concat(this.cronograma.id, "/").concat(this.meta_id));
 
-              case 4:
-                this.loader = false;
-
-              case 5:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -15726,7 +15678,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       loader: false,
-      tmp_types: []
+      tmp_types: [],
+      descuento_id: ''
     };
   },
   methods: {
@@ -15734,36 +15687,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var form, api;
+        var ruta;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                form = new FormData(document.getElementById('form-rpt-descuento'));
-                form.append('type_report_id', this.report.id);
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/descuento"), form);
-                _context.next = 6;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                ruta = this.descuento_id ? "pdf/descuento/".concat(this.cronograma.id, "/").concat(this.descuento_id) : "pdf/descuentos/".concat(this.cronograma.id);
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])(ruta, 'Descuento');
 
-              case 6:
-                this.loader = false;
-
-              case 7:
+              case 2:
               case "end":
                 return _context.stop();
             }
@@ -16003,36 +15935,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/pdf"), {
-                  type_report_id: this.report.id
-                });
-                _context.next = 4;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/general-v1/".concat(this.cronograma.id), 'GENERAL-v1');
 
-              case 4:
-                this.loader = false;
-
-              case 5:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -16145,37 +16054,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/meta"), {
-                  type_report_id: this.report.id,
-                  meta_id: this.meta_id
-                });
-                _context.next = 4;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/meta-v1/".concat(this.cronograma.id, "/").concat(this.meta_id), "META");
 
-              case 4:
-                this.loader = false;
-
-              case 5:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -16272,7 +16157,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   data: function data() {
     return {
-      loader: false
+      loader: false,
+      condicion: 0
     };
   },
   methods: {
@@ -16280,37 +16166,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
-        var form, api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                e.preventDefault();
-                form = new FormData(document.getElementById('register-pagos'));
-                form.append('type_report_id', this.report.id);
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/pago"), form);
-                _context.next = 7;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/pago/".concat(this.cronograma.id, "?cuenta=").concat(this.condicion), 'PAGO');
 
-              case 7:
-                this.loader = false;
-
-              case 8:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -16393,38 +16255,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                e.preventDefault();
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/personal"), {
-                  type_report: this.report.id,
-                  condicion: this.condicion
-                });
-                _context.next = 5;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/relacion-personal/".concat(this.cronograma.id, "?negativo=").concat(this.condicion), 'RELACION PERSONAL');
 
-              case 5:
-                this.loader = false;
-
-              case 6:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -16537,37 +16374,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/planilla"), {
-                  type_report_id: this.report.id,
-                  meta_id: this.meta_id
-                });
-                _context.next = 4;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/planilla/".concat(this.cronograma.id, "/").concat(this.meta_id), 'PLANILLA');
 
-              case 4:
-                this.loader = false;
-
-              case 5:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -78722,7 +78535,33 @@ var render = function() {
         _c("div", { staticClass: "col-md-4" }, [
           _c(
             "select",
-            { staticClass: "form-control", attrs: { name: "type_descuento" } },
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.descuento_id,
+                  expression: "descuento_id"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { name: "type_descuento" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.descuento_id = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
             [
               _c("option", { attrs: { value: "" } }, [
                 _vm._v("TODOS LOS DESCUENTOS")
@@ -79078,14 +78917,50 @@ var render = function() {
           on: { submit: _vm.generatePDF }
         },
         [
-          _vm._m(0),
-          _vm._v(" "),
-          _vm._m(1),
+          _c("div", { staticClass: "col-md-5" }, [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.condicion,
+                    expression: "condicion"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: { name: "condicion" },
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.condicion = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  }
+                }
+              },
+              [
+                _c("option", { attrs: { value: "0", selected: "" } }, [
+                  _vm._v("Cheque")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "1" } }, [_vm._v("Cuenta")])
+              ]
+            )
+          ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-md-12 mt-5" }, [
             _c("div", { staticClass: "row justify-content-center" }, [
               !_vm.loader
-                ? _c("div", { staticClass: "col-xs" }, [_vm._m(2)])
+                ? _c("div", { staticClass: "col-xs" }, [_vm._m(0)])
                 : _c("div", { staticClass: "w-100 text-center" }, [
                     _c("div", { staticClass: "spinner-border text-primary" })
                   ])
@@ -79142,24 +79017,6 @@ var render = function() {
   )
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-4 text-center" }, [
-      _c("input", { attrs: { type: "checkbox", name: "cheque" } }),
-      _vm._v(" Cheque\n        ")
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-4 text-center" }, [
-      _c("input", { attrs: { type: "checkbox", name: "cuenta" } }),
-      _vm._v(" Cuenta\n        ")
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -102332,12 +102189,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************************!*\
   !*** ./resources/js/services/api.js ***!
   \**************************************/
-/*! exports provided: unujobs */
+/*! exports provided: unujobs, URI, printReport */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unujobs", function() { return unujobs; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "URI", function() { return URI; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "printReport", function() { return printReport; });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
@@ -102349,6 +102208,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 
+var path = "/api/v1/";
 /**
  * 
  * @param {String} method 
@@ -102366,7 +102226,6 @@ function () {
     var method,
         ruta,
         body,
-        path,
         path_verify,
         validar_ruta,
         is_path_with_http,
@@ -102380,13 +102239,8 @@ function () {
             body = _args.length > 2 && _args[2] !== undefined ? _args[2] : {};
 
             /**
-             * Ruta para consumir api
-             */
-            path = "/api/v1/";
-            /**
              * Almacenamos la ruta verificada
              */
-
             path_verify = "";
             /**
              * Expresión regular para quitar #slash
@@ -102414,13 +102268,13 @@ function () {
               path_verify = ruta;
             }
 
-            _context.next = 11;
+            _context.next = 10;
             return axios__WEBPACK_IMPORTED_MODULE_1___default.a[method](path_verify, body);
 
-          case 11:
+          case 10:
             return _context.abrupt("return", _context.sent);
 
-          case 12:
+          case 11:
           case "end":
             return _context.stop();
         }
@@ -102432,6 +102286,12 @@ function () {
     return _ref.apply(this, arguments);
   };
 }();
+var URI = path;
+var printReport = function printReport(url) {
+  var name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Reporte";
+  var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ["width=1024", "height=700"];
+  return window.open("".concat(URI).concat(url), name, config.join(','));
+};
 
 /***/ }),
 

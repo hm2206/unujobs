@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+let path = "/api/v1/"; 
+
 /**
  * 
  * @param {String} method 
@@ -8,11 +10,6 @@ import axios from 'axios';
  * @return {Promise}
  */
 export const unujobs = async (method = "get", ruta, body = {}) => {    
-    /**
-     * Ruta para consumir api
-     */
-    const path = "/api/v1/";
-
     /**
      * Almacenamos la ruta verificada
      */
@@ -43,4 +40,12 @@ export const unujobs = async (method = "get", ruta, body = {}) => {
     }
     
     return await axios[method](path_verify, body);
+};
+
+
+export const URI = path;
+
+
+export const printReport = (url, name = "Reporte", config = ["width=1024", "height=700"]) => {
+    return window.open(`${URI}${url}`, name, config.join(','));
 };

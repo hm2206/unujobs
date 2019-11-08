@@ -4,7 +4,7 @@
         <div class="row mb-4 align-items-center">
 
             <div class="col-md-4">
-                <select name="type_descuento" class="form-control">
+                <select name="type_descuento" class="form-control" v-model="descuento_id">
                     <option value="">TODOS LOS DESCUENTOS</option>
                     <option :value="type.id" v-for="(type, ty) in tmp_types" :key="`type-descuentos-${ty}`">
                         {{ type.descripcion }}
@@ -36,7 +36,7 @@
 <script>
 
 import ReportHistorial from './ReportHistorial';
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -50,27 +50,18 @@ export default {
     data() {
         return {
             loader: false,
-            tmp_types: []
+            tmp_types: [],
+            descuento_id: '',
         };
     },
     methods: {
         async generatePDF() {
 
-            const form = new FormData(document.getElementById('form-rpt-descuento'));
-            form.append('type_report_id', this.report.id);
-            this.loader = true;
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/descuento`, form);
-            
-            await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
+            let ruta = this.descuento_id 
+                ? `pdf/descuento/${this.cronograma.id}/${this.descuento_id}`
+                : `pdf/descuentos/${this.cronograma.id}`;
 
-            this.loader = false;
-
+            printReport(ruta, 'Descuento');
         },
         async getDescuentos() {
             let api = unujobs("get", '/type_descuento');

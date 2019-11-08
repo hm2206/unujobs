@@ -4,11 +4,11 @@
         <form action="" class="row justify-content-center" id="register-pagos"
             v-on:submit="generatePDF"
         >
-            <div class="col-md-4 text-center">
-                <input type="checkbox" name="cheque"> Cheque
-            </div>
-            <div class="col-md-4 text-center">
-                <input type="checkbox" name="cuenta"> Cuenta
+            <div class="col-md-5">
+                <select name="condicion" class="form-control" v-model="condicion">
+                    <option value="0" selected>Cheque</option>
+                    <option value="1">Cuenta</option>
+                </select>
             </div>
             <div class="col-md-12 mt-5">
                 <div class="row justify-content-center">
@@ -48,7 +48,7 @@
 <script>
 
 import ReportHistorial from './ReportHistorial';
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -58,27 +58,14 @@ export default {
     },
     data() {
         return {
-            loader: false
+            loader: false,
+            condicion: 0,
         };
     },
     methods: {
         async generatePDF(e) {
 
-            e.preventDefault();
-            const form = new FormData(document.getElementById('register-pagos'));
-            form.append('type_report_id', this.report.id);
-            this.loader = true; 
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/pago`, form);
-            
-            await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
-
-            this.loader = false;
+            printReport(`pdf/pago/${this.cronograma.id}?cuenta=${this.condicion}`, 'PAGO');
 
         }
     }

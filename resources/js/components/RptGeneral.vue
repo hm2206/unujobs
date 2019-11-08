@@ -16,7 +16,7 @@
 <script>
 
 import ReportHistorial from './ReportHistorial';
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -31,22 +31,7 @@ export default {
     },
     methods: {
         async generatePDF() {
-
-            this.loader = true;
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/pdf`, {
-                type_report_id: this.report.id
-            });
-            
-            await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
-
-            this.loader = false;
-
+            printReport(`pdf/general-v1/${this.cronograma.id}`, 'GENERAL-v1');
         }
     }
 }
