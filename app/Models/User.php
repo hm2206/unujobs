@@ -53,9 +53,40 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, "role_user");
     }
 
+    
     public function modulos()
     {
         return $this->belongsToMany(Modulo::class, 'modulo_user');
+    }
+
+
+    public static function auth()
+    {
+        try {
+            $auth = request()->header('Authorization');
+            $tmp_token = explode(" ", $auth);
+            $token = isset($tmp_token[1]) ? $tmp_token[1] : null;
+            $isToken = Token::where("is_revoked", 0)
+                ->where('token', $token)
+                ->firstOrFail();
+            // obtenemos el usuario
+            $user = User::findOrFail($isToken->user_id);
+            // devolvemos payload
+            return [
+                "success" => true,
+                "message" => "Usuario autenticado.",
+                "token" => $isToken,
+                "user" => $user
+            ];
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return [
+                "success" => false,
+                "message" => "El token ya expíro.",
+                "token" => null,
+                "user" => null
+            ];
+        }
     }
     
 }

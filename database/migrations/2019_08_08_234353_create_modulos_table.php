@@ -20,6 +20,7 @@ class CreateModulosTable extends Migration
             $table->string("modulo_id")->nullable();
             $table->string("token");
             $table->string("icono")->nullable();
+            $table->string("slug")->nullable();
             $table->timestamps();
         });
     }

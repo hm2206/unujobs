@@ -1,6 +1,8 @@
 <?php
 
 
+
+
 Route::group(["prefix" => 'v1'], function() {
 
     Route::get('planilla', 'ApiRest@planilla');
@@ -198,5 +200,29 @@ Route::group(["prefix" => 'v1'], function() {
     // api de  educacional
     Route::resource('/educacional', 'EducacionalController')->except(['create', 'edit']);
     Route::put('/educacional/{history}/historial', 'EducacionalController@historial');
+
+
+
+    // authenticacion
+    Route::post("/login", "AuthController@login")->name('auth.login');
+    Route::post("/logout", "AuthController@logout")->name('auth.logout');
+    Route::get("/me", "AuthController@me")->name('auth.me');
+    Route::get("/profile", "AuthController@profile")->name('auth.profile');
+
+
+    // reportes de pdfs
+    Route::group(['prefix' => 'pdf'], function() {
+        Route::get("/boleta/{cronograma}/{meta}", "PdfController@boleta")->name('pdf.boleta');
+        Route::get("/general-v1/{cronograma}", "PdfController@general_v1")->name('pdf.general_v1');
+        Route::get("/general-v2/{cronograma}", "PdfController@general_v2")->name('pdf.general_v2');
+        Route::get("/meta-v1/{cronograma}/{type}", "PdfController@meta_v1")->name('pdf.meta_v1');
+        Route::get("/planilla/{cronograma}/{meta}", "PdfController@planilla")->name('pdf.planilla');
+        Route::get("/descuentos/{cronograma}", "PdfController@descuentos")->name('pdf.descuentos');
+        Route::get("/descuento/{cronograma}/{type}", "PdfController@type_descuento")->name('pdf.type_descuento');
+        Route::get("/afp/{cronograma}/{afp}", "PdfController@afp")->name('pdf.afp');
+        Route::get("/relacion-personal/{cronograma}", "PdfController@relacion_personal")->name('pdf.relacion_personal');
+        Route::get("/pago/{cronograma}", "PdfController@pago")->name('pdf.pago');
+    });
+
 
 });

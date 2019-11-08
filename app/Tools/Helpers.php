@@ -163,4 +163,16 @@ class Helpers
         return $archivo;
     }
 
+
+    public static function mes($indice)
+    {
+        $meses = [
+            "Enero", "Febrero", "Marzo", "Abril", 
+            "Mayo", 'Junio', 'Julio', 'Agosto', 
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        // retornar mes
+        return $meses[$indice - 1];
+    }
+
 }

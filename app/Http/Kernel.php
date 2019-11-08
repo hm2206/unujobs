@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:500,1',
             'bindings',
+            'cors'
         ],
     ];
 
@@ -64,6 +65,7 @@ class Kernel extends HttpKernel
         'origen' => \App\Http\Middleware\VerifyOrigen::class,
         'import' => \App\Http\Middleware\ImportMiddleware::class,
         'auditoria' => \App\Http\Middleware\AuditoriaMiddleware::class,
+        'cors' => \Barryvdh\Cors\HandleCors::class,
     ];
 
     /**

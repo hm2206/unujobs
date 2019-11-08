@@ -5,6 +5,7 @@ namespace App\Tools;
 class Money {
 
     private static $separate = true;
+    private static $limit = 5;
 
     /**
      * cambiar configuracion del separador
@@ -85,4 +86,17 @@ class Money {
         return static::parse($numero);
     }
 
+
+    public function num($n)
+    {
+        $parse = "";
+        $length = \strlen((String)$n);
+        if (self::$limit > $length) {
+            for ($i=0; $i < (self::$limit - $length) ; $i++) { 
+                $parse .= '0';
+            }
+        }
+        $parse .= $n;
+        return $parse;
+    }
 }

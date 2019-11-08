@@ -23,6 +23,11 @@ class BoletaCollection
     private $rows = 23;
     private $mes = 9;
     private $year = 2019;
+    private $ruleResource = [
+        "http" => 'asset', 
+        "file" => 'public_path'
+    ];
+    private $resource = 'file';
     // arreglo de meses
     private $meses =  [
         "Enero", "Febrero", "Marzo", "Abril", 
@@ -77,6 +82,13 @@ class BoletaCollection
     public function setRows($newRow)
     {
         $this->rows = $newRow;
+    }
+
+
+    public function setResource($resource)
+    {
+        $this->ruleResource[$resource];
+        $this->resource = $resource;
     }
 
 
@@ -148,9 +160,20 @@ class BoletaCollection
     public function generate($titulo = '')
     {
         $storage = $this->storage->chunk(2);
+        $ruleResource = $this->ruleResource;
+        $resource = $this->resource;
         $money = new Money();
-        return PDF::loadView('pdf.boleta_auto', compact('storage', 'money', 'titulo'));
+        return PDF::loadView('pdf.boleta_auto', compact('storage', 'money', 'titulo', 'ruleResource', 'resource'));
     }
 
+
+    public function view($titulo = '') 
+    {
+        $storage = $this->storage->chunk(2);
+        $ruleResource = $this->ruleResource;
+        $resource = $this->resource;
+        $money = new Money();
+        return view("reports.boleta", compact('storage', 'money', 'titulo', 'ruleResource', 'resource'));
+    }
 
 }

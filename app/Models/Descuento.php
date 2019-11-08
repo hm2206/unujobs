@@ -37,4 +37,16 @@ class Descuento extends Model
         return $this->belongsTo(TypeDescuento::class, 'type_descuento_id');
     }
 
+
+    public function historial()
+    {
+        return $this->belongsTo(Historial::class);
+    }
+
+
+    public function work()
+    {
+        return $this->belongsTo(Work::class);
+    }
+
 }

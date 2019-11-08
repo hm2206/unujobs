@@ -1,73 +1,64 @@
 <?php
-namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
+namespace App\Collections;
 
-use App\Models\Meta;
-use App\Models\Work;
-use App\Models\Descuento;
+use App\Models\TypeRemuneracion;
+use App\Models\TypeCategoria;
+use App\Models\TypeDescuento;
+use App\Models\Cargo;
+use App\Models\Cronograma;
 use App\Models\Remuneracion;
+use App\Models\Descuento;
+use App\Models\Afp;
+use App\Models\Historial;
+use App\Notifications\ReportNotification;
 use \PDF;
 use App\Models\User;
-use App\Notifications\ReportNotification;
 use App\Models\Report;
+use Illuminate\Support\Facades\Storage;
 use \Carbon\Carbon;
-use App\Models\Historial;
+use App\Models\Meta;
 use App\Tools\Money;
-use App\Models\Cargo;
+use App\Models\TypeAportacion;
+use App\Models\TypeAfp;
 
-/**
- * Genera Reportes
- */
-class ReportCronograma implements ShouldQueue
+
+class PlanillaCollection
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private $meta;
+    private $storage;
     private $cronograma;
-    private $type_report;
-    private $meta_id;
-    public $timeout = 0;
+    private $view = 'reports.planilla';
 
-    /**
-     * @param string $mes
-     * @param string $year
-     * @param string $adicional
-     */
-    public function __construct($cronograma, $type_report, $meta_id)
+    public function __construct(Meta $meta, Cronograma $cronograma)
     {
+        $this->meta = $meta;
         $this->cronograma = $cronograma;
-        $this->type_report = $type_report;
-        $this->meta_id = $meta_id;
     }
 
-    /**
-     * Genera un reporte en pdf del cronograma
-     *
-     * @return void
-     */
-    public function handle()
+
+    public function generate()
     {
+        $meses = [
+            "Enero", "Febrero", "Marzo", "Abril", 
+            "Mayo", 'Junio', 'Julio', 'Agosto', 
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+        // almacenar attr en variables locales
         $cronograma = $this->cronograma;
-        $meta = Meta::findOrFail($this->meta_id);
+        $meta = $this->meta;
         $meta->mes = $cronograma->mes;
         $meta->year = $cronograma->año;
-        $pagina = 1;
         $money = new Money;
-
+        $pagina = 1;
         // obtener historial
-        $historial = Historial::with('work')->where('cronograma_id', $cronograma->id)
+        $historial = Historial::where("cronograma_id", $cronograma->id)
             ->where('meta_id', $meta->id)
             ->orderBy('orden', 'ASC')
             ->get();
-
         // cargos
         $cargos = Cargo::whereIn('id', $historial->pluck(['cargo_id']))->get();
-
-
         // obtener remuneraciones
         $remuneraciones = Remuneracion::with("typeRemuneracion")->where('show', 1)
             ->whereIn("historial_id", $historial->pluck(['id']))
@@ -80,7 +71,7 @@ class ReportCronograma implements ShouldQueue
         $aportaciones = Descuento::with("typeDescuento")->where("base", 1)
             ->whereIn("historial_id", $historial->pluck(['id']))
             ->get();
-        //traemos trabajadores que pertenescan a la meta actual
+            //traemos trabajadores que pertenescan a la meta actual
         foreach ($historial as $history) {
             // obtenemos las remuneraciones actuales del trabajador
             $tmp_remuneraciones = $remuneraciones->where("historial_id", $history->id);
@@ -148,41 +139,29 @@ class ReportCronograma implements ShouldQueue
 
         $meta->cargos = $cargos;
 
-        $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-
-        $pdf = PDF::loadView('pdf.planilla', compact('meses', 'meta', 'cronograma', 'pagina', 'money'));
-        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
-
-        $path = "pdf/planilla_meta_{$meta->metaID}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}.pdf";
-        $nombre = "Planilla del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID}";
-        $pdf->save(storage_path("app/public/{$path}"));
-
-        $archivo = Report::where("cronograma_id", $cronograma->id)
-            ->where("type_report_id", $this->type_report)
-            ->where("name", $nombre)
-            ->first();
-
-        if ($archivo) {
-            $archivo->update([
-                "read" => 0,
-                "path" => "/storage/{$path}"
-            ]);
-        }else {
-            $archivo = Report::create([
-                "type" => "pdf",
-                "name" => $nombre,
-                "icono" => "fas fa-file-pdf",
-                "path" => "/storage/{$path}",
-                "cronograma_id" => $cronograma->id,
-                "type_report_id" => $this->type_report
-            ]);
-        }
-
-        $users = User::all();
-
-        foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/{$path}", "{$archivo->name} fué generada"));
-        }
-
+        // alamcenar en el storage
+        $this->storage = compact('meses', 'meta', 'cronograma', 'pagina', 'money');
     }
+
+
+    public function getStorage()
+    {
+        return $this->storage;
+    }
+
+
+    public function render()
+    {
+        return view($this->view, $this->storage);
+    }
+
+
+    public function stream($name = '')
+    {
+        $pdf = PDF::loadView('pdf.planilla', $this->storage);
+        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+        return $pdf->stream($name);
+    }
+
+    
 }
