@@ -18,7 +18,7 @@
         @php
             $num = 1;
         @endphp
-        @foreach ($historial->chunk(23) as $page => $historial)
+        @forelse ($historial->chunk(23) as $page => $historial)
             <div class="page-only pt-2 pr-3 uppercase">                
                 <table class="text-negro">
                     <thead>
@@ -132,7 +132,8 @@
                         </tr>
                     </tbody>
                 </table>
-                    
-            @endforeach
+            @empty
+                <div>No hay registros</div>
+            @endforelse
         </body>
 </html>

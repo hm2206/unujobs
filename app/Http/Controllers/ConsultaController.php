@@ -43,7 +43,7 @@ class ConsultaController extends Controller
         $historial = Historial::where('work_id', $work->id)
             ->whereHas('cronograma', function($cro) use($year) {
                 $cro->where('año', $year);
-            })->where('pdf', "<>", null)->get();
+            })->get();
 
         return view('consultas.work', compact('work', 'meses', 'year', 'historial'));
     }

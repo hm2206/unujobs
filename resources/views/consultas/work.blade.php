@@ -65,7 +65,7 @@
             </form>
             <div class="card-footer">
                 @forelse ($historial as $history)
-                    <a href="{!! $history->pdf !!}" class="card" target="_blank">
+                    <a href="{{ route('historial.boleta', $history->id) }}" class="card" target="_blank">
                         <div class="card-body">
                             <i class="fas fa-file-pdf text-danger"></i>
                             {{ $history->categoria ? $history->categoria->nombre : '' }}

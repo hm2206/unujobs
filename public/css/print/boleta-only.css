@@ -1,0 +1,24 @@
+
+
+@page {
+    size: A4 portrait;
+}
+
+
+.boleta-size {
+    width: 90% !important;
+    height: auto !important;
+}
+
+.font-10 {
+   font-size: 12px;
+}
+
+.font-11 {
+    font-size: 13px;
+}
+
+.font-9 {
+    font-size: 11px;
+}
+

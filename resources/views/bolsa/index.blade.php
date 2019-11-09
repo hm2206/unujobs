@@ -11,9 +11,6 @@
             <div class="carousel-item active">
                 <img class="d-block w-100" src="{{ asset('img/bolsa.png') }}" style="object-fit:contain" height="500px">
             </div>
-            <div class="carousel-item">
-                <img class="d-block w-100" src="{{ asset('img/macbook.png') }}" style="object-fit:contain" height="500px" alt="">
-            </div>
         </div>
         <a class="carousel-control-prev" href="#my-carousel" data-slide="prev" role="button">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>

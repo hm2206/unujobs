@@ -27,7 +27,7 @@
                                 <img src="{{ asset($config->logo) }}" width="40" alt="">
                             </th>
                             <th>
-                                <div><b class="font-14 text-negro">{{ $config->nombre }}</b></div>
+                                <div><b class="font-14 text-negro pl-1">{{ $config->nombre }}</b></div>
                                 <div class="ml-1 font-12 text-negro">OFICINA GENERAL DE RECURSOS HUMANOS</div>
                                 <div class="ml-1 font-12 text-negro">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</div>
                             </th>

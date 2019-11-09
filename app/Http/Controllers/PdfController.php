@@ -18,6 +18,7 @@ use App\Models\TypeRemuneracion;
 use App\Collections\BoletaCollection;
 use App\Collections\GeneralCollection;
 use App\Collections\PlanillaCollection;
+use App\Collections\EjecucionCollection;
 
 class PdfController extends Controller
 {
@@ -33,14 +34,21 @@ class PdfController extends Controller
     {
         \set_time_limit(0);
         $cronograma = Cronograma::findOrFail($cronogramaID);
+        // filtros
+        $cargo_id = request()->input('cargo_id', '');
+        $categoria_id = request()->input('categoria_id', '');
         // obtener meta
         $meta = Meta::findOrFail($metaID);
         // obtener historial
         $historial = Historial::with('work', 'cargo', 'categoria', 'meta')
             ->where('cronograma_id', $cronograma->id)
-            ->orderBy('orden', 'ASC')
             ->where('meta_id', $meta->id)
-            ->get();
+            ->orderBy('orden', 'ASC');
+        // realizar filtros
+        $historial = $cargo_id ? $historial->where('cargo_id', $cargo_id) : $historial;
+        $historial = $categoria_id ? $historial->where('categoria_id', $categoria_id) : $historial;
+        // obtener historial
+        $historial = $historial->get();
         // obtener remuneraciones
         $remuneraciones = Remuneracion::with("typeRemuneracion")
             ->whereIn("historial_id", $historial->pluck(['id']))
@@ -55,7 +63,6 @@ class PdfController extends Controller
         $boleta->setRemuneraciones($remuneraciones);
         $boleta->setDescuentos($descuentos->where('base', 0));
         $boleta->setAportaciones($descuentos->where('base', 1));
-        $boleta->setResource('http');
         $boleta->get($historial);
         return $boleta->view();
     }
@@ -260,6 +267,7 @@ class PdfController extends Controller
     public function relacion_personal($id)
     {
         $negativo = request()->input('negativo', 0);
+        $cargo_id = request()->input('cargo_id', null);
         $cronograma = Cronograma::findOrFail($id);
         // config
         $mes = Helpers::mes($cronograma->mes);
@@ -273,12 +281,20 @@ class PdfController extends Controller
         $historial = $negativo 
             ? $historial->where('total_neto', '<=', 0) 
             : $historial->where('total_neto', '>', 0);
+        // hacemos filtros
+        $historial = $cargo_id ? $historial->where('cargo_id', $cargo_id) : $historial;
         // recuperamos historial
         $historial = $historial->get();
         return view('reports.relacion_personal', compact('negativo', 'cronograma', 'historial', 'money', 'mes'));
     }
 
 
+    /**
+     * Reporte de medios de pago [cuenta, cheque]
+     *
+     * @param [type] $id
+     * @return void
+     */
     public function pago($id)
     {
         $cuenta = request()->input('cuenta', 0);
@@ -314,8 +330,36 @@ class PdfController extends Controller
     }
 
 
-    public function cheque($id)
+    /**
+     * Reporte de ejecución
+     *
+     * @param [type] $id
+     * @return void
+     */
+    public function ejecucion($id)
     {
         $cronograma = Cronograma::findOrFail($id);
+        $neto = request()->input('neto', 0);
+        $ejecucion = new EjecucionCollection($cronograma, $neto);
+        $ejecucion->generate();
+        return $ejecucion->render();
     }
+
+
+    /**
+     * Reporte de ejecución detallada
+     *
+     * @param [type] $id
+     * @return void
+     */
+    public function ejecucion_detalle($id)
+    {
+        $cronograma = Cronograma::findOrFail($id);
+        $neto = request()->input('neto', 0);
+        $ejecucion = new EjecucionCollection($cronograma, $neto);
+        $ejecucion->setIsDetalle(true);
+        $ejecucion->generate();
+        return $ejecucion->render();
+    }
+
 }

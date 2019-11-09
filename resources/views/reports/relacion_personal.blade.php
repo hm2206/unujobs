@@ -17,7 +17,7 @@
         @php
             $num = 1;
         @endphp
-        @foreach ($historial->chunk(60) as $num_page => $historial)
+        @forelse($historial->chunk(60) as $num_page => $historial)
             <div class="page-only pt-2 pr-3 w-100">            
                 <table class="text-negro">
                     <thead>
@@ -26,7 +26,7 @@
                                 <img src="{{ asset($config->logo ) }}" width="50" alt="">
                             </th>
                             <th>
-                                <div><b class="font-14 text-negro">{{ $config->nombre }}</b></div>
+                                <div><b class="pl-1 font-14 text-negro">{{ $config->nombre }}</b></div>
                                 <div class="ml-1 font-12 text-negro">OFICINA GENERAL DE RECURSOS HUMANOS</div>
                                 <div class="ml-1 font-12 text-negro">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</div>
                             </th>
@@ -130,7 +130,9 @@
                     </tr>
                 </table>
             </div> 
-        @endforeach
+        @empty
+            <div>No hay Registros</div>
+        @endforelse
     </body>
 
 </html>

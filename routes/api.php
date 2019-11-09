@@ -187,6 +187,7 @@ Route::group(["prefix" => 'v1'], function() {
     Route::get('historial/{id}/obligacion', 'HistorialController@obligacion');
     Route::get('historial/{id}/educacional', 'HistorialController@educacional');
     Route::get('historial/{id}/aportacion', 'HistorialController@aportacion');
+    Route::get('historial/{id}/boleta', 'HistorialController@boleta')->name('historial.boleta');
 
 
     // api para procesar las remuneraciones
@@ -222,6 +223,8 @@ Route::group(["prefix" => 'v1'], function() {
         Route::get("/afp/{cronograma}/{afp}", "PdfController@afp")->name('pdf.afp');
         Route::get("/relacion-personal/{cronograma}", "PdfController@relacion_personal")->name('pdf.relacion_personal');
         Route::get("/pago/{cronograma}", "PdfController@pago")->name('pdf.pago');
+        Route::get("/ejecucion/{cronograma}", "PdfController@ejecucion")->name('pdf.ejecucion');
+        Route::get("/ejecucion-detalle/{cronograma}", "PdfController@ejecucion_detalle")->name('pdf.ejecucion_detalle');
     });
 
 

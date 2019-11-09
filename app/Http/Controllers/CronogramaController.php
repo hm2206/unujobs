@@ -415,7 +415,7 @@ class CronogramaController extends Controller
 
     public function estado(Request $request, $id) 
     {
-        $cronograma = Cronograma::where("estado", 1)->findOrFail($id);
+        $cronograma = Cronograma::findOrFail($id);
         try {
             
             $cronograma->estado = $cronograma->estado ? 0 : 1;

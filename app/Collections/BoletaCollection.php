@@ -6,6 +6,7 @@ use App\Models\Historial;
 use App\Models\Cronograma;
 use App\Models\Remuneracion;
 use App\Models\Descuento;
+use App\Models\TypeRemuneraciones;
 use \PDF;
 use App\Tools\Money;
 
@@ -23,6 +24,21 @@ class BoletaCollection
     private $rows = 23;
     private $mes = 9;
     private $year = 2019;
+    /**
+     * lista de estilos estilos
+     *
+     * @var array
+     */
+    private $styles = [
+        'app' => ['css' => '/css/app.css', 'media' => ''],
+        'pdf' => ['css' => '/css/pdf.css', 'media' => ''],
+        'default' => ['css' => '/css/print/boleta.css', 'media' => 'print'],
+    ];
+    /**
+     * reglas para los recursos
+     *
+     * @var array
+     */
     private $ruleResource = [
         "http" => 'asset', 
         "file" => 'public_path'
@@ -48,6 +64,12 @@ class BoletaCollection
     {
         return new self;
     }
+
+
+    public function getStorage()
+    {
+        return $this->storage;
+    }
     
 
     public function setRemuneraciones($remuneraciones)
@@ -71,6 +93,11 @@ class BoletaCollection
     public function setMes($newMes)
     {
         $this->mes = $newMes;
+    }
+
+
+    public function setStyle($key, array $values = []) {
+        $this->styles[$key][$values[0]] = $values[1];
     }
 
 
@@ -124,6 +151,7 @@ class BoletaCollection
             $store->put("rows", $this->rows);
             $store->put("mes", $this->meses[$this->mes - 1]);
             $store->put("year", $this->year);
+            $store->put("rows", $this->rows);
         } catch (\Throwable $th) {
             array_push($this->errors, $th);
         }
@@ -170,10 +198,9 @@ class BoletaCollection
     public function view($titulo = '') 
     {
         $storage = $this->storage->chunk(2);
-        $ruleResource = $this->ruleResource;
-        $resource = $this->resource;
+        $styles = $this->styles;
         $money = new Money();
-        return view("reports.boleta", compact('storage', 'money', 'titulo', 'ruleResource', 'resource'));
+        return view("reports.boleta", compact('storage', 'money', 'titulo', 'styles'));
     }
 
 }

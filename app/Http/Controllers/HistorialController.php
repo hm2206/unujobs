@@ -18,6 +18,7 @@ use App\Collections\RemuneracionCollection;
 use App\Models\Aportacion;
 use App\Tools\Helpers;
 use App\Models\Info;
+use App\Collections\BoletaCollection;
 
 class HistorialController extends Controller
 {
@@ -219,5 +220,27 @@ class HistorialController extends Controller
     public function destroy(Historial $historial)
     {
         //
+    }
+
+
+    public function boleta($id)
+    {
+        $historial = Historial::where('id', $id)->get();
+        // remuneraciones
+        $remuneraciones = Remuneracion::where('show', 1)
+            ->whereIn('historial_id', $historial->pluck(['id']))
+            ->get();
+        // descuentos
+        $descuentos = Descuento::whereIn('historial_id', $historial->pluck(['id']))->get();
+        // aportaciones
+        $aportaciones = Aportacion::whereIn("historial_id", $historial->pluck(['id']))->get();
+        // generar boleta
+        $boleta = BoletaCollection::init();
+        $boleta->setRemuneraciones($remuneraciones);
+        $boleta->setDescuentos($descuentos->where('base', 0));
+        $boleta->setAportaciones($descuentos->where('base', 1));
+        $boleta->setStyle('default', ['css', '/css/print/boleta-only.css']);
+        $boleta->get($historial);
+        return $boleta->view();
     }
 }

@@ -3,3 +3,13 @@
     size: A3 portrait;
     page-break-after: initial;
 }
+
+
+.boleta-size {
+    height: 35% !important; 
+    width: 67% !important;
+}
+
+.boleta-size > table {
+    -o-table-baseline: initial;
+}

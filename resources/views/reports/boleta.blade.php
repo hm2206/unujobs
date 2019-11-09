@@ -7,25 +7,25 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
-        <link rel="stylesheet" href="{{ asset('/css/pdf.css') }}">
-        <link rel="stylesheet" href="{{ asset('/css/print/boleta.css') }}" media="print">
+        <link rel="stylesheet" href="{{ asset($styles['app']['css']) }}" media="{{ $styles['app']['media'] }}">
+        <link rel="stylesheet" href="{{ asset($styles['pdf']['css']) }}" media="{{ $styles['pdf']['media'] }}">
+        <link rel="stylesheet" href="{{ asset($styles['default']['css']) }}">
         <title> {{ $titulo }} </title>
     </head>
     
     <body class="bg-white text-negro">
-        @foreach ($storage as $body)
-            <div style="height: 100%;" class="page-only">
+        @forelse ($storage as $body)
+            <div style="height: 100%;" class="page-only pt-2">
                 @foreach ($body as $store)
-                    <div style="height: 35%; width: 67%;" class="pb-3 pb-1">    
+                    <div class="pb-3 pb-1 boleta-size">    
                         <table>
                             <thead>
                                 <tr>
                                     <th>
-                                        <img src="{{ $ruleResource[$resource]($config->logo) }}" width="35" alt="">
+                                        <img src="{{ asset($config->logo) }}" width="35" alt="">
                                     </th>
                                     <th>
-                                        <div><b class="uppercase">{{ $config->nombre }}</b></div>
+                                        <div><b class="uppercase ml-1">{{ $config->nombre }}</b></div>
                                         <div class="ml-1 text-sm font-11"><b>OFICINA GENERAL DE RECURSOS HUMANOS</b></div>
                                         <div class="ml-1 text-sm font-11"><b>OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</b></div>
                                     </th>
@@ -97,7 +97,7 @@
 
                             <table class="table-sm py-0" style="width:100%;">
                                 <thead class="py-0 bbt-1 bbl-1 bbb-1">
-                                    <tr class="text-center py-0" width="35%">
+                                    <tr class="text-center py-0" width="30%">
                                         <th class="py-0">
                                             <div class="py-0 font-9">
                                                 INGRESOS
@@ -117,7 +117,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="p-relative bbl-1" style="border-left-radius: 1em;">
+                                        <td class="p-relative bbl-1" style="border-left-radius: 1em;" width="30%">
                                             <table class="w-100 p-absolute top-0">
                                                 <tbody>
                                                     @foreach ($store['remuneraciones'] as $remuneracion)
@@ -149,14 +149,14 @@
                                             </table>
                                         </td>
                                         @php
-                                            $count = $store['remuneraciones']->count() + 1;
-                                            $collection = $store['descuentos']->chunk($count);
+                                            $newRows = $store['rows'] + 3;
+                                            $collection = $store['descuentos']->chunk($newRows);
                                         @endphp
                                         @foreach ($collection as $iterBody => $body)
                                             <td class="py-0" width="25%">
                                                 @php
                                                     $bb = $iterBody == 0 ? 'bbl-1' : 'bbr-1';
-                                                    $rows = $count;
+                                                    $iterador = 0;
                                                 @endphp
                                                 <div class="{{ $bb }} h-100 pr-1 pl-1">
                                                     <table class="w-100">
@@ -171,17 +171,20 @@
                                                                         {{ $money->parseTo(round($descuento->monto, 2)) }}
                                                                 </th>
                                                             </tr>
+                                                            @php
+                                                                $iterador++;
+                                                            @endphp
                                                         @endforeach
                                                         @if ($collection->count() == ($iterBody + 1))
-                                                            @for ($i = 0; $i < $rows; $i++)
+                                                            @for ($i = 0; $i < $newRows - ($iterador + 2); $i++)
                                                                 <tr>
-                                                                    <th></th>
-                                                                    <th colspan="3"></th>
+                                                                    <th class="py-0 font-9">&nbsp;</th>
+                                                                    <th class="py-0 font-10">&nbsp;</th>
                                                                 </tr>
                                                             @endfor
                                                             <tr>
-                                                                <th class="py-0 font-9 pl-1">TOTAL DSCTS.</th>
-                                                                <th class="py-0 font-10" colspan="3">
+                                                                <th class="py-0 font-9 pl-1">TOTAL DSCTS. {{ $iterador }}</th>
+                                                                <th class="py-0 font-10">
                                                                     <div class="bbt-1 text-center py-0">
                                                                         {{ $money->parseTo(round($store['history']->total_desct, 2)) }}
                                                                     </div>
@@ -253,7 +256,9 @@
                     </div>
                 @endforeach
             </div>
-        @endforeach
+        @empty
+            <div class="text-center">No hay boletas :(</div>
+        @endforelse
     </body>
 
 </html>
