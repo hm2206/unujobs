@@ -7,6 +7,7 @@ use App\Models\TypeRemuneracion;
 use App\Models\Remuneracion;
 use App\Models\TypeDescuento;
 use App\Models\Descuento;
+use App\Models\Info;
 
 class DebbugCronograma extends Seeder
 {
@@ -20,7 +21,8 @@ class DebbugCronograma extends Seeder
         // $this->ordenarHistorial();
         // $this->eliminarHistorialDuplicado();
         // $this->copiarCronograma();
-        $this->orderDescuentos();
+        // $this->orderDescuentos();
+        $this->addFechaIngreso();
     }
 
 
@@ -131,6 +133,19 @@ class DebbugCronograma extends Seeder
         $types = TypeRemuneracion::all();
         foreach ($types as $type) {
             Remuneracion::where('type_remuneracion_id', $type->id)->update([ "orden" => $type->orden ]);
+        }
+    }
+
+
+    public function addFechaIngreso()
+    {
+        $infos = Info::where("fecha_de_ingreso", "<>", "")->get();
+        $historial = Historial::whereIn("info_id", $infos->pluck(['id']))->get();
+        foreach ($infos as $info) {
+           $histories = $historial->where("info_id", $info->id);
+           foreach ($histories as $history) {
+               $history->update(["fecha_de_ingreso" => $info->fecha_de_ingreso]);
+           }
         }
     }
 

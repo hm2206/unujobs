@@ -136,6 +136,5 @@ class WorkConfigImport implements ToCollection, WithHeadingRow
         if (count($errores) > 0) {
             \Log::info($errores);
         }
-
     }
 }

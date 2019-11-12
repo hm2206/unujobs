@@ -19,6 +19,7 @@ use App\Collections\BoletaCollection;
 use App\Collections\GeneralCollection;
 use App\Collections\PlanillaCollection;
 use App\Collections\EjecucionCollection;
+use App\Collections\PersonalCollection;
 
 class PdfController extends Controller
 {
@@ -360,6 +361,15 @@ class PdfController extends Controller
         $ejecucion->setIsDetalle(true);
         $ejecucion->generate();
         return $ejecucion->render();
+    }
+
+
+    public function personal($year, $mes)
+    {
+        set_time_limit(0);
+        $personal = new PersonalCollection($year, $mes);
+        $personal->generate();
+        return $personal->render();
     }
 
 }

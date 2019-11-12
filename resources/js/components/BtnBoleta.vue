@@ -67,17 +67,12 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <a :href="history.pdf" 
-                                            v-if="history.pdf"
+                                        <a  href="#"
+                                            @click="viewBoleta($event, history.id)"
                                             class="btn btn-sm btn-success" 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            >
+                                        >
                                                 <i class="fas fa-download"></i>
                                         </a>
-                                        <button v-else class="btn btn-danger btn-sm">
-                                            <i class="fas fa-ban"></i>
-                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -125,7 +120,7 @@
 
 <script>
 
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -147,6 +142,10 @@ export default {
         }
     },
     methods: {
+        viewBoleta(e, id) {
+            e.preventDefault();
+            printReport(`historial/${id}/boleta`, 'Boleta');
+        },
         async getBoletas(e) {
             
             if (e) {
@@ -176,20 +175,9 @@ export default {
         async generate(e) {
 
             e.preventDefault();
-            this.loader = true
-
             const form = new FormData(document.getElementById('generate-boletas'));
-
-            let api = unujobs("post", `/boleta/${this.param}`, form);
-
-            await api.then(res => {
-                notify({icon: 'success', text: 'Las boletas están siendo procesadas. Nosotros le notificaremos'});
-                this.check_cronogramas = [];
-            }).catch(err => {
-                notify({icon: 'error', text: 'Ocurrio un error al procesar la solicitud'});
-            });
-
-            this.loader = false;
+            printReport(`work/${this.param}/boleta?historial=${this.check_cronogramas}`);
+           
         }
     }
 }

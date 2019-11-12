@@ -98,6 +98,8 @@ Route::group(["prefix" => 'v1'], function() {
     Route::resource("work", 'WorkController');
     Route::get("work/{id}/historial", 'WorkController@historial');
     Route::post('work/{id}/report', 'WorkController@report');
+    Route::get('work/{id}/renta/{historial}', 'WorkController@renta');
+    Route::get('work/{id}/boleta', 'WorkController@boleta');
 
     Route::get('work/{id}/obligacion', 'JobController@obligacion');
     Route::get('work/{id}/info', 'JobController@informacion');
@@ -225,6 +227,7 @@ Route::group(["prefix" => 'v1'], function() {
         Route::get("/pago/{cronograma}", "PdfController@pago")->name('pdf.pago');
         Route::get("/ejecucion/{cronograma}", "PdfController@ejecucion")->name('pdf.ejecucion');
         Route::get("/ejecucion-detalle/{cronograma}", "PdfController@ejecucion_detalle")->name('pdf.ejecucion_detalle');
+        Route::get("/personal/{year}/{mes}", "PdfController@personal")->name('pdf.personal');
     });
 
 

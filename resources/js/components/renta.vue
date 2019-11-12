@@ -78,7 +78,7 @@
 
 <script>
 
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -142,36 +142,8 @@ export default {
             this.historial.data = [...this.info.data, ...e.data];
         },
         async add(e) {
-
-            if (e) {
-                e.preventDefault();
-            }
-
-            this.loader = true;
-
-            const form = new FormData(document.getElementById(`add-cronogramas-${this.count}`));
-
-            let api = unujobs("post", `/work/${this.work.id}/report`, form);
-
-            await api.then(async res => {
-
-                let { status, message } = res.data;
-
-                let icon = status ? "success" : "error";
-
-                await notify({icon: icon, text: message});
-
-                this.getWorks();
-
-                this.check_works = [];
-
-                this.show = false;
-
-            }).catch(err => {
-                notify({icon: 'error', text: err.message});
-            })
-
-            this.loader = false;
+            e.preventDefault();
+            printReport(`work/${this.work.id}/renta/${this.check_works}`, 'Reporte de Renta');
         }
     },
     computed: {

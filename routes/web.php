@@ -165,14 +165,12 @@ Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware
 Route::post("user/recovery", "UserController@recovery");
 
 
-/*Route::get('test', function() {
-
-    $pdf = \PDF::loadView('pdf.resumen_general_metas');
-    $pdf->setPaper('a4', 'landscape');
-    return $pdf->stream();
-
-});*/
-
 Route::get('consulta', 'ConsultaController@index');
 Route::post('consulta/validar', 'ConsultaController@validar')->name('consulta.validar');
 Route::get('consulta/work/{id}', 'ConsultaController@work')->name('consulta.work');
+
+
+Route::get('/test', function() {
+    $text = "Ho la";
+    return str_replace(" ", "", $text);
+});

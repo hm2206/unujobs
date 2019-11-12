@@ -8,6 +8,11 @@ use App\Models\Info;
 use App\Models\Cronograma;
 use App\Jobs\ReportRenta;
 use App\Models\Historial;
+use App\Collections\RentaCollection;
+use App\Collections\BoletaCollection;
+use App\Models\Remuneracion;
+use App\Models\Descuento;
+use App\Models\Aportacion;
 
 class WorkController extends Controller
 {
@@ -150,4 +155,41 @@ class WorkController extends Controller
 
         }
     }
+
+
+    public function renta($id, $historialID = [])
+    {
+        $work = Work::findOrFail($id);
+        $isHistorial = \explode(",", $historialID);
+        $renta = new RentaCollection($work, $isHistorial);
+        $renta->generate();
+        return $renta->render();
+    }
+
+
+    public function boleta($id)
+    {
+        $historialID = explode(",", request()->input('historial', ""));
+        $historial = Historial::whereIn('id', $historialID)->get();
+        // remuneraciones
+        $remuneraciones = Remuneracion::where('show', 1)
+            ->whereIn('historial_id', $historial->pluck(['id']))
+            ->get();
+        // descuentos
+        $descuentos = Descuento::whereIn('historial_id', $historial->pluck(['id']))->get();
+        // aportaciones
+        $aportaciones = Aportacion::whereIn("historial_id", $historial->pluck(['id']))->get();
+        // generar boleta
+        $boleta = BoletaCollection::init();
+        $boleta->setRemuneraciones($remuneraciones);
+        $boleta->setDescuentos($descuentos->where('base', 0));
+        $boleta->setAportaciones($descuentos->where('base', 1));
+        $boleta->setStyle('default', ['css', '/css/print/boleta-only.css']);
+        $boleta->get($historial);
+        return $boleta->view();
+    }
+
 }
+
+
+

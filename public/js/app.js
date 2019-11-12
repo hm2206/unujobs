@@ -8673,11 +8673,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -8699,6 +8694,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   methods: {
+    viewBoleta: function viewBoleta(e, id) {
+      e.preventDefault();
+      Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["printReport"])("historial/".concat(id, "/boleta"), 'Boleta');
+    },
     getBoletas: function () {
       var _getBoletas = _asyncToGenerator(
       /*#__PURE__*/
@@ -8754,35 +8753,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generate = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
-        var _this2 = this;
-
-        var form, api;
+        var form;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 e.preventDefault();
-                this.loader = true;
                 form = new FormData(document.getElementById('generate-boletas'));
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/boleta/".concat(this.param), form);
-                _context2.next = 6;
-                return api.then(function (res) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-                    icon: 'success',
-                    text: 'Las boletas están siendo procesadas. Nosotros le notificaremos'
-                  });
-                  _this2.check_cronogramas = [];
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-                    icon: 'error',
-                    text: 'Ocurrio un error al procesar la solicitud'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["printReport"])("work/".concat(this.param, "/boleta?historial=").concat(this.check_cronogramas));
 
-              case 6:
-                this.loader = false;
-
-              case 7:
+              case 3:
               case "end":
                 return _context2.stop();
             }
@@ -20525,75 +20505,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     add: function () {
       var _add = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(e) {
-        var _this2 = this;
-
-        var form, api;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(e) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
-                if (e) {
-                  e.preventDefault();
-                }
+                e.preventDefault();
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["printReport"])("work/".concat(this.work.id, "/renta/").concat(this.check_works), 'Reporte de Renta');
 
-                this.loader = true;
-                form = new FormData(document.getElementById("add-cronogramas-".concat(this.count)));
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("post", "/work/".concat(this.work.id, "/report"), form);
-                _context3.next = 6;
-                return api.then(
-                /*#__PURE__*/
-                function () {
-                  var _ref = _asyncToGenerator(
-                  /*#__PURE__*/
-                  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(res) {
-                    var _res$data, status, message, icon;
-
-                    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-                      while (1) {
-                        switch (_context2.prev = _context2.next) {
-                          case 0:
-                            _res$data = res.data, status = _res$data.status, message = _res$data.message;
-                            icon = status ? "success" : "error";
-                            _context2.next = 4;
-                            return sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-                              icon: icon,
-                              text: message
-                            });
-
-                          case 4:
-                            _this2.getWorks();
-
-                            _this2.check_works = [];
-                            _this2.show = false;
-
-                          case 7:
-                          case "end":
-                            return _context2.stop();
-                        }
-                      }
-                    }, _callee2);
-                  }));
-
-                  return function (_x3) {
-                    return _ref.apply(this, arguments);
-                  };
-                }())["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_2___default()({
-                    icon: 'error',
-                    text: err.message
-                  });
-                });
-
-              case 6:
-                this.loader = false;
-
-              case 7:
+              case 2:
               case "end":
-                return _context3.stop();
+                return _context2.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee2, this);
       }));
 
       function add(_x2) {
@@ -71403,28 +71328,22 @@ var render = function() {
                               ]),
                               _vm._v(" "),
                               _c("td", { staticClass: "text-center" }, [
-                                history.pdf
-                                  ? _c(
-                                      "a",
-                                      {
-                                        staticClass: "btn btn-sm btn-success",
-                                        attrs: {
-                                          href: history.pdf,
-                                          target: "_blank",
-                                          rel: "noopener noreferrer"
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "fas fa-download"
-                                        })
-                                      ]
-                                    )
-                                  : _c(
-                                      "button",
-                                      { staticClass: "btn btn-danger btn-sm" },
-                                      [_c("i", { staticClass: "fas fa-ban" })]
-                                    )
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass: "btn btn-sm btn-success",
+                                    attrs: { href: "#" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.viewBoleta(
+                                          $event,
+                                          history.id
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fas fa-download" })]
+                                )
                               ])
                             ])
                           }),

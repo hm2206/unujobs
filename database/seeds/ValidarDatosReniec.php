@@ -17,6 +17,22 @@ class ValidarDatosReniec extends Seeder
      */
     public function run()
     {
+        $this->validarDNI();
+    }
+
+
+    public function validarDNI()
+    {
+        $works = Work::all();
+        foreach ($works as $work) {
+            $work->numero_de_documento = str_replace(" ", "", $work->numero_de_documento);
+            $work->save();
+        }
+    }
+
+
+    private function validarDatos()
+    {
         $works = Work::all();
         // recorremos y actualizamos la fecha de nacimiento
         foreach ($works as $work) {
@@ -35,6 +51,6 @@ class ValidarDatosReniec extends Seeder
                 }
             }
         }
-
     }
+
 }
