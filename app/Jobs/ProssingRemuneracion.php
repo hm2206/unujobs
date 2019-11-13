@@ -68,24 +68,27 @@ class ProssingRemuneracion implements ShouldQueue
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
         // obtenemos remuneraciones anteriores
-        $typeBefores = Remuneracion::whereIn("info_id", $this->historial->pluck(['info_id']))
+        $typeBefores = [];
+        /* Remuneracion::whereIn("info_id", $this->historial->pluck(['info_id']))
             ->whereIn("type_remuneracion_id", $this->types->pluck(['id']))
             ->where("adicional", $cronograma->adicional)
             ->where("mes", $mes)
             ->where("año", $year)
             ->get();
+        */
         // guardamos a los trabajadores del mes anterior
-        $historialOld = $this->historial->whereIn("info_id", $typeBefores->pluck('info_id'));
+        // $historialOld = $this->historial->whereIn("info_id", $typeBefores->pluck('info_id'));
         // guardamos a los trabajadores nuevos
-        $historialNew = $this->historial->whereNotIn("id", $historialOld->pluck('id'));
+        $historialNew = $this->historial;
 
         if ($historialNew->count() > 0) {
             $this->configNewRemuneracion($cronograma, $historialNew);
         }
 
+        /*
         if ($historialOld->count() > 0) {
             $this->configOldRemuneracion($cronograma, $historialOld, $typeBefores);
-        }
+        }*/
 
     }
 

@@ -116,7 +116,7 @@ class GeneralCollection
         // total de los descuentos
         $cronograma->total_descuentos = $historial->sum('total_desct');
         // obtenemos el total neto de la planilla
-        $total_liquido = $historial->sum('total_neto');
+        $cronograma->total_liquido = $historial->sum('total_neto');
 
         
         // retornar datos necesarios para el cronograma
@@ -174,14 +174,20 @@ class GeneralCollection
 
     private function configAportaciones($aportaciones)
     {
+        // total
+        $total = 0;
         $this->type_aportaciones = TypeAportacion::where('activo', 1)->get();
         // configurar aportaciones
         foreach ($this->type_aportaciones as $aportacion) {
             // guardar monto
-            $aportacion->monto = $aportaciones
+            $monto = $aportaciones
                 ->where('type_aportacion_id', $aportacion->id)
                 ->sum('monto');
+            $aportacion->monto += round($monto, 2);
+            $total += $aportacion->monto;
         }
+        // total de aportaciones
+        $this->cronograma->total_aportaciones = $total;
     }
 
     /**

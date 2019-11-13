@@ -31,6 +31,7 @@
         :cronograma="{{ $cronograma }}"
         :type_reports="{{ $typeReports }}"
         :metas="{{ $metas }}"
+        :cargos="{{ $cargos }}"
     >
         <i class="fas fa-file-pdf"></i> Reportes
     </btn-reporte>

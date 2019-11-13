@@ -9,7 +9,7 @@
 <div class="row mt-3">
     
     <div class="col-md-12 mb-1">
-        <a href="/consulta" class="btn btn-danger"><i class="fas fa-arrow-left"></i> OTRA CONSULTA</a>
+        <a href="{{ url('/consulta') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> OTRA CONSULTA</a>
     </div>
 
     <div class="col-md-6">

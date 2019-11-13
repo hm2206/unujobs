@@ -26,7 +26,7 @@
                         <a class="nav-link" href="{{ route('bolsa.index') }}">Bolsa de Trabajo <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item active">
-                        <a class="nav-link" href="{{ '/consulta' }}">Consultas <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{{ url('consulta') }}">Consultas <span class="sr-only">(current)</span></a>
                     </li>
                     {{-- <li class="nav-item">
                         <a class="nav-link" href="#">{{ $year }}</a>

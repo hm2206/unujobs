@@ -20,9 +20,6 @@
             <i class="fas fa-file-pdf"></i> Generar Boletas
         </button>
 
-        <hr>
-
-        <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
     </div>
 </template>
 
@@ -33,7 +30,7 @@ import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['report', 'cronograma', 'metas'],
+    props: ['cronograma', 'metas'],
     components: {
         'historial': ReportHistorial
     },

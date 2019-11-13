@@ -39,9 +39,6 @@
             </div>
         </form>
 
-        <hr>
-
-        <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
     </div>
 </template>
 
@@ -65,6 +62,7 @@ export default {
     methods: {
         async generatePDF(e) {
 
+            e.preventDefault();
             printReport(`pdf/pago/${this.cronograma.id}?cuenta=${this.condicion}`, 'PAGO');
 
         }

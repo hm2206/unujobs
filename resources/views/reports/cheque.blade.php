@@ -19,7 +19,7 @@
             $num = 1;
         @endphp
         @forelse ($historial->chunk(23) as $page => $historial)
-            <div class="page-only pt-2 pr-3 uppercase">                
+            <div class="page-only pt-2 uppercase">                
                 <table class="text-negro">
                     <thead>
                         <tr>

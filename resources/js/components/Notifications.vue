@@ -50,6 +50,7 @@
 import { setInterval, setTimeout, clearTimeout } from 'timers';
 import notify from 'sweetalert';
 import push from './push';
+import { unujobs } from '../services/api';
 
 export default {
     components: {
@@ -73,7 +74,7 @@ export default {
     },
     methods: {
         getNotify(){
-            let api = axios.get('/user/unread');
+            let api = unujobs('get', '/user/unread');
             api.then(res => {
 
                 if (this.notifications.length < res.data.length) {
@@ -94,7 +95,7 @@ export default {
         },
         markAsRead(id, index) {
             this.notifications.splice(index, 1);
-            let api = axios.post(`/user/${id}/markasread`);
+            let api = unujobs('post', `/user/${id}/markasread`);
             api.then(res => {
                 this.notifications = res.data;
             }).catch(err => {
@@ -102,7 +103,7 @@ export default {
             });
         },
         countUnread() {
-            let api = axios.get('/user/unread/count');
+            let api = unujobs('get', '/user/unread/count');
             api.then(res => {
                 this.count = res.data;
             }).catch(err => {   

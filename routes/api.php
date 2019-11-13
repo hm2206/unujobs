@@ -222,6 +222,7 @@ Route::group(["prefix" => 'v1'], function() {
         Route::get("/planilla/{cronograma}/{meta}", "PdfController@planilla")->name('pdf.planilla');
         Route::get("/descuentos/{cronograma}", "PdfController@descuentos")->name('pdf.descuentos');
         Route::get("/descuento/{cronograma}/{type}", "PdfController@type_descuento")->name('pdf.type_descuento');
+        Route::get("/aportacion/{cronograma}/{type}", "PdfController@aportacion")->name('pdf.aportacion');
         Route::get("/afp/{cronograma}/{afp}", "PdfController@afp")->name('pdf.afp');
         Route::get("/relacion-personal/{cronograma}", "PdfController@relacion_personal")->name('pdf.relacion_personal');
         Route::get("/pago/{cronograma}", "PdfController@pago")->name('pdf.pago');

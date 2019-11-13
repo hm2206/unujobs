@@ -8,22 +8,16 @@
         </button>
 
         <hr>
-
-        <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
     </div>
 </template>
 
 <script>
 
-import ReportHistorial from './ReportHistorial';
 import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['report', 'cronograma'],
-    components: {
-        'historial': ReportHistorial
-    },
+    props: ['cronograma'],
     data() {
         return {
             loader: false

@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="{{ asset("/css/app.css") }}">
         <link rel="stylesheet" href="{{ asset("/css/pdf.css") }}">
         <link rel="stylesheet" href="{{ asset("/css/print/A4.css") }}" media="print">
-        <title>Reporte de descuentos del {{ $mes }} - {{ $cronograma->año }}</title>
+        <title>Reporte de aportacion {{ $type->descripcion }} del {{ $mes }} - {{ $cronograma->año }}</title>
     </head>
 
 
@@ -18,9 +18,9 @@
     @php
         $num = 1;
     @endphp
-    @forelse ($descuentos->chunk(58) as $descuentos)
-        <div class="pl-2 page-only uppercase">                
-            <table class="text-negro">
+    @forelse ($aportes->chunk(58) as $aportes)
+        <div class="page-only pt-2">                
+            <table class="text-negro w-100">
                 <thead>
                     <tr>
                         <th>
@@ -51,43 +51,43 @@
                 <b>MES DE: {{ $mes }} {{ $cronograma->año }}</b>
             </h5>
 
-            <table class="table mt-2 table-bordered table-sm text-negro uppercase">
-                <thead>
-                    <tr>
-                        <th class="py-0 font-11 text-center"><b>N°</b></th>
-                        <th class="py-0 font-11"><b class="pl-1">Nombre Completo</b></th>
-                        <th class="py-0 font-11 text-center"><b class="pl-1">N° de Documento</b></th>
-                        <th class="py-0 font-11 text-right"><b class="pr-1">{{ $type->descripcion }}</b></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($descuentos as $descuento)
-                        @php
-                            $work = $descuento->work;
-                        @endphp
+                <table class="table mt-2 table-bordered table-sm text-negro uppercase" width="100%">
+                    <thead>
                         <tr>
-                            <td class="py-0 text-center"><small class="font-11 pl-1">{{ $money->num($num++) }}</small></td>
-                            <td class="py-0"><small class="font-11 pl-1">{{ $work->nombre_completo }}</small></td>
-                            <td class="py-0 text-center"><small class="font-11">{{ $work->numero_de_documento }}</small></td>
-                            <td class="py-0 text-right">
-                                <small class="font-11 pr-1">{{ $money->parseTo(round($descuento->monto, 2)) }}</small>
-                            </td>
-                        </tr> 
-                    @empty
-                        <tr>
-                            <td colspan="4">No hay Registros</td>
+                            <th class="py-0 font-11 text-center" width="8%"><b>N°</b></th>
+                            <th class="py-0 font-11" width="17%"><b class="pl-1">Nombre Completo</b></th>
+                            <th class="py-0 font-11 text-center" width="15%"><b class="pl-1">N° de Documento</b></th>
+                            <th class="py-0 font-11 text-right" width="10%"><b class="pr-1">{{ $type->descripcion }}</b></th>
                         </tr>
-                    @endforelse
-                    <tr>
-                        <th class="py-0 text-right pr-1" colspan="4">
-                            <b class="font-10 pr-1">Total: S/. {{ $money->parseTo(round($descuentos->sum('monto'), 2)) }}</b>
-                        </th>
-                    </tr>
-                </tbody>
-            </table>
-
+                    </thead>
+                    <tbody>
+                        @forelse ($aportes as $aporte)
+                            @php
+                                $work = $aporte->work;
+                            @endphp
+                            <tr>
+                                <td class="py-0 text-center"><small class="font-11 pl-1">{{ $money->num($num++) }}</small></td>
+                                <td class="py-0"><small class="font-11 pl-1">{{ $work->nombre_completo }}</small></td>
+                                <td class="py-0 text-center"><small class="font-11">{{ $work->numero_de_documento }}</small></td>
+                                <td class="py-0 text-right">
+                                    <small class="font-11 pr-1">{{ $money->parseTo(round($aporte->monto, 2)) }}</small>
+                                </td>
+                            </tr> 
+                        @empty
+                            <tr>
+                                <td colspan="4">No hay Registros</td>
+                            </tr>
+                        @endforelse
+                        <tr>
+                            <th class="py-0 text-right pr-1" colspan="4">
+                                <b class="font-10 pr-1">Total: S/. {{ $money->parseTo(round($aportes->sum('monto'), 2)) }}</b>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+    
             @php
-                $cronograma->total += $descuentos->sum('monto');
+                $cronograma->total += $aportes->sum('monto');
             @endphp
 
             <table class="table table-sm table-bordered text-negro">

@@ -421,8 +421,6 @@ class CronogramaController extends Controller
             $cronograma->estado = $cronograma->estado ? 0 : 1;
             $cronograma->save();
             $message = $cronograma->estado ? 'activada' : 'desactivada';
-            
-            TurnOffPlanilla::dispatch($cronograma)->onQueue('high');
 
             return [
                 "status" => true,

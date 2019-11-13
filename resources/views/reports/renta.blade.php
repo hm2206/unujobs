@@ -16,7 +16,7 @@
     <body class="bg-white text-negro">
         
         @foreach ($pages as $page)
-                <div class="m-height-100 pt-2 page-only p-relative" style="min-height: 90vh;">
+                <div class="m-height-100 uppercase pt-2 page-only p-relative" style="min-height: 90vh;">
                             
                     <table>
                         <thead>

@@ -157,9 +157,9 @@ export default {
         'work-afectacion': WorkAfectacion,
         'work-remuneracion': WorkRemuneracion,
         'work-descuento': WorkDescuento,
+        'work-aportacion': WorkAportacion,
         'work-obligacion': WorkObligacion,
         'work-detalle': WorkDetalle,
-        'work-aportacion': WorkAportacion,
         'buscar-info': BuscarInfo,
     },
     props: [

@@ -19,7 +19,7 @@
         @endphp
    
         @foreach ($historial->chunk(40) as $page => $historial) 
-            <div class="pt-2 pr-3 page-only">
+            <div class="pt-2 page-only">
                 <table class="text-negro">
                     <thead>
                         <tr>
@@ -84,7 +84,7 @@
                                 @php
                                     $totales += $historial->sum('total_neto');
                                 @endphp
-                                <b class="font-12 text-center">Total S/. {{ $totales }}</b>
+                                <b class="font-12 text-center">Total S/. {{ $money->parseTo(round($totales, 2)) }}</b>
                             </th>
                         </tr>
                     </tbody>

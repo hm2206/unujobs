@@ -28,8 +28,6 @@ class ConfigAportes extends Seeder
 
     public function addAportacion()
     {
-        // obtener las aportaciones para procesar
-        $this->types = TypeAportacion::with('type_descuento')->get();
          // obtenemos a los trabajadores de la planilla actual que tengan configuración de aportación
          $this->historial = Historial::whereHas('info', function($i){
             $i->whereHas('type_aportaciones');
@@ -59,7 +57,7 @@ class ConfigAportes extends Seeder
                     "porcentaje" => $aportacion->porcentaje,
                     "minimo" => $aportacion->minimo,
                     "default" => $aportacion->default,
-                    "monto" => round($monto)
+                    "monto" => round($monto, 2)
                 ]);
             }
         }   

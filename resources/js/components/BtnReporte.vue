@@ -5,7 +5,7 @@
         </button>
 
         
-        <modal @close="show = false" col="col-md-11" :show="show" height="95vh" style="padding-top: 10px;">
+        <modal @close="show = false" col="col-md-12" :show="show" height="95vh" style="padding-top: 10px;">
             <template slot="header">
                 Reportes del {{ cronograma ? cronograma.mes : '' }} del {{ cronograma ? cronograma['año'] : '' }}
             </template>
@@ -13,7 +13,7 @@
                 <div class="card-body p-relative scroll-y">
                 
                     <ul class="nav nav-tabs">
-                        <li class="nav-item" v-for="(item, i) in items" :key="`item-${i}`">
+                        <li class="nav-item" v-for="(item, i) in type_reports" :key="`item-${i}`">
                             <a href="#" 
                                 :class="`nav-link ${item.active ? 'active' : ''}`"
                                 v-on:click="seleccionar($event, item)"
@@ -24,9 +24,9 @@
                     </ul>
 
                     <component :is="current" v-if="!loader"
-                        :report="report"
                         :cronograma="cronograma"
                         :metas="metas"
+                        :cargos="cargos"
                     >
                     </component>
 
@@ -69,6 +69,7 @@ import RptDescuento from './RptDescuento';
 import RptPlanilla from './RptPlanilla';
 import RptEjecutar from './RptEjecutar';
 import RptPersonal from './RptPersonal';
+import RptAporte from './RptAporte';
 import { setTimeout } from 'timers';
 
 export default {
@@ -79,42 +80,30 @@ export default {
         'rpt-pago': RptPago,
         'rpt-afp': RptAfpNet,
         'rpt-descuento': RptDescuento,
+        'rpt-aporte': RptAporte,
         'rpt-planilla': RptPlanilla,
         'rpt-ejecutar': RptEjecutar,
         'rpt-personal': RptPersonal,
     },
-    props: ["theme", 'cronograma', 'type_reports', 'metas'],
-    mounted() {
-
-        var componentes = [
-            'rpt-general', 'rpt-meta', 'rpt-boleta', 'rpt-pago',
-            'rpt-afp', 'rpt-descuento', 'rpt-planilla', 'rpt-ejecutar',
-            'rpt-personal'
-        ];
-
-        this.type_reports.filter((e, iter) => {
-            this.items.push({
-                id: e.id,
-                text: e.descripcion,
-                active: iter == 0 ? true : false,
-                component: componentes[iter],
-                btn: false,
-                body: e
-            });
-
-            if (iter == 0) {
-                this.report = e
-            }
-
-        });
-    },
+    props: ["theme", 'cronograma', 'metas', 'cargos'],
     data() {
         return {
             show: false,
             loader: false,
             current: 'rpt-general',
             items: [],
-            report: {},
+            type_reports: [
+                { id: 1, text: 'Report General', component: 'rpt-general', active: true},
+                { id: 2, text: 'Report. Meta', component: 'rpt-meta', active: false },
+                { id: 3, text: 'Boletas', component: 'rpt-boleta', active: false },
+                { id: 4, text: 'Cuentas y Cheques', component: 'rpt-pago', active: false },
+                { id: 5, text: 'AFP', component: 'rpt-afp', active: false },
+                { id: 6, text: 'Descuentos', component: 'rpt-descuento', active: false },
+                { id: 7, text: 'Aportaciones', component: 'rpt-aporte', active: false },
+                { id: 8, text: 'Planilla', component: 'rpt-planilla', active: false },
+                { id: 9, text: 'Ejec. Planilla', component: 'rpt-ejecutar', active: false },
+                { id: 10, text: 'Relación de Personal', component: 'rpt-personal', active: false },
+            ],
             send: false,
             btn: false
         }
@@ -124,7 +113,7 @@ export default {
             e.preventDefault();
             if (!this.send) {
                 this.loader = true;
-                await this.items.map((i) => {
+                await this.type_reports.map((i) => {
                     if (item.id == i.id) {
                         i.active = true;
                     }else {

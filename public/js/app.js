@@ -10203,9 +10203,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     'work-afectacion': _WorkAfectacion__WEBPACK_IMPORTED_MODULE_8__["default"],
     'work-remuneracion': _WorkRemuneracion__WEBPACK_IMPORTED_MODULE_4__["default"],
     'work-descuento': _WorkDescuento__WEBPACK_IMPORTED_MODULE_5__["default"],
+    'work-aportacion': _WorkAportacion__WEBPACK_IMPORTED_MODULE_9__["default"],
     'work-obligacion': _WorkObligacion__WEBPACK_IMPORTED_MODULE_6__["default"],
     'work-detalle': _WorkDetalle__WEBPACK_IMPORTED_MODULE_7__["default"],
-    'work-aportacion': _WorkAportacion__WEBPACK_IMPORTED_MODULE_9__["default"],
     'buscar-info': _BuscarInfo__WEBPACK_IMPORTED_MODULE_10__["default"]
   },
   props: ["theme", 'param', "historial", "nombre_completo", "paginate", "cronograma"],
@@ -11697,8 +11697,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RptPlanilla__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./RptPlanilla */ "./resources/js/components/RptPlanilla.vue");
 /* harmony import */ var _RptEjecutar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./RptEjecutar */ "./resources/js/components/RptEjecutar.vue");
 /* harmony import */ var _RptPersonal__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./RptPersonal */ "./resources/js/components/RptPersonal.vue");
-/* harmony import */ var timers__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! timers */ "./node_modules/timers-browserify/main.js");
-/* harmony import */ var timers__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(timers__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var _RptAporte__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./RptAporte */ "./resources/js/components/RptAporte.vue");
+/* harmony import */ var timers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! timers */ "./node_modules/timers-browserify/main.js");
+/* harmony import */ var timers__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(timers__WEBPACK_IMPORTED_MODULE_14__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -11774,6 +11775,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     'rpt-general': _RptGeneral__WEBPACK_IMPORTED_MODULE_4__["default"],
@@ -11782,37 +11784,69 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     'rpt-pago': _RptPago__WEBPACK_IMPORTED_MODULE_7__["default"],
     'rpt-afp': _RptAfpNet__WEBPACK_IMPORTED_MODULE_8__["default"],
     'rpt-descuento': _RptDescuento__WEBPACK_IMPORTED_MODULE_9__["default"],
+    'rpt-aporte': _RptAporte__WEBPACK_IMPORTED_MODULE_13__["default"],
     'rpt-planilla': _RptPlanilla__WEBPACK_IMPORTED_MODULE_10__["default"],
     'rpt-ejecutar': _RptEjecutar__WEBPACK_IMPORTED_MODULE_11__["default"],
     'rpt-personal': _RptPersonal__WEBPACK_IMPORTED_MODULE_12__["default"]
   },
-  props: ["theme", 'cronograma', 'type_reports', 'metas'],
-  mounted: function mounted() {
-    var _this = this;
-
-    var componentes = ['rpt-general', 'rpt-meta', 'rpt-boleta', 'rpt-pago', 'rpt-afp', 'rpt-descuento', 'rpt-planilla', 'rpt-ejecutar', 'rpt-personal'];
-    this.type_reports.filter(function (e, iter) {
-      _this.items.push({
-        id: e.id,
-        text: e.descripcion,
-        active: iter == 0 ? true : false,
-        component: componentes[iter],
-        btn: false,
-        body: e
-      });
-
-      if (iter == 0) {
-        _this.report = e;
-      }
-    });
-  },
+  props: ["theme", 'cronograma', 'metas', 'cargos'],
   data: function data() {
     return {
       show: false,
       loader: false,
       current: 'rpt-general',
       items: [],
-      report: {},
+      type_reports: [{
+        id: 1,
+        text: 'Report General',
+        component: 'rpt-general',
+        active: true
+      }, {
+        id: 2,
+        text: 'Report. Meta',
+        component: 'rpt-meta',
+        active: false
+      }, {
+        id: 3,
+        text: 'Boletas',
+        component: 'rpt-boleta',
+        active: false
+      }, {
+        id: 4,
+        text: 'Cuentas y Cheques',
+        component: 'rpt-pago',
+        active: false
+      }, {
+        id: 5,
+        text: 'AFP',
+        component: 'rpt-afp',
+        active: false
+      }, {
+        id: 6,
+        text: 'Descuentos',
+        component: 'rpt-descuento',
+        active: false
+      }, {
+        id: 7,
+        text: 'Aportaciones',
+        component: 'rpt-aporte',
+        active: false
+      }, {
+        id: 8,
+        text: 'Planilla',
+        component: 'rpt-planilla',
+        active: false
+      }, {
+        id: 9,
+        text: 'Ejec. Planilla',
+        component: 'rpt-ejecutar',
+        active: false
+      }, {
+        id: 10,
+        text: 'Relación de Personal',
+        component: 'rpt-personal',
+        active: false
+      }],
       send: false,
       btn: false
     };
@@ -11835,7 +11869,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 this.loader = true;
                 _context.next = 5;
-                return this.items.map(function (i) {
+                return this.type_reports.map(function (i) {
                   if (item.id == i.id) {
                     i.active = true;
                   } else {
@@ -14986,6 +15020,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
 /* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _push__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./push */ "./resources/js/components/push.vue");
+/* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/api */ "./resources/js/services/api.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -15043,6 +15078,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     push: _push__WEBPACK_IMPORTED_MODULE_3__["default"]
@@ -15095,7 +15131,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getNotify: function getNotify() {
       var _this = this;
 
-      var api = axios.get('/user/unread');
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_4__["unujobs"])('get', '/user/unread');
       api.then(function (res) {
         if (_this.notifications.length < res.data.length) {
           var that = _this;
@@ -15118,7 +15154,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this2 = this;
 
       this.notifications.splice(index, 1);
-      var api = axios.post("/user/".concat(id, "/markasread"));
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_4__["unujobs"])('post', "/user/".concat(id, "/markasread"));
       api.then(function (res) {
         _this2.notifications = res.data;
       })["catch"](function (err) {
@@ -15128,7 +15164,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     countUnread: function countUnread() {
       var _this3 = this;
 
-      var api = axios.get('/user/unread/count');
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_4__["unujobs"])('get', '/user/unread/count');
       api.then(function (res) {
         _this3.count = res.data;
       })["catch"](function (err) {
@@ -15359,15 +15395,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma'],
+  props: ['cronograma'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
@@ -15396,36 +15428,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
       _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var api;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.cronograma.id, "/afp-net"), {
-                  type_report_id: this.report.id
-                });
-                _context.next = 4;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/afp/".concat(this.cronograma.id, "/").concat(this.afp_id), 'AFP NET');
 
-              case 4:
-                this.loader = false;
-
-              case 5:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -15463,6 +15472,140 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return generateAfp;
+    }()
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RptAporte.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RptAporte.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ReportHistorial */ "./resources/js/components/ReportHistorial.vue");
+/* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/api */ "./resources/js/services/api.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_3__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['report', 'cronograma'],
+  components: {
+    'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  mounted: function mounted() {
+    this.getDescuentos();
+  },
+  data: function data() {
+    return {
+      loader: false,
+      tmp_types: [],
+      aporte_id: ''
+    };
+  },
+  methods: {
+    generatePDF: function () {
+      var _generatePDF = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                e.preventDefault();
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/aportacion/".concat(this.cronograma.id, "/").concat(this.aporte_id), 'Descuento');
+
+              case 2:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function generatePDF(_x) {
+        return _generatePDF.apply(this, arguments);
+      }
+
+      return generatePDF;
+    }(),
+    getDescuentos: function () {
+      var _getDescuentos = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var _this = this;
+
+        var api;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("get", '/type_aportacion');
+                this.loader = true;
+                _context2.next = 4;
+                return api.then(function (res) {
+                  _this.tmp_types = res.data;
+                })["catch"](function (err) {
+                  console.log("error: no se pudó obtener los tipos de descuentos");
+                });
+
+              case 4:
+                this.loader = false;
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function getDescuentos() {
+        return _getDescuentos.apply(this, arguments);
+      }
+
+      return getDescuentos;
     }()
   }
 });
@@ -15515,14 +15658,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma', 'metas'],
+  props: ['cronograma', 'metas'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
@@ -15635,15 +15775,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -15666,16 +15797,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     generatePDF: function () {
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(e) {
         var ruta;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                e.preventDefault();
                 ruta = this.descuento_id ? "pdf/descuento/".concat(this.cronograma.id, "/").concat(this.descuento_id) : "pdf/descuentos/".concat(this.cronograma.id);
                 Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])(ruta, 'Descuento');
 
-              case 2:
+              case 3:
               case "end":
                 return _context.stop();
             }
@@ -15683,7 +15815,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee, this);
       }));
 
-      function generatePDF() {
+      function generatePDF(_x) {
         return _generatePDF.apply(this, arguments);
       }
 
@@ -15778,17 +15910,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -15800,44 +15921,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       loader: false,
-      meta_id: ''
+      meta_id: '',
+      ejecucion: ""
     };
   },
   methods: {
     generatePDF: function () {
       var _generatePDF = _asyncToGenerator(
       /*#__PURE__*/
-      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee(url) {
-        var api;
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                this.loader = true;
-                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["unujobs"])("post", "/cronograma/".concat(this.param, "/").concat(url), {
-                  type_report_id: this.report.id
-                });
-                _context.next = 4;
-                return api.then(function (res) {
-                  var _res$data = res.data,
-                      status = _res$data.status,
-                      message = _res$data.message;
-                  var icon = status ? 'success' : 'error';
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: icon,
-                    text: message
-                  });
-                })["catch"](function (err) {
-                  sweetalert__WEBPACK_IMPORTED_MODULE_3___default()({
-                    icon: 'error',
-                    text: 'Algo salió mal'
-                  });
-                });
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/".concat(this.ejecucion.url, "/").concat(this.cronograma.id, "?neto=").concat(this.ejecucion.neto));
 
-              case 4:
-                this.loader = false;
-
-              case 5:
+              case 1:
               case "end":
                 return _context.stop();
             }
@@ -15845,7 +15944,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee, this);
       }));
 
-      function generatePDF(_x) {
+      function generatePDF() {
         return _generatePDF.apply(this, arguments);
       }
 
@@ -15872,10 +15971,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ReportHistorial */ "./resources/js/components/ReportHistorial.vue");
-/* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/api */ "./resources/js/services/api.js");
-/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
-/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/api */ "./resources/js/services/api.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
+/* harmony import */ var sweetalert__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert__WEBPACK_IMPORTED_MODULE_2__);
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -15895,16 +15993,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma'],
-  components: {
-    'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
-  },
+  props: ['cronograma'],
   data: function data() {
     return {
       loader: false
@@ -15919,7 +16011,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/general-v1/".concat(this.cronograma.id), 'GENERAL-v1');
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["printReport"])("pdf/general-v1/".concat(this.cronograma.id), 'GENERAL-v1');
 
               case 1:
               case "end":
@@ -15986,14 +16078,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma', 'metas'],
+  props: ['cronograma', 'metas'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
@@ -16124,9 +16213,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
 
 
 
@@ -16150,9 +16236,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                e.preventDefault();
                 Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/pago/".concat(this.cronograma.id, "?cuenta=").concat(this.condicion), 'PAGO');
 
-              case 1:
+              case 2:
               case "end":
                 return _context.stop();
             }
@@ -16216,18 +16303,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['report', 'cronograma'],
+  props: ['report', 'cronograma', 'cargos'],
   components: {
     'historial': _ReportHistorial__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
       loader: false,
-      condicion: 0
+      condicion: 0,
+      cargo_id: ""
     };
   },
   methods: {
@@ -16239,9 +16331,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/relacion-personal/".concat(this.cronograma.id, "?negativo=").concat(this.condicion), 'RELACION PERSONAL');
+                e.preventDefault();
+                Object(_services_api__WEBPACK_IMPORTED_MODULE_2__["printReport"])("pdf/relacion-personal/".concat(this.cronograma.id, "?negativo=").concat(this.condicion, "&cargo_id=").concat(this.cargo_id), 'RELACION PERSONAL');
 
-              case 1:
+              case 2:
               case "end":
                 return _context.stop();
             }
@@ -16281,9 +16374,6 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-//
-//
-//
 //
 //
 //
@@ -17488,7 +17578,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getPlanillas: function getPlanillas() {
       var _this = this;
 
-      var api = axios.get('/api/v1/planilla');
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', '/planilla');
       this.loading = true;
       api.then(function (res) {
         var data = res.data;
@@ -17510,7 +17600,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getPlanillaID: function getPlanillaID(id) {
       var _this2 = this;
 
-      var api = axios.get("/api/v1/planilla/".concat(id));
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', "/planilla/".concat(id));
       this.loading = true;
       api.then(
       /*#__PURE__*/
@@ -17589,7 +17679,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context5.prev = _context5.next) {
               case 0:
                 // realizar peticion a la api
-                api = axios.get("/api/v1/cargo/".concat(id));
+                api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])("/cargo/".concat(id));
                 this.loading = true;
                 api.then(function (res) {
                   var data = res.data;
@@ -17616,7 +17706,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getSindicatos: function getSindicatos() {
       var _this4 = this;
 
-      var api = axios.get('/api/v1/sindicato');
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', '/sindicato');
       this.loading = true;
       api.then(function (res) {
         _this4.sindicatos = res.data;
@@ -17628,7 +17718,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     getMetas: function getMetas() {
       var _this5 = this;
 
-      var api = axios.get('/api/v1/meta');
+      var api = Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["unujobs"])('get', '/meta');
       this.loading = true;
       api.then(function (res) {
         var data = res.data;
@@ -17957,6 +18047,11 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
+//
+//
+//
+//
 //
 //
 //
@@ -74239,7 +74334,7 @@ var render = function() {
         "modal",
         {
           staticStyle: { "padding-top": "10px" },
-          attrs: { col: "col-md-11", show: _vm.show, height: "95vh" },
+          attrs: { col: "col-md-12", show: _vm.show, height: "95vh" },
           on: {
             close: function($event) {
               _vm.show = false
@@ -74265,7 +74360,7 @@ var render = function() {
                 _c(
                   "ul",
                   { staticClass: "nav nav-tabs" },
-                  _vm._l(_vm.items, function(item, i) {
+                  _vm._l(_vm.type_reports, function(item, i) {
                     return _c(
                       "li",
                       { key: "item-" + i, staticClass: "nav-item" },
@@ -74299,9 +74394,9 @@ var render = function() {
                   ? _c(_vm.current, {
                       tag: "component",
                       attrs: {
-                        report: _vm.report,
                         cronograma: _vm.cronograma,
-                        metas: _vm.metas
+                        metas: _vm.metas,
+                        cargos: _vm.cargos
                       }
                     })
                   : _vm._e(),
@@ -78224,12 +78319,118 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card-body" }, [
+    _c("form", { staticClass: "row", on: { submit: _vm.generateAfp } }, [
+      _c("div", { staticClass: "col-md-5" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.afp_id,
+                expression: "afp_id"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { name: "afp_id" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.afp_id = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c("option", { attrs: { value: "" } }, [_vm._v("Selecionar AFP")]),
+            _vm._v(" "),
+            _vm._l(_vm.afps, function(afp, af) {
+              return _c(
+                "option",
+                { key: "afp-item-" + af, domProps: { value: afp.id } },
+                [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(afp.nombre) +
+                      "\n                "
+                  )
+                ]
+              )
+            })
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-3" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-danger",
+            attrs: { disabled: _vm.afp_id ? false : true }
+          },
+          [
+            _c("i", { staticClass: "fas fa-file-pdf" }),
+            _vm._v("\n                Generar Reporte de AFP\n            ")
+          ]
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    !_vm.loader
+      ? _c(
+          "button",
+          { staticClass: "btn btn-success", on: { click: _vm.generatePDF } },
+          [
+            _c("i", { staticClass: "fas fa-file-excel" }),
+            _vm._v(" Generar Reporte para el AFP NET\n    ")
+          ]
+        )
+      : _vm._e()
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RptAporte.vue?vue&type=template&id=fa551104&":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/RptAporte.vue?vue&type=template&id=fa551104& ***!
+  \************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
   return _c(
-    "div",
-    { staticClass: "card-body" },
+    "form",
+    { staticClass: "card-body", attrs: { id: "form-rpt-descuento" } },
     [
-      _c("form", { staticClass: "row", on: { submit: _vm.generateAfp } }, [
-        _c("div", { staticClass: "col-md-5" }, [
+      _c("div", { staticClass: "row mb-4 align-items-center" }, [
+        _c("div", { staticClass: "col-md-4" }, [
           _c(
             "select",
             {
@@ -78237,12 +78438,12 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.afp_id,
-                  expression: "afp_id"
+                  value: _vm.aporte_id,
+                  expression: "aporte_id"
                 }
               ],
               staticClass: "form-control",
-              attrs: { name: "afp_id" },
+              attrs: { name: "type_descuento" },
               on: {
                 change: function($event) {
                   var $$selectedVal = Array.prototype.filter
@@ -78253,7 +78454,7 @@ var render = function() {
                       var val = "_value" in o ? o._value : o.value
                       return val
                     })
-                  _vm.afp_id = $event.target.multiple
+                  _vm.aporte_id = $event.target.multiple
                     ? $$selectedVal
                     : $$selectedVal[0]
                 }
@@ -78261,17 +78462,17 @@ var render = function() {
             },
             [
               _c("option", { attrs: { value: "" } }, [
-                _vm._v("Selecionar AFP")
+                _vm._v("Selecionar aportación empleador")
               ]),
               _vm._v(" "),
-              _vm._l(_vm.afps, function(afp, af) {
+              _vm._l(_vm.tmp_types, function(type, ty) {
                 return _c(
                   "option",
-                  { key: "afp-item-" + af, domProps: { value: afp.id } },
+                  { key: "type-aportes-" + ty, domProps: { value: type.id } },
                   [
                     _vm._v(
                       "\n                    " +
-                        _vm._s(afp.nombre) +
+                        _vm._s(type.descripcion) +
                         "\n                "
                     )
                   ]
@@ -78282,45 +78483,22 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-3" }, [
+        _c("div", { staticClass: "col-xs" }, [
           _c(
             "button",
             {
               staticClass: "btn btn-danger",
-              attrs: { disabled: _vm.afp_id ? false : true }
+              attrs: { disabled: !_vm.aporte_id },
+              on: { click: _vm.generatePDF }
             },
             [
               _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v("\n                Generar Reporte de AFP\n            ")
+              _vm._v(" Generar Reporte de Aportación\n            ")
             ]
           )
         ])
-      ]),
-      _vm._v(" "),
-      _c("br"),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
-            "button",
-            { staticClass: "btn btn-primary", on: { click: _vm.generatePDF } },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Generar Reporte para el AFP NET\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
+      ])
+    ]
   )
 }
 var staticRenderFns = []
@@ -78345,84 +78523,71 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-5" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.meta_id,
-                  expression: "meta_id"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { name: "meta_id" },
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.meta_id = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                }
+  return _c("div", { staticClass: "card-body" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-5" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.meta_id,
+                expression: "meta_id"
               }
-            },
-            _vm._l(_vm.metas, function(meta, me) {
-              return _c(
-                "option",
-                { key: "metas-" + me, domProps: { value: meta.id } },
-                [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(meta.metaID) +
-                      ": " +
-                      _vm._s(meta.meta) +
-                      "\n                "
-                  )
-                ]
-              )
-            }),
-            0
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
-            "button",
-            { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Generar Boletas\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
-  )
+            ],
+            staticClass: "form-control",
+            attrs: { name: "meta_id" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.meta_id = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          _vm._l(_vm.metas, function(meta, me) {
+            return _c(
+              "option",
+              { key: "metas-" + me, domProps: { value: meta.id } },
+              [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(meta.metaID) +
+                    ": " +
+                    _vm._s(meta.meta) +
+                    "\n                "
+                )
+              ]
+            )
+          }),
+          0
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    !_vm.loader
+      ? _c(
+          "button",
+          { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
+          [
+            _c("i", { staticClass: "fas fa-file-pdf" }),
+            _vm._v(" Generar Boletas\n    ")
+          ]
+        )
+      : _vm._e()
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -78507,44 +78672,21 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(0)
-      ]),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
+        _c("div", { staticClass: "col-xs" }, [
+          _c(
             "button",
             { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
             [
               _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Generar Reporte de Descuentos\n    ")
+              _vm._v(" Generar Reporte de Descuentos\n            ")
             ]
           )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
+        ])
+      ])
+    ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-3" }, [
-      _c("input", { attrs: { type: "checkbox", name: "detalle", value: "1" } }),
-      _vm._v(" Detalles\n        ")
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -78566,92 +78708,86 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      !_vm.loader
-        ? _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-danger btn-sm",
-              on: {
-                click: function($event) {
-                  return _vm.generatePDF("descuento-bruto")
-                }
+  return _c("div", { staticClass: "card-body" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-5" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.ejecucion,
+                expression: "ejecucion"
               }
-            },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Ejecutar Descuento Bruto\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
-            "button",
-            {
-              staticClass: "btn btn-outline-danger btn-sm",
-              on: {
-                click: function($event) {
-                  return _vm.generatePDF("descuento-bruto-detallado")
-                }
+            ],
+            staticClass: "form-control",
+            attrs: { id: "" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.ejecucion = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
               }
-            },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Ejecutar Descuento Detallado Bruto\n    ")
-            ]
-          )
-        : _vm._e(),
+            }
+          },
+          [
+            _c("option", { attrs: { value: "" } }, [
+              _vm._v("Seleccionar ejecución")
+            ]),
+            _vm._v(" "),
+            _c(
+              "option",
+              { domProps: { value: { url: "ejecucion", neto: "0" } } },
+              [_vm._v("Ejecución Bruta")]
+            ),
+            _vm._v(" "),
+            _c(
+              "option",
+              { domProps: { value: { url: "ejecucion-detalle", neto: "0" } } },
+              [_vm._v("Ejecución Bruta Detallada")]
+            ),
+            _vm._v(" "),
+            _c(
+              "option",
+              { domProps: { value: { url: "ejecucion", neto: "1" } } },
+              [_vm._v("Ejecución Neta")]
+            ),
+            _vm._v(" "),
+            _c(
+              "option",
+              { domProps: { value: { url: "ejecucion-detalle", neto: "1" } } },
+              [_vm._v("Ejecución Neta Detallada")]
+            )
+          ]
+        )
+      ]),
       _vm._v(" "),
       !_vm.loader
         ? _c(
             "button",
             {
               staticClass: "btn btn-danger btn-sm",
-              on: {
-                click: function($event) {
-                  return _vm.generatePDF("descuento-neto")
-                }
-              }
+              attrs: { disabled: !_vm.ejecucion.url },
+              on: { click: _vm.generatePDF }
             },
             [
               _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Ejecutar Descuento Neto\n    ")
+              _vm._v(" Ver Reporte\n        ")
             ]
           )
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
-            "button",
-            {
-              staticClass: "btn btn-danger btn-sm",
-              on: {
-                click: function($event) {
-                  return _vm.generatePDF("descuento-neto-detallado")
-                }
-              }
-            },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Ejecutar Descuento Detallado Neto\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
         : _vm._e()
-    ],
-    1
-  )
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -78675,31 +78811,20 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      !_vm.loader
-        ? _c(
-            "button",
-            { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Generar Reporte\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
-  )
+  return _c("div", { staticClass: "card-body" }, [
+    !_vm.loader
+      ? _c(
+          "button",
+          { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
+          [
+            _c("i", { staticClass: "fas fa-file-pdf" }),
+            _vm._v(" Generar Reporte\n    ")
+          ]
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c("hr")
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -78723,84 +78848,71 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-5" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.meta_id,
-                  expression: "meta_id"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { name: "meta_id" },
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.meta_id = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                }
+  return _c("div", { staticClass: "card-body" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-5" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.meta_id,
+                expression: "meta_id"
               }
-            },
-            _vm._l(_vm.metas, function(meta, me) {
-              return _c(
-                "option",
-                { key: "metas-" + me, domProps: { value: meta.id } },
-                [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(meta.metaID) +
-                      ": " +
-                      _vm._s(meta.meta) +
-                      "\n                "
-                  )
-                ]
-              )
-            }),
-            0
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
-            "button",
-            { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Generar Reporte Meta x Meta\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
-  )
+            ],
+            staticClass: "form-control",
+            attrs: { name: "meta_id" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.meta_id = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          _vm._l(_vm.metas, function(meta, me) {
+            return _c(
+              "option",
+              { key: "metas-" + me, domProps: { value: meta.id } },
+              [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(meta.metaID) +
+                    ": " +
+                    _vm._s(meta.meta) +
+                    "\n                "
+                )
+              ]
+            )
+          }),
+          0
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    !_vm.loader
+      ? _c(
+          "button",
+          { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
+          [
+            _c("i", { staticClass: "fas fa-file-pdf" }),
+            _vm._v(" Generar Reporte Meta x Meta\n    ")
+          ]
+        )
+      : _vm._e()
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -78824,116 +78936,103 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      _c(
-        "form",
-        {
-          staticClass: "row justify-content-center",
-          attrs: { action: "", id: "register-pagos" },
-          on: { submit: _vm.generatePDF }
-        },
-        [
-          _c("div", { staticClass: "col-md-5" }, [
-            _c(
-              "select",
-              {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.condicion,
-                    expression: "condicion"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: { name: "condicion" },
-                on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.condicion = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  }
+  return _c("div", { staticClass: "card-body" }, [
+    _c(
+      "form",
+      {
+        staticClass: "row justify-content-center",
+        attrs: { action: "", id: "register-pagos" },
+        on: { submit: _vm.generatePDF }
+      },
+      [
+        _c("div", { staticClass: "col-md-5" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.condicion,
+                  expression: "condicion"
                 }
-              },
-              [
-                _c("option", { attrs: { value: "0", selected: "" } }, [
-                  _vm._v("Cheque")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "1" } }, [_vm._v("Cuenta")])
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-md-12 mt-5" }, [
-            _c("div", { staticClass: "row justify-content-center" }, [
-              !_vm.loader
-                ? _c("div", { staticClass: "col-xs" }, [_vm._m(0)])
-                : _c("div", { staticClass: "w-100 text-center" }, [
-                    _c("div", { staticClass: "spinner-border text-primary" })
-                  ])
+              ],
+              staticClass: "form-control",
+              attrs: { name: "condicion" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.condicion = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            [
+              _c("option", { attrs: { value: "0", selected: "" } }, [
+                _vm._v("Cheque")
+              ]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "1" } }, [_vm._v("Cuenta")])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-md-12 mt-5" }, [
+          _c("div", { staticClass: "row justify-content-center" }, [
+            !_vm.loader
+              ? _c("div", { staticClass: "col-xs" }, [_vm._m(0)])
+              : _c("div", { staticClass: "w-100 text-center" }, [
+                  _c("div", { staticClass: "spinner-border text-primary" })
+                ])
+          ])
+        ]),
+        _vm._v(" "),
+        !_vm.loader
+          ? _c("div", { staticClass: "w-100 text-center" }, [
+              _c("hr"),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-dark",
+                  attrs: {
+                    href: "/api/v1/file/" + _vm.cronograma.id,
+                    target: "__blank"
+                  }
+                },
+                [
+                  _c("i", { staticClass: "fas fa-file-pdf" }),
+                  _vm._v(" Generar txt de las cuentas \n            ")
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-dark",
+                  attrs: {
+                    href: "/api/v1/file/judicial/" + _vm.cronograma.id,
+                    target: "__blank"
+                  }
+                },
+                [
+                  _c("i", { staticClass: "fas fa-file-pdf" }),
+                  _vm._v(" Generar txt Judiciales \n            ")
+                ]
+              )
             ])
-          ]),
-          _vm._v(" "),
-          !_vm.loader
-            ? _c("div", { staticClass: "w-100 text-center" }, [
-                _c("hr"),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    staticClass: "btn btn-dark",
-                    attrs: {
-                      href: "/api/v1/file/" + _vm.cronograma.id,
-                      target: "__blank"
-                    }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-file-pdf" }),
-                    _vm._v(" Generar txt de las cuentas \n            ")
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    staticClass: "btn btn-dark",
-                    attrs: {
-                      href: "/api/v1/file/judicial/" + _vm.cronograma.id,
-                      target: "__blank"
-                    }
-                  },
-                  [
-                    _c("i", { staticClass: "fas fa-file-pdf" }),
-                    _vm._v(" Generar txt Judiciales \n            ")
-                  ]
-                )
-              ])
-            : _vm._e()
-        ]
-      ),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
-  )
+          : _vm._e()
+      ]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -78967,73 +79066,109 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      _c("form", { staticClass: "row", on: { submit: _vm.generatePDF } }, [
-        _c("div", { staticClass: "col-md-5" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.condicion,
-                  expression: "condicion"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { name: "condicion" },
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.condicion = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                }
+  return _c("div", { staticClass: "card-body" }, [
+    _c("form", { staticClass: "row", on: { submit: _vm.generatePDF } }, [
+      _c("div", { staticClass: "col-md-5" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.condicion,
+                expression: "condicion"
               }
-            },
-            [
-              _c("option", { attrs: { value: "0" } }, [_vm._v("Todos")]),
-              _vm._v(" "),
-              _c("option", { attrs: { value: "1" } }, [
-                _vm._v("Saldos Negativos")
-              ])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-3" }, [
-          _c(
-            "button",
-            { staticClass: "btn btn-danger", attrs: { disabled: _vm.loader } },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v("\n                Generar Reporte PDF\n            ")
-            ]
-          )
-        ])
+            ],
+            staticClass: "form-control",
+            attrs: { name: "condicion" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.condicion = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c("option", { attrs: { value: "0" } }, [
+              _vm._v("Todos los saldos")
+            ]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "1" } }, [
+              _vm._v("Saldos Negativos")
+            ])
+          ]
+        )
       ]),
       _vm._v(" "),
-      _c("hr"),
+      _c("div", { staticClass: "col-md-3" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.cargo_id,
+                expression: "cargo_id"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { name: "condicion" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.cargo_id = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c("option", { attrs: { value: "" } }, [
+              _vm._v("Todos los cargos")
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.cargos, function(cargo) {
+              return _c(
+                "option",
+                { key: cargo.id, domProps: { value: cargo.id } },
+                [_vm._v(_vm._s(cargo.descripcion))]
+              )
+            })
+          ],
+          2
+        )
+      ]),
       _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
-  )
+      _c("div", { staticClass: "col-xs" }, [
+        _c(
+          "button",
+          { staticClass: "btn btn-danger", attrs: { disabled: _vm.loader } },
+          [
+            _c("i", { staticClass: "fas fa-file-pdf" }),
+            _vm._v("\n                Generar Reporte PDF\n            ")
+          ]
+        )
+      ])
+    ])
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -79057,84 +79192,71 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "card-body" },
-    [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-5" }, [
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.meta_id,
-                  expression: "meta_id"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { name: "meta_id" },
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.meta_id = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                }
+  return _c("div", { staticClass: "card-body" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-5" }, [
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.meta_id,
+                expression: "meta_id"
               }
-            },
-            _vm._l(_vm.metas, function(meta, me) {
-              return _c(
-                "option",
-                { key: "metas-" + me, domProps: { value: meta.id } },
-                [
-                  _vm._v(
-                    "\n                    " +
-                      _vm._s(meta.metaID) +
-                      ": " +
-                      _vm._s(meta.meta) +
-                      "\n                "
-                  )
-                ]
-              )
-            }),
-            0
-          )
-        ])
-      ]),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c(
-            "button",
-            { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
-            [
-              _c("i", { staticClass: "fas fa-file-pdf" }),
-              _vm._v(" Generar Planilla\n    ")
-            ]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("hr"),
-      _vm._v(" "),
-      !_vm.loader
-        ? _c("historial", {
-            attrs: { param: _vm.cronograma.id, type: _vm.report.id }
-          })
-        : _vm._e()
-    ],
-    1
-  )
+            ],
+            staticClass: "form-control",
+            attrs: { name: "meta_id" },
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.meta_id = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          _vm._l(_vm.metas, function(meta, me) {
+            return _c(
+              "option",
+              { key: "metas-" + me, domProps: { value: meta.id } },
+              [
+                _vm._v(
+                  "\n                    " +
+                    _vm._s(meta.metaID) +
+                    ": " +
+                    _vm._s(meta.meta) +
+                    "\n                "
+                )
+              ]
+            )
+          }),
+          0
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("hr"),
+    _vm._v(" "),
+    !_vm.loader
+      ? _c(
+          "button",
+          { staticClass: "btn btn-danger", on: { click: _vm.generatePDF } },
+          [
+            _c("i", { staticClass: "fas fa-file-pdf" }),
+            _vm._v(" Generar Planilla\n    ")
+          ]
+        )
+      : _vm._e()
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -81158,35 +81280,60 @@ var render = function() {
           _vm._l(_vm.aportaciones, function(aportacion) {
             return _c(
               "div",
-              { key: "aporte-" + aportacion.id, staticClass: "col-md-3" },
+              { key: "aporte-" + aportacion.id, staticClass: "col-md-6" },
               [
-                _c("span", { staticClass: "btn btn-dark" }, [
-                  _vm._v(
-                    _vm._s(
-                      aportacion.type_aportacion
-                        ? aportacion.type_aportacion.descripcion
-                        : ""
-                    ) + "\n                        "
-                  ),
-                  _c("i", { staticClass: "fas fa-arrow-right text-warning" }),
-                  _vm._v(" "),
-                  _c("b", { staticClass: "btn btn-sm btn-warning text-dark" }, [
-                    _c("b", [_vm._v("S/. " + _vm._s(aportacion.monto))])
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-xs" }, [
+                    _vm._v(
+                      "\n                            " +
+                        _vm._s(
+                          aportacion.type_aportacion
+                            ? aportacion.type_aportacion.descripcion
+                            : ""
+                        ) +
+                        "\n                        "
+                    )
                   ]),
                   _vm._v(" "),
-                  _c(
-                    "span",
-                    {
-                      staticClass: "btn btn-circle btn-sm btn-danger",
-                      staticStyle: { cursor: "pointer" },
+                  _c("div", { staticClass: "col-md-4" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: aportacion.monto,
+                          expression: "aportacion.monto"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "text", disabled: "" },
+                      domProps: { value: aportacion.monto },
                       on: {
-                        click: function($event) {
-                          return _vm.leave(aportacion.id)
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(aportacion, "monto", $event.target.value)
                         }
                       }
-                    },
-                    [_c("i", { staticClass: "fas fa-trash" })]
-                  )
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-xs" }, [
+                    _c(
+                      "span",
+                      {
+                        staticClass: "btn btn-circle btn-sm btn-danger",
+                        staticStyle: { cursor: "pointer" },
+                        on: {
+                          click: function($event) {
+                            return _vm.leave(aportacion.id)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-trash" })]
+                    )
+                  ])
                 ])
               ]
             )
@@ -99948,6 +100095,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAfpNet_vue_vue_type_template_id_d236af26___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAfpNet_vue_vue_type_template_id_d236af26___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/RptAporte.vue":
+/*!***********************************************!*\
+  !*** ./resources/js/components/RptAporte.vue ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _RptAporte_vue_vue_type_template_id_fa551104___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./RptAporte.vue?vue&type=template&id=fa551104& */ "./resources/js/components/RptAporte.vue?vue&type=template&id=fa551104&");
+/* harmony import */ var _RptAporte_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./RptAporte.vue?vue&type=script&lang=js& */ "./resources/js/components/RptAporte.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _RptAporte_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _RptAporte_vue_vue_type_template_id_fa551104___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _RptAporte_vue_vue_type_template_id_fa551104___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/RptAporte.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/RptAporte.vue?vue&type=script&lang=js&":
+/*!************************************************************************!*\
+  !*** ./resources/js/components/RptAporte.vue?vue&type=script&lang=js& ***!
+  \************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAporte_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./RptAporte.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RptAporte.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAporte_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/RptAporte.vue?vue&type=template&id=fa551104&":
+/*!******************************************************************************!*\
+  !*** ./resources/js/components/RptAporte.vue?vue&type=template&id=fa551104& ***!
+  \******************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAporte_vue_vue_type_template_id_fa551104___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./RptAporte.vue?vue&type=template&id=fa551104& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/RptAporte.vue?vue&type=template&id=fa551104&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAporte_vue_vue_type_template_id_fa551104___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_RptAporte_vue_vue_type_template_id_fa551104___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

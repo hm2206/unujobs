@@ -20,6 +20,8 @@ use App\Collections\GeneralCollection;
 use App\Collections\PlanillaCollection;
 use App\Collections\EjecucionCollection;
 use App\Collections\PersonalCollection;
+use App\Models\Cargo;
+use App\Models\TypeAportacion;
 
 class PdfController extends Controller
 {
@@ -64,6 +66,7 @@ class PdfController extends Controller
         $boleta->setRemuneraciones($remuneraciones);
         $boleta->setDescuentos($descuentos->where('base', 0));
         $boleta->setAportaciones($descuentos->where('base', 1));
+        $boleta->setMes($cronograma->mes);
         $boleta->get($historial);
         return $boleta->view();
     }
@@ -157,12 +160,12 @@ class PdfController extends Controller
      * @param [type] $cronogramaID
      * @return void
      */
-    public function descuentos($cronogramaID)
+    public function descuentos($id)
     {
-        $cronograma = Cronograma::findOrFail($cronogramaID);
+        $cronograma = Cronograma::findOrFail($id);
         // obtener el historial de descuentos
         $historial = Historial::with('descuentos', 'work:works.id,nombre_completo,numero_de_documento')
-            ->where('cronograma_id', $cronogramaID)
+            ->where('cronograma_id', $id)
             ->get();
         // obtener mes
         $mes = Helpers::mes($cronograma->mes);
@@ -175,6 +178,37 @@ class PdfController extends Controller
         $cronograma->total_neto = 0;
         // redenrizar
         return view('reports.descuentos', compact('historial', 'cronograma', 'mes', 'money'));
+    }
+
+
+    /**
+     * Reporte de todas las aportaciones
+     *
+     * @param [type] $cronogramaID
+     * @return void
+     */
+    public function aportacion($id, $typeID)
+    {
+        $cronograma = Cronograma::findOrFail($id);
+        // obtener el historial de descuentos
+        $type = TypeAportacion::findOrFail($typeID);
+        // obtener aportes
+        $aportes = Aportacion::with('work:works.id,nombre_completo,numero_de_documento')
+            ->where('cronograma_id', $cronograma->id)
+            ->where('type_aportacion_id', $typeID)
+            ->where('monto', '>', 0)
+            ->get();
+        // obtener mes
+        $mes = Helpers::mes($cronograma->mes);
+        // moneda
+        $money = new Money;
+        // totales
+        $cronograma->total_bruto = 0;
+        $cronograma->total_base = 0;
+        $cronograma->total_desct = 0;
+        $cronograma->total_neto = 0;
+        // redenrizar
+        return view('reports.aportacion', compact('aportes', 'type', 'cronograma', 'mes', 'money'));
     }
 
 
@@ -275,6 +309,8 @@ class PdfController extends Controller
         $money = new Money;
         $cronograma->total_bruto = 0;
         $cronograma->total_neto = 0;
+        // obtener cargo
+        $cargo = Cargo::find($cargo_id);
         // obtener historial
         $historial = Historial::with('categoria', 'work:works.id,nombre_completo,numero_de_documento')
             ->where('cronograma_id', $cronograma->id);
@@ -286,7 +322,7 @@ class PdfController extends Controller
         $historial = $cargo_id ? $historial->where('cargo_id', $cargo_id) : $historial;
         // recuperamos historial
         $historial = $historial->get();
-        return view('reports.relacion_personal', compact('negativo', 'cronograma', 'historial', 'money', 'mes'));
+        return view('reports.relacion_personal', compact('negativo', 'cronograma', 'historial', 'money', 'mes', 'cargo'));
     }
 
 

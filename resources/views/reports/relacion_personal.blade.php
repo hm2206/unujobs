@@ -18,7 +18,7 @@
             $num = 1;
         @endphp
         @forelse($historial->chunk(60) as $num_page => $historial)
-            <div class="page-only pt-2 pr-3 w-100">            
+            <div class="page-only pt-2">            
                 <table class="text-negro">
                     <thead>
                         <tr>
@@ -35,7 +35,8 @@
                 </table>
 
                 <div class="ml-1 font-11 text-negro text-center mt-2 uppercase">
-                    <h5><b>RELACIÓN DEL PERSONAL MES DE {{ $mes }} - {{ $cronograma->año }}</b></h5>
+                    <h5><b>RELACIÓN DEL PERSONAL DEL MES DE {{ $mes }} - {{ $cronograma->año }}</b></h5>
+                    <b>{{ $cargo ? $cargo->descripcion : '' }}</b>
                 </div>
 
 
@@ -101,6 +102,7 @@
                                     @endphp
                                     Totales S/.&nbsp;&nbsp;&nbsp;&nbsp;
                                     {{ $money->parseTo(round($historial->sum("total_bruto"), 2)) }}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
                                 </b>
                             </th>
                             <th class="py-0 text-center font-11">

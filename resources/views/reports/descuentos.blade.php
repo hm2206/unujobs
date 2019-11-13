@@ -21,7 +21,7 @@
     @endphp
 
     @foreach ($historial->chunk(60) as $iter => $historial)
-        <div class="page-only pl-2 pr-2 pt-2">
+        <div class="page-only w-100 pt-2">
             <table class="text-negro">
                 <thead>
                     <tr>

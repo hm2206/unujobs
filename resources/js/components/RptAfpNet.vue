@@ -22,16 +22,12 @@
 
         <hr>
 
-        <button class="btn btn-primary"
+        <button class="btn btn-success"
             v-if="!loader"
             v-on:click="generatePDF"
         >
-            <i class="fas fa-file-pdf"></i> Generar Reporte para el AFP NET
+            <i class="fas fa-file-excel"></i> Generar Reporte para el AFP NET
         </button>
-
-        <hr>
-
-        <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
     </div>
 </template>
 
@@ -42,7 +38,7 @@ import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
-    props: ['report', 'cronograma'],
+    props: ['cronograma'],
     components: {
         'historial': ReportHistorial
     },
@@ -67,20 +63,7 @@ export default {
         },
         async generatePDF() {
 
-            this.loader = true;
-            let api = unujobs("post", `/cronograma/${this.cronograma.id}/afp-net`, {
-                type_report_id: this.report.id
-            });
-            
-            await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
-
-            this.loader = false;
+            printReport(`pdf/afp/${this.cronograma.id}/${this.afp_id}`, 'AFP NET');
 
         },
         async generateAfp(e) {

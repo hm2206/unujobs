@@ -25,23 +25,28 @@
 
             <div class="col-md-12">
                 <div class="row">
-                    <div class="col-md-3"
+                    <div class="col-md-6"
                         v-for="aportacion in aportaciones"
                         :key="`aporte-${aportacion.id}`"
                     >
-                        <span class="btn btn-dark">{{ aportacion.type_aportacion 
-                            ? aportacion.type_aportacion.descripcion : '' }}
-                            <i class="fas fa-arrow-right text-warning"></i>
-                            <b class="btn btn-sm btn-warning text-dark">
-                               <b>S/. {{ aportacion.monto }}</b>
-                            </b>
-                            <span class="btn btn-circle btn-sm btn-danger"
-                                style="cursor: pointer;"
-                                v-on:click="leave(aportacion.id)"
-                            >
-                                <i class="fas fa-trash"></i>
-                            </span>
-                        </span>
+                        <div class="row">
+                            <div class="col-xs">
+                                {{ aportacion.type_aportacion 
+                                    ? aportacion.type_aportacion.descripcion : ''
+                                }}
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" disabled v-model="aportacion.monto" class="form-control">
+                            </div>
+                            <div class="col-xs">
+                                <span class="btn btn-circle btn-sm btn-danger"
+                                    style="cursor: pointer;"
+                                    v-on:click="leave(aportacion.id)"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

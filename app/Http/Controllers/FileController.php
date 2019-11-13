@@ -74,9 +74,8 @@ class FileController extends Controller
         $planilla = Planilla::findOrFail($cronograma->planilla_id);
         // obtener las boletas de los trabajadores
         $historial = Historial::with('work')
-            ->where("numero_de_cuenta", "<>", null)
+            ->where("numero_de_cuenta", "<>", '')
             ->where("cronograma_id", $cronograma->id)
-            ->whereHas("banco")
             ->orderBy('orden', 'ASC')
             ->get();
 

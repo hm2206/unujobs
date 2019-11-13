@@ -1,44 +1,33 @@
 <template>
     <div class="card-body">
 
-        <button class="btn btn-outline-danger btn-sm"
-            v-on:click="generatePDF('descuento-bruto')"
-            v-if="!loader"
-        >
-            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Bruto
-        </button>
+        <div class="row">
+            <div class="col-md-5">
+                <select class="form-control" v-model="ejecucion" id="">
+                    <option value="">Seleccionar ejecución</option>
+                    <option :value="{url: 'ejecucion', neto: '0'}">Ejecución Bruta</option>
+                    <option :value="{url: 'ejecucion-detalle', neto: '0'}">Ejecución Bruta Detallada</option>
+                    <option :value="{url: 'ejecucion', neto: '1'}">Ejecución Neta</option>
+                    <option :value="{url: 'ejecucion-detalle', neto: '1'}">Ejecución Neta Detallada</option>
+                </select>
+            </div>
 
-        <button class="btn btn-outline-danger btn-sm"
-            v-on:click="generatePDF('descuento-bruto-detallado')"
-            v-if="!loader"
-        >
-            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Detallado Bruto
-        </button>
+            <button class="btn btn-danger btn-sm"
+                v-on:click="generatePDF"
+                v-if="!loader"
+                :disabled="!ejecucion.url"
+            >
+                <i class="fas fa-file-pdf"></i> Ver Reporte
+            </button>
+        </div>
 
-        <button class="btn btn-danger btn-sm"
-            v-on:click="generatePDF('descuento-neto')"
-            v-if="!loader"
-        >
-            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Neto
-        </button>
-
-        <button class="btn btn-danger btn-sm"
-            v-on:click="generatePDF('descuento-neto-detallado')"
-            v-if="!loader"
-        >
-            <i class="fas fa-file-pdf"></i> Ejecutar Descuento Detallado Neto
-        </button>
-
-        <hr>
-
-        <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
     </div>
 </template>
 
 <script>
 
 import ReportHistorial from './ReportHistorial';
-import { unujobs } from '../services/api';
+import { unujobs, printReport } from '../services/api';
 import notify from 'sweetalert';
 
 export default {
@@ -50,25 +39,13 @@ export default {
         return {
             loader: false,
             meta_id: '',
+            ejecucion: ""
         };
     },
     methods: {
-        async generatePDF(url) {
+        async generatePDF() {
 
-            this.loader = true;
-            let api = unujobs("post", `/cronograma/${this.param}/${url}`, {
-                type_report_id: this.report.id
-            });
-            
-            await api.then(res => {
-                let { status, message } = res.data;
-                let icon = status ? 'success' : 'error';
-                notify({icon, text: message});
-            }).catch(err => {
-                notify({icon: 'error', text: 'Algo salió mal'});
-            });
-
-            this.loader = false;
+            printReport(`pdf/${this.ejecucion.url}/${this.cronograma.id}?neto=${this.ejecucion.neto}`);
 
         }
     },

@@ -52,6 +52,8 @@ class ProssingAportacion implements ShouldQueue
         }])->where('cronograma_id', $this->cronograma->id);
         // verificar si hay infos especificos
         if (count($this->infoIn)) {
+            $this->historial = $this->historial->whereIn("id", $this->infoIn)->get();
+        }else {
             $this->historial = $this->historial->get();
         }
         // creamos storage para crear aportaciones
@@ -77,7 +79,7 @@ class ProssingAportacion implements ShouldQueue
                     "porcentaje" => $aportacion->porcentaje,
                     "minimo" => $aportacion->minimo,
                     "default" => $aportacion->default,
-                    "monto" => round($monto)
+                    "monto" => round($monto, 2)
                 ]);
                 // actualizar aportaciones
                 Descuento::where('historial_id', $history->id)

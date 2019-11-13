@@ -14,7 +14,7 @@
 </head>
 
 
-<body class="bg-white text-negro mt-0 pt-2 pr-3">
+<body class="bg-white text-negro mt-0 pt-2">
         
     <table>
         <thead>

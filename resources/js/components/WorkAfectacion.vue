@@ -312,7 +312,7 @@ export default {
             }
         },
         getPlanillas() {
-            let api = axios.get('/api/v1/planilla');
+            let api = unujobs('get' ,'/planilla');
             this.loading = true;
             api.then(res => {
                 let { data } = res;
@@ -333,7 +333,7 @@ export default {
 
         },
         getPlanillaID(id) {
-            let api = axios.get(`/api/v1/planilla/${id}`);
+            let api = unujobs('get', `/planilla/${id}`);
             this.loading = true;
             api.then(async res => {
                 this.loading = false;
@@ -357,7 +357,7 @@ export default {
         },
         async getCargoID(id) {
             // realizar peticion a la api
-            let api = axios.get(`/api/v1/cargo/${id}`);
+            let api = unujobs(`/cargo/${id}`);
             this.loading = true;
             api.then(res => {
                 let { data } = res;
@@ -368,7 +368,7 @@ export default {
             });
         },
         getSindicatos() {
-            let api = axios.get('/api/v1/sindicato');
+            let api = unujobs('get', '/sindicato');
             this.loading = true;
             api.then(res => {
                 this.sindicatos = res.data;
@@ -378,7 +378,7 @@ export default {
             });
         },
         getMetas() {
-            let api = axios.get('/api/v1/meta');
+            let api = unujobs('get','/meta');
             this.loading = true;
             api.then(res => {
                 let { data } = res;

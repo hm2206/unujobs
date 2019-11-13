@@ -105,7 +105,7 @@ class ProssingDescuento implements ShouldQueue
         $message = $titulo . " del {$cronograma->mes} - {$cronograma->año}, ya está lista";
 
         foreach ($users as $user) {
-            $user->notify(new BasicNotification($link, $message,
+            $user->notify(new BasicNotification(url($link), $message,
                  "fas fa-file-alt", "bg-danger"));
         }
 

@@ -4,9 +4,9 @@
         <div class="row mb-4 align-items-center">
 
             <div class="col-md-4">
-                <select name="type_descuento" class="form-control" v-model="descuento_id">
-                    <option value="">TODOS LOS DESCUENTOS</option>
-                    <option :value="type.id" v-for="(type, ty) in tmp_types" :key="`type-descuentos-${ty}`">
+                <select name="type_descuento" class="form-control" v-model="aporte_id">
+                    <option value="">Selecionar aportación empleador</option>
+                    <option :value="type.id" v-for="(type, ty) in tmp_types" :key="`type-aportes-${ty}`">
                         {{ type.descripcion }}
                     </option>
                 </select>
@@ -15,8 +15,9 @@
             <div class="col-xs">
                 <button class="btn btn-danger"
                     v-on:click="generatePDF"
+                    :disabled="!aporte_id"
                 >
-                    <i class="fas fa-file-pdf"></i> Generar Reporte de Descuentos
+                    <i class="fas fa-file-pdf"></i> Generar Reporte de Aportación
                 </button>
             </div>
 
@@ -42,21 +43,17 @@ export default {
         return {
             loader: false,
             tmp_types: [],
-            descuento_id: '',
+            aporte_id: '',
         };
     },
     methods: {
         async generatePDF(e) {
 
             e.preventDefault();
-            let ruta = this.descuento_id 
-                ? `pdf/descuento/${this.cronograma.id}/${this.descuento_id}`
-                : `pdf/descuentos/${this.cronograma.id}`;
-
-            printReport(ruta, 'Descuento');
+            printReport(`pdf/aportacion/${this.cronograma.id}/${this.aporte_id}`, 'Descuento');
         },
         async getDescuentos() {
-            let api = unujobs("get", '/type_descuento');
+            let api = unujobs("get", '/type_aportacion');
             this.loader = true;
             await api.then(res => {
                 this.tmp_types = res.data;

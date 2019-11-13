@@ -20,9 +20,6 @@
             <i class="fas fa-file-pdf"></i> Generar Planilla
         </button>
 
-        <hr>
-
-        <historial v-if="!loader" :param="cronograma.id" :type="report.id"></historial>
     </div>
 </template>
 

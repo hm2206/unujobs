@@ -15,6 +15,8 @@ use App\Models\TypeDescuento;
 use App\Models\User;
 use App\Models\Categoria;
 use App\Models\Cargo;
+use App\Models\TypeAportacion;
+use App\Models\Info;
 use App\Notifications\BasicNotification;
 use App\Models\Historial;
 
