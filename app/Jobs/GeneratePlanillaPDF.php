@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -19,24 +18,48 @@ use App\Models\Descuento;
 use App\Models\Afp;
 use App\Models\Work;
 use App\Notifications\ReportNotification;
+use App\Models\TypeAfp;
 use \PDF;
 use App\Models\User;
+use App\Models\Report;
 use Illuminate\Support\Facades\Storage;
+use \Carbon\Carbon;
+use App\Tools\Money;
+use App\Models\Historial;
+use App\Models\Aportacion;
+use App\Models\TypeAportacion;
+use App\Tools\Helpers;
 
-
+/**
+ * Genera pdf de la planilla
+ */
 class GeneratePlanillaPDF implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
     private $cronograma;
+    public $timeout = 0;
+    public $type_report;
+    private $file;
 
-    public function __construct($cronograma)
+    /**
+     * configuramos un poco
+     *
+     * @param \App\Models\Cronograma $cronograma
+     */
+    public function __construct($cronograma, $type_report)
     {
         $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
     }
 
 
+    /**
+     * Generamos el pdf de las planilas generales
+     *
+     * @return void
+     */
     public function handle()
     {
         $meses = [
@@ -46,145 +69,130 @@ class GeneratePlanillaPDF implements ShouldQueue
         ];
 
         $cronograma = $this->cronograma;
+        $historial = Historial::where('cronograma_id', $cronograma->id)->get();
+        $money = new Money;
 
-        $type_remuneraciones = TypeRemuneracion::all();
-        $type_categorias = TypeCategoria::with('cargos')->get();
-        $type_descuentos = TypeDescuento::where("config_afp", null)->get();
-        $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)->get();
+        // nombre del reporte
+        $nombre = "Resumen General del {$cronograma->mes} del {$cronograma->año} - v1";
+        // generamos ruta del reporte
+        $path = "planilla_general_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v1.pdf";
+        // crear y actualizar reporte
+        $archivo = Helpers::createOrUpdateReport($cronograma, $this->type_report, [
+            "type" => "pdf",
+            "icono" => "fas fa-file-pdf",
+            "key" => "report_general_{$cronograma->id}_v1",
+            "name" => $nombre,
+            "read" => 0,
+            "path" => "/storage/pdf/reports/{$path}",
+            "pendiente" => 1
+        ]);
+
+        $inTypeAFP = collect();
+        $afps = Afp::orderBy("nombre", "ASC")->where('activo', 1)->get();
+        // obtenemos los id de los descuentos
+        foreach ($afps as $afp) {
+            $inTypeAFP->push($afp->prima_descuento_id);
+            $inTypeAFP->push($afp->aporte_descuento_id);
+        }
+        // obtenemos los type descuento de los afps
+        $afpTypes = TypeAfp::whereHas("type_descuento")->get(); 
+        // guardamos los type descuentos de los types afp
+        foreach ($afpTypes as $type) {
+            $inTypeAFP->push($type->type_descuento_id);
+        }
+        // obtenemos los tipos de descuentos y remuneraciones
+        $type_remuneraciones = TypeRemuneracion::where("activo", 1)->where('report', 1)->get();
+        $type_descuentos = TypeDescuento::where("activo", 1)
+            ->whereNotIn("id", $inTypeAFP)
+            ->where('base', 0)
+            ->get();
+        // optenere los tipos de aportaciones
+        $type_aportaciones = TypeAportacion::where('activo', 1)->get();
+        // obtener tipos de categorias que pertenecen a la planilla
+        $type_categorias = TypeCategoria::with('cargos')
+            ->whereHas('cargos', function($car) use($cronograma) {
+                $car->where("planilla_id", $cronograma->planilla_id);
+            })->get();
+
+        // obtener las remuneraciones
+        $remuneraciones = Remuneracion::where('cronograma_id', $cronograma->id)
+            ->whereIn("type_remuneracion_id", $type_remuneraciones->pluck(['id']))
+            ->get();
+        // obtener los descuentos
         $descuentos = Descuento::where('cronograma_id', $cronograma->id)->get();
+        // obtener las aportaciones 
+        $aportaciones = Descuento::where('cronograma_id', $cronograma->id)
+            ->whereIn("type_descuento_id", $type_aportaciones->pluck('type_descuento_id'))
+            ->get();
 
-        $afps = Afp::all();
-        $works = Work::whereIn("id", $remuneraciones->pluck(['work_id']))->get();
 
-        $results = collect();
-        $resumen = collect();
-        $totales = 0;
-        $rows = 0;
-
-        foreach ($type_remuneraciones as $type) {
-
-            $cats = collect();
-            $total = 0;
-
-            foreach($type_categorias as $categoria) {
-
-                $tags = collect();
-
-                foreach ($categoria->cargos as $cargo) {
-                    $tmp = $remuneraciones->where('cargo_id', $cargo->id)->where('type_remuneracion_id', $type->id)->sum('monto');
-
-                    $tags->push([
-                        "id" => $cargo->id,
-                        "descripcion" => $cargo->descripcion,
-                        "monto" => $tmp
-                    ]);
-
-                    $total += $tmp;
-                }
-
-                $cats->push([
-                    "id" => $categoria->id,
-                    "descripcion" => $categoria->descripcion,
-                    "tags" => $tags
-                ]);
-            }
-
-            $results->push([
-                "id" => $type->id,
-                "descripcion" => $type->descripcion,
-                "categorias" => $cats,
-                "total" => $total
-            ]);
+        foreach ($type_remuneraciones as $type_remuneracion) {
+            // obtenemos los tipos de categorias
+            $type_remuneracion->type_categorias = $type_categorias;
+            $type_remuneracion->total = $remuneraciones->where("type_remuneracion_id", $type_remuneracion->id)->sum("monto");
         }
 
-        foreach ($type_categorias as $categoria) {
-            $cars = collect();
-            $suma = 0;
-
-            foreach ($categoria->cargos as $cargo) {
-                $suma = $remuneraciones->where('cargo_id', $cargo->id)->sum('monto');
-                $cars->push([
-                    "id" => $cargo->descripcion,
-                    "total" => $suma 
-                ]);
-
-                $totales += $suma;
-            }
-
-            $resumen->push([
-                "id" => $categoria['id'],
-                "descripcion" => $categoria['descripcion'],
-                "cargos" => $cars
-            ]);
+        // configurar afps
+        foreach($afps as $afp) {
+            $typesAFP = $afp->type_afps->pluck(['type_descuento_id']);
+            $pluck = [$afp->prima_descuento_id, $afp->aporte_descuento_id];
+            $historialAFP = $historial->where('afp_id', $afp->id)->pluck('id');
+            // almacenamos el monto de afp
+            $afp_monto = $descuentos->whereIn("type_descuento_id", $pluck)
+                ->whereIn('historial_id', $historialAFP)
+                ->sum("monto");
+            // almacenamos el monto del type afp
+            $type_afp_monto = $descuentos->whereIn("type_descuento_id", $typesAFP)
+                ->whereIn("historial_id", $historialAFP)
+                ->sum('monto');
+            // almacenamos el monto del afp
+            $afp->monto = round($afp_monto + $type_afp_monto, 2);
         }
 
+        // configuracion de los descuentos
         foreach ($type_descuentos as $desc) {
             $desc->monto = $descuentos->where("type_descuento_id", $desc->id)->sum('monto');
         }
 
-        foreach($afps as $afp) {
-            $whereIn = TypeDescuento::where("config_afp", "<>", null)->get();
-            $desct = Descuento::where("cronograma_id", $cronograma->id)
-                ->whereIn("type_descuento_id", $whereIn->pluck(['id']))
-                ->whereIn("work_id", $works->where("afp_id", $afp->id)->pluck(['id']))
-                ->get();
-            $afp->monto = $desct->sum('monto');
+        // configurar aportaciones
+        $total_aportaciones = $descuentos->where('base', 1)->sum('monto');
+
+        // configuramos las aportaciones
+        foreach ($type_aportaciones as $aport) {
+            $aport->monto = $descuentos->where("type_descuento_id", $aport->type_descuento_id)->sum("monto");
         }
 
-        $total_descuentos = $afps->sum('monto') + $type_descuentos->sum('monto');
-        $total_essalud = 0;
-        $total_ies = 0;
-        $total_dlfp = 0;
-        $total_accidentes = 0;
-
-        foreach ($works as $work) {
-            $tmp_essalud = 0;
-            $tmp_accidente = 0;
-            $base = 0;
-            $tmp_remuneraciones = Remuneracion::where("cronograma_id", $cronograma->id)
-                ->where("work_id", $work->id)
-                ->where('base', 0)
-                ->get();
-
-            $base = $tmp_remuneraciones->sum('monto');
-
-            //aportaciones current
-            $tmp_essalud = $base < 930 ? 83.7 : $base * 0.09;
-            $tmp_accidente = $work->accidentes ? ($base * 1.55) / 100 : 0;
-
-            //totales
-            $total_essalud += $tmp_essalud;        
-            $total_accidentes += $tmp_accidente;
-        }
-
-        //calcular total de aportaciones
-        $total_aportaciones = $total_accidentes + $total_essalud + $total_dlfp + $total_ies;
-
+        // configuracion de los totales
+        $total_bruto = $historial->sum("total_bruto");
+        // total de afps
+        $afp_total = $afps->sum('monto');
+        // total de los descuentos
+        $total_descuentos = $historial->sum('total_desct');
+        // obtenemos el total neto de la planilla
+        $total_liquido = $historial->sum('total_neto');
 
         $sub_titulo = "RESUMEN GENERAL DE TODAS LAS METAS DE MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
         $titulo = "";
 
-
         $pdf = PDF::loadView('pdf.cronograma', \compact(
-            'type_remuneraciones', 'results', 'resumen', 
-            'meses', 'cronograma', 'type_categorias',
-            'totales', 'type_descuentos', 'rows', 
+            'type_remuneraciones', 'meses', 'cronograma', 
+            'type_categorias', 'type_descuentos', "total_bruto",
             'sub_titulo','titulo', 'afps', 'total_descuentos',
-            'total_essalud', 'total_ies', 'total_dlfp', 
-            'total_accidentes', 'total_aportaciones'
+            'type_aportaciones', 'total_aportaciones', 'remuneraciones',
+            'total_liquido', 'money', 'afp_total'
         ));
 
-
-        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $nombre = "pdf/planilla_{$cronograma->id}_{$cronograma->mes}_{$cronograma->año}.pdf";
-
-        $pdf->save(storage_path("app/public") . "/{$nombre}");
-        $cronograma->update(["pdf" => "/storage/{$nombre}", "pendiente" => 0]);
-
+        $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+        $output = $pdf->output();
+        Storage::disk('public')->put("/pdf/reports/{$path}", $output);
+        // levantar el reporte de la cola
+        $archivo->update([ "pendiente" => 0 ]);
+        // notificar
         $users = User::all();
+        $message = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification($cronograma->pdf ,"La Planilla general se genero correctamente"));
+            $user->notify(new ReportNotification($archivo->path ,"EL Reporte General v1 de la planilla {$message}, ya están listas"));
         }
 
 

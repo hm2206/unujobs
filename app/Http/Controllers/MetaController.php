@@ -1,14 +1,28 @@
 <?php
-
+/**
+ * Http/Controllers/MetaController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Meta;
 use Illuminate\Http\Request;
 use App\Http\Requests\MetaRequest;
 
+/**
+ * Class MetaController
+ * 
+ * @category Controllers
+ */
 class MetaController extends Controller
 {
 
+    /**
+     * Muestra una lista de las metas presupuestales
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $like = request()->input("query_search", null);
@@ -23,12 +37,23 @@ class MetaController extends Controller
     }
 
 
+    /**
+     * Muestra un formulario para crear una nueva meta presupuestal
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('meta.create');
     }
 
 
+    /**
+     * Almacena una meta presupuestal recien creado
+     *
+     * @param  \App\Http\Request\MetaRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(MetaRequest $request)
     {
         $meta = Meta::create($request->all());
@@ -36,20 +61,39 @@ class MetaController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Meta $meta
+     * @return void
+     */
     public function show(Meta $meta)
     {
-        //
+        return back();
     }
 
 
-    public function edit($id)
+    /**
+     * Muestra un formulario para editar una meta presupuestal
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function edit($slug)
     {
-        $meta = Meta::where("metaID", $id)->firstOrFail();
+        $id = \base64_decode($slug);
+        $meta = Meta::where("id", $id)->firstOrFail();
         return view('meta.edit', \compact('meta'));
     }
 
-
-    public function update(MetaRequest $request, $id)
+    /**
+     * Actualiza una meta presupuestal recien modificado
+     *
+     * @param  \App\Http\Request\MetaRequest  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $id)
     {
         $meta = Meta::find($id);
         $meta->update($request->all());
@@ -64,10 +108,17 @@ class MetaController extends Controller
      */
     public function destroy(Meta $meta)
     {
-        //
+        return back();
     }
 
-    public function query($like, $metas) 
+    /**
+     * Realiza una busqueda de las metas presupuestales
+     * 
+     * @param  string  $like
+     * @param  \Illuminate\Database\Eloquent\Builder  $metas
+     * @return  \Illuminate\Database\Eloquent\Builder
+     */
+    public function query($like,\Illuminate\Database\Eloquent\Builder $metas) 
     {
         return $metas->where("metaID", "like", "%{$like}%")
             ->orwhere("meta", "like", "%{$like}%")
@@ -76,4 +127,5 @@ class MetaController extends Controller
             ->orWhere("actividadID", "like", "%{$like}%")
             ->orWhere("actividad", "like", "%{$like}%");
     }
+    
 }

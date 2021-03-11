@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Sindicato;
 use Illuminate\Http\Request;
+use App\Models\Sindicato;
 
 class SindicatoController extends Controller
 {
@@ -14,7 +14,7 @@ class SindicatoController extends Controller
      */
     public function index()
     {
-        //
+        return Sindicato::all();
     }
 
     /**
@@ -41,10 +41,10 @@ class SindicatoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Sindicato  $sindicato
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Sindicato $sindicato)
+    public function show($id)
     {
         //
     }
@@ -52,10 +52,10 @@ class SindicatoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Sindicato  $sindicato
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Sindicato $sindicato)
+    public function edit($id)
     {
         //
     }
@@ -64,10 +64,10 @@ class SindicatoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Sindicato  $sindicato
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Sindicato $sindicato)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -75,10 +75,10 @@ class SindicatoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Sindicato  $sindicato
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Sindicato $sindicato)
+    public function destroy($id)
     {
         //
     }

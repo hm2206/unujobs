@@ -7,6 +7,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * Notificación de reportes de pdf
+ */
 class ReportNotification extends Notification
 {
     use Queueable;

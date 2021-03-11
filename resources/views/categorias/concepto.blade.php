@@ -57,21 +57,7 @@
     
     </div>
     
-    <div class="col-md-5">
-        <div class="card-body">
-            <div class="row justify-content-start">
-                @foreach ($categoria->conceptos as $concepto)
-                    <div class="btn btn-outline-success mb-1 mr-1">
-                        <b class="text-danger">{{ $concepto->key }}</b>
-                        <i class="fas fa-lock text-dark"></i>
-                        <b class="text-danger">{{ $concepto->descripcion }}</b>
-                        <i class="fas fa-arrow-right text-dark"></i> 
-                        <span class="btn btn-warning btn-sm">S./{{ $concepto->pivot ? $concepto->pivot->monto : null }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
+    <edit-concepto :conceptos="{{ $categoria->conceptos }}" param="{{ $categoria->id }}">
 
 </div>
 @endsection

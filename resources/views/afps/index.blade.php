@@ -38,10 +38,10 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
-                            <th>Flujo</th>
-                            <th>Mixta</th>
                             <th>Aporte</th>
                             <th>Prima</th>
+                            <th>Porcentajes Dinamicos</th>
+                            <th>Prima Limite</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -50,13 +50,26 @@
                             <tr id="categoria-{{ $afp->id }}">
                                 <th>{{ $afp->id }}</th>
                                 <th class="uppercase">{{ $afp->nombre }}</th>
-                                <th class="uppercase">{{ $afp->flujo }} %</th>
-                                <th class="uppercase">{{ $afp->mixta }} %</th>
                                 <th class="uppercase">{{ $afp->aporte }} %</th>
                                 <th class="uppercase">{{ $afp->prima }} %</th>
                                 <th>
+                                    <table class="w-100">
+                                        @foreach ($afp->type_afps as $type)
+                                            <tr>
+                                                <th class="uppercase">
+                                                    {{ $type->descripcion }} 
+                                                    <button class="btn btn-sm btn-danger">
+                                                        {{ $type->pivot ? $type->pivot->porcentaje : 0}} %
+                                                    </button>
+                                                </th>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </th>
+                                <th>{{ $afp->prima_limite }}</th>
+                                <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('afp.edit', $afp->id) }}" class="btn btn-sm btn-warning">
+                                        <a href="{{ route('afp.edit', $afp->slug()) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                     </div>

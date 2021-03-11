@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo')
-    - Cargos + Categoria
+    - Cargos >> Categoria
 @endsection
 
 @section('link')
@@ -58,16 +58,46 @@
         </div>
     </div>
 
-    <div class="col-md-5">
-        <div class="card-body">
-            <div class="row">
-                @foreach ($cargo->categorias as $categoria)
-                    <div class="btn btn-warning ml-1 mb-1">
-                        {{ $categoria->nombre }}
-                    </div>
-                @endforeach
+    @if($cargo->categorias->count() > 0)
+        <div class="col-md-5">
+
+            @if (session('danger'))
+                <div class="alert alert-danger">
+                    {{ session('danger') }}
+                </div>
+            @endif
+
+            <div class="card-header">
+                Seleccionar para poder eliminar
             </div>
+            <form class="card-body" method="POST" action="{{ route('cargo.categoria.delete', $cargo->id) }}">
+                <div class="row">
+                    @csrf
+                    @method('DELETE')
+                    @forelse ($cargo->categorias as $categoria)
+                        <div class="btn btn-outline-primary ml-1 mb-1">
+                            <input type="checkbox" name="categorias[]" value="{{ $categoria->id }}">
+                            {{ $categoria->nombre }}
+                        </div>
+                    @empty
+                        <div class="col-md-12">
+                            <small>No hay registros disponibles!</small>
+                        </div>
+                    @endforelse
+
+                    <div class="col-md-12 mt-3">
+                        <hr>
+                        <input type="password" name="password" class="form-control" required placeholder="Contraseña para confirmar">
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <button class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar los elementos seleccionados
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </div>
+    @endif
 </div>
 @endsection

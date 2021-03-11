@@ -1,63 +1,81 @@
 <?php
-
+/**
+ * Models/Work.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Modelo de la tabla works
+ * 
+ * @category Models
+ */
 class Work extends Model
 {
+
+    use SoftDeletes;
     
+
+    protected $dates = ['deleted_at'];
+
+    /**
+     * Los campos que solo serán alterados en la base de datos
+     *
+     * @var array
+     */
     protected $fillable = [
-        "ape_paterno", "ape_materno", "nombres","numero_de_documento",
-        "fecha_de_nacimiento", "profesion", "phone","fecha_de_ingreso",
-        "sexo", "numero_de_essalud", "banco_id", "numero_de_cuenta",
-        "afp_id", "type_afp", "fecha_de_afiliacion", "numero_de_cussp", "accidentes",
-        "sindicato_id", "nombre_completo", "direccion", "total", "profesion", "email"
+        "ape_paterno", "ape_materno", "nombres", "nombre_completo",
+        "direccion", "tipo_de_documento", "numero_de_documento", 
+        "fecha_de_nacimiento", "profesion", "email", "phone", "sexo", 
+        "activo"
     ];
 
-    public function banco()
-    {
-        return $this->belongsTo(Banco::class);
-    }
 
-    public function sindicato()
-    {
-        return $this->belongsTo(Sindicato::class);
-    }
-
-    public function sindicatos()
-    {
-        return $this->belongsToMany(Sindicato::class, 'sindicato_work');
-    }
-
-    public function afp()
-    {
-        return $this->belongsTo(Afp::class);
-    }
-
-    public function categoria()
-    {
-        return $this->belongsTo(Categoria::class);
-    }
-
-    public function cargo()
-    {
-        return $this->belongsTo(Cargo::class);
-    }
-
+    /**
+     * Relacion de muchos a uno con la tabla infos
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function infos()
     {
         return $this->hasMany(Info::class);
     }
 
-    public function meta() 
+
+    /**
+     * Relacion de muchos a uno con la tabla infos
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function historial()
     {
-        return $this->belongsTo(Meta::Class);
+        return $this->hasMany(Historial::class);
     }
 
-    public function remuneraciones()
+
+    /**
+     * Relacion de muchos a uno con la tabla obligacions
+     *
+     * @return Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function obligaciones()
     {
-        return $this->hasMany(Remuneracion::class);
+        return $this->hasMany(Obligacion::class);
+    }
+
+
+    /**
+     * Slug para proteger los id en las urls
+     *
+     * @return string
+     */
+    public function slug()
+    {
+        return base64_encode($this->id);
     }
 
 }

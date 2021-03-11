@@ -1,4 +1,9 @@
 <?php
+/**
+ * ./app/Http/Controllers/CargoController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 
 namespace App\Http\Controllers;
 
@@ -7,73 +12,144 @@ use App\Models\Categoria;
 use App\Models\Planilla;
 use App\Models\TypeRemuneracion;
 use Illuminate\Http\Request;
+use \Hash;
 
+/**
+ * Class CargoController
+ * 
+ * @category Controllers
+ */
 class CargoController extends Controller
 {
 
+    /**
+     * Muestra una lista de cargos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $cargos = Cargo::all();
         return view("cargos.index", compact('cargos'));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo cargo
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $planillas = Planilla::all();
         return view('cargos.create', \compact('planillas'));
     }
 
-
+    /**
+     * Almacena un cargo recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\View\View
+     */
     public function store(Request $request)
     {
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos",
             "planilla_id" => "required",
-            "tag" => "required"
+            "tag" => "required",
+            "ext_pptto" => "required|max:45"
         ]);
 
-        Cargo::create($request->all());
+        try {
+            
+            Cargo::create($request->all());
+            return [
+                "status" => true,
+                "message" => "El registro se guardo correctamente!"
+            ];
 
-        return back()->with(["success" => "El registro se guardo correctamente!"]);
+        } catch (\Throwable $th) {
+            
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación"
+            ];
+
+        }
+
     }
 
 
     public function show(Cargo $cargo)
     {
-        //
+        return back();
     }
 
-
-    public function edit(Cargo $cargo)
+    /**
+     * Muestra un formulario para editar un cargo
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function edit($slug)
     {
+        $id = \base64_decode($slug);
+        $cargo = Cargo::findOrFail($id);
         $planillas = Planilla::all();
         return view('cargos.edit', \compact('planillas', 'cargo'));
     }
 
-
-    public function update(Request $request, Cargo $cargo)
+    /**
+     * Actualiza un cargo recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Cargo $cargo
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $id)
     {
         $this->validate(request(), [
             "descripcion" => "required|unique:cargos,id,".$request->descripcion,
             "planilla_id" => "required",
-            "tag" => "required"
+            "tag" => "required",
+            "ext_pptto" => "required|max:45"
         ]);
 
-        $cargo->update($request->all());
+        try {
+            
+            $cargo = Cargo::findOrFail($id);
+            $cargo->update($request->all());
 
-        return back()->with(["success" => "El registro se actualizó correctamente!"]);
+            return [
+                "status" => true,
+                "message" => "El registro se actualizó correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al procesar la operación"
+            ];
+
+        }
     }
 
 
     public function destroy(Cargo $cargo)
     {
-        //
+        return back();
     }
 
 
-    public function categoria($id)
+    /**
+     * Muestra un formulario para agregra una categoria al cargo
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function categoria($slug)
     {
+        $id = \base64_decode($slug);
         $cargo = Cargo::findOrFail($id);
         $notIn = $cargo->categorias->pluck(["id"]);
         $categorias = Categoria::whereNotIn('id', $notIn)->orderBy('nombre', 'ASC')->get();
@@ -81,7 +157,13 @@ class CargoController extends Controller
         return view("cargos.categoria", compact('cargo', 'categorias'));
     }
 
-
+    /**
+     * Almacena la categoria recien agregada al cargo
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function categoriaStore(Request $request, $id)
     {
         $this->validate(request(), [
@@ -96,8 +178,42 @@ class CargoController extends Controller
     }
 
 
-    public function config($id)
+    /**
+     * Eliminar una categoria agregada al cargo
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function categoriaDelete(Request $request, $id)
     {
+        $auth = auth()->user();
+        $password = $request->password;
+        $categorias = $request->input('categorias', []);
+
+        $validation = Hash::check($password, $auth->password);
+
+        if ($validation) {
+
+            $cargo = Cargo::findOrFail($id);
+            $cargo->categorias()->detach($categorias);
+
+            return back()->with(["success" => "Los datos se eliminarón correctamente!"]);
+        }
+
+        return back()->with(["danger" => "La contraseña es incorrecta"]);
+    }
+
+
+    /**
+     * Muestra un panel con chechbox para agregar la configuración de los aportes
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function config($slug)
+    {
+        $id = \base64_decode($slug);
         $cargo = Cargo::findOrFail($id);
         $types = TypeRemuneracion::all();
 
@@ -115,6 +231,14 @@ class CargoController extends Controller
         return view("cargos.config", compact('cargo', 'types'));
     }
 
+
+    /**
+     * Almacena un nueva configuracion al cargo
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function configStore(Request $request, $id)
     {
         $cargo = Cargo::findOrFail($id);
@@ -122,5 +246,6 @@ class CargoController extends Controller
         $cargo->typeRemuneracions()->sync($types);
         return back();
     }
+
 
 }

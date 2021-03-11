@@ -12,7 +12,12 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('descuento.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-descuento
+        theme="btn-primary"
+        redirect="{{ route('descuento.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-descuento>
 </div>
 
 @if (session('success'))
@@ -38,6 +43,8 @@
                         <tr>
                             <th>#ID</th>
                             <th>Descripción</th>
+                            <th>Tipo</th>
+                            <th>Activo</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -46,12 +53,32 @@
                             <tr id="categoria-{{ $descuento->id }}">
                                 <th>{{ $descuento->key }}</th>
                                 <th class="uppercase">{{ $descuento->descripcion }}</th>
+                                <th class="uppercase">
+                                    @if ($descuento->base)
+                                        <button class="btn btn-sm btn-primary">
+                                            Aportación
+                                        </button>
+                                    @endif
+
+                                    @if ($descuento->retencion)
+                                        <button class="btn btn-sm btn-danger">
+                                            Retención
+                                        </button>
+                                    @endif
+                                </th>
+                                <th>
+                                    {{ $descuento->activo ? 'Si' : 'No' }}
+                                </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('descuento.edit', $descuento->id) }}" class="btn btn-sm btn-warning">
+                                        <btn-descuento
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('descuento.index')}}"
+                                            :datos="{{ $descuento }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a target="blank" href="{{ route('descuento.config', $descuento->id) }}" class="btn btn-sm btn-success">
+                                        </btn-descuento>
+                                        <a href="{{ route('descuento.config', $descuento->slug()) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>
                                     </div>

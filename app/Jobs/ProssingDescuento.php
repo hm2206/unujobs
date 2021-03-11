@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -10,181 +9,148 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use \DB;
 use App\Models\Work;
+use App\Models\Info;
 use App\Models\Cronograma;
-use App\Models\TypeDescuento;
-use App\Models\Descuento;
-use App\Models\Afp;
-use App\Models\Cargo;
-use App\Models\Remuneracion;
 use App\Models\User;
 use App\Notifications\BasicNotification;
-use App\Models\Sindicato;
+use App\Collections\InfoCollection;
+use App\Models\TypeDescuento;
+use App\Models\Descuento;
+use App\Models\Remuneracion;
+use App\Models\Historial;
+use App\Collections\DescuentoCollection;
 
+/**
+ * Procesa los descuentos de los trabajadores
+ */
 class ProssingDescuento implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 
     private $cronograma;
-    private $jobs;
+    private $historial;
+    private $types;
+    private $infoIn = [];
 
+    public $timeout = 0;
 
-    public function __construct($cronograma, $jobs)
+    /**
+     * @param object $cronograma
+     * @param object $jobs
+     * @return void
+     */
+    public function __construct($cronograma, $infoIn = [])
     {
         $this->cronograma = $cronograma;
-        $this->jobs = $jobs;
+        $this->infoIn = $infoIn;
     }
 
 
-
+    /**
+     * Se ejecuta automaticamente en las colas de trabajos
+     *
+     * @return void
+     */
     public function handle()
     {
+        // cronograma actual
         $cronograma = $this->cronograma;
-        $jobs = $this->jobs;
-
-        $types = TypeDescuento::all();
-
-        foreach ($jobs as $job) {
-            $this->configurarDescuento($types,$cronograma, $job);
+        // obtener tipos de descuentos
+        $this->types = TypeDescuento::where("activo", 1)->get();
+        // obtener a todos los trabajadores
+        $this->historial = Historial::where("cronograma_id", $cronograma->id);
+        // verificar si hay infos especificos
+        if (count($this->infoIn)) {
+            $this->historial = $this->historial->whereIn("info_id", $this->infoIn);
         }
-
-        $users = User::all();
-
-        foreach ($users as $user) {
-            $user->notify(new BasicNotification("#", "Descuentos agregados a los trabajadores", "fas fa-file-alt", "bg-danger"));
-        }
-
-    }
-
-    private function configurarDescuento($types, $cronograma, $job)
-    {
+        // obtener historial
+        $this->historial = $this->historial->get();
+        // fecha anteriores
         $mes = $cronograma->mes == 1 ? 12 : $cronograma->mes - 1;
         $year = $cronograma->mes == 1 ? $cronograma->año - 1 : $cronograma->año; 
-        
-        foreach ($job->infos as $info) {
-            $hasDescuentos = Descuento::where("work_id", $job->id)
-                ->where("cronograma_id", $cronograma->id)
-                ->where("cargo_id", $info->cargo_id)
-                ->where("categoria_id", $info->categoria_id)
-                ->where("planilla_id", $info->planilla_id)
-                ->get();
+        // obtenemos remuneraciones anteriores
+        $typeBefores = Descuento::whereIn("info_id", $this->historial->pluck(['info_id']))
+            ->whereIn("type_descuento_id", $this->types->pluck(['id']))
+            ->where("adicional", $cronograma->adicional)
+            ->where("mes", $mes)
+            ->where("año", $year)
+            ->get();
 
-            if($hasDescuentos->count() > 0) {
-                foreach ($hasDescuentos as $descuento) {
-                    Descuento::create([
-                        "work_id" => $job->id,
-                        "categoria_id" => $info->categoria_id,
-                        "cargo_id" => $info->cargo_id,
-                        "cronograma_id" => $cronograma->id,
-                        "planilla_id" => $info->planilla_id,
-                        "type_descuento_id" => $descuento->id,
-                        "mes" => $cronograma->mes,
-                        "año" => $cronograma->año,
-                        "monto" => $descuento->monto,
-                        "adicional" => $cronograma->adicional,
-                        "dias" => $cronograma->dias
-                    ]);
-                }
-            }else {
-                foreach ($types as $type) {
-                    $config = \json_decode($type->config_afp);
-
-                    $remuneraciones = Remuneracion::where('work_id', $job->id)
-                        ->where('cargo_id', $info->cargo_id)
-                        ->where('categoria_id', $info->categoria_id)
-                        ->where('cronograma_id', $cronograma->id)
-                        ->where('planilla_id', $info->planilla_id)
-                        ->where('base', 0)
-                        ->get();
-
-                    
-                    $total = $remuneraciones->sum("monto");
-                    $total = $total > 0 ? $total : $info->total;
-                    $suma = 0;
-                    
-                    //configurar descuentos automaticos de afps
-                    if($job->afp) {
-
-                        if(\is_array($config) && count($config) > 0) {
-                            $type_afp = "";
-                            $opcional = count($config) > 1 ? true : false; 
-
-                            if($opcional) {
-
-                                foreach ($config as $conf) {
-                                    if($conf != "aporte" && $conf != "prima") {
-                                        if($conf == $job->type_afp) {
-                                            $type_afp = $conf;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                            }else {
-                                $type_afp = implode("", $config);
-                            }
-
-                            $porcentaje = $job->afp->{$type_afp};
-                            $suma = ($total * $porcentaje) / 100;
-
-                        }
-                    }elseif ($job->ley) {
-
-                        if($type->ley) {
-                            $suma = $total * 0.06;
-                        }
-
-                    }else {
-
-                        if($type->obligatorio) {
-                            $suma =($total * 13) / 100;   
-                        }
-
-                    }
+        // obtener a los trabajadores con los descuentos del mes anterior
+        $oldHistorial = $this->historial->whereIn("info_id", $typeBefores->pluck(['info_id']));
+        // obtener a los trabajadores recientemente agregados
+        $newHistorial = $this->historial->whereNotIn("id", $oldHistorial->pluck(['id']));
 
 
-                    // configurar descuentos automaticos de los sindicatos
-                    if ($job->sindicatos->count() > 0) {
+        // configurar descuentos
+        if ($oldHistorial->count() > 0) {
+            $this->configOldDescuento($cronograma, $oldHistorial, $typeBefores);
+        }
 
-                        // obtenemos la configuracion de los sindicatos que tiene el descuento
-                        $sindicatoIn = $type->sindicatos->pluck(["id"]);
+        //configurar descuentos nuevos
+        if ($newHistorial->count() > 0) {
+            $this->configNewDescuento($cronograma, $newHistorial);
+        }
 
-                        if (count($sindicatoIn) > 0) {
+        // habilitamos la planilla
+        $cronograma->update([
+            "pendiente" => 0,
+            "estado" => 1
+        ]);
 
-                            //almacenar el porcentaje de los sindicatos de la configuración
-                            $porcentaje_sindicato = 0;
-    
-                            //obtener los porcentajes de los sindicatos del trabajador
-                            $porcentaje_sindicato = $job->sindicatos->whereIn("id", $sindicatoIn)->sum('porcentaje');
-    
-                            // terminamos la configuracion de los sindicatos
-                            $suma =  ($total * $porcentaje_sindicato) / 100;
+        $users = User::all();
+        $link = "/planilla/cronograma/{$cronograma->slug()}/job";
+        $titulo = $cronograma->planilla ? $cronograma->planilla->descripcion : '';
+        $message = $titulo . " del {$cronograma->mes} - {$cronograma->año}, ya está lista";
 
-                        }
-
-
-                    }
-
-                    
-                    Descuento::create([
-                        "work_id" => $job->id,
-                        "categoria_id" => $info->categoria_id,
-                        "cargo_id" => $info->cargo_id,
-                        "planilla_id" => $info->planilla_id,
-                        "cronograma_id" => $cronograma->id,
-                        "type_descuento_id" => $type->id,
-                        "mes" => $cronograma->mes,
-                        "año" => $cronograma->año,
-                        "monto" => round($suma, 2),
-                        "adicional" => $cronograma->adicional,
-                        "dias" => $cronograma->dias
-                    ]);
-
-
-                }
-            }
+        foreach ($users as $user) {
+            $user->notify(new BasicNotification($link, $message,
+                 "fas fa-file-alt", "bg-danger"));
         }
 
     }
+
+
+    private function configOldDescuento($cronograma, $historial, $befores) 
+    {
+        // creamos la collecion para procesar los descuentos
+        $config = new DescuentoCollection($cronograma, $this->types);
+        // recorremos los trabajadores
+        foreach ($historial as $history) {
+            // recorremos lso tipos de descuentos
+            foreach ($this->types as $type) {
+                // obtenemos el registro anterior
+                $typeBefore = $befores->where('info_id', $history->info_id)
+                    ->where("type_descuento_id", $type->id)
+                    ->first();
+                // almacenamos el monto
+                $monto = isset($typeBefore->monto) ? $typeBefore->monto : 0;
+                // preparamos los descuentos para calcular
+                $config->preparate($history, $cronograma, $type, $monto);
+            }
+            // obtenemos el total de descuentos
+            $total_desct = $befores->where('info_id', $history->info_id)->sum('monto');
+            // obtener total neto
+            $total_neto = $history->total_bruto - $total_desct;
+            // actualizar historial
+            $history->update([
+                "total_desct" => round($total_desct, 2),
+                "total_neto" => round($total_neto, 2)
+            ]);
+        }
+        // insertamos masivamente los descuentos
+        $config->save();
+    }
+
+
+    private function configNewDescuento($cronograma, $historial)
+    {
+        // creamos la collecion para procesar los descuentos
+        $config = new DescuentoCollection($cronograma, $this->types);
+        // insertamos masivamente los descuentos
+        $config->insert($historial);
+    }
+
 
 }

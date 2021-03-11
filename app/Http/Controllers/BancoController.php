@@ -1,10 +1,20 @@
 <?php
+/**
+ * ./app/Http/Controllers/BancoController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 
 namespace App\Http\Controllers;
 
-use App\Banco;
+use App\Models\Banco;
 use Illuminate\Http\Request;
 
+/**
+ * Class BancoController
+ * 
+ * @category Controllers
+ */
 class BancoController extends Controller
 {
     /**
@@ -14,7 +24,7 @@ class BancoController extends Controller
      */
     public function index()
     {
-        //
+        return Banco::get();
     }
 
     /**

@@ -8,7 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <meta mame="csrf-token" content="{{ csrf_token() }}">
+
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <title>Sistema Recursos Humanos @yield('titulo')</title>
 
@@ -16,13 +17,15 @@
   {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css"> --}}
   <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
   <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon">
 
   <!-- Custom styles for this template-->
 
 </head>
 
-<body id="page-top">
+<body>
 
+  <div id="app">
   <!-- Page Wrapper -->
   <div id="wrapper">
 
@@ -31,7 +34,7 @@
 
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('home') }}">
-        <div class="sidebar-brand-text mx-3">RRHH</div>
+        <div class="sidebar-brand-text mx-3">SGRHP</div>
       </a>
 
       <!-- Divider -->
@@ -47,67 +50,29 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
 
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Menu
-      </div>
-
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fas fa-fw fa-users"></i>
-          <span>Recursos Humanos</span>
-        </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Opciones:</h6>
-            <a class="collapse-item" href="{{ route('personal.index') }}">Requerimiento de Personal</a>
-            <a class="collapse-item" href="{{ route('convocatoria.index') }}">Convocatorias</a>
-          </div>
-        </div>
-      </li>
-
-      <!-- Nav Item - Utilities Collapse Menu -->
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-          <i class="fas fa-fw fa-file"></i>
-          <span>Planillas</span>
-        </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Opciones:</h6>
-            <a class="collapse-item" href="{{ route('job.index') }}">Trabajadores</a>
-            <a class="collapse-item" href="{{ route('meta.index') }}">Metas</a>
-            <a class="collapse-item" href="{{ route('cronograma.index') }}">Crear Planilla x Mes</a>
-            <a class="collapse-item" href="{{ route('cargo.index') }}">Cargos</a>
-            <a class="collapse-item" href="{{ route('categoria.index') }}">Categorias</a>
-            <a class="collapse-item" href="{{ route('concepto.index') }}">Conceptos</a>
-            <a class="collapse-item" href="{{ route('descuento.index') }}">Descuentos</a>
-            <a class="collapse-item" href="{{ route('remuneracion.index') }}">Remuneraciones</a>
-            <a class="collapse-item" href="{{ route('afp.index') }}">AFP</a>
-          </div>
-        </div>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
+      <menu-bar param="{{ auth()->user()->id }}"></menu-bar>
 
     </ul>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
+      
 
       <!-- Main Content -->
       <div id="content">
 
-        <div id="app">
+        <div>
+            
+            <authentication></authentication>
             <!-- Topbar -->
               <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
+
+                  <search></search>
 
                   <!-- Nav Item - Alerts -->
                   <notification></notification>
@@ -157,6 +122,12 @@
               <!-- Begin Page Content -->
               <div class="container-fluid">
 
+                @if (session('warning'))
+                  <div class="alert alert-warning">
+                    {{ session('warning') }}
+                  </div>
+                @endif
+
                 @yield('content')
 
               </div>
@@ -181,17 +152,14 @@
 
   </div>
   <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
+  </div>
 
   <!-- Bootstrap core JavaScript-->
   <script src="{{ asset('js/app.js') }}"></script>
 
   <!-- Custom scripts for all pages-->
   <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
+
 
 </body>
 

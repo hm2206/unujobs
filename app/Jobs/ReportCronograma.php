@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -15,110 +14,164 @@ use App\Models\Remuneracion;
 use \PDF;
 use App\Models\User;
 use App\Notifications\ReportNotification;
+use App\Models\Report;
+use \Carbon\Carbon;
+use App\Models\Historial;
+use App\Tools\Money;
 
+/**
+ * Genera Reportes
+ */
 class ReportCronograma implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $mes;
-    private $year;
-    private $adicional;
+    private $cronograma;
+    private $type_report;
+    private $meta_id;
+    public $timeout = 0;
 
-    public function __construct($mes, $year, $adicional)
+    /**
+     * @param string $mes
+     * @param string $year
+     * @param string $adicional
+     */
+    public function __construct($cronograma, $type_report, $meta_id)
     {
-        $this->mes = $mes;
-        $this->year = $year;
-        $this->adicional = $adicional;
+        $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
+        $this->meta_id = $meta_id;
     }
 
-
+    /**
+     * Genera un reporte en pdf del cronograma
+     *
+     * @return void
+     */
     public function handle()
     {
-        $metas = $metas = Meta::all();
-        $pagina = 0;
+        $cronograma = $this->cronograma;
+        $meta = Meta::findOrFail($this->meta_id);
+        $meta->mes = $cronograma->mes;
+        $meta->year = $cronograma->año;
+        $pagina = 1;
+        $money = new Money;
 
+        // obtener historial
+        $historial = Historial::where('cronograma_id', $cronograma->id)
+            ->where('meta_id', $meta->id)
+            ->orderBy('orden', 'ASC')
+            ->get();
+
+        // configuracion
+        $remuneraciones = Remuneracion::with("typeRemuneracion")->where('show', 1)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get();
+        // obtener descuentos
+        $descuentos = Descuento::with("typeDescuento")->where("base", 0)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get();
+        // aportaciones
+        $aportaciones = Descuento::with("typeDescuento")->where("base", 1)
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get();
         //traemos trabajadores que pertenescan a la meta actual
-        foreach($metas as $meta) {
-
-            $meta->mes = $this->mes;
-            $meta->year = $this->year;
-
-            //obtener a los trabajadores que esten en esta meta
-            $works = Work::whereHas('infos', function($i) use($meta) {
-                $i->where('infos.meta_id', $meta->id);
-            })->with(['infos' => function($i) use($meta) {
-                $i->where('infos.meta_id', $meta->id);
-            }])->get();
-
-            foreach($works as $work) {
-
-                foreach ($work->infos as $info) {
-
-                    //obtenemos las remuneraciones actuales del trabajador
-                    $info->remuneraciones = $work->remuneraciones->where('año', $meta->year)
-                        ->where('mes', $meta->mes)
-                        ->where('adicional', $this->adicional)
-                        ->where('cargo_id', $info->cargo_id)
-                        ->where('planilla_id', $info->planilla_id)
-                        ->where('categoria_id', $info->categoria_id);
-                    
-                    $total = $info->remuneraciones->sum('monto');
-
-                    $tmp_base = $info->remuneraciones->where("base", 0)->sum('monto');
-                    $tmp_base = $tmp_base == 0 ? $info->total : $tmp_base;
-
-                    // agregamos datos a las remuneraciones
-                    $info->remuneraciones->push([
-                        "nombre" => "TOTAL",
-                        "monto" => $total
+        foreach ($historial as $history) {
+            // obtenemos las remuneraciones actuales del trabajador
+            $tmp_remuneraciones = $remuneraciones->where("historial_id", $history->id);
+            // total de remuneraciones
+            $total = $history->total_bruto;
+            // base imponible
+            $tmp_base = $history->base;
+            // verificar que no tenga más de 23 
+            if ($tmp_remuneraciones->count() < 23) {
+                $limite = 23 - $tmp_remuneraciones->count();
+                for($i = 0; $limite > $i; $i++) {
+                    $tmp_remuneraciones->put(rand(1000, 9999), (Object)[
+                        "nivel" => 0,
+                        "empty" => true,
+                        "key" => "",
+                        "monto" => ""
                     ]);
-
-                    //obtenemos los descuentos actuales del trabajador
-                    $info->descuentos = Descuento::where('año', $meta->year)
-                            ->where('mes', $meta->mes)
-                            ->where('adicional', $this->adicional)
-                            ->where('cargo_id', $info->cargo_id)
-                            ->where('categoria_id', $info->categoria_id)
-                            ->where('planilla_id', $info->planilla_id)
-                            ->get();
-
-                    $total_descto = $info->descuentos->sum('monto');
-
-                    //calcular base imponible
-                    $info->base = $tmp_base;
-
-                    //calcular total de descuentos
-                    $info->descuentos->push([
-                        "nombre" => "TOTAL",
-                        "monto" => $info->descuentos->sum('monto')
-                    ]);
-
-                    //calcular essalud
-                    $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
-
-                    //calcular total neto
-                    $info->neto = $total - $total_descto;
-
                 }
-
             }
+            // agregamos el total bruto
+            $tmp_remuneraciones->put(rand(1000, 9999), (Object)[
+                "nivel" => 1,
+                "key" => "TOTAL",
+                "monto" => $total
+            ]);
+                    
+            $history->remuneraciones = $tmp_remuneraciones->chunk(6);
 
-            $meta->works = $works;
+            //obtenemos los descuentos actuales del trabajador
+            $tmp_descuentos = $descuentos->where("historial_id", $history->id);
+            $total_descto = $history->total_desct;
+
+            //calcular base imponible
+            $history->base = $tmp_base;
+            //calcular total neto
+            $history->neto = $history->total_neto;
+
+            // agregamos el total neto
+            $tmp_descuentos->put(rand(1000, 9999), (Object)[
+                "nivel" => 1,
+                "key" => "DESC",
+                "monto" => $total_descto
+            ]);
+
+            $history->descuentos = $tmp_descuentos->chunk(6);
+
+            $tmp_aportaciones = $aportaciones->where("historial_id", $history->id);
+            $total_aportaciones = $tmp_aportaciones->sum("monto");
+
+            // total de las Aportaciones
+            $tmp_aportaciones->put(rand(1000, 9999), (Object)[
+                "nivel" => 1,
+                "key" => "APORT",
+                "monto" => $total_aportaciones
+            ]);
+
+            $history->aportaciones = $tmp_aportaciones;
 
         }
 
+        $meta->historial = $historial->chunk(5);
+
         $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
-        $pdf = PDF::loadView('pdf.planilla', compact('meses', 'metas', 'pagina'));
+        $pdf = PDF::loadView('pdf.planilla', compact('meses', 'meta', 'cronograma', 'pagina', 'money'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
 
-        $ruta = "/pdf/planilla_metas_{$this->mes}_{$this->year}_{$this->adicional}.pdf";
-        $pdf->save(storage_path("app/public") . $ruta);
+        $path = "pdf/planilla_meta_{$meta->metaID}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}.pdf";
+        $nombre = "Planilla del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID}";
+        $pdf->save(storage_path("app/public/{$path}"));
+
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage{$ruta}", "La planilla {$this->mes} del {$this->year} fué generada"));
+            $user->notify(new ReportNotification("/storage/{$path}", "{$archivo->name} fué generada"));
         }
 
     }

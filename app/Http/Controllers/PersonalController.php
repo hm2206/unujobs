@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/PersonalController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Personal;
@@ -8,59 +12,53 @@ use App\Http\Requests\PersonalRequest;
 use App\Models\Cargo;
 use App\Models\Sede;
 use App\Models\Dependencia;
-use App\Models\Oficina;
 use App\Models\Meta;
 use App\Models\Question;
 use \PDF;
 use Illuminate\Support\Facades\Storage;
 use \DB;
 
+/**
+ * Class PersonalController
+ * 
+ * @category Controllers
+ */
 class PersonalController extends Controller
 {
-
+    /**
+     * Muestra una lista de los requerimientos de personal
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        $personals = Personal::paginate(20);
+        $personals = Personal::orderBy('id', 'DESC')->paginate(20);
         return view('personal.index', compact('personals'));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo requerimiento de personal
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $sedes = Sede::get(["id", "descripcion"]);
         $current_sede = [];
-        $dependencias = [];
-        $current_dependencia = [];
-        $oficinas = [];
         $lugares = [];
         $metas = Meta::all();
 
-        if($sedes) {
-            $current_sede = old('sede_id') ? $sedes->find(old('sede_id')) : $sedes->first();
-            if ($current_sede) {
-                $dependencias = $current_sede->dependencias;
-                $lugares = $current_sede->oficinas;
-            }
-        }
-
-        if($dependencias) {
-            $current_dependencia = old('dependencia_id') 
-                ? $dependencias->find(old('dependencia_id')) 
-                : $dependencias->first();
-
-            if($current_dependencia) {
-                $oficinas = Oficina::where("sede_id", $current_sede->id)
-                    ->where("dependencia_id", old('dependencia_id'))
-                    ->get();
-            }
-
-        }
-
         $cargos = Cargo::get(["id", "descripcion"]);
 
-        return view("personal.create", \compact('sedes', 'dependencias', 'oficinas', 'cargos', 'lugares', 'metas'));
+        return view("personal.create", \compact('sedes', 'cargos', 'lugares', 'metas'));
     }
 
+    /**
+     * Almacena un requerimiento de personal recien creado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(PersonalRequest $request)
     {
         
@@ -68,7 +66,10 @@ class PersonalController extends Controller
         $requisitos = $request->input("requisitos", []);
 
         $personal = Personal::create($request->except(['aceptado', 'file', 'bases']));
-        $slug = \str_replace(" ", "-", $personal->cargo_txt) . "-" . date('Y');
+
+        //crear o cambiar slug
+        $slug = $personal->changeSlug($personal->cargo_txt, $personal->id);
+
         $personal->update([
             "bases" => json_encode($bases),
             "slug" => $slug
@@ -92,18 +93,28 @@ class PersonalController extends Controller
     }
 
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function show($id)
     {
-        $personal = Personal::findOrFail($id);
-        return view("personal.show", \compact('personal'));
+        return back();
+        //$personal = Personal::findOrFail($id);
+        //return view("personal.show", \compact('personal'));
     }
 
 
-    public function edit($id)
+    /**
+     * Muestra un formulario para editar un requerimiento de personal
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function edit($slug)
     {
         $sedes = Sede::all();
         $metas = Meta::all();
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
         $questions = [];
 
         foreach ($personal->questions as $q) {
@@ -119,19 +130,31 @@ class PersonalController extends Controller
     }
 
 
-    public function update(PersonalRequest $request, $id)
+    /**
+     * Actualiza un requerimiento de personal recien modificado
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $slug
+     * @return \Illuminate\Http\Redirect
+     */
+    public function update(PersonalRequest $request, $slug)
     {
-
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
 
         $bases = $request->input('bases', []);
         $requisitos = $request->input("requisitos", []);
 
+        //actualizando slug
+        $newSlug = $personal->changeSlug($personal->cargo_txt, $personal->id);
+
         $personal->update($request->except(['aceptado', 'file', 'bases']));
-        $personal->update(["bases" => json_encode($bases)]);
+        $personal->update([
+            "bases" => json_encode($bases),
+            "slug" => $newSlug
+        ]);
 
 
-        DB::table('questions')->where('personal_id', $id)->delete();
+        DB::table('questions')->where('personal_id', $personal->id)->delete();
 
         foreach ($requisitos as $key => $requisito) {
             $titulo = isset($requisito[0]) ? $requisito[0] : "";
@@ -147,23 +170,27 @@ class PersonalController extends Controller
 
         }
 
-        return back()->with(["success" => "EL registro se actualizó correctamente!"]);
+        return redirect()->route('personal.edit', $newSlug)->with(["success" => "EL registro se actualizó correctamente!"]);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Personal  $personal
      * @return \Illuminate\Http\Response
      */
     public function destroy(Personal $personal)
     {
-        //
+        return back();
     }
 
-    public function aceptar(Request $request, $id)
+    /**
+     * Actualiza el estado de la convocatoria  "aceptado" o "rechazado"
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function aceptar(Request $request, $slug)
     {
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
         $personal->update([
             "aceptado" => $personal->aceptado ? 0 : 1
         ]);
@@ -171,12 +198,18 @@ class PersonalController extends Controller
         return back();
     }
 
-
-    public function pdf($id)
+    /**
+     * Genera un archivo PDF del requerimiento de personal
+     *
+     * @param  string  $slug
+     * @return \PDF
+     */
+    public function pdf($slug)
     {
-        $personal = Personal::findOrFail($id);
+        $personal = Personal::where("slug", $slug)->firstOrFail();
         $bases = \json_decode($personal->bases);
         $pdf = PDF::loadView("pdf.requerimiento_personal", compact('personal', 'bases'));
         return $pdf->stream();
     }
+
 }

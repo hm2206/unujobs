@@ -1,4 +1,9 @@
 <?php
+/**
+ * ./app/Http/Controllers/BolsaController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 
 namespace App\Http\Controllers;
 
@@ -12,9 +17,18 @@ use App\Models\TypeEtapa;
 use \PDF;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Class BolsaController
+ * 
+ * @category Controllers
+ */
 class BolsaController extends Controller
 {
-    
+    /**
+     * Muestra una lista de recursos
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $year = request()->input('year', date('Y'));
@@ -28,10 +42,22 @@ class BolsaController extends Controller
         return view("bolsa.index", compact('year', 'convocatorias'));
     }
 
-    public function show($numero, $titulo)
+
+    /**
+     * Muestra un recurso específico
+     *
+     * @param  string $slugConvocatoria
+     * @param  string $slug
+     * @return \Illuminate\View\View
+     */
+    public function show($slugConvocatoria, $slug)
     {
-        $convocatoria = Convocatoria::findOrFail($numero);
-        $personal = Personal::where("slug", $titulo)->where('aceptado', 1)->firstOrFail();
+
+        //recuperar ids
+        $convocatoriaID = \base64_decode($slugConvocatoria);
+
+        $convocatoria = Convocatoria::findOrFail($convocatoriaID);
+        $personal = Personal::where("slug", $slug)->where('aceptado', 1)->firstOrFail();
         $types = [];
 
         $idParse = request()->postulante ? \base64_decode(request()->postulante) : Cache::get('postulante');
@@ -57,6 +83,14 @@ class BolsaController extends Controller
         return view("bolsa.show", compact('convocatoria', 'personal', 'mas', 'postulante', 'auth', 'types', 'current', 'idParse', 'isExpire'));
     }
 
+
+    /**
+     * Muestra un formulario de registro de postulacion
+     *
+     * @param  int $numero
+     * @param  string $titulo
+     * @return \Illuminate\Http\Response|Illuminate\View\View
+     */
     public function postular($numero, $titulo)
     {
         $ubigeos = Ubigeo::with(['departamentos' => function($d) {
@@ -80,6 +114,13 @@ class BolsaController extends Controller
 
     }
 
+
+    /**
+     * Valida y autentica a un postulante
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
     public function authenticar(Request $request)
     {
         $this->validate(request(), [
@@ -107,12 +148,22 @@ class BolsaController extends Controller
     }
 
 
-    public function resultados($id, $personalID)
+    /**
+     * Muestra un resultado determinado de las postulaciones
+     *
+     * @param  string $slugConvocatoria
+     * @param  string $slugPersonal
+     * @return PDF
+     */
+    public function resultados($slugConvocatoria, $slugPersonal)
     {
+
+        $id = \base64_decode($slugConvocatoria);
+
         $convocatoria = Convocatoria::findOrFail($id);
         $year = isset(explode("-", $convocatoria->fecha_final)[0]) ? explode("-", $convocatoria->fecha_final)[0] : date('Y');
         $etapas = TypeEtapa::all();
-        $current = Personal::findOrFail($personalID);
+        $current = Personal::where("slug", $slugPersonal)->firstOrFail();
 
 
         foreach ($etapas as $etapa) {

@@ -12,13 +12,34 @@
 
 <div class="col-md-12">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('categoria.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-categoria
+        theme="btn-primary"
+        redirect="{{ route('categoria.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-categoria>
 </div>
 
 @if (session('success'))
     <div class="col-md-12 mt-3 ">
         <div class="alert alert-success">
             {{ session('success') }}       
+        </div>
+    </div>
+@endif
+
+@if (session('danger'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ session('danger') }}       
+        </div>
+    </div>
+@endif
+
+@if ($errors->first('import'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ $errors->first('import') }}       
         </div>
     </div>
 @endif
@@ -30,14 +51,70 @@
 <div class="col-md-12">
 
     <div class="card">
-        <form class="card-header" method="POST" action="{{ route('export.categoria') }}">
-            @csrf
+        <div class="card-header">
+            
             <h4 class="card-title">Lista de Categorias</h4>
             <p class="card-category">Sub Módulo de Gestión de categorias</p>
-            <button class="btn btn-success">
-                <i class="fas fa-file-excel"></i> Exportar Cargos
-            </button>
-        </form>
+
+            <div class="row">
+
+                <form  method="POST" action="{{ route('export.categoria') }}" class="mr-2">
+                        @csrf
+                        <button class="btn btn-success btn-sm">
+                            <i class="fas fa-file-excel"></i> Exportar Categorias
+                        </button>
+                </form>
+                
+                <validacion 
+                    btn_text="Importar Categorias"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.categoria') }}"
+                >
+    
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/categoria_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="import" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+    
+                </validacion>
+
+                <validacion 
+                    class="ml-2"
+                    btn_text="Importar Conceptos a las Categorias"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.categoria.conceptos') }}"
+                >
+    
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/categoria_concepto_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="import_conceptos" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import_conceptos" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+    
+                </validacion>
+            </div>
+
+
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table">
@@ -52,10 +129,10 @@
                     <tbody>
                         @forelse ($categorias as $categoria)
                             <tr id="categoria-{{ $categoria->id }}">
-                                <th>{{ $categoria->id }}</th>
+                                <th>{{ $categoria->key }}</th>
                                 <th class="uppercase">{{ $categoria->nombre }}</th>
                                 <th>
-                                    <a href="{{ route('categoria.concepto', [$categoria->id, "page={$categorias->currentPage()}"]) }}" class="mb-1 btn btn-sm btn-primary">
+                                    <a href="{{ route('categoria.concepto', [$categoria->slug(), "page={$categorias->currentPage()}"]) }}" class="mb-1 btn btn-sm btn-primary">
                                         <i class="fas fa-plus"></i>
                                     </a>
                                     @foreach ($categoria->conceptos as $concepto)
@@ -69,12 +146,24 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('categoria.edit', $categoria->id) }}" class="btn btn-sm btn-warning">
+                                        <btn-categoria
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('categoria.index')}}"
+                                            :datos="{{ $categoria }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a target="__blank" href="{{ route('categoria.config', [$categoria->id, "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-success">
+                                        </btn-categoria>
+
+                                        <a href="{{ route('categoria.config', [$categoria->slug(), "page={$categorias->currentPage()}"]) }}" class="btn btn-sm btn-success">
                                             <i class="fas fa-cog"></i>
                                         </a>
+
+                                        <config-boleta
+                                            theme="btn-sm btn-danger"
+                                            :cargo="{{ $categoria }}"
+                                        >
+                                            <i class="fas fa-file-pdf"></i>
+                                        </config-boleta>
                                     </div>
                                 </th>
                             </tr>

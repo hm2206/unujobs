@@ -63,3 +63,12 @@
     80% {transform: scale(1)};
     100% {transform: scale(1.15)};
 }
+
+.scroll-y {
+    overflow-y: auto;
+    height: 100%;
+}
+
+.super-small {
+    font-size: 11px;
+}

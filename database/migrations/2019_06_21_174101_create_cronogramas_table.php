@@ -25,6 +25,8 @@ class CreateCronogramasTable extends Migration
             $table->string('pdf')->nullable();
             $table->integer('pendiente')->default(0);
             $table->text('observacion')->nullable();
+            $table->tinyInteger("estado")->default(0);
+            $table->tinyInteger('auto')->default(1);
             $table->timestamps();
         });
     }

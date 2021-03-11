@@ -16,7 +16,7 @@
 </div>
     
 <div class="col-md-12">
-    <form class="card" action="{{ route('convocatoria.update', $convocatoria->id) }}" method="POST">
+    <form class="card" action="{{ route('convocatoria.update', $convocatoria->slug()) }}" method="POST">
         @csrf
         @method('PUT')
         <h5 class="card-header">Actualizar Convocatoria</h5>
@@ -82,14 +82,21 @@
                     <h5>Requerimientos de Personal</h5>
 
                     <div class="row mt-3 mb-3">
-                        @foreach ($personals as $personal)
+                        @forelse($personals as $personal)
                             <div class="col-md-4">
                                 <input type="checkbox" value="{{ $personal->id }}" {!! $personal->convocatoria_id == $convocatoria->id ? 'checked' : null !!} 
                                     name="personals[]"
                                 >
-                                {{ $personal->slug }}
+                                {{ $personal->cargo_txt }}
                             </div>
-                        @endforeach
+
+                        @empty
+                            <div class="col-md-12">
+                                <b class="text-danger">
+                                    No hay requerimientos de personal disponibles
+                                </b>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 

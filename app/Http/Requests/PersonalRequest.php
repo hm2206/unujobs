@@ -1,9 +1,18 @@
 <?php
-
+/**
+ * Http/Requests/PersonalRequest.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Valida peticiones
+ * 
+ * @category Requests
+ */
 class PersonalRequest extends FormRequest
 {
     /**
@@ -17,6 +26,11 @@ class PersonalRequest extends FormRequest
     }
 
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
     public function rules()
     {
         $rules = [

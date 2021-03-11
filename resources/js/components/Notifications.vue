@@ -16,14 +16,15 @@
                     v-for="(notify, n) in notifications" :key="notify.id"
                     v-on:click="markAsRead(notify.id, n)"
                 >
-                    <a class="mr-3" target="__blank" :href="notify.data ? notify.data.url : '#'" >
+                    <a class="mr-3" :href="notify.data ? notify.data.url : '#'" target="__blank">
                         <div :class="`icon-circle ${notify.data ? notify.data.background : 'bg-primary'}`">
                             <i :class="`${notify.data ? notify.data.icono : 'fas fa-file-alt'} text-white`"></i>
                         </div>
                     </a>
                     <div>
                         <div class="small text-gray-500" v-text="getDate(notify.created_at)"></div>
-                        <a class="font-weight-bold" target="__blank" :href="notify.data ? notify.data.url : '#'" 
+                        <a class="font-weight-bold" :href="notify.data ? notify.data.url : '#'" 
+                            target="__blank"
                             v-text="notify.data.body">
                         </a>
                     </div>
@@ -39,12 +40,21 @@
 
             <a class="dropdown-item text-center small text-gray-500" href="#">Todas las notificaciones</a>
         </div>
+
+        <push :current="notifications"/>
+
     </li>
 </template>
 
 <script>
 import { setInterval, setTimeout, clearTimeout } from 'timers';
+import notify from 'sweetalert';
+import push from './push';
+
 export default {
+    components: {
+        push
+    },
     data() {
         return {
             notifications: [],
@@ -52,14 +62,14 @@ export default {
             count: "",
         }
     },
-    mounted() {
+    async mounted() {
         let that = this;
-        this.getNotify();
-        this.countUnread();
+        await this.getNotify();
+        await that.countUnread();
         this.intervalo = setInterval(function() {
             that.getNotify();
             that.countUnread();
-        }, 3000);
+        }, 5000);
     },
     methods: {
         getNotify(){
@@ -75,7 +85,6 @@ export default {
                 this.notifications = res.data;
 
             }).catch(err => {
-                alert("No se pudó obtener las notificaciones, Actualize la página");
                 clearTimeout(this.intervalo);
             })
         },
@@ -89,7 +98,6 @@ export default {
             api.then(res => {
                 this.notifications = res.data;
             }).catch(err => {
-                alert("Ocurrio un error al actualizar las notificationes, Actualize la página");
                 clearTimeout(this.intervalo);
             });
         },

@@ -1,6 +1,9 @@
 <?php
     namespace App\Tools;
-    
+	
+	/**
+	 * WebScrapping a la web de reniec
+	 */
 	class Reniec
 	{
 		var $cc;

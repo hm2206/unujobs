@@ -1,26 +1,36 @@
 <?php
-
+/**
+ * Models/User.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Modelo de la tabla users
+ * 
+ * @category Models
+ */
 class User extends Authenticatable
 {
     use Notifiable;
 
+
     /**
-     * The attributes that are mass assignable.
+     * Los campos que solo serán alterados en la base de datos
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'nombres', 'email', 'password', "ape_paterno", "ape_materno", "nombre_completo"
     ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * Los campos que no se mostrarán
      *
      * @var array
      */
@@ -36,4 +46,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function roles() 
+    {
+        return $this->belongsToMany(Role::class, "role_user");
+    }
+
+    public function modulos()
+    {
+        return $this->belongsToMany(Modulo::class, 'modulo_user');
+    }
+    
 }

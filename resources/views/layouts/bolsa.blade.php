@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>UNU | BOLSA DE TRABAJO @yield('title')</title>
+    <title>UNU | @yield('title', 'BOLSA DE TRABAJO')</title>
 
     <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/all.css') }}" rel="stylesheet" type="text/css">
@@ -21,6 +21,9 @@
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                     <li class="nav-item active">
                         <a class="nav-link" href="{{ route('bolsa.index') }}">Bolsa de Trabajo <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ '/consulta' }}">Consultas <span class="sr-only">(current)</span></a>
                     </li>
                     {{-- <li class="nav-item">
                         <a class="nav-link" href="#">{{ $year }}</a>

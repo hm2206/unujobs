@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -16,105 +15,109 @@ use App\Models\Remuneracion;
 use App\Models\Descuento;
 use \PDF;
 use \Mail;
+use \DB;
+use App\Models\Info;
 use App\Models\User;
+use \Carbon\Carbon;
 use App\Mail\SendBoleta;
+use App\Models\Meta;
+use App\Models\Report;
 use App\Notifications\ReportNotification;
+use App\Models\Historial;
+use App\Collections\BoletaCollection;
 
-
+/**
+ * Generar Archivo PDF de las Boletas mesuales de un determinado cronograma
+ */
 class ReportBoleta implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $mes;
-    private $year;
-    private $adicional;
+  
+    public $timeout = 0;
+    // report 
+    private $cronograma;
+    private $type_report;
+    private $meta_id;
 
-    public function __construct($mes, $year, $adicional)
+    /**
+     * @param string $mes
+     * @param string $year
+     * @param string $adicional
+     */
+    public function __construct($cronograma, $type_report, $meta_id)
     {
-        $this->mes = $mes;
-        $this->year = $year;   
-        $this->adicional = $adicional;
+        $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
+        $this->meta_id = $meta_id;
     }
 
-
+    /**
+     * Genera y procesa las boletas de los trabajadores
+     *
+     * @return void
+     */
     public function handle()
     {
+        $cronograma = $this->cronograma;
+        // metas
+        $meta = Meta::findOrFail($this->meta_id);
+        // historial
+        $historial = Historial::with('work', 'cargo', 'categoria', 'meta')
+            ->where('cronograma_id', $cronograma->id)
+            ->orderBy('orden', 'ASC')
+            ->where('meta_id', $meta->id)
+            ->get();
+        // obtener remuneraciones
+        $remuneraciones = Remuneracion::with("typeRemuneracion")
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->where("show", 1)
+            ->get();
 
-        $workIn = Remuneracion::where("mes", $this->mes)
-            ->where("año", $this->year)
-            ->where('adicional', $this->adicional)
-            ->get()
-            ->pluck(["work_id"]);
+        // obtenemos  descuentos
+        $descuentos = Descuento::with("typeDescuento")
+            ->whereIn("historial_id", $historial->pluck(['id']))
+            ->get(); 
 
-        $works = Work::whereIn("id", $workIn)->get();
+        $path = "pdf/boletas_meta_{$meta->metaID}_{$this->cronograma->mes}_{$this->cronograma->año}_{$this->cronograma->id}.pdf";
+        $nombre = "Boletas del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID}";
 
-        foreach ($works as $work) {
-            
-            foreach ($work->infos as $info) {
+        // generar configuracion para las boleta
+        $boleta = BoletaCollection::init();
+        $boleta->setRemuneraciones($remuneraciones);
+        $boleta->setDescuentos($descuentos->where('base', 0));
+        $boleta->setAportaciones($descuentos->where('base', 1));
+        $boleta->get($historial);
+        $pdf = $boleta->generate();
+        $pdf->setPaper('a3', 'portrait')->setWarnings(false);
+        $pdf->save(storage_path("app/public/{$path}"));
 
-                $remuneraciones = Remuneracion::where("work_id", $work->id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("adicional", $this->adicional)
-                    ->get();
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
 
-                $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
-                    ->where("categoria_id", $info->categoria_id)
-                    ->where("cargo_id", $info->cargo_id)
-                    ->where("planilla_id", $info->planilla_id)
-                    ->where("adicional", $this->adicional)
-                    ->get();
-
-                $total = $remuneraciones->sum("monto");
-                
-                $info->remuneraciones = $remuneraciones;
-                $info->descuentos = $descuentos->chunk(2)->toArray();
-                $info->total_descuento = $descuentos->sum('monto');
-
-
-                //base imponible
-                $info->base = $remuneraciones->where('base', 0)->sum('monto');
-
-                //aportes
-                $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
-                $info->accidentes = $work->accidentes ? ($info->base * 1.55) / 100 : 0;
-
-                //total neto
-                $info->neto = $total - $info->total_descuento;
-                $info->total_aportes = $info->essalud + $info->accidentes;
-
-            }
-
-            if ($work->email) {
-
-                try {
-                    $year = $this->year;
-                    $mes = $this->mes;
-                    $pdf_tmp = PDF::loadView('pdf.send_boleta', compact('work', 'year', 'mes'));
-                    $pdf_tmp->setPaper('a4', 'landscape');
-
-                    Mail::to($work->email)
-                    ->send(new SendBoleta($work, $this->year, $this->mes, $this->adicional, $pdf_tmp));
-                } catch (\Throwable $th) {
-                    \Log::info('No se pudó enviar boleta de: ' . $work->email . " error: " . $th);
-                }
-
-            }
-
+        if ($archivo) {
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
         }
-
-        
-        //genera el pdf;
-        $pdf = PDF::loadView("pdf.boleta_auto", compact('works'));
-        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        $pdf->save(storage_path("app/public/pdf/boletas_{$this->mes}_{$this->year}_{$this->adicional}.pdf"));
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage/pdf/boletas_{$this->mes}_{$this->year}_{$this->adicional}.pdf", 
-                "La boleta {$this->mes} del {$this->year} fué generada"
+            $user->notify(new ReportNotification("/storage/{$path}", 
+                $nombre
             ));
         }
 

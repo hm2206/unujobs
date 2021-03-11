@@ -38,13 +38,18 @@
                     <hr>
 
                     <div class="row">
-                        @foreach ($type->conceptos as $concepto)
+                        @foreach ($type->conceptos->chunk(5) as $body)
                             <div class="col-md-4">
-                                <div class="form-group">
-                                    <input type="checkbox" name="conceptos[]" value="{{ $concepto['id'] }}" {!! $concepto['check'] ? "checked" : null !!}>
-                                    <i class="fa fa-arrow-right text-danger"></i>
-                                    <b><b>{{ $concepto['key'] }}</b></b>
-                                </div>
+                                @foreach ($body as $concepto)
+                                    <div class="form-group">
+                                        <input type="checkbox" name="conceptos[]" value="{{ $concepto['id'] }}" {!! $concepto['check'] ? "checked" : null !!}>
+                                        <i class="fa fa-arrow-right text-danger"></i>
+                                        <b><b>{{ $concepto['key'] }}</b></b>
+                                        <button class="btn btn-sm btn-{{ $concepto['check'] ? 'primary' : 'dark' }}">
+                                            {{ $concepto['descripcion'] }}
+                                        </button>
+                                    </div>
+                                @endforeach
                             </div>
                         @endforeach
                     </div>

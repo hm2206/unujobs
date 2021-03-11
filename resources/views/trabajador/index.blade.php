@@ -10,14 +10,91 @@
 
 @section('content')
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-</div>
-
 <div class="row">
     <div class="col-md-12">
-        <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-        <a href="{{ route('job.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+        
+        <div class="row">
+            <div class="col-md-10">
+                <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
+                <a href="{{ route('job.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+                
+                <validacion 
+                    btn_text="Imp. Trabajadores"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.work') }}"
+                >
+        
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/work_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                                
+                    <div class="form-group">
+                        <label for="import" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+        
+                </validacion>
+        
+                <validacion 
+                    btn_text="Imp. Configuración"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('import.work.config') }}"
+                >
+        
+                    <div class="form-group">
+                        <a href="{{ url('/formatos/work_config_import.xlsx') }}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-file-excel"></i> Formato de importación
+                        </a>
+                    </div>
+                                
+                    <div class="form-group">
+                        <label for="import_config" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-upload"></i> Subir Archivo de Excel
+                            <input type="file" name="import" id="import_config" hidden>
+                        </label>
+                        <small class="text-danger">{{ $errors->first('import') }}</small>
+                    </div>
+        
+                </validacion>
+        
+                <validacion 
+                    btn_text="Exportar"
+                    method="post"
+                    token="{{ csrf_token() }}"
+                    url="{{ route('export.work') }}"
+                >
+        
+                            
+                    <div class="form-group">
+                        <small>Limite de trabajadores: <span class="text-danger">{{ $count }}</span></small>
+                    </div>
+        
+                    <div class="form-group">
+                        <input type="number" name="limite" class="form-control" value="{{ $count }}" max="{{ $count }}">
+                    </div>
+                                
+                    <div class="form-group">
+                        <input type="checkbox" name="order" title="Ordenar Descendentemente"> 
+                        <i class="fas fa-sort-alpha-up"></i> Ordenar Descendentemente
+                    </div>
+        
+                    <hr>
+        
+                </validacion>
+            </div>
+
+            <div class="col-md-2 text-right">
+                <h1>{{ $count }}</h1>
+            </div>
+        </div>
+
     </div>
     
     @if (session('success'))
@@ -27,62 +104,36 @@
             </div>
         </div>
     @endif
-    
-    <div class="col-md-6 mt-3">
-    
-        <form method="GET" class="card">
-            <div class="card-header">
-                Buscar Trabajadores
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="form-group">
-                            <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-info">Buscar <i class="fas fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
 
-    <div class="col-md-6">
-        <form method="POST" class="card mt-3" action="{{ route('export.work') }}">
-            @csrf
-            <div class="card-header">
-                Exportación de trabajadores
+    @if (session('danger'))
+        <div class="col-md-12 mt-3 ">
+            <div class="alert alert-danger">
+                {{ session('danger') }}       
             </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <small>Limite de trabajadores <span class="text-danger">{{ $jobs->count() }}</span></small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <input type="number" name="limite" class="form-control" value="{{ $jobs->count() }}" max="{{ $jobs->count() }}">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <input type="checkbox" name="order" title="Ordenar Descendentemente"> <i class="fas fa-sort-alpha-up"></i>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-success btn-sm">Exportar <i class="fas fa-file-excel"></i></button>
-                    </div>
-                </div>
-            </div>
-        </form>
+        </div>
+    @endif
+
+    @if ($errors->first('import'))
+    <div class="col-md-12 mt-3 ">
+        <div class="alert alert-danger">
+            {{ $errors->first('import') }}       
+        </div>
     </div>
+@endif
+
     
     <div class="col-md-12 mt-3">
     
-        {!! $jobs->appends(['query_search' => request('query_search')])->links() !!}
+        {!! 
+            $jobs->appends([
+                'query_search' => request('query_search'),
+                "planilla_id" => $planilla_id,
+                "cargo_id" => $cargo_id,
+                "categoria_id" => $categoria_id,
+                "meta_id" => $meta_id,
+                "estado" => $estado
+            ])->links() 
+        !!}
     
         <div class="card">
             <div class="card-header card-header-danger">
@@ -90,37 +141,97 @@
                 <p class="card-category">Sub Módulo de Trabajadores</p>
             </div>
             <div class="card-body">
+
+                <form method="GET card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <input type="text" placeholder="Buscar..." name="query_search" value="{{ request('query_search') }}" class="form-control" autofocus>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <select-filtro
+                                planilla_id="{{ $planilla_id }}"
+                                cargo_id="{{ $cargo_id }}"
+                                categoria_id="{{ $categoria_id }}"
+                                meta_id="{{ $meta_id }}"
+                                estado_id="{{ $estado }}"
+                                :plaza={{ $plaza }}
+                            >
+                            </select-filtro>
+                        </div>
+
+                        <div class="col-md-1">
+                            <button class="btn btn-info">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+
                 <div class="table-responsive">
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
                                 <th>Nombre Completo</th>
-                                <th>Número de documento</th>
-                                <th>Profesión</th>
-                                <th>teléfono</th>
-                                <th>Número de cuenta</th>
+                                <th>N° Documento</th>
+                                <th>Cargo</th>
+                                <th>Categoria</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($jobs as $job)
-                                <tr class="uppercase capitalize">
-                                    <th>{{ $job->nombre_completo }}</th>
-                                    <th>{{ $job->numero_de_documento }}</th>
-                                    <th>{{ $job->profesion }}</th>
-                                    <th>{{ $job->phone }}</th>
-                                    <th>{{ $job->numero_de_cuenta }}</th>
+                                <tr>
+                                    <th class="uppercase" width="30%">{{ $job->work->nombre_completo }}</th>
+                                    <th>{{ $job->work->numero_de_documento }}</th>
+                                    <th class="uppercase">
+                                        <span class="btn btn-sm btn-dark">
+                                            {{ $job->cargo ? $job->cargo->descripcion : '' }}
+                                        </span>
+                                    </th>
+                                    <th class="uppercase">
+                                        <span class="btn btn-sm btn-dark">
+                                            {{ $job->categoria ? $job->categoria->nombre : '' }}
+                                        </span>
+                                    </th>
                                     <th>
-                                        <div class="btn-group">
-                                            <a href="{{ route('job.edit', $job->id) }}" class="btn btn-circle btn-xs btn-warning">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </a>
-                                            <a href="{{ route('job.show', $job->id) }}" class="btn btn-xs btn-primary">
+                                        @if ($job->active)
+                                            <button class="btn-sm btn btn-success">
+                                                Activo
+                                            </button>
+                                        @else
+                                            <button class="btn-sm btn btn-danger">
+                                                Inactivo
+                                            </button>
+                                        @endif
+                                    </th>
+                                    <th>
+                                        <div class="row justify-content-around">
+                                            <btn-work-config theme="btn-warning btn-sm btn-circle"
+                                                param="{{ $job->work_id }}"
+                                                nombre_completo="{{ $job->work->nombre_completo }}"
+                                            >
+                                                <i class="fas fa-cog"></i>
+                                            </btn-work-config>
+                                            <a href="{{ route('job.show', $job->work->slug()) }}" class="btn btn-circle btn-sm btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('job.boleta', $job->id) }}" target="blank" title="Boleta" class="btn btn-circle btn-xs btn-dark">
-                                                <i class="fas fa-file"></i>
-                                            </a>
+
+                                            <btn-boleta theme="btn-dark btn-sm btn-circle"
+                                                param="{{ $job->id }}"
+                                                url="{{ route('job.boleta.store', $job->work_id) }}"
+                                                nombre_completo="{{ $job->work->nombre_completo }}"
+                                                token="{{ csrf_token() }}"
+                                            >
+                                                <i class="fas fa-file-alt"></i>
+                                            </btn-boleta>
+
+                                            <active-info 
+                                                :active="{{ $job->active }}"
+                                                param="{{ $job->id }}"
+                                            />
+
                                         </div>
                                     </th>
                                 </tr>

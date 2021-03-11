@@ -1,6 +1,15 @@
 <?php
 
+// authenticacion de perdida de sesion
+Route::post('current', 'UserController@current');
 
+/*
+\DB::listen(function($query) {
+    echo "<pre>{$query->sql}</pre>";
+});
+*/
+
+// ruta de authenticacion
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
@@ -26,13 +35,10 @@ Route::group(["prefix" => "RRHH"], function() {
     Route::resource("postulante", "PostulanteController");
     Route::post("postulante/{id}/cv", "PostulanteController@upload")->name('postulante.cv');
 
-    //Evaluaciones
-    Route::resource("evaluacion", "EvaluacionController");
-
 
     //Etapas
     Route::resource('etapa', 'EtapaController');
-    Route::get('etapa/{id}/convocatoria/{convocatoria}/pdf', 'EtapaController@pdf')->name('etapa.pdf');
+    Route::get('/etapa/{id}/convocatoria/{convocatoria}/pdf', 'EtapaController@pdf')->name('etapa.pdf');
 
 });
 
@@ -41,16 +47,8 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
 
     //Trabajadores
     Route::resource('job', 'JobController');
-    Route::get('job/{id}/remuneracion', 'JobController@remuneracion')->name('job.remuneracion');
-    Route::put('job/{id}/remuneracion', 'JobController@remuneracionUpdate')->name('job.remuneracion.update');
-    Route::get('job/{id}/descuento', 'JobController@descuento')->name('job.descuento');
-    Route::put('job/{id}/descuento', 'JobController@descuentoUpdate')->name('job.descuento.update');
-    Route::get('job/{id}/obligacion', 'JobController@obligacion')->name('job.obligacion');
     Route::get('job/{id}/boleta', 'JobController@boleta')->name('job.boleta');
     Route::post('job/{id}/boleta', 'JobController@boletaStore')->name('job.boleta.store');
-    Route::get('job/{id}/config', 'JobController@config')->name('job.config');
-    Route::post('job/{id}/config', 'JobController@configStore')->name('job.config.store');
-    Route::post('job/{id}/sindicato', 'JobController@sindicatoStore')->name('job.sindicato.store');
 
     //Metas
     Route::resource('meta', 'MetaController');
@@ -59,6 +57,7 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     Route::resource('cargo', 'CargoController');
     Route::get('cargo/{id}/categoria', 'CargoController@categoria')->name('cargo.categoria');
     Route::post('cargo/{id}/categoria', 'CargoController@categoriaStore')->name('cargo.categoria.store');
+    Route::delete('cargo/{id}/categoria/delete', 'CargoController@categoriaDelete')->name('cargo.categoria.delete');
     Route::get('cargo/{id}/config', 'CargoController@config')->name('cargo.config');
     Route::post('cargo/{id}/config', 'CargoController@configStore')->name('cargo.config.store');
 
@@ -75,8 +74,6 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
     //cronogramas
     Route::resource('cronograma', 'CronogramaController');
     Route::get('/cronograma/{id}/job', 'CronogramaController@job')->name('cronograma.job');
-    Route::get('/cronograma/{id}/add', 'CronogramaController@add')->name('cronograma.add');
-    Route::post('/cronograma/{id}/add', 'CronogramaController@addStore')->name('cronograma.add.store');
 
     
     //Descuentos
@@ -99,7 +96,6 @@ Route::group(["prefix" => "planilla", "middleware" => ["auth"]], function() {
 //Reportes
 Route::group(["prefix" => "export"], function() {
 
-    Route::get("cronograma/{id}/pdf", "ExportCronogramaController@pdf")->name('export.cronograma.pdf');
     Route::get("reporte/mes/{mes}/year/{year}/adicional/{adicional}", 'ExportCronogramaController@reporte')->name('export.reporte');
 
 
@@ -109,6 +105,19 @@ Route::group(["prefix" => "export"], function() {
     Route::post("cargo", "ExportController@cargo")->name("export.cargo");
     Route::post("categoria", "ExportController@categoria")->name("export.categoria");
     Route::post("cronograma/{id}", "ExportController@cronograma")->name("export.cronograma");
+
+});
+
+
+// Importaciones de datos en excel
+Route::group(["prefix" => "import"], function() {
+
+    Route::post("/work", "ImportController@work")->name("import.work");
+    Route::post('/etapa/{id}', "ImportController@etapa")->name("import.etapa");
+    Route::post("/meta", "ImportController@meta")->name("import.meta");
+    Route::post("/categoria", "ImportController@categoria")->name("import.categoria");
+    Route::post("/categoria/conceptos", "ImportController@workConfig")->name("import.categoria.conceptos");
+    Route::post("/work/config", "ImportController@workConfig")->name("import.work.config");
 
 });
 
@@ -126,14 +135,44 @@ Route::group(["prefix" => "convocatorias-de-trabajo"], function() {
 });
 
 
+ // Accesos
+ Route::group(["prefix" => "accesos", "middleware" => ["auth"]], function() {
+   
+    Route::get("/user", "AccesoController@user")->name("acceso.user");
+    Route::get("/modulo", "AccesoController@modulo")->name("acceso.modulo");
+
+});
+
+
+
+// Reportes
+Route::group(["prefix" => "reportes", "middleware" => ["auth"]], function() {
+   
+    Route::get("/", "ReportController@index")->name("report.index");
+
+});
+
+
+// Renderizar PDFS;
+Route::get("/pdf/{id}/boleta", 'PDFController@boleta');
+
 
 //notificaciones
-Route::get("user/unread/count", "UserController@countUnread");
-Route::get("user/unread", "UserController@unread");
-Route::post("user/{notify}/markasread", "UserController@markAsRead");
+Route::get("user/unread/count", "UserController@countUnread")->middleware('auth');
+Route::get("user/unread", "UserController@unread")->middleware('auth');
+Route::post("user/{notify}/markasread", "UserController@markAsRead")->middleware('auth');
+// Recuperar sesión
+Route::post("user/recovery", "UserController@recovery");
 
 
-//formatos de JSon
-Route::get('formato/json', 'FormatoController@json')->name('formato.json');
+/*Route::get('test', function() {
 
+    $pdf = \PDF::loadView('pdf.resumen_general_metas');
+    $pdf->setPaper('a4', 'landscape');
+    return $pdf->stream();
 
+});*/
+
+Route::get('consulta', 'ConsultaController@index');
+Route::post('consulta/validar', 'ConsultaController@validar')->name('consulta.validar');
+Route::get('consulta/work/{id}', 'ConsultaController@work')->name('consulta.work');

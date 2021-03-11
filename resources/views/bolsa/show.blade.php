@@ -9,13 +9,13 @@
             <a href="{{ route('bolsa.index', 'postulante=' . request()->postulante) }}" class="btn btn-danger">
                 <i class="fas fa-arrow-left"></i> atrás
             </a>
-            <a href="{{ route('personal.pdf', $personal->id) }}" class="btn btn-dark" target="__blank">
+            <a href="{{ route('personal.pdf', $personal->slug) }}" class="btn btn-dark" target="__blank">
                 <i class="fas fa-file-pdf"></i> PDF
             </a>
-            <a href="{{ route('bolsa.resultados', [$personal->convocatoria_id, $personal->id]) }}" class="btn btn-dark" target="__blank">
+            <a href="{{ route('bolsa.resultados', [$convocatoria->slug(), $personal->slug]) }}" class="btn btn-dark" target="__blank">
                 <i class="fas fa-file-pdf"></i> Resultados
             </a>
-            <a href="{{ route('convocatoria.pdf', $personal->convocatoria_id) }}" class="btn btn-dark" target="__blank">
+            <a href="{{ route('convocatoria.pdf', $convocatoria->slug()) }}" class="btn btn-dark" target="__blank">
                 <i class="fas fa-file-pdf"></i> Bases
             </a>
         </div>
@@ -247,7 +247,7 @@
                                 Postular
                             </button>
                         @else
-                            <a href="{{ route('bolsa.postular', [$convocatoria->id, $personal->slug]) }}" class="btn btn-primary btn-block">Postular</a>
+                            <a href="{{ route('bolsa.postular', [$convocatoria->slug(), $personal->slug]) }}" class="btn btn-primary btn-block">Postular</a>
                         @endif
                     </div>
                 </div>
@@ -272,7 +272,7 @@
                             >
                             <small class="text-danger">{{ $errors->first('numero_de_documento') }}</small>
                             <input type="hidden" name="redirect" 
-                                value="{{ route('bolsa.show', [$convocatoria->id, $personal->slug]) }}"
+                                value="{{ route('bolsa.show', [$convocatoria->slug(), $personal->slug]) }}"
                             >
                             <input type="hidden" name="personal_id" value="{{ $personal->id }}">
                         </div>
@@ -294,7 +294,7 @@
                         <ul>
                             @foreach ($mas as $per)
                                 <li>
-                                    <a href="{{ route('bolsa.show', [$convocatoria->numero_de_convocatoria, $per->slug]) }}">
+                                    <a href="{{ route('bolsa.show', [$convocatoria->slug(), $per->slug]) }}">
                                         {{ $per->cargo_txt }}
                                     </a>
                                 </li>

@@ -38,17 +38,6 @@
                 <b class="text-danger">{{ $errors->first('nombre') }}</b>
             </div>
 
-            <div class="form-group">
-                <label for="" class="form-control-label">Flujo <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" name="flujo" value="{{ old('flujo') ? old('flujo') : $afp->flujo }}">
-                <b class="text-danger">{{ $errors->first('flujo') }}</b>
-            </div>
-
-            <div class="form-group">
-                <label for="" class="form-control-label">Mixta <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" name="mixta" value="{{ old('mixta') ? old('mixta') : $afp->mixta }}">
-                <b class="text-danger">{{ $errors->first('mixta') }}</b>
-            </div>
 
             <div class="form-group">
                 <label for="" class="form-control-label">Aporte <span class="text-danger">*</span></label>
@@ -60,6 +49,12 @@
                 <label for="" class="form-control-label">Prima <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" name="prima" value="{{ old('prima') ? old('prima') : $afp->prima }}">
                 <b class="text-danger">{{ $errors->first('prima') }}</b>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="form-control-label">Prima Limite<span class="text-danger">*</span></label>
+                <input type="number" step="any" class="form-control" name="prima_limite" value="{{ old('prima_limite') ? old('prima_limite') : $afp->prima_limite }}">
+                <b class="text-danger">{{ $errors->first('prima_limite') }}</b>
             </div>
 
             <button class="btn btn-success" type="submit">Guardar <i class="fas fa-save"></i></button>

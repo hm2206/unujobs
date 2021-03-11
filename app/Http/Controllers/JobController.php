@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Http/Controllers/JobController.php
+ * 
+ * @author Hans Medina <twd2206@gmail.com>
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Work;
@@ -19,39 +23,100 @@ use App\Models\Cronograma;
 use App\Models\Descuento;
 use App\Models\TypeDescuento;
 use App\Models\Info;
+use App\Models\Detalle;
 use App\Jobs\ReportBoleta;
+use App\Jobs\ReportBoletaWork;
 use App\Jobs\ReportCronograma;
+use App\Models\Planilla;
 use \PDF;
+use \DB;
+use App\Collections\WorkCollection;
 
+/**
+ * Class JobController
+ * 
+ * @category Controllers
+ */
 class JobController extends Controller
 {
 
+    /**
+     * Muestra una lista de los trabajadores
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        $jobs = Work::orderBy('id', 'DESC');
+        // request para los filtros
+        $estado = request()->estado != "" ? request()->estado : 1;
         $like = request()->query_search;
+        $planilla_id = request()->input("planilla_id", "");
+        $cargo_id = request()->input("cargo_id", "");
+        $categoria_id = request()->input("categoria_id", "");
+        $meta_id = request()->input("meta_id", "");
+        $plaza = request()->plaza ? 1 : 0;
 
-        if($like) {
-            $jobs = self::query($like, $jobs);
+        // filtros
+        $config = [
+            "planilla" => $planilla_id,
+            "cargo" => $cargo_id,
+            "categoria" => $categoria_id,
+            "meta" => $meta_id,
+            "plaza" => $plaza,
+            "total" => 0
+        ];
+
+        // ejecutar filtro
+        $jobs = Info::with('work')->where('active', $estado);
+        
+        if ($config['planilla']) {
+            $jobs = $jobs->where("planilla_id", $config['planilla']);
         }
 
-        $jobs = $jobs->paginate(10);
-        return view('trabajador.index', \compact('jobs'));
+        if ($config['cargo']) {
+            $jobs = $jobs->where("cargo_id", $config['cargo']);
+        }
+
+        if ($config['categoria']) {
+            $jobs = $jobs->where("categoria_id", $config['categoria']);
+        }
+
+        if ($config['meta']) {
+            $jobs = $jobs->where("meta_id", $config['meta']);
+        }
+
+        if ($config['plaza']) {
+            $jobs = $jobs->where("plaza","like", $like);
+        }else {
+            $jobs = $jobs->whereHas('work', function($w) use($like) {
+                $w->where("nombre_completo", "like", "%{$like}%")
+                    ->orWhere("numero_de_documento", "like", "%{$like}%")
+                    ->orderBy('works.nombre_completo', 'DESC');
+            });
+        }
+
+        // obteneos los id de las personas
+        $index = $jobs->get(["id"]);
+        $count = $index->count();
+
+        // obtenos a los trabajadores
+        $jobs = $jobs->paginate(20);
+
+        return view('trabajador.index', \compact(
+            'jobs', 'estado', 'planilla_id', 'cargo_id', 'categoria_id', 'meta_id',
+            'count', "plaza"
+        ));
     }
 
-
+    /**
+     * Muestra un formulario para crear un nuevo trabajador
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $documento = request()->input("documento", null);
         $result = (object)["success" => false, "message" => ""];
-        $sindicatos = Sindicato::get(["id", "nombre"]);
-        $bancos = Banco::get(["id", "nombre"]);
-        $afps = Afp::get(["id", "nombre"]);
-        $cargos = Cargo::with('categorias')->get(['id', 'descripcion']);
-        $metas = Meta::all();
-        $categorias = Categoria::whereHas('cargos', function($q) {
-            $q->where("cargos.id", old('cargo_id'));
-        })->get();
 
         if (!old('numero_de_documento')) {
             if($documento) {
@@ -60,34 +125,64 @@ class JobController extends Controller
             }
         }
 
-        return view('trabajador.create', compact('decumento', 'result', 'sindicatos', 'bancos', 'afps', 'categorias', 'cargos', 'metas'));
+        return view('trabajador.create', compact('documento', 'result'));
     }
 
- 
+
+    /**
+     * Almacena un a nuevo trabajador
+     *
+     * @param  \App\Http\Requests\JobRequest  $request
+     * @return \Illuminate\Http\Redirect
+     */
     public function store(JobRequest $request)
     {
         $job = Work::create($request->all());
         $job->nombre_completo = "{$job->ape_paterno} {$job->ape_materno} {$job->nombres}";
         $job->save();
-        return redirect()->route('job.index')->with(["success" => "El registro se guardo correctamente"]);
+        return redirect()->route('job.show', $job->slug())->with(["success" => "El registro se guardo correctamente"]);
     }
 
 
-    public function show(Work $job)
+    /**
+     * Muestra a un trabajador específico
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function show($slug)
     {
+        //recuperar id
+        $id = \base64_decode($slug);
+        $job = Work::findOrFail($id);
         return view("trabajador.show", \compact('job'));
     }
 
-
-    public function edit(Work $job)
+    /**
+     * Muestra un formulario para editar a un trabajador
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function edit($slug)
     {
+        //recuperando el id
+        $id = \base64_decode($slug);
+        $job = Work::findOrFail($id);
+
         $bancos = Banco::get(["id", "nombre"]);
         $afps = Afp::get(["id", "nombre"]);
 
-        return view('trabajador.edit', compact('job','sindicatos', 'bancos', 'afps', 'cargos', 'categorias', 'metas'));
+        return view('trabajador.edit', compact('job', 'bancos', 'afps'));
     }
 
-
+    /**
+     * Actualiza a un trabajador recien modificado
+     *
+     * @param  \App\Http\Requests\JobRequest  $request
+     * @param  \App\Models\Work  $job
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(JobRequest $request, Work $job)
     {
         $job->update($request->all());
@@ -97,329 +192,117 @@ class JobController extends Controller
     }
 
 
+    /**
+     * Uncomented
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Work $job)
     {
-        //
+        return back();
     }
 
-    public function query($like, $jobs) 
+    
+
+    public function informacion($id) 
     {
-        return $jobs->where("nombre_completo", "like", "%{$like}%")
-            ->orWhere("numero_de_documento", "like", "%{$like}%");
+        $info = Info::with(["work", 'categoria'])->FindOrFail($id);
+        return [
+            "info" => $info,
+            "work" =>  $info->work,
+            "afps" => Afp::all(),
+            "bancos" => Banco::all()
+        ];
     }
 
-    public function remuneracion($id)
+
+
+    /**
+     * Muestra un formulario para visualizar, crear y editar las obligaciones judiciales del trabajador
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function obligacion($id)
     {
-        $job = Work::findOrFail($id);
-
-        $current = request()->categoria_id ? $job->infos->find(request()->categoria_id) : $job->infos->first();
-        $categorias = $job->infos;
-
-        $year = request()->year ? (int)request()->year : date('Y');
-        $mes = request()->mes ? (int)request()->mes : (int)date('m');
+        $work = Work::with('obligaciones')->findOrFail($id);
+        
+        // configuración
+        $year = request()->input('year', date('Y'));
+        $mes = request()->input('mes', date('m'));
         $adicional = request()->adicional ? 1 : 0;
-        $numero = request()->numero ? request()->numero : 1;
-        $remuneraciones = [];
-        $dias = 30;
-        $total = 0;
+        $categoria_id = request()->categoria_id;
+        $numero = request()->numero ? request()->numero : null;
+        $seleccionar = [];
 
-        if (!$current) {
-            return back();
-        }
-
-        $selecionar = [];
         $cronograma = Cronograma::where('mes', $mes)
                 ->where('año', $year)
                 ->where("adicional", $adicional);
-        
-        if ($current) {
-            $cronograma = $cronograma->where("planilla_id", $current->planilla_id);
-        }
-
 
         if($adicional) {
+
             $seleccionar = $cronograma->get();
             $cronograma = $cronograma->where("numero", $numero);
-        }
-
-        $cronograma = $cronograma->first();
-
-        if($cronograma) {
-
-            if($current) {
-
-                $remuneraciones = Remuneracion::where("work_id", $job->id)
-                ->where('mes', $mes)
-                ->where('año', $year)
-                ->where("categoria_id", $current->categoria_id)
-                ->where("cargo_id", $current->cargo_id)
-                ->where("cronograma_id", $cronograma->id)
-                ->get();
-
-                $dias = $cronograma->dias;
-                $total = $remuneraciones->sum('monto');
-            }
-
+        
         }
         
-        return view("trabajador.remuneracion", 
-            compact(
-                'job', 'categoria', 'remuneraciones', 'total', 
-                'dias', 'mes', 'year', 'cronograma', 'numero', 'seleccionar',
-                'current', 'categorias'
-            )
-        );
+        $cronograma = $cronograma->firstOrFail();
+
+        return [
+            "work" => $work,
+            "obligaciones" => $work->obligaciones->where("categoria_id", $categoria_id),
+            "cronograma" => $cronograma,
+            "numeros" => $seleccionar
+        ];
+
     }
 
 
-    public function remuneracionUpdate(Request $request, $id)
-    {
-
-        $this->validate(request(), [
-            "cronograma_id" => "required",
-            "categoria_id" => "required",
-            "categoria_id" => "required",
-            "planilla_id" => "required"
-        ]);
-        
-        $job = Work::findOrFail($id);
-        $cronograma = Cronograma::find($request->cronograma_id);
-        $remuneraciones = $job->remuneraciones
-            ->where("cronograma_id", $cronograma->id)
-            ->where("cargo_id", $request->cargo_id)
-            ->where("planilla_id", $request->planilla_id)
-            ->where("categoria_id", $request->categoria_id);
-
-        $info = Info::where("work_id", $job->id)
-            ->where("cargo_id", $request->cargo_id)
-            ->where("categoria_id", $request->categoria_id)
-            ->firstOrFail();
-
-        $total = 0;
-
-        foreach ($remuneraciones as $remuneracion) {
-            if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
-                $tmp_remuneracion = $request->input($remuneracion->id);
-                if (is_numeric($tmp_remuneracion)) {
-                    $remuneracion->monto = round($tmp_remuneracion, 2);
-                    $remuneracion->save();
-                    $total += $tmp_remuneracion;
-                }
-            }else {
-                return back()->with(["danger" => "No es posible actualizar estos datos"]);
-            }
-        }
-
-        $info->update(["total" => round($total, 2)]);
-        return back();
-    }
-
-
-    public function descuento($id) 
-    {
-        $job = Work::findOrFail($id);
-
-        $current = request()->categoria_id ? $job->infos->find(request()->categoria_id) : $job->infos->first();
-        $categorias = $job->infos;
-
-        $year = request()->year ? (int)request()->year : date('Y');
-        $mes = request()->mes ? (int)request()->mes : (int)date('m');
-        $adicional = request()->adicional ? 1 : 0;
-        $numero = request()->numero ? request()->numero : 1;
-        $descuentos = [];
-        $types = [];
-        $dias = 30;
-        $total = 0;
-        $base = 0;
-
-        if (!$current) {
-            return back();
-        }
-
-        $cronograma = Cronograma::where('mes', $mes)
-            ->where('año', $year)
-            ->where("adicional", $adicional);
-
-        if ($current) {
-            $cronograma = $cronograma->where("planilla_id", $current->planilla_id);
-        }
-
-        if($adicional) {
-            $seleccionar = $cronograma->get();
-            $cronograma = $cronograma->where("numero", $numero);
-        }
-
-        $cronograma = $cronograma->first();
-
-        if($cronograma) {
-            $descuentos = Descuento::with('typeDescuento')->where("work_id", $job->id)
-            ->where('mes', $mes)
-            ->where('año', $year)
-            ->where("categoria_id", $current->categoria_id)
-            ->where("cargo_id", $current->cargo_id)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
-            $types = Remuneracion::where('work_id', $job->id)
-                ->where("cronograma_id", $cronograma->id)
-                ->where("categoria_id", $current->categoria_id)
-                ->where("cargo_id", $current->cargo_id)
-                ->where("base", 0)->get();
-
-            $base = $types->sum('monto');
-            $total = $descuentos->sum('monto');
-            $dias = $cronograma->dias;
-        }
-
-        $aporte = $base * 0.09;
-        $aporte = $base < 930 ? 83.70 : $aporte;
-        $total_neto = $job->total - $total;
-
-        return view("trabajador.descuento", 
-            compact('job', 'descuentos', 'cronograma', 'year', 'mes', 'categoria',
-                'seleccionar', 'adicional', 'numero', 'total', 'dias', 'base', 'aporte', 
-                'total_neto', 'current', 'categorias'
-            ));
-    }
-
-
-    public function descuentoUpdate(Request $request, $id)
-    {
-        $this->validate(request(), [
-            "cronograma_id" => "required",
-            "categoria_id" => "required",
-            "categoria_id" => "required",
-            "planilla_id" => "required"
-        ]);
-
-        $job = Work::findOrFail($id);
-        $cronograma = Cronograma::find($request->cronograma_id);
-        $descuentos = Descuento::where("work_id", $job->id)
-            ->where("cronograma_id", $cronograma->id)
-            ->where("categoria_id", $request->categoria_id)
-            ->where("planilla_id", $request->planilla_id)
-            ->where("cargo_id", $request->cargo_id)
-            ->get();
-
-        foreach ($descuentos as $descuento) {
-            if($cronograma->mes == (int)date('m') && $cronograma->año == date('Y')) {
-                $tmp_descuento = $request->input($descuento->id);
-                if (is_numeric($tmp_descuento)) {
-                    $descuento->monto = round($tmp_descuento, 2);
-                    $descuento->save();
-                }
-            }else {
-                return back()->with(["danger" => "No es posible actualizar estos datos"]);
-            }
-        }
-
-        return back();
-    }
-
-
-    public function obligacion($id)
-    {
-        $job = Work::findOrFail($id);
-
-        $year = request()->year ? (int)request()->year : date('Y');
-        $mes = request()->mes ? (int)request()->mes : (int)date('m');
-        $adicional = request()->adicional ? 1 : 0;
-        $numero = request()->numero ? request()->numero : 1;
-        $descuentos = [];
-        $dias = 30;
-
-        $cronograma = Cronograma::where('mes', $mes)
-            ->where('año', $year)
-            ->where("planilla_id", $job->planilla_id)
-            ->where("adicional", $adicional);
-
-        if($adicional) {
-            $seleccionar = $cronograma->get();
-            $cronograma = $cronograma->where("numero", $numero);
-        }
-
-        $cronograma = $cronograma->first();
-
-        if($cronograma) {
-            $descuentos = Descuento::with('typeDescuento')->where("work_id", $job->id)
-            ->where('mes', $mes)
-            ->where('año', $year)
-            ->where("categoria_id", $job->categoria_id)
-            ->where("cronograma_id", $cronograma->id)
-            ->get();
-
-            $dias = $cronograma->dias;
-        }
-
-        $total = 0;
-
-        foreach($descuentos as $descuento) {
-            $total += $descuento->monto;
-        }
-
-        return view("trabajador.obligacion", 
-            compact('cronograma', 'year', 'mes', 'adicional', 'numero', 'dias', 'job', 'total', 'seleccionar'));
-    }
-
+    /**
+     * Muestra un panel de checkbox para generar las boletas de todos los cronogramas seleccionados
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
     public function boleta($id)
     {
         $work = Work::findOrFail($id);
         $remuneraciones = Remuneracion::where('work_id', $work->id)->get();
-        $cronogramas = Cronograma::whereIn("id", $remuneraciones->pluck(['cronograma_id']))
-            ->orderBy('id', 'ASC')->paginate(30);
+        $cronogramas = Cronograma::with("planilla")->whereIn("id", $remuneraciones->pluck(['cronograma_id']))
+            ->orderBy('id', 'DESC')->paginate(20);
 
-        $meses = [
-            "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-            "Julio", "Agosto","Septiembre","Octubre","Noviembre","Diciembre"
-        ];
-
-        return view('trabajador.boleta', compact('work', 'cronogramas', 'meses'));
+        return $cronogramas;
     }
 
+    /**
+     * Genera un pdf de los cronogramas seleccionados recientemente en formato de boletas
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\View\View
+     */
     public function boletaStore(Request $request, $id)
     {
         $work = Work::findOrFail($id);
-        $whereIn = $request->input('cronogramas', []);
-        $cronogramas = Cronograma::whereIn("id", $whereIn)->get();
+        $inHistorial = $request->input('historial', []);
 
-        $cronogramas->map(function($q) use($work) {
-            $remuneraciones = Remuneracion::where("work_id", $work->id)
-                ->where("cronograma_id", $q->id)
-                ->get();
+        ReportBoletaWork::dispatch($inHistorial, $work)->onQueue('medium');
 
-            $descuentos = Descuento::with('typeDescuento')->where('work_id', $work->id)
-                ->where("cronograma_id", $q->id)
-                ->get();
-            
-            $q->remuneraciones = $remuneraciones;
-            $q->descuentos = $descuentos->chunk(2)->toArray();
-            $q->total_descuento = $descuentos->sum('monto');
-
-
-            //base imponible
-            $q->base = $remuneraciones->where('base', 0)->sum('monto');
-
-            //aportes
-            $q->essalud = $q->base < 930 ? 83.7 : $q->base * 0.09;
-            $q->accidentes = $work->accidentes ? ($base * 1.55) / 100 : 0;
-
-            //total neto
-            $q->neto = $work->total - $q->total_descuento;
-            $q->total_aportes = $q->essalud + $q->accidentes;
-
-            return $q;
-        });
-
-        // return $cronogramas;
-
-        $pdf = PDF::loadView("pdf.boleta", compact('work', 'cronogramas'));
-        $pdf->setPaper('a4', 'landscape')->setWarnings(false);
-        return $pdf->stream("boleta - {$work->nombre_completo}");
+        return "generando boleta";
     }
 
 
-    public function config($id)
+    /**
+     * Muestra un formulario para configurar los cargos
+     * Y un panel con checkbox para configurar los sindicatos
+     *
+     * @param  string  $slug
+     * @return \Illuminate\View\View
+     */
+    public function config($slug)
     {  
+        //recuperar id del trabajador
+        $id = \base64_decode($slug);
         $work = Work::with('infos')->findOrFail($id);
         $cargoNotIn = $work->infos->pluck(["id"]);
         $cargos = Cargo::whereNotIn("id", $cargoNotIn)->get();
@@ -439,6 +322,13 @@ class JobController extends Controller
         return view('trabajador.configuracion', compact('work', 'cargos', 'categorias', 'current', 'sindicatos', 'metas'));
     }
 
+    /**
+     * Almacena la configuracion de los cargos del trabajador creados recientemente
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return  \illuminate\Http\RedirectResponse
+     */
     public function configStore(Request $request, $id)
     {
 
@@ -450,29 +340,244 @@ class JobController extends Controller
             "perfil" => "required"
         ]);
 
-        $work = Work::findOrFail($id);
+       try {
 
-        $info = Info::updateOrCreate([
-            "work_id" => $work->id,
-            "cargo_id" => $request->cargo_id,
-            "categoria_id" => $request->categoria_id,
-            "planilla_id" => $request->planilla_id,
-            "meta_id" => $request->meta_id
+            $work = Work::findOrFail($id);
+
+            $info = Info::updateOrCreate([
+                "work_id" => $work->id,
+                "cargo_id" => $request->cargo_id,
+                "categoria_id" => $request->categoria_id,
+                "planilla_id" => $request->planilla_id,
+                "meta_id" => $request->meta_id
+            ]);
+
+            $info->update($request->all());
+
+            $infos = Info::with(['planilla', 'cargo', 'categoria', 'meta'])
+                ->where("work_id", $work->id)
+                ->where("active", 1)->get();
+
+            return [
+                "status" => true,
+                "message" => "El registro fué agregado correctamente!",
+                "body" => $infos
+            ];
+
+       } catch (\Throwable $th) {
+           
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => $th
+            ];
+
+       }
+
+    }
+
+
+    public function configDelete(Request $request, $id)
+    {
+        $this->validate(request(), [
+            "info" => "required"
         ]);
 
-        $info->update($request->all());
+        try {
 
-        return redirect()->route('job.config', $work->id);
+            $work = Work::findOrFail($id);
+            $info = Info::findOrFail($request->info);
+            $info->active = 0;
+            $info->save();
 
+            return [
+                "status" => true,
+                "message" => "El registro eliminado correctamente!",
+                "body" => $info
+            ];
+
+        } catch (\Throwable $th) {
+
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => $th
+            ];
+
+        }
     }
 
     
+    /**
+     * Almacena la configuracion de los sindicatos del trabajador agregados recientemente
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return  \illuminate\Http\RedirectResponse
+     */
     public function sindicatoStore(Request $request, $id)
     {
-        $work = Work::findOrFail($id);
-        $sindicatos = $request->input('sindicatos', []);
-        $work->sindicatos()->sync($sindicatos);
-        return back();
+        try {
+
+            $work = Work::findOrFail($id);
+            $sindicatos = $request->input('sindicatos', []);
+            $work->sindicatos()->sync($sindicatos);
+
+            return [
+                "status" => true,
+                "message" => "El registro fué agregado correctamente!",
+                "body" =>  $work
+            ];
+
+        } catch (\Throwable $th) {
+
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "Ocurrió un error al procesar la operación",
+                "body" => $th
+            ];
+
+        }
     }
 
+
+
+    public function retencion($id)
+    {
+        $work = Work::findOrFail($id);
+        $types = TypeDescuento::where("activo", 1)
+            ->where("retencion", 1)
+            ->orWhere("base", 1)
+            ->get();
+        
+        foreach ($types as $type) {
+
+            $tmp_type = $work->typeDescuentos->where("id", $type->id)->count();
+            if ($tmp_type > 0) {
+                $type->checked = true;
+            }else {
+                $type->checked = false;
+            }
+
+        }
+
+        return $types;
+
+    }
+
+
+
+    public function retencionStore(Request $request, $id)
+    {
+
+        $work = Work::findOrFail($id);
+        
+        try {
+
+            $retenciones = $request->input('retenciones', []);
+            $work->typeDescuentos()->sync($retenciones);
+
+            return [
+                "status" => true,
+                "message" => "Los datos se guardarón correctamente!"
+            ];
+
+        } catch (\Throwable $th) {
+            
+            \Log::info($th);
+
+            return [
+                "status" => false,
+                "message" => "El registro fué eliminado correctamente!"
+            ];
+
+        }
+
+    }
+
+
+    public function detalle($id) 
+    {
+
+        $info = Info::findOrFail($id);
+
+        // configuración
+        $year = request()->input('year', date('Y'));
+        $mes = request()->input('mes', date('m'));
+        $adicional = request()->adicional ? 1 : 0;
+        $categoria_id = request()->categoria_id;
+        $numero = request()->numero ? request()->numero : 1;
+
+
+        // almacenar
+        $total = 0;
+        $dias = 30;
+        $base = 0;
+        $observacion = "";
+        $seleccionar = [];
+        $types = [];
+        $cronograma = Cronograma::where('mes', $mes)
+                ->where('año', $year)
+                ->where("adicional", $adicional)
+                ->where("planilla_id", $info->planilla_id);
+
+
+        if($adicional) {
+
+            $seleccionar = $cronograma->get();
+            $cronograma = $cronograma->where("numero", $numero);
+        
+        }
+        
+        $cronograma = $cronograma->firstOrFail();
+        $detalles = Detalle::where("cronograma_id", $cronograma->id)
+            ->orderBy("type_descuento_id", 'ASC')
+            ->where("info_id", $info->id)
+            ->get();
+
+        
+
+        $observacion = isset($observacion->observacion) ? $observacion->observacion : '';
+
+        $dias = $cronograma->dias;
+
+        return [
+            "cronograma" => $cronograma,
+            "numeros" => $seleccionar,
+            "dias" => $dias,
+            "adicional" => $adicional,
+            "year" => $year,
+            "mes" => $mes,
+            "detalles" => $detalles,
+        ];
+    } 
+
+
+    public function observacionUpdate(Request $request, $id)
+    {
+        try {
+            $cronograma_id = $request->cronograma_id;
+            $observacion = $request->observacion;
+            $create = DB::table("work_cronograma")->where("cronograma_id", $cronograma_id)
+                ->where("work_id", $id)
+                ->update(["observacion" => $observacion]);
+
+            return [
+                "status" => true,
+                "message" => "La observación se guardo correctamente!"
+            ];
+        } catch (\Throwable $th) {
+            \Log::info($th);
+            return [
+                "status" => false,
+                "message" => "Ocurrio un error al guardar la observación"
+            ];
+        }
+    }
 }

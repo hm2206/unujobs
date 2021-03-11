@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -8,112 +7,196 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-use \PDF;
-use App\Models\Work;
+use App\Exports\PlanillaExport;
+use App\Models\TypeRemuneracion;
+use App\Models\TypeCategoria;
+use App\Models\TypeDescuento;
+use App\Models\Cargo;
+use App\Models\Cronograma;
+use App\Models\Remuneracion;
 use App\Models\Descuento;
-use App\Models\User;
+use App\Models\Afp;
+use App\Models\Historial;
 use App\Notifications\ReportNotification;
+use \PDF;
+use App\Models\User;
+use App\Models\Report;
+use Illuminate\Support\Facades\Storage;
+use \Carbon\Carbon;
+use App\Models\Meta;
+use App\Tools\Money;
+use App\Models\TypeAportacion;
+use App\Models\TypeAfp;
 
+/**
+ * Genera pdf de la planilla
+ */
 class GeneratePlanillaMetaPDF implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
- 
-    private $metas = [];
-    private $config;
 
-    public function __construct($metas, array $config)
+    private $cronograma;
+    public $timeout = 0;
+    private $type_report;
+    private $meta_id;
+
+    /**
+     * configuramos un poco
+     *
+     * @param \App\Models\Cronograma $cronograma
+     */
+    public function __construct($cronograma, $type_report, $meta_id)
     {
-        $this->metas = $metas;
-        $this->config = $config;
+        $this->cronograma = $cronograma;
+        $this->type_report = $type_report;
+        $this->meta_id = $meta_id;
     }
 
-
+    /**
+     * Generamos el pdf de las planilas generales
+     *
+     * @return void
+     */
     public function handle()
     {
-        $metas = $this->metas;
-        $pagina = 0;
-        $config = $this->config;
+        $meses = [
+            "Enero", "Febrero", "Marzo", "Abril", 
+            "Mayo", 'Junio', 'Julio', 'Agosto', 
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
 
-        //traemos trabajadores que pertenescan a la meta actual
-        $metas->map(function($meta) use($config) {
+        $meta = Meta::findOrFail($this->meta_id);
+        $cronograma = $this->cronograma;
+        $historial = Historial::where("cronograma_id", $cronograma->id)->where('meta_id', $meta->id)->get();
+        $money = new Money;
 
-            $meta->mes = $config['mes'];
-            $meta->year = $config['year'];
+        $inTypeAFP = collect();
+        $afps = Afp::orderBy("nombre", "ASC")->where('activo', 1)->get();
+        // obtenemos los id de los descuentos
+        foreach ($afps as $afp) {
+            $inTypeAFP->push($afp->prima_descuento_id);
+            $inTypeAFP->push($afp->aporte_descuento_id);
+        }
+        // obtenemos los type descuento de los afps
+        $afpTypes = TypeAfp::whereHas("type_descuento")->get();
+         // guardamos los type descuentos de los types afp
+         foreach ($afpTypes as $type) {
+            $inTypeAFP->push($type->type_descuento_id);
+        }
+        // obtenemos los tipos de descuentos, remuneraciones y aportaciones
+        $type_remuneraciones = TypeRemuneracion::where("report", 1)->where("activo", 1)->get();
+        $type_descuentos = TypeDescuento::where("activo", 1)
+            ->whereNotIn("id", $inTypeAFP)
+            ->where('base', 0)
+            ->get();
+        $type_aportaciones = TypeAportacion::where('activo', 1)->get();
 
-            //obtener a los trabajadores que esten en esta meta
-            $works = Work::whereHas('infos', function($i) use($meta) {
-                $i->where('infos.meta_id', $meta->id);
-            })->with(['infos' => function($i) use($meta) {
-                $i->where('infos.meta_id', $meta->id);
-            }])->get();
+        // obtener tipos de categorias que pertenecen a la planilla
+        $type_categorias = TypeCategoria::with('cargos')
+            ->whereHas('cargos', function($car) use($cronograma) {
+                $car->where("planilla_id", $cronograma->planilla_id);
+            })->get();
+        // obtener las remuneraciones por meta presupuestal
+        $remuneraciones = Remuneracion::whereIn("historial_id", $historial->pluck(['id']))
+            ->whereIn("type_remuneracion_id", $type_remuneraciones->pluck(['id']))
+            ->where('cronograma_id', $cronograma->id)
+            ->get();
+        // obtener descuentos por la meta presupuestal
+        $descuentos = Descuento::whereIn("historial_id", $historial->pluck(['id']))
+            ->where('cronograma_id', $cronograma->id)
+            ->get();
 
-            foreach ($works as $work) {
-                
-                foreach ($work->infos as $info) {
+        foreach ($type_remuneraciones as $type_remuneracion) {
+            // obtenemos los tipos de categorias
+            $type_remuneracion->type_categorias = $type_categorias;
+            $type_remuneracion->total = $remuneraciones->where("type_remuneracion_id", $type_remuneracion->id)->sum("monto");
+        }
 
-                    //obtenemos las remuneraciones actuales del trabajador
-                    $info->remuneraciones = $work->remuneraciones->where('año', $config['year'])
-                        ->where('mes', $config['mes'])
-                        ->where('cargo_id', $info->cargo_id)
-                        ->where('categoria_id', $info->categoria_id);
-                    
-                    $total = $info->remuneraciones->sum('monto');
+        // configurar afps
+        foreach($afps as $afp) {
+            $typesAFP = $afp->type_afps->pluck(['type_descuento_id']);
+            $pluck = [$afp->prima_descuento_id, $afp->aporte_descuento_id];
+            $historialAFP = $historial->where('afp_id', $afp->id)->pluck('id');
+            // almacenamos el monto de afp
+            $afp_monto = $descuentos->whereIn("type_descuento_id", $pluck)
+                ->whereIn('historial_id', $historialAFP)
+                ->sum("monto");
+            // almacenamos el monto del type afp
+            $type_afp_monto = $descuentos->whereIn("type_descuento_id", $typesAFP)
+                ->whereIn("historial_id", $historialAFP)
+                ->sum('monto');
+            // almacenamos el monto del afp
+            $afp->monto = round($afp_monto + $type_afp_monto, 2);
+        }
 
-                    $tmp_base = $info->remuneraciones->where("base", 0)->sum('monto');
-                    $tmp_base = $tmp_base == 0 ? $info->total : $tmp_base;
+        // configuracion de los descuentos
+        foreach ($type_descuentos as $desc) {
+            $desc->monto = $descuentos->where("type_descuento_id", $desc->id)->sum('monto');
+        }
 
-                    // agregamos datos a las remuneraciones
-                    $info->remuneraciones->push([
-                        "nombre" => "TOTAL",
-                        "monto" => $total
-                    ]);
+        // total de los descuentos
+        $total_descuentos = $historial->sum('total_desct');
 
-                    //obtenemos los descuentos actuales del trabajador
-                    $info->descuentos = Descuento::where('año', $config['year'])
-                            ->where('mes', $config['mes'])
-                            ->where('cargo_id', $info->cargo_id)
-                            ->where('categoria_id', $info->categoria_id)
-                            ->get();
+        // configurar aportaciones
+        $total_aportaciones = 0;
 
-                    $total_descto = $info->descuentos->sum('monto');
+        // total de afps
+        $afp_total = $afps->sum('monto');
 
-                    //calcular base imponible
-                    $info->base = $tmp_base;
+        foreach ($type_aportaciones as $aport) {
+            $aport->monto = $descuentos->where("type_descuento_id", $aport->type_descuento_id)->sum("monto");
+            $total_aportaciones += $aport->monto;
+        }
 
-                    //calcular total de descuentos
-                    $info->descuentos->push([
-                        "nombre" => "TOTAL",
-                        "monto" => $info->descuentos->sum('monto')
-                    ]);
+        // configuracion de los totales
+        $total_bruto = $historial->sum('total_bruto');
+        $total_liquido = $historial->sum('total_neto');
 
-                    //calcular essalud
-                    $info->essalud = $info->base < 930 ? 83.7 : $info->base * 0.09;
+        $sub_titulo = "RESUMEN SIAF META {$meta->metaID} DEL MES " . $meses[$cronograma->mes - 1] . " - " . $cronograma->año;
+        $titulo = $meta->metaID;
 
-                    //calcular total neto
-                    $info->neto = $info->total - $total_descto;
+        $pdf = PDF::loadView('pdf.resumen_meta_por_meta', \compact(
+            'type_remuneraciones', 'meses', 'cronograma', 
+            'type_categorias', 'type_descuentos', "total_bruto",
+            'sub_titulo','titulo', 'afps', 'total_descuentos',
+            'type_aportaciones', 'total_aportaciones', 'remuneraciones',
+            'total_liquido', 'afp_total', 'money'
+        ));
 
-                }
-
-            }
-
-            //retornamos las metas
-            return $meta;
-
-        });
-
-        $meses = ["ENERO",'FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-
-        $pdf = PDF::loadView('pdf.planilla', compact('meses', 'metas', 'pagina'));
         $pdf->setPaper('a3', 'landscape')->setWarnings(false);
+        $path = "pdf/planilla_general_meta_{$meta->metaID}_{$cronograma->mes}_{$cronograma->año}_{$cronograma->id}_v1.pdf";
+        $nombre = "Resumen general del {$cronograma->mes} del {$cronograma->año} - Meta {$meta->metaID} - v1";
+        $pdf->save(storage_path("app/public") . "/{$path}");
 
-        $ruta = "/pdf/planilla_metas_{$config['mes']}_{$config['year']}.pdf";
-        $pdf->save(storage_path('app/public') . $ruta);
+        $archivo = Report::where("cronograma_id", $cronograma->id)
+            ->where("type_report_id", $this->type_report)
+            ->where("name", $nombre)
+            ->first();
+
+        if ($archivo) {
+            $archivo->update([
+                "read" => 0,
+                "path" => "/storage/{$path}"
+            ]);
+        }else {
+            $archivo = Report::create([
+                "type" => "pdf",
+                "name" => $nombre,
+                "icono" => "fas fa-file-pdf",
+                "path" => "/storage/{$path}",
+                "cronograma_id" => $cronograma->id,
+                "type_report_id" => $this->type_report
+            ]);
+        }
 
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->notify(new ReportNotification("/storage{$ruta}" ,"La Planilla Meta x Meta se genero correctamente"));
+            $user->notify(new ReportNotification($cronograma->pdf ,"{$archivo->name}, ya está lista"));
         }
+
+
     }
+
 }

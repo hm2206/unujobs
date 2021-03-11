@@ -16,12 +16,12 @@ class CreateAfpsTable extends Migration
         Schema::create('afps', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string("nombre");
-            $table->text("descripcion")->nullable();
-            $table->double("porcentaje")->nullable();
-            $table->double('flujo')->nullable();
-            $table->double('mixta')->nullable();
-            $table->double('aporte')->nullable();
             $table->double('prima')->nullable();
+            $table->double('aporte')->nullable();
+            $table->bigInteger('prima_descuento_id')->nullable();
+            $table->bigInteger('aporte_descuento_id')->nullable();
+            $table->double('prima_limite')->default(0);
+            $table->tinyInteger('activo')->default(1);
             $table->timestamps();
         });
     }

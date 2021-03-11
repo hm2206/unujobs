@@ -7,6 +7,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+/**
+ * Notificación Basica
+ */
 class BasicNotification extends Notification
 {
     use Queueable;
@@ -16,7 +19,15 @@ class BasicNotification extends Notification
     private $icono;
     private $background;
 
-    public function __construct($url, $body, $icono = "fas fa-file-alt", $background = "bg-primary")
+    /**
+     * Configuración basica para la notificación
+     *
+     * @param string $url
+     * @param string $body
+     * @param string $icono
+     * @param string $background
+     */
+    public function __construct($url = "", $body = "", $icono = "fas fa-file-alt", $background = "bg-primary")
     {
         $this->url = $url;
         $this->body = $body;
@@ -24,7 +35,7 @@ class BasicNotification extends Notification
         $this->background = $background;
     }
 
-
+    
     public function via($notifiable)
     {
         return ['database'];

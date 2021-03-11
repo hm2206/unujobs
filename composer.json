@@ -15,6 +15,9 @@
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "maatwebsite/excel": "^3.1",
+        "mpociot/laravel-apidoc-generator": "^3.10",
+        "apigen/apigen": "dev-master",
+		"roave/better-reflection": "dev-master#c87d856",
         "rebing/graphql-laravel": "^1.24"
     },
     "require-dev": {

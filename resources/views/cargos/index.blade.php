@@ -12,7 +12,12 @@
 
 <div class="col-md-12 mb-2">
     <a href="{{ route('home') }}" class="btn btn-danger"><i class="fas fa-arrow-left"></i> atrás</a>
-    <a href="{{ route('cargo.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> nuevo</a>
+    <btn-cargo
+        theme="btn-primary"
+        redirect="{{ route('cargo.index')}}"
+    >
+        <i class="fas fa-plus"></i> Nuevo
+    </btn-cargo>
 </div>
 
 @if (session('success'))
@@ -46,12 +51,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($cargos as $cargo)
+                        @forelse ($cargos as $iter => $cargo)
                             <tr>
-                                <th>{{ $cargo->id }}</th>
+                                <th>{{ $cargo->id}}</th>
                                 <th class="uppercase">{{ $cargo->descripcion }}</th>
                                 <th>
-                                    <a href="{{ route('cargo.categoria', $cargo->id) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>
+                                    <a href="{{ route('cargo.categoria', $cargo->slug()) }}" class="btn mt-1 btn-sm btn-primary"><i class="fas fa-plus"></i></a>
                                     @foreach ($cargo->categorias as $categoria)
                                         <a href="#" class="btn btn-sm btn-danger uppercase mt-1">
                                             {{ $categoria->nombre }}
@@ -60,12 +65,13 @@
                                 </th>
                                 <th>
                                     <div class="btn-group">
-                                        <a href="{{ route('cargo.edit', $cargo->id) }}" class="btn btn-sm btn-warning">
+                                        <btn-cargo
+                                            theme="btn-warning btn-sm"
+                                            redirect="{{ route('cargo.index')}}"
+                                            :datos="{{ $cargo }}"
+                                        >
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a href="{{ route('cargo.config', $cargo->id) }}" class="btn btn-sm btn-dark">
-                                            <i class="fas fa-cog"></i>
-                                        </a>
+                                        </btn-cargo>
                                     </div>
                                 </th>
                             </tr>

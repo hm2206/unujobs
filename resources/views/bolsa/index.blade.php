@@ -61,7 +61,7 @@
                             @endphp
 
                             Convocatoria N° {{ $convocatoria->numero_de_convocatoria }}-{{ $tmp_year }}-UNU 
-                            <a target="__blank" href="{{ route('convocatoria.pdf', $convocatoria->id) }}" class="ml-3 btn btn-sm btn-danger">
+                            <a target="__blank" href="{{ route('convocatoria.pdf', $convocatoria->slug()) }}" class="ml-3 btn btn-sm btn-danger">
                                 <i class="fas fa-file-pdf"></i> PDF
                             </a>
                         </a>
@@ -74,7 +74,7 @@
                                 <li>
                                     <a href="{{ route('bolsa.show', 
                                         [
-                                            $convocatoria->id, 
+                                            $convocatoria->slug(), 
                                             $personal->slug, 
                                             'postulante=' . request()->postulante
                                         ]) }}"

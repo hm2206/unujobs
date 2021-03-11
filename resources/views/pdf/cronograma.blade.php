@@ -6,9 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ public_path() . "/css/app.css" }}">
     <link rel="stylesheet" href="{{ public_path() . "/css/pdf.css" }}">
-    <title>Reporte Planilla </title>
+    <title>REPORTE GENERAL DE PLANILLA </title>
 </head>
-<body class="bg-white">
+
+<style>
+
+    html {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    body {
+        padding: 1.5em;
+    }
+
+</style>
+
+<body class="bg-white text-negro mt-0 pt-0">
 
     <div class="text-center">{{ $titulo }}</div>
         
@@ -19,192 +33,210 @@
                     <img src="{{ public_path() . "/img/logo.png" }}" width="50" alt="">
                 </th>
                 <th>
-                    <div><b>UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
-                    <div class="ml-1 text-sm">OFICINA GENERAL DE RECURSOS HUMANOS</div>
-                    <div class="ml-1 text-sm">OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</div>
+                    <div><b class="font-14">UNIVERSIDAD NACIONAL DE UCAYALI</b></div>
+                    <div class="ml-1 font-13 text-sm"><b>OFICINA GENERAL DE RECURSOS HUMANOS</b></div>
+                    <div class="ml-1 font-13 text-sm"><b>OFICINA EJECUTIVA DE REMUNERACIONES Y PENSIONES</b></div>
                 </th>
             </tr>
         </thead>
     </table>
 
-    <h6 class="mt-1 text-center mb-2 uppercase">{{ $sub_titulo }}</h6>
+    <h6 class="mt-2 text-center uppercase"><b class="font-13">{{ $sub_titulo }}</b></h6>
 
-    <div class="text-md uppercase">
+    <div class="text-md uppercase font-13">
         <b> 
             RESUMEN DE PLANILLA UNICA DE PAGO : 
             @if ($cronograma->adicional)
                 ADICIONAL <span class="text-danger">>></span> {{ $cronograma->numero }}
             @else
-                <span class="ml-2">{{ $cronograma->planilla ? $cronograma->planilla->key : null }}</span>
+                <span class="ml-2">{{ $cronograma->planilla ? $cronograma->planilla->descripcion : null }}</span>
             @endif 
         </b>
     </div>
-    <div class="text-md uppercase"><b>OBSERVACIONES :{{ $cronograma->observacion }}</b></div>
+    <div class="text-md uppercase font-12"><b>OBSERVACIONES :{{ $cronograma->observacion }}</b></div>
 
-    <table style="width:100%;">
+    <table style="width:100%;" class="text-negro">
         <tr>
-            <td style="position:relative;">
-                <table class="table-sm table table-bordered" style="position:absolute;top:0px;left:0px;width:100%;">
-                    <thead class="table-thead text-center">
+            <td style="position:relative;" class="py-0 font-12">
+                <table class="table-sm" style="position:absolute;top:0px;left:0px;width:100%;">
+                    <thead class="table-thead text-center bbb-1 bbl-1 bbt-1">
                         <tr>
-                            <td></td>
+                            <td class="py-0"></td>
                             @foreach ($type_categorias as $categoria)
-                                <td>{{ $categoria->descripcion }} 
+                                <th class="py-0 font-12">{{ $categoria->descripcion }} 
                                     <table width="100%">
                                         <tr>
                                             @foreach ($categoria->cargos as $cargo)
-                                                <td class="small text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                    {{ $cargo->tag }}
-                                                </td>
+                                                <th class="small text-center font-11 py-0" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                                    <b>{{ $cargo->tag }} </b><br>
+                                                    <b>{{ $cargo->ext_pptto }}</b>
+                                                </th>
                                             @endforeach
                                         </tr>
                                     </table>
-                                </td>
+                                </th>
                             @endforeach
-                            <td><b>TOTALES</b></td>
+                            <td class="font-12"><b>TOTALES</b></td>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody  class="bbl-1">
                         <tr>
-                            <td width="25%"><b>2.1 PERSONAL Y OBLIGACIONES SOCIALES</b></td>
-                            @foreach ($resumen as $res)
-                                <td>
+                            <td width="25%" class="py-0 font-11 bbb-1 bbr-1 pl-1"><b>2.1 PERSONAL Y OBLIGACIONES SOCIALES</b></td>
+                            @foreach ($type_categorias as $type_categoria)
+                                <td class="py-0 bbb-1">
                                     <table width="100%">
                                         <tr>
-                                            @foreach ($res['cargos'] as $car)
+                                            @foreach ($type_categoria->cargos as $cargo)
                                                 <td width="50%" class="text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                    <b>{{ $car['total'] }}</b>
+                                                    <b class="font-13">
+                                                        {{ 
+                                                            $money->parseTo(
+                                                                $remuneraciones->where("cargo_id", $cargo->id)
+                                                                    ->sum("monto")
+                                                            )     
+                                                        }}
+                                                    </b>
                                                 </td>
                                             @endforeach
                                         </tr>
                                     </table>
                                 </td>
                             @endforeach
-                            <td class="text-center"><b>{{ $totales }}</b></td>
+                            <td class="text-center bbb-1 py-0">
+                                <b class="font-13">{{ $money->parseTo($remuneraciones->sum("monto")) }}</b>
+                            </td>
                         </tr>
-                        @foreach ($results as $type)
+                        @foreach ($type_remuneraciones as $type)
                             <tr class="table-height">
 
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $type['id'] }}. {{ $type['descripcion'] }}
-                                </td>
+                                <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-11">
+                                    <b class="font-12">{{ $type->key }}.-{{ $type->descripcion }}</b>
+                                </th>
 
-                                @foreach ($type['categorias'] as $categoria)
+                                @foreach ($type->type_categorias as $type_categoria)
                                     <td class="table-height text-center" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
                                         <table width="100%">
                                             <tr>
-                                                @foreach ($categoria['tags'] as $tag)
-                                                    <td width="50%" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                                        {{ $tag['monto'] }}
-                                                    </td>
+                                                @foreach ($type_categoria->cargos as $cargo)
+                                                    <th width="50%" class="font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                                        {{ 
+                                                            $money->parseTo(
+                                                                $remuneraciones->where("cargo_id", $cargo->id)
+                                                                    ->where("type_remuneracion_id", $type->id)
+                                                                    ->sum('monto') 
+                                                            )
+                                                        }}
+                                                    </th>
                                                 @endforeach
                                             </tr>
                                         </table>
                                     </td>
                                 @endforeach
 
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="text-center">
-                                    {{ $type['total'] }}
-                                </td>
+                                <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="bbr-1 font-13 text-center">
+                                    {{ $money->parseTo($type->total) }}
+                                </th>
 
                             </tr>
                         @endforeach
+                        @for ($i = 0; $i < 4; $i++)
+                            <tr>
+                                <th colspan="{{ $type->type_categorias->count() }}" class="font-12">&nbsp;</th>
+                            </tr>
+                        @endfor
+                        <tr>
+                            <th colspan="{{ $type->type_categorias->count() }}" class="font-12 bbb-1"></th>
+                            <th class="font-12 bbb-1" colspan="2">
+                                <div class="bbt-1 font-13">
+                                    TOTAL PLANILLA BRUTA: S/. {{ $money->parseTo($total_bruto) }}
+                                </div>
+                            </th>
+                        </tr>
                     </tbody>
                 </table>
             </td>
 
-            <td style="position:relative;">
-                <table class="table table-sm table-bordered" style="position:absolute;top:0px;left:0px;width:100%;">
-                    <thead>
+            <td style="position:relative;" class="py-0 font-11">
+                <table class="table-sm" style="position:absolute;top:0px;left:0px;width:100%;">
+                    <thead class="bbr-1 bbt-1 bbb-1 bbl-1 bbr-1">
                         <tr>
-                            <th colspan="2">DESCUENTOS</th>
+                            <th colspan="2" class="py-2 font-12">DESCUENTOS</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bbl-1 bbr-1">
                         @foreach ($type_descuentos as $descuento)
                             <tr>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $descuento->descripcion }}
-                                </td>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $descuento->monto }}
-                                </td>
+                                <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
+                                    {{ $descuento->key }}.-{{ $descuento->descripcion }}
+                                </th>
+                                <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $money->parseTo($descuento->monto) }}
+                                </th>
                             </tr>
                         @endforeach
 
+                        <tr>
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
+                                SISTEMA PRIVADO DE PENSIONES
+                            </th>
+                            <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                {{ $money->parseTo($afp_total) }}
+                            </th>
+                        </tr>
+
                         @foreach ($afps as $afp)
                             <tr>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
                                     AFP {{ $afp->nombre }}
-                                </td>
-                                <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                    {{ $afp->monto }}
-                                </td>
+                                </th>
+                                <th class="text-left font-13" style="height: 10px; border:0px;padding:0px;">
+                                    {{ $money->parseTo($afp->monto) }}
+                                </th>
                             </tr>
                         @endforeach
                         <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
                                 TOTAL DESCUENTOS
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
-                                {{ $total_descuentos }}
-                            </td>
+                            </th>
+                            <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-top:1px solid black;">
+                                <div class="bbb-1 pr-1">{{ $money->parseTo($total_descuentos) }}</div>
+                            </th>
                         </tr>
                         <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                TOTAL LICUADO PERCIBIDO
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:1px solid black;">
-                                
-                            </td>
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
+                                TOTAL LIQUIDO PERCIBIDO
+                            </th>
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:1px solid black;"
+                                class="font-13 text-right"
+                            >
+                                {{ $money->parseTo($total_liquido)  }}
+                            </th>
                         </tr>
                         <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
                                 TOTAL PLANILLA BRUTA
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:2px solid black;">
-                                {{ $totales }}
-                            </td>
+                            </th>
+                            <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;border-bottom:2px solid black;">
+                                {{ $money->parseTo($total_bruto) }}
+                            </th>
                         </tr>
+                        @foreach ($type_aportaciones as $aport)
+                            <tr>
+                                <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
+                                    {{ $aport->key }}.- {{ $aport->descripcion }}
+                                </th>
+                                <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                    {{ $money->parseTo($aport->monto) }}
+                                </th>
+                            </tr>
+                        @endforeach
                         <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                80.-ESSALUD (APORTACIONES)
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_essalud }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                81.-I.E.S 17%
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_ies }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                82.-D.L.F.P (APORTACIONES)
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_dlfp }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                83.-ACCIDENTES DE TRABAJO
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_accidentes }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                84.-TOTAL APORTACIONES
-                            </td>
-                            <td style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
-                                {{ $total_aportaciones }}
-                            </td>
+                            <th style="height: 10px; border:0px;padding:0px;padding-left:0.3em;" class="font-12">
+                                <div class="bbb-1 font-12">84.-TOTAL APORTACIONES</div>
+                            </th>
+                            <th class="text-right font-13" style="height: 10px; border:0px;padding:0px;padding-left:0.3em;">
+                                <div class="bbb-1 font-13 bbt-1 pr-1">{{ $money->parseTo($total_aportaciones) }}</div>
+                            </th>
                         </tr>
                     </tbody>
                 </table>
